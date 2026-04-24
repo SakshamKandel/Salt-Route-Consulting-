@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
+/playwright-report
+/test-results
+/.claude
+/logs
+/*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -1,0 +1,335 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── ENUMS ─────────────────────────────────────────────
+
+enum Role {
+  GUEST
+  OWNER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum PropertyStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  ARCHIVED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  ROLE_CHANGE
+  BOOKING_CREATE
+  BOOKING_CANCEL
+  BOOKING_CONFIRM
+  PROPERTY_PUBLISH
+  PROPERTY_ARCHIVE
+  INVITATION_SEND
+  INVITATION_ACCEPT
+}
+
+// ─── USER ──────────────────────────────────────────────
+
+model User {
+  id               String    @id @default(cuid())
+  name             String?
+  email            String    @unique
+  emailVerified    DateTime?
+  hashedPassword   String?
+  phone            String?
+  image            String?
+  role             Role       @default(GUEST)
+  status           UserStatus @default(ACTIVE)
+  twoFactorEnabled Boolean    @default(false)
+  twoFactorSecret  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts    Account[]
+  sessions    Session[]
+  properties  Property[]   @relation("OwnerProperties")
+  bookings    Booking[]
+  reviews     Review[]
+  wishlists   Wishlist[]
+  invitations Invitation[] @relation("InvitedBy")
+  auditLogs   AuditLog[]
+
+  @@map("users")
+}
+
+// ─── AUTH (NextAuth) ───────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── PROPERTY ──────────────────────────────────────────
+
+model Property {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String         @db.Text
+  highlights    String[]
+  location      String
+  address       String?
+  latitude      Float?
+  longitude     Float?
+  pricePerNight Decimal        @db.Decimal(10, 2)
+  maxGuests     Int            @default(2)
+  bedrooms      Int            @default(1)
+  bathrooms     Int            @default(1)
+  amenities     String[]
+  rules         String[]
+  status        PropertyStatus @default(DRAFT)
+  featured      Boolean        @default(false)
+
+  ownerId String
+  owner   User   @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images       PropertyImage[]
+  bookings     Booking[]
+  blockedDates BlockedDate[]
+  reviews      Review[]
+  wishlists    Wishlist[]
+
+  @@index([status])
+  @@index([ownerId])
+  @@index([slug])
+  @@map("properties")
+}
+
+model PropertyImage {
+  id        String  @id @default(cuid())
+  url       String
+  publicId  String
+  alt       String?
+  order     Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([propertyId])
+  @@map("property_images")
+}
+
+// ─── BOOKING ───────────────────────────────────────────
+
+model Booking {
+  id                 String        @id @default(cuid())
+  bookingCode        String        @unique @default(cuid())
+  checkIn            DateTime
+  checkOut           DateTime
+  guests             Int
+  totalPrice         Decimal       @db.Decimal(10, 2)
+  status             BookingStatus @default(PENDING)
+  notes              String?       @db.Text
+  cancellationReason String?
+
+  guestId    String
+  guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([guestId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([checkIn, checkOut])
+  @@map("bookings")
+}
+
+model BlockedDate {
+  id     String   @id @default(cuid())
+  date   DateTime
+  reason String?
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, date])
+  @@index([propertyId])
+  @@map("blocked_dates")
+}
+
+// ─── REVIEW ────────────────────────────────────────────
+
+model Review {
+  id         String  @id @default(cuid())
+  rating     Int
+  comment    String  @db.Text
+  reply      String? @db.Text
+  isApproved Boolean @default(false)
+
+  guestId    String
+  guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([guestId, propertyId])
+  @@index([propertyId])
+  @@map("reviews")
+}
+
+// ─── WISHLIST ──────────────────────────────────────────
+
+model Wishlist {
+  id String @id @default(cuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, propertyId])
+  @@map("wishlists")
+}
+
+// ─── INVITATION ────────────────────────────────────────
+
+model Invitation {
+  id        String           @id @default(cuid())
+  email     String
+  role      Role             @default(OWNER)
+  token     String           @unique
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime
+
+  invitedById String
+  invitedBy   User   @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([token])
+  @@map("invitations")
+}
+
+// ─── INQUIRY (Contact Form) ───────────────────────────
+
+model Inquiry {
+  id      String        @id @default(cuid())
+  name    String
+  email   String
+  phone   String?
+  subject String
+  message String        @db.Text
+  status  InquiryStatus @default(NEW)
+  reply   String?       @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("inquiries")
+}
+
+// ─── AUDIT LOG ─────────────────────────────────────────
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  action    AuditAction
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
