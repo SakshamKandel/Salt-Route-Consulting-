@@ -1,8 +1,9 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Home, Calendar, ChartBar, User, LogOut, MessageSquare, Edit3, Bell } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { getUnreadNotificationCount } from "@/lib/notifications"
+import { OwnerSidebarNav, OwnerMobileNav } from "@/components/owner/OwnerSidebarNav"
 
 export default async function OwnerLayout({
   children,
@@ -10,117 +11,147 @@ export default async function OwnerLayout({
   children: React.ReactNode
 }) {
   const session = await auth()
-  
+
   if (!session?.user || !["OWNER", "ADMIN"].includes(session.user.role)) {
     redirect("/login")
   }
 
   const unreadNotifications = await getUnreadNotificationCount(session.user.id)
 
-  const navigation = [
-    { name: "Overview", href: "/owner/dashboard", icon: ChartBar },
-    { name: "Properties", href: "/owner/properties", icon: Home },
-    { name: "Reservations", href: "/owner/bookings", icon: Calendar },
-    { name: "Messages", href: "/owner/messages", icon: MessageSquare },
-    { name: "Alerts", href: "/owner/notifications", icon: Bell },
-    { name: "Insights", href: "/owner/reports", icon: ChartBar },
-    { name: "Request Edit", href: "/owner/request-edit", icon: Edit3 },
-    { name: "Profile", href: "/owner/profile", icon: User },
-  ]
+  const initials = session.user.name
+    ? session.user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "PP"
+
+  const firstName = session.user.name?.split(" ")[0] ?? "Partner"
 
   return (
-    <div className="flex h-screen bg-background text-charcoal overflow-hidden font-sans selection:bg-gold/30">
-      {/* ─── QUIET LUXURY SIDEBAR ─── */}
-      <aside className="w-72 flex-col hidden md:flex relative z-20 bg-[#FAFAFA] border-r border-charcoal/5">
-        <div className="absolute top-0 right-0 w-[1px] h-full bg-gradient-to-b from-transparent via-gold/20 to-transparent pointer-events-none" />
-        
-        <div className="p-12 flex justify-center items-center flex-col shrink-0 mt-8">
-          <Link href="/" className="flex flex-col items-center group">
-            <span className="font-display text-2xl tracking-[0.4em] uppercase leading-none text-charcoal mb-3 group-hover:text-gold transition-colors duration-700">
+    <div className="flex h-screen overflow-hidden font-sans bg-[#0A1826]">
+
+      {/* ─── SIDEBAR ─── */}
+      <aside className="w-[280px] flex-col hidden md:flex shrink-0 relative z-20 bg-[#060E18]">
+        {/* Gold accent line on right edge */}
+        <div
+          className="absolute top-0 right-0 w-px h-full pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgba(197,168,128,0.18) 40%, rgba(197,168,128,0.18) 60%, transparent 100%)",
+          }}
+        />
+
+        {/* Branding */}
+        <div className="px-10 pt-12 pb-6 shrink-0">
+          <Link href="/" className="group inline-flex flex-col">
+            <span className="font-display text-[1.1rem] tracking-[0.4em] uppercase leading-none text-sand/85 group-hover:text-gold">
               Salt Route
             </span>
-            <span className="text-[9px] tracking-[0.6em] text-charcoal/40 uppercase font-sans font-light">
+            <span className="text-[7.5px] tracking-[0.55em] uppercase font-sans font-light text-gold/50 mt-2 leading-none">
               Partner Portal
             </span>
           </Link>
-          <div className="w-4 h-[1px] bg-charcoal/20 mt-10" />
         </div>
-        
-        <nav className="flex-1 overflow-y-auto py-8">
-          <ul className="space-y-2 px-8">
-            {navigation.map((item) => (
-              <li key={item.name}>
-                <Link
-                  href={item.href}
-                  className="flex items-center px-6 py-4 rounded-none text-sm font-light hover:bg-charcoal/5 transition-all duration-500 group relative overflow-hidden"
-                >
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-0 bg-charcoal/30 group-hover:h-3/4 transition-all duration-500 ease-out" />
-                  <item.icon className="mr-6 h-4 w-4 flex-shrink-0 text-charcoal/30 group-hover:text-charcoal transition-colors duration-500 stroke-[1.2]" />
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/50 group-hover:text-charcoal transition-colors duration-500 font-medium">{item.name}</span>
-                  {item.href === "/owner/notifications" && unreadNotifications > 0 && (
-                    <span className="ml-auto min-w-5 rounded-full bg-gold px-1.5 text-center text-[9px] font-bold text-charcoal">
-                      {unreadNotifications > 9 ? "9+" : unreadNotifications}
-                    </span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
+
+        {/* Divider */}
+        <div className="mx-10 mb-8 h-px bg-gradient-to-r from-gold/25 to-transparent" />
+
+        {/* Navigation — only passes a number (serializable) */}
+        <nav className="flex-1 overflow-y-auto">
+          <OwnerSidebarNav notificationBadge={unreadNotifications} />
         </nav>
 
-        {/* Logout Section */}
-        <div className="p-8 pb-12 mt-auto">
-          <form action={async () => {
-            "use server"
-            const { signOut } = await import("@/auth")
-            await signOut({ redirectTo: "/login" })
-          }}>
-            <button type="submit" className="w-full flex items-center justify-center gap-4 px-6 py-4 border border-charcoal/10 hover:border-charcoal/30 text-charcoal/40 hover:text-charcoal transition-all duration-500 group">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Sign Out</span>
-              <LogOut className="h-4 w-4 stroke-[1.2] group-hover:-translate-x-1 transition-transform duration-500" />
+        {/* Bottom: user info + sign out */}
+        <div
+          className="px-8 pt-6 pb-10 shrink-0"
+          style={{ borderTop: "1px solid rgba(197,168,128,0.08)" }}
+        >
+          <div className="flex items-center gap-3.5 mb-5">
+            <div
+              className="w-9 h-9 flex items-center justify-center shrink-0 overflow-hidden"
+              style={{ border: "1px solid rgba(197,168,128,0.2)", background: "rgba(197,168,128,0.06)" }}
+            >
+              {session.user.image ? (
+                <img src={session.user.image} alt={session.user.name || ""} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-[11px] font-semibold text-gold tracking-wider">
+                  {initials}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-sand/80 font-medium tracking-wide truncate leading-tight">
+                {session.user.name}
+              </p>
+              <p className="text-[8.5px] uppercase tracking-[0.35em] text-sand/30 mt-0.5 leading-tight">
+                Property Partner
+              </p>
+            </div>
+          </div>
+
+          <form
+            action={async () => {
+              "use server"
+              const { signOut } = await import("@/auth")
+              await signOut({ redirectTo: "/login" })
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full flex items-center justify-between px-4 py-3 text-sand/30 hover:text-sand/55 group"
+              style={{ border: "1px solid rgba(247,245,240,0.06)" }}
+            >
+              <span className="text-[9px] uppercase tracking-[0.3em] font-medium">Sign Out</span>
+              <LogOut className="h-3.5 w-3.5 stroke-[1.3] group-hover:-translate-x-0.5" />
             </button>
           </form>
         </div>
       </aside>
 
-      {/* ─── MAIN CONTENT ─── */}
+      {/* ─── MAIN AREA ─── */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="absolute inset-0 pointer-events-none bg-white" />
-        
-        {/* Top Header */}
-        <header className="min-h-24 md:h-32 flex items-center justify-between px-5 sm:px-8 md:px-16 z-10 shrink-0 border-b border-charcoal/5">
-          <div className="flex min-w-0 items-center gap-4 md:gap-6">
-            <span className="w-12 h-[1px] bg-charcoal/20 hidden md:block" />
-            <div className="min-w-0">
-              <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/40 mb-2 font-bold">Welcome Back</p>
-              <h1 className="truncate font-display text-xl md:text-2xl text-charcoal tracking-widest uppercase">{session.user.name}</h1>
+
+        {/* Top header */}
+        <header
+          className="h-[72px] flex items-center justify-between px-6 sm:px-10 md:px-14 shrink-0 z-10"
+          style={{
+            borderBottom: "1px solid rgba(197,168,128,0.08)",
+            background: "rgba(6,14,24,0.7)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <div className="flex items-center gap-5">
+            <Link href="/" className="md:hidden">
+              <span className="font-display text-base tracking-[0.35em] uppercase text-sand/80">SRC</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-4">
+              <span className="w-8 h-px bg-gold/20" />
+              <p className="text-[9px] uppercase tracking-[0.34em] text-sand/35 font-medium">
+                Owner portfolio, {firstName}
+              </p>
             </div>
           </div>
+          <Link
+            href="/properties"
+            className="text-[9px] uppercase tracking-[0.24em] text-sand/25 hover:text-gold"
+          >
+            Public Collection
+          </Link>
         </header>
 
-        <nav className="md:hidden z-10 shrink-0 overflow-x-auto border-b border-charcoal/5 bg-white">
-          <div className="flex min-w-max items-center gap-1 px-3 py-3">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="relative inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-[9px] uppercase tracking-[0.16em] text-charcoal/45 hover:bg-charcoal/[0.03] hover:text-charcoal"
-              >
-                <item.icon className="h-3.5 w-3.5 stroke-[1.3]" />
-                <span>{item.name}</span>
-                {item.href === "/owner/notifications" && unreadNotifications > 0 && (
-                  <span className="min-w-4 rounded-full bg-gold px-1 text-center text-[8px] font-bold text-charcoal">
-                    {unreadNotifications > 9 ? "9+" : unreadNotifications}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
+        {/* Mobile scrollable nav — only passes a number */}
+        <nav
+          className="md:hidden shrink-0 overflow-x-auto z-10"
+          style={{ borderBottom: "1px solid rgba(197,168,128,0.08)", background: "#060E18" }}
+        >
+          <OwnerMobileNav notificationBadge={unreadNotifications} />
         </nav>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-5 sm:px-8 md:px-16 pb-16 md:pb-24 z-10">
-          <div className="max-w-7xl mx-auto">
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto z-10">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 pb-24">
             {children}
           </div>
         </main>

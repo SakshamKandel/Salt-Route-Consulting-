@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { CalendarDays, Camera, Edit3, Sparkles } from "lucide-react"
 import { submitOwnerRequestAction } from "./actions"
 
 export default async function OwnerRequestEditPage({
@@ -11,64 +11,158 @@ export default async function OwnerRequestEditPage({
 }) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
-  
+
   const resolvedParams = await searchParams
-  const defaultPropertyId = resolvedParams.propertyId as string
+  const defaultPropertyId = resolvedParams.propertyId as string | undefined
 
   const properties = await prisma.property.findMany({
     where: { ownerId: session.user.id },
-    select: { id: true, title: true }
+    select: { id: true, title: true, location: true },
+    orderBy: [{ featured: "desc" }, { title: "asc" }],
   })
 
+  const requestTypes = [
+    "Calendar Block",
+    "Price Change",
+    "Update Images",
+    "Description Update",
+    "Amenities Update",
+    "Additional Features",
+    "House Rules",
+    "Other",
+  ]
+
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <div>
-        <h2 className="text-3xl font-display text-navy">Request an Edit</h2>
-        <p className="text-slate-500">Need to block dates, change pricing, or update property details? Send a request to our admin team.</p>
-      </div>
-
-      <div className="bg-white border rounded-lg p-6 shadow-sm">
-        <form action={async (formData) => {
-          "use server"
-          const res = await submitOwnerRequestAction(formData)
-          if (res.success) {
-            redirect("/owner/dashboard?requestSubmitted=true")
-          }
-        }} className="space-y-6">
-          
-          <div>
-            <label className="text-sm font-medium mb-1 block">Select Property</label>
-            <select name="propertyId" defaultValue={defaultPropertyId || ""} required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="" disabled>Select a property...</option>
-              {properties.map(p => (
-                <option key={p.id} value={p.id}>{p.title}</option>
-              ))}
-            </select>
+    <div className="space-y-14">
+      <section className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <span className="h-px w-8 bg-gold/40" />
+            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Listing Edits</p>
           </div>
+          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
+            Send precise property updates to Salt Route.
+          </h1>
+          <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
+            Request calendar blocks, price changes, image refreshes, amenities, house rules, or additional client-facing features for any property.
+          </p>
+        </div>
 
-          <div>
-            <label className="text-sm font-medium mb-1 block">Type of Change</label>
-            <select name="requestType" required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="Calendar Block">Block Calendar Dates</option>
-              <option value="Price Change">Update Pricing</option>
-              <option value="Update Images">Update Images</option>
-              <option value="Other">Other Edit</option>
-            </select>
-          </div>
+        <div className="grid grid-cols-3 gap-px bg-gold/8">
+          {[
+            { icon: CalendarDays, label: "Calendar" },
+            { icon: Camera, label: "Media" },
+            { icon: Sparkles, label: "Features" },
+          ].map(({ icon: Icon, label }) => (
+            <div key={label} className="bg-[#0A1826] p-5 text-center">
+              <Icon className="mx-auto mb-4 h-4 w-4 text-gold/45 stroke-[1.3]" />
+              <p className="text-[8px] uppercase tracking-[0.22em] text-sand/30">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <div>
-            <label className="text-sm font-medium mb-1 block">Message / Details</label>
-            <textarea 
-              name="message" 
-              required 
-              rows={5}
-              placeholder="E.g., Please block the dates from Oct 10 to Oct 15 as I will be using the property myself."
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
-          </div>
+      <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div
+          className="p-6 sm:p-8 lg:p-10"
+          style={{
+            border: "1px solid rgba(197,168,128,0.1)",
+            background: "rgba(197,168,128,0.025)",
+          }}
+        >
+          <form
+            action={async (formData) => {
+              "use server"
+              const res = await submitOwnerRequestAction(formData)
+              if (res.success) {
+                redirect("/owner/dashboard?requestSubmitted=true")
+              }
+            }}
+            className="space-y-8"
+          >
+            <div className="space-y-2.5">
+              <label className="block text-[9px] uppercase tracking-[0.36em] text-sand/40">
+                Select Property
+              </label>
+              <select
+                name="propertyId"
+                defaultValue={defaultPropertyId ?? ""}
+                required
+                className="w-full appearance-none bg-transparent px-5 py-4 text-[12.5px] font-light text-sand/72 outline-none transition-all duration-500 focus:border-gold/40"
+                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+              >
+                <option value="" disabled className="bg-[#0A1826]">
+                  Select a property...
+                </option>
+                {properties.map((p) => (
+                  <option key={p.id} value={p.id} className="bg-[#0A1826]">
+                    {p.title} - {p.location}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <Button type="submit" className="w-full bg-navy text-cream">Submit Request</Button>
-        </form>
+            <div className="space-y-2.5">
+              <label className="block text-[9px] uppercase tracking-[0.36em] text-sand/40">
+                Type of Change
+              </label>
+              <select
+                name="requestType"
+                required
+                className="w-full appearance-none bg-transparent px-5 py-4 text-[12.5px] font-light text-sand/72 outline-none transition-all duration-500 focus:border-gold/40"
+                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+              >
+                {requestTypes.map((type) => (
+                  <option key={type} value={type} className="bg-[#0A1826]">
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2.5">
+              <label className="block text-[9px] uppercase tracking-[0.36em] text-sand/40">
+                Details
+              </label>
+              <textarea
+                name="message"
+                required
+                rows={7}
+                placeholder="Add exact dates, new prices, feature details, amenity changes, photo notes, or guest-facing copy updates."
+                className="w-full resize-y bg-transparent px-5 py-4 text-[12.5px] font-light leading-[1.8] text-sand/65 outline-none transition-all duration-500 placeholder:text-sand/20 focus:border-gold/40"
+                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-3 bg-gold px-10 py-4 text-[9px] font-semibold uppercase tracking-[0.36em] text-[#060E18] transition-colors duration-500 hover:bg-sand sm:w-auto"
+            >
+              Submit Request
+              <Edit3 className="h-3.5 w-3.5 stroke-[1.4]" />
+            </button>
+          </form>
+        </div>
+
+        <aside className="space-y-5">
+          {[
+            ["Use exact data", "For calendar blocks and price changes, include dates, amounts, and whether the change is temporary."],
+            ["Think guest-facing", "For additional features, write the benefit a client should notice, such as mountain-view balcony or chef on request."],
+            ["Media updates", "For photos, mention the room, priority order, and whether it should become the primary cover image."],
+          ].map(([title, body]) => (
+            <div key={title} className="border border-gold/8 bg-[#0A1826] p-6">
+              <p className="font-display text-xl tracking-wide text-sand/78">{title}</p>
+              <p className="mt-3 text-[11.5px] font-light leading-[1.85] text-sand/32">{body}</p>
+            </div>
+          ))}
+        </aside>
+      </section>
+
+      <div className="flex items-start gap-5 border border-gold/8 px-7 py-6">
+        <span className="mt-2 h-px w-4 shrink-0 bg-gold/40" />
+        <p className="text-[11.5px] font-light leading-[1.8] text-sand/30">
+          The Salt Route team reviews partner requests within 24 hours. For urgent same-day changes, use the support messages section as well.
+        </p>
       </div>
     </div>
   )

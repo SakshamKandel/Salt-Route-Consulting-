@@ -17,10 +17,10 @@ const guestLinks = [
 
 const ownerLinks = [
   { href: "/", label: "Guest View" },
-  { href: "/for-owners#portfolio", label: "Portfolio" },
-  { href: "/for-owners#services", label: "Services" },
-  { href: "/for-owners#why-us", label: "Why Us" },
-  { href: "/contact", label: "Enquire" },
+  { href: "#portfolio", label: "Portfolio" },
+  { href: "#services", label: "Services" },
+  { href: "#why-us", label: "Why Us" },
+  { href: "#owner-enquiry", label: "Enquire" },
 ]
 
 export function Nav() {
@@ -127,7 +127,7 @@ export function Nav() {
             </div>
             
             <Link
-              href={isOwnerSection ? "/contact" : "/properties"}
+              href={isOwnerSection ? "#owner-enquiry" : "/properties"}
               className={`hidden sm:inline-flex px-5 md:px-8 py-3.5 text-[9px] uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/30 hover:bg-white/10 md:hover:border-white/60'}`}
             >
               {isOwnerSection ? "Partner With Us" : "Reserve Stays"}

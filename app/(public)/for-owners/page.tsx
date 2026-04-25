@@ -6,7 +6,7 @@ function firstSentence(text: string, max = 180) {
   const trimmed = text.trim()
   const sentenceEnd = trimmed.search(/(?<=[.!?])\s/)
   const cut = sentenceEnd === -1 ? trimmed : trimmed.slice(0, sentenceEnd)
-  return cut.length > max ? cut.slice(0, max).trimEnd() + "…" : cut
+  return cut.length > max ? `${cut.slice(0, max).trimEnd()}...` : cut
 }
 
 export default async function ForOwnersPage() {
@@ -14,7 +14,7 @@ export default async function ForOwnersPage() {
     where: { status: "ACTIVE" },
     include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    take: 8,
+    take: 12,
   })
 
   const portfolio: ForOwnersPortfolioItem[] = properties.map((p) => ({
@@ -23,6 +23,10 @@ export default async function ForOwnersPage() {
     location: p.location,
     desc: firstSentence(p.description),
     image: getPrimaryImageUrl(p.images),
+    bedrooms: p.bedrooms,
+    bathrooms: p.bathrooms,
+    maxGuests: p.maxGuests,
+    featured: p.featured,
   }))
 
   return <ForOwnersClient portfolio={portfolio} />

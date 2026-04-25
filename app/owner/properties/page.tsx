@@ -6,6 +6,7 @@ import Image from "next/image"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
+import { ArrowRight, Bath, BedDouble, Camera, MapPin, Sparkles, Users } from "lucide-react"
 
 export default async function OwnerPropertiesPage({
   searchParams,
@@ -14,9 +15,13 @@ export default async function OwnerPropertiesPage({
 }) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+
   const params = await searchParams
   const requestedPage = parsePage(params.page)
-  const where = { ownerId: session.user.id, status: "ACTIVE" as const }
+  const where = {
+    ownerId: session.user.id,
+    status: { not: "ARCHIVED" as const },
+  }
   const total = await prisma.property.count({ where })
   const pagination = getPagination(requestedPage, total)
 
@@ -26,68 +31,147 @@ export default async function OwnerPropertiesPage({
     take: pagination.take,
     include: {
       _count: {
-        select: { bookings: { where: { status: "CONFIRMED" } } }
+        select: {
+          bookings: { where: { status: { in: ["CONFIRMED", "COMPLETED", "CHECKED_IN"] } } },
+          reviews: true,
+        },
       },
-      images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] }
+      images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
   })
 
   return (
-    <div className="space-y-16">
-      <div className="flex items-center gap-4">
-        <span className="w-8 h-[1px] bg-gold/50" />
-        <h2 className="text-[11px] font-sans text-sand uppercase tracking-[0.4em]">My Portfolio</h2>
-      </div>
+    <div className="space-y-14">
+      <section className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-end">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <span className="h-px w-8 bg-gold/40" />
+            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Portfolio Rooms</p>
+          </div>
+          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
+            Every property in its own polished owner view.
+          </h1>
+          <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
+            Open any asset to review its guest-facing story, gallery, amenities, arrivals, reviews, revenue, and listing update requests.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-px bg-gold/8">
+          {[
+            ["Total", total],
+            ["Shown", properties.length],
+          ].map(([label, value]) => (
+            <div key={label} className="bg-[#0A1826] p-6">
+              <p className="text-[8px] uppercase tracking-[0.3em] text-sand/28">{label}</p>
+              <p className="mt-3 font-display text-3xl text-gold/75">{value}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {properties.length === 0 ? (
-        <div className="p-20 text-center border border-white/[0.05] bg-white/[0.02]">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/30 font-sans">No listed properties in your collection yet.</p>
+        <div className="border border-gold/8 py-24 text-center">
+          <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
+          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">
+            No active properties in your portfolio yet
+          </p>
+          <p className="mt-3 text-[11px] font-light text-sand/20">
+            Contact Salt Route to prepare your first property room.
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {properties.map(p => {
+        <div className="grid grid-cols-1 gap-px bg-gold/8 md:grid-cols-2 xl:grid-cols-3">
+          {properties.map((p) => {
             const imageUrl = getPrimaryImageUrl(p.images) || "/placeholder-property.jpg"
+            const readiness = [
+              p.images.length > 0,
+              p.amenities.length > 0,
+              p.highlights.length > 0,
+              p.description.length > 140,
+            ].filter(Boolean).length
 
             return (
-              <div key={p.id} className="group flex flex-col relative">
-                <div className="aspect-[4/5] relative overflow-hidden bg-white/5 mb-8">
-                  <Image 
-                    src={imageUrl} 
-                    alt={p.title} 
-                    fill 
-                    className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-110" 
+              <Link
+                key={p.id}
+                href={`/owner/properties/${p.id}`}
+                className="group flex min-h-[500px] flex-col bg-[#0A1826] transition-colors duration-700 hover:bg-[#0F2133]"
+              >
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#10243A]">
+                  <Image
+                    src={imageUrl}
+                    alt={p.title}
+                    fill
+                    sizes="(min-width: 1280px) 31vw, (min-width: 768px) 48vw, 100vw"
+                    className="object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-transparent transition-colors duration-700" />
-                  <div className="absolute top-6 right-6">
-                    <span className="bg-charcoal/80 backdrop-blur-md text-gold px-4 py-2 text-[9px] uppercase tracking-[0.3em] border border-gold/20">
-                      {p.status}
+                  <div className="absolute inset-0 bg-[#06111D]/22 transition-colors duration-700 group-hover:bg-transparent" />
+                  <div className="absolute left-5 top-5 border border-gold/20 bg-[#06111D]/78 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-gold backdrop-blur">
+                    {p.status}
+                  </div>
+                  {p.featured && (
+                    <div className="absolute bottom-5 left-5 border border-white/18 bg-white/10 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-white backdrop-blur">
+                      Signature
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-1 flex-col p-6 sm:p-7">
+                  <p className="flex items-center gap-2 text-[8.5px] uppercase tracking-[0.28em] text-gold/50">
+                    <MapPin className="h-3.5 w-3.5 stroke-[1.3]" />
+                    {p.location}
+                  </p>
+                  <h3 className="mt-4 font-display text-2xl tracking-wide text-sand/86 transition-colors duration-500 group-hover:text-sand">
+                    {p.title}
+                  </h3>
+
+                  <div className="mt-6 grid grid-cols-3 gap-3 text-[8px] uppercase tracking-[0.2em] text-sand/28">
+                    <span className="inline-flex items-center gap-2">
+                      <BedDouble className="h-3.5 w-3.5 stroke-[1.3]" />
+                      {p.bedrooms}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <Bath className="h-3.5 w-3.5 stroke-[1.3]" />
+                      {p.bathrooms}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 stroke-[1.3]" />
+                      {p.maxGuests}
+                    </span>
+                  </div>
+
+                  <div className="mt-auto grid grid-cols-3 gap-3 border-t border-gold/8 pt-6">
+                    <div>
+                      <p className="font-display text-2xl text-gold/72">{p._count.bookings}</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Stays</p>
+                    </div>
+                    <div>
+                      <p className="font-display text-2xl text-gold/72">{p._count.reviews}</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Reviews</p>
+                    </div>
+                    <div>
+                      <p className="font-display text-2xl text-gold/72">{readiness}/4</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Ready</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between border-t border-gold/8 pt-5">
+                    <span className="inline-flex items-center gap-2 text-[8.5px] uppercase tracking-[0.25em] text-sand/30">
+                      <Camera className="h-3.5 w-3.5 stroke-[1.3]" />
+                      {p.amenities.length} amenities
+                    </span>
+                    <span className="inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-gold/55 transition-colors duration-500 group-hover:text-gold">
+                      Open room
+                      <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
                     </span>
                   </div>
                 </div>
-                
-                <div className="space-y-4">
-                  <h3 className="font-display text-2xl text-sand tracking-widest uppercase group-hover:text-gold transition-colors duration-500">{p.title}</h3>
-                  <div className="flex items-center gap-3">
-                    <span className="w-4 h-[1px] bg-gold/30" />
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-sand/40 font-sans">{p.location}</p>
-                  </div>
-                  
-                  <div className="pt-8 flex justify-between items-center border-t border-white/5 mt-4">
-                    <span className="text-[9px] uppercase tracking-[0.4em] text-sand/30 font-sans">{p._count.bookings} CONFIRMED</span>
-                    <Link 
-                      href={`/owner/properties/${p.id}`} 
-                      className="text-[9px] uppercase tracking-[0.4em] text-gold hover:text-sand transition-colors pb-1 border-b border-transparent hover:border-sand"
-                    >
-                      MANAGE
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              </Link>
             )
           })}
         </div>
       )}
+
       <PaginationControls
         basePath="/owner/properties"
         page={pagination.currentPage}
