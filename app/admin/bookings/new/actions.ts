@@ -3,6 +3,9 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { createAuditLog } from "@/lib/audit"
+import { generateBookingCode } from "@/lib/booking-code"
+import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
+import { notifyUser } from "@/lib/notifications"
 import { sendEmail } from "@/lib/email/transporter"
 import { BookingConfirmed } from "@/emails/BookingConfirmed"
 import { OwnerNewBooking } from "@/emails/OwnerNewBooking"
@@ -20,12 +23,6 @@ const manualBookingSchema = z.object({
   notes: z.string().optional(),
 })
 
-function generateBookingCode() {
-  const year = new Date().getFullYear()
-  const num = Math.floor(1000 + Math.random() * 9000)
-  return `SLT-${year}-${num}`
-}
-
 export async function createManualBookingAction(data: z.infer<typeof manualBookingSchema>) {
   const session = await auth()
   if (!session?.user || session.user.role !== "ADMIN") return { error: "Unauthorized" }
@@ -42,6 +39,7 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
       select: {
         pricePerNight: true,
         title: true,
+        ownerId: true,
         owner: { select: { name: true, email: true } },
       },
     })
@@ -53,7 +51,7 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
     const overlap = await prisma.booking.findFirst({
       where: {
         propertyId: validated.propertyId,
-        status: { in: ["PENDING", "CONFIRMED"] },
+        status: { in: ACTIVE_BOOKING_STATUSES },
         checkIn: { lt: checkOut },
         checkOut: { gt: checkIn },
       },
@@ -68,7 +66,7 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
 
     const booking = await prisma.booking.create({
       data: {
-        bookingCode: generateBookingCode(),
+        bookingCode: await generateBookingCode(),
         guestId: validated.guestId,
         propertyId: validated.propertyId,
         checkIn,
@@ -76,6 +74,7 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
         guests: validated.guests,
         totalPrice,
         status: "CONFIRMED",
+        confirmedAt: new Date(),
         notes: validated.notes,
       },
     })
@@ -104,6 +103,14 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
       }).catch(console.error)
     }
 
+    await notifyUser(validated.guestId, {
+      type: "BOOKING",
+      title: "Booking confirmed",
+      body: `${property.title} is confirmed for ${dates}.`,
+      href: `/account/bookings/${booking.id}`,
+      metadata: { bookingId: booking.id },
+    })
+
     if (property.owner?.email) {
       sendEmail({
         to: property.owner.email,
@@ -118,6 +125,14 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
         ),
       }).catch(console.error)
     }
+
+    await notifyUser(property.ownerId, {
+      type: "BOOKING",
+      title: "New confirmed booking",
+      body: `${property.title} has a new confirmed booking.`,
+      href: `/owner/bookings/${booking.id}`,
+      metadata: { bookingId: booking.id },
+    })
 
     revalidatePath("/admin/bookings")
     redirect(`/admin/bookings/${booking.id}`)

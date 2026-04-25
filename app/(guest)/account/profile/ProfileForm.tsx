@@ -3,14 +3,13 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary"
 import { updateProfileAction } from "./actions"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
+import { Camera, Check, AlertCircle } from "lucide-react"
 
 const schema = z.object({
   name: z.string().min(2),
@@ -41,25 +40,39 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
       setError(res.error)
     } else if (res?.success) {
       setSuccess(res.success)
-      // Update client session data without a full page reload
       await update({ name: data.name, image: data.image })
     }
     setIsPending(false)
   }
 
+  const inputClass = "rounded-none border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 text-sm font-sans text-charcoal focus-visible:border-charcoal focus-visible:ring-0 placeholder:text-charcoal/25"
+
   return (
-    <div className="space-y-6">
-      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
-      {success && <Alert className="bg-green-50 text-green-700 border-green-200"><AlertDescription>{success}</AlertDescription></Alert>}
+    <div className="space-y-10">
+      {error && (
+        <div className="flex items-center gap-3 p-4 border border-red-200 bg-red-50 text-red-600 text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="flex items-center gap-3 p-4 border border-charcoal/10 bg-charcoal/[0.02] text-charcoal/70 text-xs">
+          <Check className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+          {success}
+        </div>
+      )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="flex items-center gap-6">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 border-2 border-white shadow-sm">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+          {/* Avatar Upload */}
+          <div className="flex items-center gap-8">
+            <div className="relative w-20 h-20 rounded-full overflow-hidden bg-charcoal/[0.03] border border-charcoal/5 shrink-0">
               {imageUrl ? (
                 <Image src={imageUrl} alt="Avatar" fill className="object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+                <div className="w-full h-full flex items-center justify-center text-charcoal/20 font-display text-2xl">
+                  {initialData.name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
               )}
             </div>
             
@@ -75,21 +88,27 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
               }}
             >
               {({ open }) => (
-                <Button type="button" variant="outline" onClick={() => open()}>
-                  Upload Avatar
-                </Button>
+                <button
+                  type="button"
+                  onClick={() => open()}
+                  className="flex items-center gap-2 px-5 py-2.5 border border-charcoal/10 text-[9px] uppercase tracking-[0.2em] text-charcoal/50 hover:border-charcoal/20 hover:text-charcoal transition-all"
+                >
+                  <Camera className="w-3 h-3" strokeWidth={1.5} />
+                  <span>Upload Photo</span>
+                </button>
               )}
             </CldUploadWidget>
           </div>
 
+          {/* Fields */}
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl><Input placeholder="Your Name" {...field} value={field.value || ""} /></FormControl>
-                <FormMessage />
+                <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">Full Name</FormLabel>
+                <FormControl><Input placeholder="Your Name" className={inputClass} {...field} value={field.value || ""} /></FormControl>
+                <FormMessage className="text-red-400 text-xs" />
               </FormItem>
             )}
           />
@@ -99,16 +118,22 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl><Input placeholder="+1 234 567 890" {...field} value={field.value || ""} /></FormControl>
-                <FormMessage />
+                <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">Phone Number</FormLabel>
+                <FormControl><Input placeholder="+977 98XXXXXXXX" className={inputClass} {...field} value={field.value || ""} /></FormControl>
+                <FormMessage className="text-red-400 text-xs" />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="bg-navy text-cream" disabled={isPending}>
-            {isPending ? "Saving..." : "Save Changes"}
-          </Button>
+          <div className="pt-6">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {isPending ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
         </form>
       </Form>
     </div>

@@ -12,15 +12,27 @@ export default async function EditPropertyPage({
 }) {
   const { id } = await params
 
-  const [property, owners] = await Promise.all([
+  const [property, owners, locationRows] = await Promise.all([
     prisma.property.findUnique({ where: { id } }),
     prisma.user.findMany({
       where: { role: { in: ["OWNER", "ADMIN"] } },
       select: { id: true, name: true, email: true }
-    })
+    }),
+    prisma.property.findMany({
+      where: { location: { not: "" } },
+      select: { location: true },
+      distinct: ["location"],
+      orderBy: { location: "asc" },
+    }),
   ])
 
   if (!property) return notFound()
+
+  const knownLocations = locationRows.map((r) => r.location)
+  const initialData = {
+    ...property,
+    pricePerNight: Number(property.pricePerNight),
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -35,7 +47,7 @@ export default async function EditPropertyPage({
       </div>
 
       <div className="bg-white border rounded-lg p-6 shadow-sm">
-        <PropertyForm owners={owners} initialData={property} />
+        <PropertyForm owners={owners} initialData={initialData} knownLocations={knownLocations} />
       </div>
     </div>
   )

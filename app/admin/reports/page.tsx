@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import { StatCard } from "@/components/admin/stat-card"
-import { BarChart2, TrendingUp, Users, DollarSign, Calendar, Star } from "lucide-react"
+import { BarChart2, TrendingUp, Users, DollarSign, Calendar } from "lucide-react"
+import { formatNpr } from "@/lib/currency"
 
 async function getReportData() {
   const now = new Date()
@@ -29,7 +30,7 @@ async function getReportData() {
     prisma.user.count({ where: { role: "GUEST" } }),
     prisma.property.count(),
     prisma.property.count({ where: { status: "ACTIVE" } }),
-    prisma.review.count({ where: { isApproved: true } }),
+    prisma.review.count({ where: { status: "PUBLISHED" } }),
     prisma.review.aggregate({ _avg: { rating: true } }),
     prisma.booking.findMany({
       take: 10,
@@ -40,12 +41,12 @@ async function getReportData() {
 
   const totalRevenue = await prisma.booking.aggregate({
     _sum: { totalPrice: true },
-    where: { status: { in: ["CONFIRMED", "COMPLETED"] } },
+    where: { status: { in: ["CONFIRMED", "CHECKED_IN", "COMPLETED"] } },
   })
 
   const thisMonthRevenue = await prisma.booking.aggregate({
     _sum: { totalPrice: true },
-    where: { status: { in: ["CONFIRMED", "COMPLETED"] }, createdAt: { gte: startOfMonth } },
+    where: { status: { in: ["CONFIRMED", "CHECKED_IN", "COMPLETED"] }, createdAt: { gte: startOfMonth } },
   })
 
   return {
@@ -84,13 +85,13 @@ export default async function AdminReportsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Revenue"
-          value={`$${data.totalRevenue.toLocaleString()}`}
+          value={formatNpr(data.totalRevenue)}
           icon={DollarSign}
           description="Confirmed + completed"
         />
         <StatCard
           title="This Month Revenue"
-          value={`$${data.thisMonthRevenue.toLocaleString()}`}
+          value={formatNpr(data.thisMonthRevenue)}
           icon={TrendingUp}
           description="Current calendar month"
         />
@@ -165,7 +166,7 @@ export default async function AdminReportsPage() {
                       : "bg-yellow-100 text-yellow-700"
                     }`}>{b.status}</span>
                   </td>
-                  <td className="px-6 py-3">${Number(b.totalPrice).toLocaleString()}</td>
+                  <td className="px-6 py-3">{formatNpr(b.totalPrice)}</td>
                 </tr>
               ))}
             </tbody>

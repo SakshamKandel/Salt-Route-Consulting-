@@ -31,7 +31,7 @@ export default function RootLayout({
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="font-sans bg-cream text-navy-900 min-h-full flex flex-col">
+      <body className="font-sans bg-background text-foreground min-h-full flex flex-col">
         <SessionProvider>
           {children}
           <Toaster />

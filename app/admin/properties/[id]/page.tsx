@@ -6,6 +6,7 @@ import { ArrowLeft, Edit, Image as ImageIcon, Calendar as CalendarIcon, CheckCir
 import { StatCard } from "@/components/admin/stat-card"
 import { DashboardBookingsTable } from "@/components/admin/dashboard-tables"
 import { Badge } from "@/components/ui/badge"
+import { formatNpr } from "@/lib/currency"
 
 export default async function PropertyOverviewPage({
   params,
@@ -28,6 +29,15 @@ export default async function PropertyOverviewPage({
   })
 
   if (!property) return notFound()
+
+  const bookingsForTable = property.bookings.map((b) => ({
+    id: b.id,
+    bookingCode: b.bookingCode,
+    checkIn: b.checkIn.toISOString(),
+    status: b.status,
+    property: { title: b.property.title },
+    guest: { name: b.guest.name, email: b.guest.email },
+  }))
 
   return (
     <div className="space-y-8">
@@ -54,7 +64,7 @@ export default async function PropertyOverviewPage({
           </Button>
           <Button asChild variant="outline" className="text-navy border-navy/20">
             <Link href={`/admin/properties/${id}/images`}>
-              <ImageIcon className="w-4 h-4 mr-2" /> Images
+              <ImageIcon className="w-4 h-4 mr-2" /> Media
             </Link>
           </Button>
           <Button asChild variant="outline" className="text-navy border-navy/20">
@@ -68,8 +78,8 @@ export default async function PropertyOverviewPage({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Bookings" value={property._count.bookings} icon={CheckCircle} />
         <StatCard title="Total Reviews" value={property._count.reviews} icon={CheckCircle} />
-        <StatCard title="Photos" value={property._count.images} icon={ImageIcon} />
-        <StatCard title="Price / Night" value={`$${property.pricePerNight.toString()}`} icon={CheckCircle} />
+        <StatCard title="Media" value={property._count.images} icon={ImageIcon} />
+        <StatCard title="Price / Night" value={formatNpr(property.pricePerNight)} icon={CheckCircle} />
       </div>
 
       <div className="bg-white border rounded-lg p-6 shadow-sm">
@@ -77,7 +87,7 @@ export default async function PropertyOverviewPage({
         {property.bookings.length === 0 ? (
           <p className="text-slate-500 text-center py-4">No bookings yet.</p>
         ) : (
-          <DashboardBookingsTable bookings={property.bookings} />
+          <DashboardBookingsTable bookings={bookingsForTable} />
         )}
       </div>
     </div>

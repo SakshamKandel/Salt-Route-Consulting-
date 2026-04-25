@@ -1,127 +1,82 @@
+"use client"
+
 import Link from "next/link"
-import { Mountain, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
 
-const propertyLinks = [
-  { href: "/properties?location=Nagarkot", label: "Nagarkot Villas" },
-  { href: "/properties?location=Pokhara", label: "Pokhara Retreats" },
-  { href: "/properties?location=Chitwan", label: "Chitwan Lodges" },
-]
-
-const companyLinks = [
-  { href: "/about", label: "About Us" },
-  { href: "/services", label: "Services" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
+const guestLinks = [
+  { href: "/properties", label: "Properties" },
+  { href: "/about", label: "Philosophy" },
+  { href: "/services", label: "Experiences" },
 ]
 
 const legalLinks = [
-  { href: "/terms", label: "Terms of Service" },
   { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Service" },
   { href: "/refund-policy", label: "Refund Policy" },
 ]
 
 export function Footer() {
   return (
-    <footer className="bg-navy text-cream">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand */}
-          <div className="space-y-4">
-            <Link href="/" className="font-display text-2xl text-cream tracking-widest uppercase">
-              Salt<span className="text-gold"> Route</span>
-            </Link>
-            <p className="text-cream/60 text-sm leading-relaxed">
-              Bespoke luxury stays in Nepal&apos;s most captivating destinations. Every property is handpicked for authenticity, comfort, and connection to place.
-            </p>
-            <div className="flex gap-3 pt-2">
-              <a
-                href="https://wa.me/9779800000000"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cream/60 hover:text-gold transition-colors text-sm"
-              >
-                WhatsApp
-              </a>
-              <span className="text-cream/20">·</span>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cream/60 hover:text-gold transition-colors text-sm"
-              >
-                Instagram
-              </a>
-            </div>
-          </div>
-
-          {/* Properties */}
-          <div>
-            <h4 className="font-display text-gold text-sm uppercase tracking-widest mb-4">Properties</h4>
-            <ul className="space-y-2">
-              {propertyLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-cream/60 hover:text-gold text-sm transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link href="/properties" className="text-cream/60 hover:text-gold text-sm transition-colors">
-                  All Properties
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="font-display text-gold text-sm uppercase tracking-widest mb-4">Company</h4>
-            <ul className="space-y-2">
-              {companyLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-cream/60 hover:text-gold text-sm transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-display text-gold text-sm uppercase tracking-widest mb-4">Get in Touch</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2 text-cream/60 text-sm">
-                <Mail size={15} className="mt-0.5 shrink-0 text-gold" />
-                <a href="mailto:info@saltroutegroup.com" className="hover:text-gold transition-colors">
-                  info@saltroutegroup.com
-                </a>
-              </li>
-              <li className="flex items-start gap-2 text-cream/60 text-sm">
-                <Phone size={15} className="mt-0.5 shrink-0 text-gold" />
-                <a href="tel:+9779800000000" className="hover:text-gold transition-colors">
-                  +977 98-0000-0000
-                </a>
-              </li>
-              <li className="flex items-start gap-2 text-cream/60 text-sm">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-gold" />
-                <span>Kathmandu, Nepal</span>
-              </li>
-            </ul>
-          </div>
+    <footer className="bg-background text-charcoal pt-24 pb-12 border-t border-charcoal/5">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 text-center">
+        
+        {/* Brand */}
+        <div className="mb-16">
+          <Link href="/" className="inline-flex flex-col items-center">
+            <Image 
+              src="/logo.png" 
+              alt="SRG Logo" 
+              width={140} 
+              height={65} 
+              className="object-contain mb-3" 
+            />
+            <span className="text-[9px] tracking-[0.4em] text-charcoal/40 uppercase font-sans font-medium">
+              Consulting
+            </span>
+          </Link>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-cream/40 text-xs">
-            &copy; {new Date().getFullYear()} Salt Route Consulting. All rights reserved.
-          </p>
-          <div className="flex gap-4">
-            {legalLinks.map((l) => (
-              <Link key={l.href} href={l.href} className="text-cream/40 hover:text-gold text-xs transition-colors">
+        {/* Links Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 max-w-4xl mx-auto mb-20">
+          
+          <div className="flex flex-col items-center gap-4">
+            <h4 className="text-[10px] uppercase tracking-[0.3em] font-sans font-semibold text-charcoal/40 mb-2">Discover</h4>
+            {guestLinks.map(l => (
+              <Link key={l.href} href={l.href} className="text-[11px] font-sans tracking-[0.15em] uppercase text-charcoal/60 hover:text-charcoal transition-colors">
                 {l.label}
               </Link>
             ))}
           </div>
+
+          <div className="flex flex-col items-center gap-4">
+            <h4 className="text-[10px] uppercase tracking-[0.3em] font-sans font-semibold text-charcoal/40 mb-2">Contact</h4>
+            <a href="mailto:info@saltroutegroup.com" className="text-[11px] font-sans tracking-[0.15em] uppercase text-charcoal/60 hover:text-charcoal transition-colors">
+              info@saltroutegroup.com
+            </a>
+            <a href="tel:+97701XXXXXXX" className="text-[11px] font-sans tracking-[0.15em] uppercase text-charcoal/60 hover:text-charcoal transition-colors">
+              +977 01 XXXXXXX
+            </a>
+            <span className="text-[11px] font-sans tracking-[0.15em] uppercase text-charcoal/60 text-center leading-relaxed">
+              Jhamsikhel, Lalitpur<br />Nepal
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center gap-4">
+            <h4 className="text-[10px] uppercase tracking-[0.3em] font-sans font-semibold text-charcoal/40 mb-2">Legal</h4>
+            {legalLinks.map(l => (
+              <Link key={l.href} href={l.href} className="text-[11px] font-sans tracking-[0.15em] uppercase text-charcoal/60 hover:text-charcoal transition-colors">
+                {l.label}
+              </Link>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Bottom */}
+        <div className="border-t border-charcoal/5 pt-8 flex flex-col items-center gap-4">
+          <p className="font-sans text-[9px] uppercase tracking-[0.2em] text-charcoal/30">
+            © {new Date().getFullYear()} Salt Route Consulting. All Rights Reserved.
+          </p>
         </div>
       </div>
     </footer>

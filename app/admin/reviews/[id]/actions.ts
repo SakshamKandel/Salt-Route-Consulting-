@@ -11,7 +11,7 @@ export async function approveReviewAction(id: string) {
   try {
     await prisma.review.update({
       where: { id },
-      data: { isApproved: true },
+      data: { isApproved: true, status: "PUBLISHED" },
     })
 
     await createAuditLog({
@@ -24,9 +24,39 @@ export async function approveReviewAction(id: string) {
 
     revalidatePath(`/admin/reviews/${id}`)
     revalidatePath(`/admin/reviews`)
+    revalidatePath(`/properties`)
     return { success: true }
-  } catch {
+  } catch (err) {
+    console.error("[APPROVE_REVIEW_ERROR]", err)
     return { error: "Failed to approve review." }
+  }
+}
+
+export async function hideReviewAction(id: string) {
+  const session = await auth()
+  if (!session?.user || session.user.role !== "ADMIN") return { error: "Unauthorized" }
+
+  try {
+    await prisma.review.update({
+      where: { id },
+      data: { isApproved: false, status: "HIDDEN" },
+    })
+
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "REVIEW",
+      entityId: id,
+      details: { action: "hidden" },
+      userId: session.user.id,
+    })
+
+    revalidatePath(`/admin/reviews/${id}`)
+    revalidatePath(`/admin/reviews`)
+    revalidatePath(`/properties`)
+    return { success: true }
+  } catch (err) {
+    console.error("[HIDE_REVIEW_ERROR]", err)
+    return { error: "Failed to hide review." }
   }
 }
 
@@ -46,7 +76,8 @@ export async function deleteReviewAction(id: string) {
 
     revalidatePath(`/admin/reviews`)
     return { success: true }
-  } catch {
+  } catch (err) {
+    console.error("[DELETE_REVIEW_ERROR]", err)
     return { error: "Failed to delete review." }
   }
 }
@@ -70,8 +101,13 @@ export async function replyToReviewAction(id: string, replyText: string) {
     })
 
     revalidatePath(`/admin/reviews/${id}`)
+    revalidatePath(`/properties`) // Revalidate public pages where reviews appear
     return { success: true }
-  } catch {
-    return { error: "Failed to save reply." }
+  } catch (err) {
+    console.error("[REPLY_REVIEW_ERROR]", err)
+    if (err instanceof Error) {
+      return { error: `Database Error: ${err.message}` }
+    }
+    return { error: "Failed to save reply to database." }
   }
 }

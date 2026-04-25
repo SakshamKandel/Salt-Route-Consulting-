@@ -1,102 +1,200 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Mountain, Heart, Globe, Award } from "lucide-react"
+import { motion } from "framer-motion"
 
-export const metadata = {
-  title: "About Us | Salt Route",
-  description: "Learn about Salt Route — Nepal's bespoke luxury travel consultancy."
-}
 
 const values = [
   {
-    icon: Heart,
-    title: "Authentic Experiences",
-    desc: "We believe travel should deepen your understanding of a place, not just tick boxes. Every stay is designed to create genuine connection."
+    num: "01",
+    title: "Heritage",
+    desc: "We honor the architectural and cultural lineage of every space we manage, ensuring each property tells a story rooted in Nepal's rich tradition.",
   },
   {
-    icon: Mountain,
-    title: "Local Expertise",
-    desc: "Our team has explored every corner of Nepal for decades. We know which lodges have the best sunrise views and which trails are worth every step."
+    num: "02",
+    title: "Excellence",
+    desc: "A commitment to world-class service standards — from the properties we select to the guest experiences we create — in the heart of Nepal.",
   },
   {
-    icon: Globe,
-    title: "Sustainable Tourism",
-    desc: "We partner exclusively with properties that invest in their communities and minimise their environmental footprint."
-  },
-  {
-    icon: Award,
-    title: "Uncompromising Standards",
-    desc: "Every property in our collection is personally inspected. If we wouldn't stay there ourselves, it doesn't make the list."
+    num: "03",
+    title: "Stewardship",
+    desc: "Preserving the untamed beauty of Nepal's landscapes through conscious, responsible travel and hospitality that gives back to local communities.",
   },
 ]
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-cream pt-16">
-      {/* Hero */}
-      <div className="relative h-80 md:h-[500px] bg-navy">
-        <Image
-          src="https://placehold.co/1920x500/1B3A5C/C9A96E?text=Our+Story"
-          alt="About Salt Route"
-          fill
-          className="object-cover opacity-50"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-3">Our Story</p>
-          <h1 className="font-display text-4xl md:text-6xl text-cream">About Salt Route</h1>
-        </div>
-      </div>
+    <div className="bg-background text-charcoal min-h-screen">
 
-      {/* Mission */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20">
-        <div className="text-center">
-          <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-4">Our Mission</p>
-          <h2 className="font-display text-3xl md:text-4xl text-navy mb-8">
-            Connecting discerning travelers with Nepal&apos;s most extraordinary places
-          </h2>
-          <p className="text-navy/70 text-lg leading-relaxed mb-6">
-            Salt Route was founded by a team of seasoned Nepal travelers and hospitality professionals who shared one frustration: finding truly special accommodations shouldn&apos;t require weeks of research. We created the curated collection we wished had existed when we first fell in love with this extraordinary country.
-          </p>
-          <p className="text-navy/70 leading-relaxed">
-            Today, we work with a handpicked selection of heritage villas, boutique retreats, and eco-lodges across Nepal&apos;s most captivating destinations. Every property is personally vetted, and every guest is supported by a dedicated consultant who knows these places intimately.
-          </p>
+      {/* HERO */}
+      <section className="relative h-[85vh] w-full flex flex-col justify-center pt-20 bg-[#FAFAFA]">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2.5, ease: "easeOut" }}
+          className="absolute inset-0 z-0 overflow-hidden"
+        >
+          <Image
+            src="https://images.unsplash.com/photo-1518173946687-a4c8a9833d8e?q=80&w=1974&auto=format&fit=crop"
+            alt="Nepal landscape"
+            fill
+            className="object-cover opacity-90"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/90" />
+        </motion.div>
+
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5 }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.6em] text-charcoal/60 font-sans mb-8 font-medium">Our Story</p>
+            <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] text-charcoal tracking-wide leading-[1.05] mb-10 font-normal">
+              Who We Are.
+            </h1>
+            <p className="font-sans text-base md:text-lg text-charcoal/60 max-w-xl mx-auto leading-relaxed font-light">
+              A boutique consultancy focused on bespoke stays and world-class hospitality management across Nepal.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="bg-navy py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-3">What We Stand For</p>
-            <h2 className="font-display text-4xl text-cream">Our Values</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex gap-5 p-6 rounded-2xl border border-white/10 hover:border-gold/30 transition-colors">
-                <div className="shrink-0 w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center">
-                  <Icon size={22} className="text-gold" />
-                </div>
-                <div>
-                  <h3 className="font-display text-xl text-cream mb-2">{title}</h3>
-                  <p className="text-cream/60 text-sm leading-relaxed">{desc}</p>
-                </div>
+      {/* STORY */}
+      <section className="py-32 md:py-48 bg-white flex items-center justify-center p-8 md:p-16 border-t border-charcoal/5">
+        <div className="max-w-screen-xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2 }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">The Essence</p>
+            <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-10 tracking-wide leading-[1.2]">
+              Nepal&apos;s Finest<br />Hospitality.
+            </h2>
+            <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-6 font-light">
+              Salt Route was established to bridge the gap between Nepal&apos;s untamed landscapes and the world&apos;s most discerning travelers. We are a boutique consultancy focused on bespoke stays and world-class hospitality management.
+            </p>
+            <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-12 font-light">
+              Our collection is limited, our vetting is rigorous, and our standards are absolute. We believe that true luxury is found in the intersection of authentic heritage and modern comfort.
+            </p>
+            <div className="w-16 h-[1px] bg-charcoal/10 mb-12" />
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <p className="font-display text-4xl text-charcoal mb-2">3+</p>
+                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Properties</p>
               </div>
+              <div>
+                <p className="font-display text-4xl text-charcoal mb-2">100%</p>
+                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Satisfaction</p>
+              </div>
+              <div>
+                <p className="font-display text-4xl text-charcoal mb-2">2026</p>
+                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Founded</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative aspect-[4/5] overflow-hidden hidden lg:block bg-[#FAFAFA] border border-charcoal/5"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=1974&auto=format&fit=crop"
+              alt="Salt Route hospitality"
+              fill
+              className="object-cover"
+            />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* VALUES */}
+      <section className="py-32 md:py-48 bg-[#FAFAFA] flex items-center justify-center p-8 md:p-16 border-y border-charcoal/5">
+        <div className="max-w-screen-xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-20 text-center"
+          >
+            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">What We Stand For</p>
+            <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide">Our Values.</h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-16 gap-y-12">
+            {values.map((v, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: i * 0.15 }}
+                className="pt-8 border-t border-charcoal/10 flex flex-col gap-8 group"
+              >
+                <span className="font-sans text-[10px] tracking-[0.2em] text-charcoal/30 font-semibold group-hover:text-gold transition-colors">N° {v.num}</span>
+                <div>
+                  <h3 className="font-display text-3xl text-charcoal mb-4 tracking-wide">
+                    {v.title}
+                  </h3>
+                  <p className="font-sans text-base text-charcoal/60 leading-relaxed font-light">{v.desc}</p>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Team note */}
-      <section className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-4">The Team</p>
-        <h2 className="font-display text-3xl text-navy mb-6">People Who Love Nepal as Much as You Will</h2>
-        <p className="text-navy/70 leading-relaxed mb-10">
-          Our consultants aren&apos;t travel agents reading from a brochure — they&apos;re people who have hiked these trails, eaten in these kitchens, and slept under these skies. When you speak with us, you get first-hand knowledge, not guesswork.
-        </p>
-        <Button asChild size="lg" className="bg-navy text-cream hover:bg-navy/90">
-          <Link href="/contact">Get in Touch</Link>
-        </Button>
+      {/* CTA */}
+      <section className="py-32 md:py-48 bg-white flex items-center justify-center p-8 md:p-16 relative">
+        <div className="max-w-screen-xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2 }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">Experience Salt Route</p>
+            <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-[1.2] mb-10">
+              Ready to<br />Discover Nepal?
+            </h2>
+            <div className="w-16 h-[1px] bg-charcoal/10 mb-10" />
+            <p className="font-sans text-lg text-charcoal/60 leading-relaxed mb-12 font-light">
+              Browse our curated collection of properties or reach out to plan a bespoke stay tailored to your journey.
+            </p>
+            <div className="flex gap-6 flex-wrap">
+              <Link href="/properties" className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:bg-charcoal/90 transition-all duration-700">
+                Explore Stays
+              </Link>
+              <Link href="/contact" className="border border-charcoal/20 text-charcoal px-10 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-700">
+                Contact Us
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, delay: 0.2 }}
+            className="relative aspect-square overflow-hidden hidden lg:block bg-[#FAFAFA] border border-charcoal/5"
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2070&auto=format&fit=crop"
+              alt="Nepal property"
+              fill
+              className="object-cover"
+            />
+          </motion.div>
+        </div>
       </section>
     </div>
   )

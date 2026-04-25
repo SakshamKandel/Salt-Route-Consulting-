@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { createManualBookingAction } from "./actions"
+import { formatNpr } from "@/lib/currency"
 
 type Property = { id: string; title: string; pricePerNight: string }
 type Guest = { id: string; name: string | null; email: string }
@@ -31,7 +32,8 @@ export function ManualBookingForm({
     checkIn && checkOut
       ? Math.max(0, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
       : 0
-  const totalPrice = selectedProperty && nights > 0 ? (Number(selectedProperty.pricePerNight) * nights).toFixed(2) : null
+  const nightlyPrice = selectedProperty ? Number(selectedProperty.pricePerNight) : 0
+  const totalPrice = selectedProperty && nights > 0 ? nightlyPrice * nights : null
 
   const today = new Date().toISOString().split("T")[0]
 
@@ -90,7 +92,7 @@ export function ManualBookingForm({
           <option value="">Select a property...</option>
           {properties.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.title} — ${p.pricePerNight}/night
+              {p.title} - {formatNpr(p.pricePerNight)}/night
             </option>
           ))}
         </select>
@@ -139,8 +141,8 @@ export function ManualBookingForm({
 
       {totalPrice && (
         <div className="bg-navy/5 rounded-lg p-4 flex justify-between items-center">
-          <span className="text-slate-600 text-sm">{nights} night{nights !== 1 ? "s" : ""} × ${selectedProperty!.pricePerNight}</span>
-          <span className="text-xl font-bold text-navy">${totalPrice}</span>
+          <span className="text-slate-600 text-sm">{nights} night{nights !== 1 ? "s" : ""} x {formatNpr(selectedProperty!.pricePerNight)}</span>
+          <span className="text-xl font-bold text-navy">{formatNpr(totalPrice)}</span>
         </div>
       )}
 

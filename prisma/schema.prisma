@@ -29,6 +29,7 @@ enum PropertyStatus {
 enum BookingStatus {
   PENDING
   CONFIRMED
+  CHECKED_IN
   CANCELLED
   COMPLETED
   NO_SHOW
@@ -48,6 +49,33 @@ enum InvitationStatus {
   REVOKED
 }
 
+enum NotificationType {
+  BOOKING
+  INQUIRY
+  REVIEW
+  SYSTEM
+}
+
+enum InquirySource {
+  PUBLIC_CONTACT
+  GUEST_MESSAGE
+  OWNER_REQUEST
+  ADMIN_DIRECT
+}
+
+enum InquirySender {
+  GUEST
+  OWNER
+  ADMIN
+  SYSTEM
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  HIDDEN
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -59,6 +87,8 @@ enum AuditAction {
   BOOKING_CREATE
   BOOKING_CANCEL
   BOOKING_CONFIRM
+  BOOKING_CHECK_IN
+  BOOKING_CHECK_OUT
   PROPERTY_PUBLISH
   PROPERTY_ARCHIVE
   INVITATION_SEND
@@ -91,6 +121,9 @@ model User {
   wishlists   Wishlist[]
   invitations Invitation[] @relation("InvitedBy")
   auditLogs   AuditLog[]
+  notifications Notification[]
+  authoredInquiryMessages InquiryMessage[] @relation("InquiryMessageAuthor")
+  ownerInquiries Inquiry[] @relation("OwnerInquiries")
 
   @@map("users")
 }
@@ -183,6 +216,7 @@ model PropertyImage {
   alt       String?
   order     Int     @default(0)
   isPrimary Boolean @default(false)
+  isBanner  Boolean @default(false)
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -205,11 +239,17 @@ model Booking {
   status             BookingStatus @default(PENDING)
   notes              String?       @db.Text
   cancellationReason String?
+  confirmedAt        DateTime?
+  checkedInAt        DateTime?
+  checkedOutAt       DateTime?
+  cancelledAt        DateTime?
+  noShowAt           DateTime?
 
   guestId    String
   guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  review     Review?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -237,23 +277,44 @@ model BlockedDate {
 // ─── REVIEW ────────────────────────────────────────────
 
 model Review {
-  id         String  @id @default(cuid())
+  id         String       @id @default(cuid())
   rating     Int
-  comment    String  @db.Text
-  reply      String? @db.Text
-  isApproved Boolean @default(false)
+  comment    String       @db.Text
+  reply      String?      @db.Text
+  isApproved Boolean      @default(false)
+  status     ReviewStatus @default(PENDING)
 
   guestId    String
   guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  bookingId  String?  @unique
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([guestId, propertyId])
+  images    ReviewImage[]
+
   @@index([propertyId])
+  @@index([guestId, propertyId])
+  @@index([status])
   @@map("reviews")
+}
+
+model ReviewImage {
+  id        String  @id @default(cuid())
+  url       String
+  publicId  String?
+  alt       String?
+  
+  reviewId  String
+  review    Review  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([reviewId])
+  @@map("review_images")
 }
 
 // ─── WISHLIST ──────────────────────────────────────────
@@ -303,13 +364,66 @@ model Inquiry {
   subject String
   message String        @db.Text
   status  InquiryStatus @default(NEW)
+  source  InquirySource @default(PUBLIC_CONTACT)
   reply   String?       @db.Text
+  replies Json?         // Legacy array of { sender: "guest"|"admin", message: string, timestamp: string }
+  lastMessageAt DateTime @default(now())
+  lastMessageBy InquirySender @default(GUEST)
+  adminLastReadAt DateTime?
+  guestLastReadAt DateTime?
+  ownerLastReadAt DateTime?
+
+  ownerId String?
+  owner   User? @relation("OwnerInquiries", fields: [ownerId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  messages InquiryMessage[]
+
   @@index([status])
+  @@index([source])
+  @@index([ownerId])
+  @@index([lastMessageAt])
   @@map("inquiries")
+}
+
+model InquiryMessage {
+  id       String        @id @default(cuid())
+  sender   InquirySender
+  body     String        @db.Text
+  authorId String?
+  author   User?         @relation("InquiryMessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  inquiryId String
+  inquiry   Inquiry      @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([inquiryId])
+  @@index([sender])
+  @@index([createdAt])
+  @@map("inquiry_messages")
+}
+
+model Notification {
+  id       String           @id @default(cuid())
+  type     NotificationType
+  title    String
+  body     String
+  href     String?
+  readAt   DateTime?
+  metadata Json?
+
+  userId String
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, readAt])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
 // ─── AUDIT LOG ─────────────────────────────────────────

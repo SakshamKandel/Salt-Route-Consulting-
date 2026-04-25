@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Star, Home, Plus } from "lucide-react"
 import { FeaturedToggle } from "./FeaturedToggle"
+import { getPrimaryImageUrl } from "@/lib/property-media"
 
 export default async function HomepageSettingsPage() {
   const properties = await prisma.property.findMany({
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    include: { images: { take: 1, orderBy: { order: "asc" } } },
+    include: { images: { take: 6, orderBy: { order: "asc" } } },
   })
 
   const featured = properties.filter((p) => p.featured)
@@ -49,9 +50,9 @@ export default async function HomepageSettingsPage() {
             {[...featured, ...notFeatured].map((p) => (
               <div key={p.id} className="flex items-center gap-4 px-5 py-4">
                 <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
-                  {p.images[0] ? (
+                  {getPrimaryImageUrl(p.images) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.images[0].url} alt={p.title} className="w-full h-full object-cover" />
+                    <img src={getPrimaryImageUrl(p.images)!} alt={p.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-beige" />
                   )}

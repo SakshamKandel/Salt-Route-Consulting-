@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { setup2FAAction, verify2FAAction, disable2FAAction } from "./actions"
 import { Shield, ShieldOff, QrCode } from "lucide-react"
 import Image from "next/image"

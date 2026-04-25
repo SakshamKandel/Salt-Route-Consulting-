@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import { ReviewsTable } from "./ReviewsTable"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { ReviewStatus } from "@prisma/client"
 
 export default async function AdminReviewsPage({
   searchParams,
@@ -13,7 +14,7 @@ export default async function AdminReviewsPage({
 
   const reviews = await prisma.review.findMany({
     where: {
-      isApproved: filter === "APPROVED" ? true : filter === "PENDING" ? false : undefined
+      status: filter !== "ALL" ? (filter as ReviewStatus) : undefined
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -24,7 +25,8 @@ export default async function AdminReviewsPage({
 
   const tabs = [
     { label: "Pending Approval", value: "PENDING" },
-    { label: "Approved", value: "APPROVED" },
+    { label: "Published", value: "PUBLISHED" },
+    { label: "Hidden", value: "HIDDEN" },
     { label: "All Reviews", value: "ALL" },
   ]
 

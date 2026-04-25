@@ -1,9 +1,13 @@
 "use client"
 
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { DataTable, Column } from "@/components/admin/data-table"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { MoreHorizontal, Edit, Image as ImageIcon, Calendar } from "lucide-react"
+import { MoreHorizontal, Edit, Image as ImageIcon, Calendar, Trash2 } from "lucide-react"
+import { deletePropertyAction } from "./actions"
+import { formatNpr } from "@/lib/currency"
 
 import {
   DropdownMenu,
@@ -19,10 +23,30 @@ type PropertyTableRow = {
   title: string
   location: string
   status: string
-  pricePerNight: { toString(): string }
+  pricePerNight: number
 }
 
 export function PropertiesTable({ properties }: { properties: PropertyTableRow[] }) {
+  const router = useRouter()
+  const [rows, setRows] = useState(properties)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+
+  async function handleDelete(row: PropertyTableRow) {
+    if (!confirm(`Delete "${row.title}"? This will remove the property from admin and public listings.`)) {
+      return
+    }
+
+    setPendingDeleteId(row.id)
+    const res = await deletePropertyAction(row.id)
+    if (res.error) {
+      alert(res.error)
+    } else {
+      setRows((current) => current.filter((item) => item.id !== row.id))
+      router.refresh()
+    }
+    setPendingDeleteId(null)
+  }
+
   const columns: Column<PropertyTableRow>[] = [
     {
       header: "Title",
@@ -50,7 +74,7 @@ export function PropertiesTable({ properties }: { properties: PropertyTableRow[]
     },
     {
       header: "Price/Night",
-      cell: (row) => <span>${row.pricePerNight.toString()}</span>,
+      cell: (row) => <span>{formatNpr(row.pricePerNight)}</span>,
     },
     {
       header: "Actions",
@@ -74,7 +98,7 @@ export function PropertiesTable({ properties }: { properties: PropertyTableRow[]
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href={`/admin/properties/${row.id}/images`} className="flex items-center gap-2 w-full">
-                <ImageIcon className="w-4 h-4" /> Manage Images
+                <ImageIcon className="w-4 h-4" /> Manage Media
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -83,7 +107,14 @@ export function PropertiesTable({ properties }: { properties: PropertyTableRow[]
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Delete Property</DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => handleDelete(row)}
+              disabled={pendingDeleteId === row.id}
+            >
+              <Trash2 className="w-4 h-4" />
+              {pendingDeleteId === row.id ? "Deleting..." : "Delete Property"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -92,7 +123,7 @@ export function PropertiesTable({ properties }: { properties: PropertyTableRow[]
 
   return (
     <DataTable
-      data={properties}
+      data={rows}
       columns={columns}
       searchKey="title"
       searchPlaceholder="Search properties..."

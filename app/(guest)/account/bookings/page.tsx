@@ -1,11 +1,12 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { BookingStatus, Prisma } from "@prisma/client"
+import { getPrimaryImageUrl } from "@/lib/property-media"
+import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
+import { formatNpr } from "@/lib/currency"
+import { ArrowRight, Calendar } from "lucide-react"
 
 export default async function BookingsPage({
   searchParams,
@@ -31,78 +32,152 @@ export default async function BookingsPage({
     where: whereClause,
     include: {
       property: {
-        include: { images: { take: 1 } }
+        include: { images: { take: 6, orderBy: { order: "asc" } } }
       }
     },
     orderBy: { createdAt: "desc" }
   })
 
+  const statuses = ["ALL", "PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED", "CANCELLED"]
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-display text-navy">My Bookings</h1>
+    <div className="space-y-12">
+      {/* ─── PAGE HEADER ─── */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-[1px] bg-charcoal/20" />
+          <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
+            Your Reservations
+          </h1>
+        </div>
       </div>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["ALL", "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].map((status) => (
-          <Button
-            key={status}
-            variant={(!statusFilter && status === "ALL") || statusFilter === status ? "default" : "outline"}
-            asChild
-            className={(!statusFilter && status === "ALL") || statusFilter === status ? "bg-navy text-cream hover:bg-navy/90" : ""}
-          >
-            <Link href={status === "ALL" ? "/account/bookings" : `/account/bookings?status=${status}`}>
-              {status}
+      {/* ─── FILTER TABS ─── */}
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {statuses.map((status) => {
+          const isActive = (!statusFilter && status === "ALL") || statusFilter === status
+          return (
+            <Link
+              key={status}
+              href={status === "ALL" ? "/account/bookings" : `/account/bookings?status=${status}`}
+              className={`text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border transition-all duration-300 whitespace-nowrap ${
+                isActive
+                  ? "bg-charcoal text-white border-charcoal"
+                  : "bg-white text-charcoal/40 border-charcoal/10 hover:border-charcoal/20 hover:text-charcoal/60"
+              }`}
+            >
+              {status.replace("_", " ")}
             </Link>
-          </Button>
-        ))}
+          )
+        })}
       </div>
 
-      <div className="space-y-4">
-        {bookings.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            No bookings found.
-          </div>
-        ) : (
-          bookings.map((booking) => (
-            <Card key={booking.id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <CardContent className="p-0 flex flex-col md:flex-row">
-                <div className="relative w-full md:w-48 h-48 md:h-auto">
-                  {booking.property.images[0] ? (
+      {/* ─── BOOKING CARDS ─── */}
+      {bookings.length === 0 ? (
+        <div className="text-center py-24 bg-white border border-charcoal/5">
+          <Calendar className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
+          <p className="text-charcoal/40 text-sm font-sans mb-6">No reservations found</p>
+          <Link
+            href="/properties"
+            className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors"
+          >
+            <span>Browse Properties</span>
+            <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {bookings.map((booking) => {
+            const imageUrl = getPrimaryImageUrl(booking.property.images) || "/placeholder-property.jpg"
+            const nights = Math.ceil(
+              (new Date(booking.checkOut).getTime() - new Date(booking.checkIn).getTime()) / (1000 * 60 * 60 * 24)
+            )
+
+            return (
+              <Link
+                key={booking.id}
+                href={`/account/bookings/${booking.id}`}
+                className="group block bg-white border border-charcoal/5 hover:border-charcoal/15 transition-all duration-300 overflow-hidden"
+              >
+                <div className="flex flex-col md:flex-row">
+                  {/* Image */}
+                  <div className="relative w-full md:w-64 lg:w-80 aspect-[16/10] md:aspect-auto md:min-h-[200px] overflow-hidden shrink-0">
                     <Image
-                      src={booking.property.images[0].url}
+                      src={imageUrl}
                       alt={booking.property.title}
                       fill
-                      className="object-cover"
+                      sizes="(min-width: 768px) 320px, 100vw"
+                      className="object-cover transition-transform duration-[2s] group-hover:scale-105"
                     />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200" />
-                  )}
-                </div>
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold text-navy">{booking.property.title}</h3>
-                      <Badge variant={booking.status === "CONFIRMED" ? "default" : "secondary"}>
-                        {booking.status}
-                      </Badge>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                        <div>
+                          <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide mb-1 group-hover:text-charcoal/70 transition-colors">
+                            {booking.property.title}
+                          </h3>
+                          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30">
+                            {booking.property.location}
+                          </p>
+                        </div>
+                        <span className={`text-[8px] uppercase tracking-[0.2em] px-3 py-1.5 border shrink-0 ${
+                          booking.status === "CONFIRMED" ? "border-charcoal/15 text-charcoal/60 bg-charcoal/[0.02]" :
+                          booking.status === "PENDING" ? "border-gold/30 text-gold-dark bg-gold/5" :
+                          booking.status === "CHECKED_IN" ? "border-blue-200 text-blue-500 bg-blue-50" :
+                          booking.status === "COMPLETED" ? "border-charcoal/10 text-charcoal/40" :
+                          "border-red-200 text-red-400 bg-red-50"
+                        }`}>
+                          {BOOKING_STATUS_LABELS[booking.status]}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                        <div>
+                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Check In</p>
+                          <p className="text-sm text-charcoal/70 font-sans">
+                            {new Date(booking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Check Out</p>
+                          <p className="text-sm text-charcoal/70 font-sans">
+                            {new Date(booking.checkOut).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Duration</p>
+                          <p className="text-sm text-charcoal/70 font-sans">
+                            {nights} night{nights !== 1 ? "s" : ""}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Total</p>
+                          <p className="text-sm text-charcoal font-display tracking-wider">
+                            {formatNpr(booking.totalPrice)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 mb-4">
-                      {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
-                    </p>
-                    <p className="font-medium text-navy">Total: ${booking.totalPrice.toString()}</p>
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button variant="outline" asChild>
-                      <Link href={`/account/bookings/${booking.id}`}>View Details</Link>
-                    </Button>
+
+                    <div className="mt-6 pt-6 border-t border-charcoal/5 flex items-center justify-between">
+                      <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/20">
+                        Ref: {booking.bookingCode}
+                      </p>
+                      <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-charcoal/30 group-hover:text-charcoal/60 transition-colors">
+                        <span>Details</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" strokeWidth={1.5} />
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

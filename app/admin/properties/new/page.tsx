@@ -5,10 +5,19 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export default async function NewPropertyPage() {
-  const owners = await prisma.user.findMany({
-    where: { role: { in: ["OWNER", "ADMIN"] } },
-    select: { id: true, name: true, email: true }
-  })
+  const [owners, locationRows] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: { in: ["OWNER", "ADMIN"] } },
+      select: { id: true, name: true, email: true }
+    }),
+    prisma.property.findMany({
+      where: { location: { not: "" } },
+      select: { location: true },
+      distinct: ["location"],
+      orderBy: { location: "asc" },
+    }),
+  ])
+  const knownLocations = locationRows.map((r) => r.location)
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -23,7 +32,7 @@ export default async function NewPropertyPage() {
       </div>
 
       <div className="bg-white border rounded-lg p-6 shadow-sm">
-        <PropertyForm owners={owners} />
+        <PropertyForm owners={owners} knownLocations={knownLocations} />
       </div>
     </div>
   )

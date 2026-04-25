@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { sendEmail } from "@/lib/email/transporter"
 import { InquiryStatus } from "@prisma/client"
 import { createAuditLog } from "@/lib/audit"
+import { notifyAdmins, notifyUser } from "@/lib/notifications"
 
 export async function updateInquiryStatusAction(id: string, status: InquiryStatus) {
   const session = await auth()
@@ -29,7 +30,7 @@ export async function updateInquiryStatusAction(id: string, status: InquiryStatu
     return { success: true }
   } catch (err: unknown) {
     console.error("[INQUIRY_STATUS]", err)
-    return { error: "Failed to update inquiry." }
+    return { error: "Failed to update inquiry status." }
   }
 }
 
@@ -41,8 +42,50 @@ export async function replyToInquiryAction(id: string, replyMessage: string) {
     const inquiry = await prisma.inquiry.findUnique({ where: { id } })
     if (!inquiry) return { error: "Inquiry not found" }
 
-    // Send the reply email
-    await sendEmail({
+    const now = new Date()
+    await prisma.inquiry.update({
+      where: { id },
+      data: {
+        status: "RESPONDED",
+        reply: replyMessage,
+        lastMessageAt: now,
+        lastMessageBy: "ADMIN",
+        adminLastReadAt: now,
+        messages: {
+          create: {
+            sender: "ADMIN",
+            body: replyMessage,
+            authorId: session.user.id,
+          },
+        },
+      }
+    })
+
+    const recipient = await prisma.user.findUnique({
+      where: { email: inquiry.email },
+      select: { id: true },
+    })
+
+    if (inquiry.ownerId) {
+      await notifyUser(inquiry.ownerId, {
+        type: "INQUIRY",
+        title: "Admin replied to your request",
+        body: inquiry.subject,
+        href: `/owner/messages?inquiry=${inquiry.id}`,
+        metadata: { inquiryId: inquiry.id },
+      })
+    } else if (recipient) {
+      await notifyUser(recipient.id, {
+        type: "INQUIRY",
+        title: "Salt Route replied",
+        body: inquiry.subject,
+        href: `/account/messages?inquiry=${inquiry.id}`,
+        metadata: { inquiryId: inquiry.id },
+      })
+    }
+
+    // 2. Send Email (Fire and forget)
+    sendEmail({
       to: inquiry.email,
       subject: `Re: Your Inquiry to Salt Route Consulting`,
       html: `
@@ -57,30 +100,115 @@ export async function replyToInquiryAction(id: string, replyMessage: string) {
           <p style="color: #64748b; font-size: 12px;">Original message:<br><em>${inquiry.message}</em></p>
         </div>
       `
-    })
-
-    // Automatically mark as responded after replying
-    await prisma.inquiry.update({
-      where: { id },
-      data: {
-        status: "RESPONDED",
-        reply: replyMessage
-      }
-    })
+    }).catch(e => console.error("[EMAIL_FAIL] Admin reply email failed:", e))
 
     await createAuditLog({
       action: "UPDATE",
       entity: "INQUIRY",
       entityId: id,
-      details: { action: "replied", replyLength: replyMessage.length },
+      details: { action: "admin_replied" },
       userId: session.user.id,
     })
 
     revalidatePath(`/admin/inquiries/${id}`)
     revalidatePath(`/admin/inquiries`)
+    revalidatePath(`/account/messages`)
+    revalidatePath(`/owner/messages`)
     return { success: true }
   } catch (err: unknown) {
-    console.error("[INQUIRY_REPLY]", err)
+    console.error("[INQUIRY_REPLY_ERROR]", err)
+    // Return specific error message if possible
+    if (err instanceof Error) {
+       return { error: `Database Error: ${err.message}` }
+    }
+    return { error: "Failed to save reply to database." }
+  }
+}
+
+export async function guestReplyAction(id: string, message: string) {
+  const session = await auth()
+  if (!session?.user?.id) return { error: "Unauthorized" }
+
+  try {
+    const inquiry = await prisma.inquiry.findUnique({ 
+      where: { id },
+      select: { email: true, ownerId: true, subject: true }
+    })
+    
+    if (!inquiry || (inquiry.email !== session.user.email && inquiry.ownerId !== session.user.id)) {
+      return { error: "Message not found or unauthorized." }
+    }
+
+    const sender = inquiry.ownerId === session.user.id ? "OWNER" : "GUEST"
+    const now = new Date()
+
+    await prisma.inquiry.update({
+      where: { id },
+      data: {
+        status: "IN_PROGRESS",
+        lastMessageAt: now,
+        lastMessageBy: sender,
+        ...(sender === "OWNER" ? { ownerLastReadAt: now } : { guestLastReadAt: now }),
+        messages: {
+          create: {
+            sender,
+            body: message,
+            authorId: session.user.id,
+          },
+        },
+      }
+    })
+
+    await notifyAdmins({
+      type: "INQUIRY",
+      title: sender === "OWNER" ? "Owner replied" : "Guest replied",
+      body: inquiry.subject,
+      href: `/admin/inquiries/${id}`,
+      metadata: { inquiryId: id },
+    })
+
+    revalidatePath(`/account/messages`)
+    revalidatePath(`/owner/messages`)
+    revalidatePath(`/admin/inquiries/${id}`)
+    return { success: true }
+  } catch (err) {
+    console.error("[GUEST_REPLY_ERROR]", err)
+    if (err instanceof Error) {
+      return { error: `Database Error: ${err.message}` }
+    }
     return { error: "Failed to send reply." }
   }
+}
+
+export async function markInquiryReadAction(id: string) {
+  const session = await auth()
+  if (!session?.user?.id) return { error: "Unauthorized" }
+
+  const now = new Date()
+  const inquiry = await prisma.inquiry.findUnique({
+    where: { id },
+    select: { email: true, ownerId: true },
+  })
+  if (!inquiry) return { error: "Inquiry not found." }
+
+  if (session.user.role === "ADMIN") {
+    await prisma.inquiry.update({ where: { id }, data: { adminLastReadAt: now } })
+    revalidatePath(`/admin/inquiries/${id}`)
+    revalidatePath(`/admin/inquiries`)
+    return { success: true }
+  }
+
+  if (inquiry.ownerId === session.user.id) {
+    await prisma.inquiry.update({ where: { id }, data: { ownerLastReadAt: now } })
+    revalidatePath(`/owner/messages`)
+    return { success: true }
+  }
+
+  if (inquiry.email === session.user.email) {
+    await prisma.inquiry.update({ where: { id }, data: { guestLastReadAt: now } })
+    revalidatePath(`/account/messages`)
+    return { success: true }
+  }
+
+  return { error: "Unauthorized" }
 }

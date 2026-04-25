@@ -4,6 +4,9 @@ import { NextResponse } from "next/server"
 import { cancelBookingSchema } from "@/lib/validations"
 import { assertBookingAccess, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
+import { sendEmail } from "@/lib/email/transporter"
+import { BookingRejected } from "@/emails/BookingRejected"
+import { render } from "@react-email/render"
 
 export async function POST(
   request: Request,
@@ -28,7 +31,10 @@ export async function POST(
 
     const booking = await prisma.booking.findUnique({
       where: { id },
-      select: { status: true },
+      include: {
+        guest: { select: { name: true, email: true } },
+        property: { select: { title: true } },
+      },
     })
 
     if (!booking) {
@@ -57,6 +63,21 @@ export async function POST(
       userId: session.user.id,
       ipAddress: getClientIp(request.headers),
     })
+
+    if (booking.guest.email) {
+      render(BookingRejected({
+        name: booking.guest.name || "Guest",
+        propertyName: booking.property.title,
+        bookingCode: booking.bookingCode,
+        reason: validated.reason,
+      })).then((html) =>
+        sendEmail({
+          to: booking.guest.email!,
+          subject: `Booking Cancelled — ${booking.bookingCode}`,
+          html,
+        })
+      ).catch((e) => console.error("[EMAIL] cancel dispatch:", e))
+    }
 
     return NextResponse.json({ id: updated.id, status: updated.status })
   } catch (error: unknown) {

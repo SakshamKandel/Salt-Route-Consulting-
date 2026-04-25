@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { v2 as cloudinary } from "cloudinary"
 
 cloudinary.config({
@@ -8,41 +8,30 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-// 10.6 — Allowed image formats and max file size
-const ALLOWED_FORMATS = ["jpg", "jpeg", "png", "webp", "avif"]
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
-
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await auth()
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const timestamp = Math.round(new Date().getTime() / 1000)
-
-  // Sign with explicit constraints so Cloudinary rejects anything else
-  const params = {
-    timestamp,
-    folder: "salt_route_properties",
-    allowed_formats: ALLOWED_FORMATS.join(","),
-    max_file_size: MAX_FILE_SIZE_BYTES,
-    // Enforce image resource type at API level
-    resource_type: "image",
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
+  if (!apiSecret) {
+    return NextResponse.json({ error: "Cloudinary is not configured" }, { status: 500 })
   }
 
-  const signature = cloudinary.utils.api_sign_request(
-    params,
-    process.env.CLOUDINARY_API_SECRET!
-  )
+  // The Cloudinary upload widget POSTs the params it wants signed in `paramsToSign`.
+  // We must sign exactly those params (in the order/shape Cloudinary expects) so the
+  // resulting signature matches what the widget sends with the upload request.
+  const body = (await req.json().catch(() => ({}))) as {
+    paramsToSign?: Record<string, string | number>
+  }
 
-  return NextResponse.json({
-    timestamp,
-    signature,
-    folder: params.folder,
-    allowed_formats: ALLOWED_FORMATS,
-    max_file_size: MAX_FILE_SIZE_BYTES,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  })
+  const paramsToSign = body.paramsToSign ?? {
+    timestamp: Math.round(new Date().getTime() / 1000),
+  }
+
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret)
+
+  return NextResponse.json({ signature })
 }

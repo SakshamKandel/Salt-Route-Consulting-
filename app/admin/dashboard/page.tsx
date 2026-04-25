@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import { StatCard } from "@/components/admin/stat-card"
 import { DashboardBookingsTable, DashboardInquiriesTable } from "@/components/admin/dashboard-tables"
 import { Home, Users, MessageSquare, CheckCircle, Clock } from "lucide-react"
+import { serializeForClient } from "@/lib/serialize"
 
 export default async function AdminDashboard() {
   const [
@@ -34,8 +35,8 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-display text-navy">Dashboard Overview</h2>
-        <p className="text-slate-500">Welcome to the Salt Route Admin Portal.</p>
+        <h2 className="text-3xl font-display text-charcoal tracking-wide">Dashboard Overview</h2>
+        <p className="text-charcoal/50 text-sm mt-2 font-medium">Welcome to the Salt Route Admin Portal.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -49,13 +50,13 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-navy">Recent Booking Requests</h3>
-          <DashboardBookingsTable bookings={recentBookings} />
+          <h3 className="text-xl font-display text-charcoal tracking-wide">Recent Booking Requests</h3>
+          <DashboardBookingsTable bookings={serializeForClient(recentBookings)} />
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-navy">Recent Inquiries</h3>
-          <DashboardInquiriesTable inquiries={recentInquiries} />
+          <h3 className="text-xl font-display text-charcoal tracking-wide">Recent Inquiries</h3>
+          <DashboardInquiriesTable inquiries={serializeForClient(recentInquiries)} />
         </div>
       </div>
     </div>

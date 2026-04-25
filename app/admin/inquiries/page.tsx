@@ -3,6 +3,7 @@ import { InquiriesTable } from "./InquiriesTable"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { InquiryStatus } from "@prisma/client"
+import { isInquiryUnreadForAdmin } from "@/lib/inquiries"
 
 export default async function AdminInquiriesPage({
   searchParams,
@@ -18,6 +19,7 @@ export default async function AdminInquiriesPage({
     },
     orderBy: { createdAt: "desc" }
   })
+  const unreadCount = inquiries.filter(isInquiryUnreadForAdmin).length
 
   const tabs = [
     { label: "New", value: "NEW" },
@@ -31,7 +33,7 @@ export default async function AdminInquiriesPage({
     <div className="space-y-8">
       <div>
         <h2 className="text-3xl font-display text-navy">Inquiries</h2>
-        <p className="text-slate-500">Manage messages and questions from guests.</p>
+        <p className="text-slate-500">Manage messages and questions from guests. {unreadCount} unread in this view.</p>
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">

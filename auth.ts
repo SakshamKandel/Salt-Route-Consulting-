@@ -5,6 +5,7 @@ import { authConfig } from '@/auth.config'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
 import { loginSchema } from '@/lib/validations'
+import GoogleProvider from 'next-auth/providers/google'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -25,6 +26,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -65,5 +71,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return null
       }
     })
-  ]
+  ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account, profile }) {
+      console.log("Sign in attempt:", { email: user.email, provider: account?.provider })
+      return true
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as any
+      }
+      return session
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = (user as any).role
+      }
+      return token
+    },
+  },
+  debug: process.env.NODE_ENV === "development",
 })

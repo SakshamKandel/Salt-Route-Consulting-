@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Check, Trash2 } from "lucide-react"
-import { approveReviewAction, deleteReviewAction } from "./actions"
+import { Check, EyeOff, Trash2 } from "lucide-react"
+import { approveReviewAction, deleteReviewAction, hideReviewAction } from "./actions"
+import type { ReviewStatus } from "@prisma/client"
 
 type ReviewActionRow = {
   id: string
   isApproved: boolean
+  status: ReviewStatus
 }
 
 export function ReviewActions({ review }: { review: ReviewActionRow }) {
@@ -36,11 +38,24 @@ export function ReviewActions({ review }: { review: ReviewActionRow }) {
     }
   }
 
+  const handleHide = async () => {
+    setIsPending(true)
+    const res = await hideReviewAction(review.id)
+    if (res.success) alert("Review hidden.")
+    else alert("Error: " + res.error)
+    setIsPending(false)
+  }
+
   return (
     <div className="flex gap-3">
-      {!review.isApproved && (
+      {review.status !== "PUBLISHED" && (
         <Button onClick={handleApprove} disabled={isPending} className="bg-green-600 hover:bg-green-700 text-white">
-          <Check className="w-4 h-4 mr-2" /> Approve
+          <Check className="w-4 h-4 mr-2" /> Publish
+        </Button>
+      )}
+      {review.status !== "HIDDEN" && (
+        <Button variant="outline" onClick={handleHide} disabled={isPending}>
+          <EyeOff className="w-4 h-4 mr-2" /> Hide
         </Button>
       )}
       <Button variant="destructive" onClick={handleDelete} disabled={isPending}>

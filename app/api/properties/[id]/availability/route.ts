@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { safeErrorResponse } from "@/lib/security"
+import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
 
 // 10.2 — Zod on query params
 const availabilityQuerySchema = z.object({
@@ -29,7 +30,7 @@ export async function GET(
       prisma.booking.findMany({
         where: {
           propertyId: id,
-          status: { in: ["CONFIRMED", "PENDING"] },
+          status: { in: ACTIVE_BOOKING_STATUSES },
           OR: [
             { checkIn: { lte: toDate }, checkOut: { gte: fromDate } },
           ],

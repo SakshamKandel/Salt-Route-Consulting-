@@ -31,9 +31,9 @@ export default async function PropertyImagesPage({
           </Link>
         </Button>
         <div>
-          <h2 className="text-3xl font-display text-navy">Manage Images</h2>
+          <h2 className="text-3xl font-display text-navy">Manage Media</h2>
           <p className="text-slate-500">
-            {property.title} — {images.length} image{images.length !== 1 ? "s" : ""}. The starred image is shown as the property thumbnail.
+            {property.title} - {images.length} media item{images.length !== 1 ? "s" : ""}. The starred image is shown as the property thumbnail.
           </p>
         </div>
       </div>

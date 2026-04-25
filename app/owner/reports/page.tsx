@@ -2,8 +2,9 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, DollarSign, Download } from "lucide-react"
+import { BarChart, Banknote, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { formatNpr } from "@/lib/currency"
 
 export default async function OwnerReportsPage() {
   const session = await auth()
@@ -31,10 +32,10 @@ export default async function OwnerReportsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue (YTD)</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <Banknote className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-700">${totalRevenue._sum.totalPrice?.toString() || 0}</div>
+            <div className="text-2xl font-bold text-green-700">{formatNpr(totalRevenue._sum.totalPrice)}</div>
           </CardContent>
         </Card>
       </div>

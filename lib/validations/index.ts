@@ -1,10 +1,18 @@
 import { z } from 'zod'
 
+export const phoneSchema = z
+  .string()
+  .trim()
+  .min(7, 'Phone number is required')
+  .max(20, 'Phone number is too long')
+  .regex(/^[+0-9() -]+$/, 'Phone number can only include digits, spaces, +, -, and parentheses')
+
 // ─── AUTH ──────────────────────────────────────────────
 
 export const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
+  phone: phoneSchema,
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -44,7 +52,7 @@ export const resetPasswordSchema = z.object({
 export const inquirySchema = z.object({
   name: z.string().min(2, 'Name is required').max(100),
   email: z.string().email('Invalid email address'),
-  phone: z.string().optional(),
+  phone: phoneSchema.optional().or(z.literal('')),
   subject: z.string().min(2, 'Subject is required').max(200),
   message: z.string().min(10, 'Message must be at least 10 characters').max(2000),
 })
@@ -58,6 +66,7 @@ export const bookingSchema = z.object({
   }),
   checkOut: z.coerce.date(),
   guests: z.number().int().min(1, 'At least 1 guest required').max(20),
+  phone: phoneSchema.optional(),
   notes: z.string().max(500).optional(),
 }).refine((data) => data.checkOut > data.checkIn, {
   message: 'Check-out must be after check-in',
@@ -90,9 +99,10 @@ export const propertySchema = z.object({
 // ─── REVIEW ────────────────────────────────────────────
 
 export const reviewSchema = z.object({
-  propertyId: z.string().cuid('Invalid property'),
+  bookingId: z.string().cuid('Invalid booking'),
   rating: z.number().int().min(1, 'Minimum 1 star').max(5, 'Maximum 5 stars'),
   comment: z.string().min(10, 'Review must be at least 10 characters').max(2000),
+  images: z.array(z.string().url()).optional(),
 })
 
 export const reviewReplySchema = z.object({

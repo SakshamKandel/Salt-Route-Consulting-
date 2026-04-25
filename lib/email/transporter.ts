@@ -9,8 +9,10 @@ const {
 } = process.env
 
 export const transporter = nodemailer.createTransport({
+  service: SMTP_HOST?.includes('gmail') ? 'gmail' : undefined,
   host: SMTP_HOST,
   port: Number(SMTP_PORT) || 587,
+  secure: Number(SMTP_PORT) === 465,
   auth: {
     user: SMTP_USER,
     pass: SMTP_PASSWORD,

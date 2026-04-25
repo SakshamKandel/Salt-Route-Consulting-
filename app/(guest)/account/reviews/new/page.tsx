@@ -8,13 +8,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { createReviewAction } from "./actions"
-import { Star } from "lucide-react"
+import { Star, ImagePlus, X } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary"
 
 const schema = z.object({
   bookingId: z.string().min(1),
   rating: z.number().min(1, "Please select a rating").max(5),
   comment: z.string().min(10, "Comment must be at least 10 characters"),
+  images: z.array(z.object({ url: z.string(), publicId: z.string().optional() })).optional(),
 })
 
 export default function NewReviewPage({
@@ -23,15 +26,16 @@ export default function NewReviewPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = use(searchParams)
-  const bookingId = resolvedParams.bookingId as string | undefined
+  const bookingId = (resolvedParams.bookingId || resolvedParams.booking) as string | undefined
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
+  const [uploadedImages, setUploadedImages] = useState<{ url: string; publicId?: string }[]>([])
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { bookingId: bookingId || "", rating: 0, comment: "" },
+    defaultValues: { bookingId: bookingId || "", rating: 0, comment: "", images: [] },
   })
 
   if (!bookingId) {
@@ -49,7 +53,7 @@ export default function NewReviewPage({
     setError(null)
     setSuccess(null)
     
-    const res = await createReviewAction(data)
+    const res = await createReviewAction({ ...data, images: uploadedImages })
     
     if (res?.error) {
       setError(res.error)
@@ -123,6 +127,51 @@ export default function NewReviewPage({
               </FormItem>
             )}
           />
+
+          {/* Photo upload */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-slate-700">Photos <span className="text-slate-400 font-normal">(optional, up to 5)</span></p>
+            <div className="flex flex-wrap gap-3">
+              {uploadedImages.map((img, i) => (
+                <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-slate-200 group">
+                  <Image src={img.url} alt={`Review photo ${i + 1}`} fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setUploadedImages((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={18} className="text-white" />
+                  </button>
+                </div>
+              ))}
+              {uploadedImages.length < 5 && (
+                <CldUploadWidget
+                  signatureEndpoint="/api/upload/signature"
+                  options={{ multiple: true, maxFiles: 5 - uploadedImages.length, folder: "salt-route/reviews" }}
+                  onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                    const info = typeof result.info === "object" ? result.info : undefined
+                    if (info?.secure_url) {
+                      setUploadedImages((prev) => [
+                        ...prev,
+                        { url: info.secure_url, publicId: info.public_id },
+                      ])
+                    }
+                  }}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => open()}
+                      className="w-24 h-24 flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 rounded-lg text-slate-400 hover:border-navy/40 hover:text-navy transition-colors"
+                    >
+                      <ImagePlus size={20} />
+                      <span className="text-[10px] uppercase tracking-wider">Add</span>
+                    </button>
+                  )}
+                </CldUploadWidget>
+              )}
+            </div>
+          </div>
 
           <Button type="submit" className="bg-navy text-cream" disabled={isPending}>
             {isPending ? "Submitting..." : "Submit Review"}

@@ -1,7 +1,8 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Compass, Users, Home, Calendar, MessageSquare, Settings, FileText, Bell, LogOut, ChartBar } from "lucide-react"
+import { Users, Home, Calendar, MessageSquare, Settings, FileText, Bell, LogOut, ChartBar, Mail } from "lucide-react"
+import { getUnreadNotificationCount } from "@/lib/notifications"
 
 export default async function AdminLayout({
   children,
@@ -14,6 +15,8 @@ export default async function AdminLayout({
     redirect("/login")
   }
 
+  const unreadNotifications = await getUnreadNotificationCount(session.user.id)
+
   const navigation = [
     { name: "Dashboard", href: "/admin/dashboard", icon: ChartBar },
     { name: "Properties", href: "/admin/properties", icon: Home },
@@ -22,17 +25,24 @@ export default async function AdminLayout({
     { name: "Reviews", href: "/admin/reviews", icon: FileText },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Owners", href: "/admin/owners", icon: Users },
+    { name: "Invitations", href: "/admin/invitations", icon: Mail },
     { name: "Reports", href: "/admin/reports", icon: ChartBar },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ]
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
-        <div className="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
-          <Compass className="h-6 w-6 text-gold mr-2" />
-          <span className="text-white font-bold tracking-wider uppercase text-sm">Salt Route Admin</span>
+    <div className="flex h-screen bg-background text-charcoal overflow-hidden font-sans selection:bg-gold/30">
+      {/* ─── QUIET LUXURY SIDEBAR ─── */}
+      <aside className="w-64 bg-[#FAFAFA] border-r border-charcoal/5 flex flex-col hidden md:flex">
+        <div className="h-24 flex items-center justify-center px-6 border-b border-charcoal/5">
+          <Link href="/" className="flex flex-col items-center group">
+            <span className="font-display text-xl tracking-[0.3em] uppercase leading-none text-charcoal group-hover:text-gold transition-colors duration-700">
+              Salt Route
+            </span>
+            <span className="text-[8px] tracking-[0.5em] text-charcoal/40 uppercase font-sans font-medium mt-2">
+              Admin Portal
+            </span>
+          </Link>
         </div>
         <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
           <ul className="space-y-1 px-3">
@@ -40,10 +50,11 @@ export default async function AdminLayout({
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors"
+                  className="flex items-center px-6 py-4 rounded-none text-sm font-light hover:bg-charcoal/5 transition-all duration-500 group relative overflow-hidden"
                 >
-                  <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-                  {item.name}
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-0 bg-charcoal/30 group-hover:h-3/4 transition-all duration-500 ease-out" />
+                  <item.icon className="mr-4 h-4 w-4 flex-shrink-0 text-charcoal/30 group-hover:text-charcoal transition-colors duration-500 stroke-[1.2]" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 group-hover:text-charcoal transition-colors duration-500 font-medium">{item.name}</span>
                 </Link>
               </li>
             ))}
@@ -52,25 +63,30 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden bg-white">
         {/* Topbar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10 shrink-0">
+        <header className="h-24 border-b border-charcoal/5 flex items-center justify-between px-10 z-10 shrink-0">
           <div className="flex items-center">
-            <h1 className="text-lg font-semibold text-slate-800">Admin Portal</h1>
+            <h1 className="font-display text-xl text-charcoal tracking-widest uppercase">Admin Dashboard</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="text-slate-400 hover:text-slate-600">
-              <Bell className="h-5 w-5" />
-            </button>
-            <div className="flex items-center gap-2 border-l pl-4">
-              <span className="text-sm font-medium text-slate-700">{session.user.name}</span>
+          <div className="flex items-center gap-6">
+            <Link href="/admin/notifications" className="relative text-charcoal/30 hover:text-charcoal transition-colors" aria-label="Notifications">
+              <Bell className="h-4 w-4 stroke-[1.2]" />
+              {unreadNotifications > 0 && (
+                <span className="absolute -right-2 -top-2 min-w-4 rounded-full bg-red-600 px-1 text-center text-[10px] font-bold text-white">
+                  {unreadNotifications > 9 ? "9+" : unreadNotifications}
+                </span>
+              )}
+            </Link>
+            <div className="flex items-center gap-4 border-l border-charcoal/10 pl-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{session.user.name}</span>
               <form action={async () => {
                 "use server"
                 const { signOut } = await import("@/auth")
                 await signOut({ redirectTo: "/login" })
               }}>
-                <button type="submit" className="text-slate-400 hover:text-red-600 ml-2">
-                  <LogOut className="h-5 w-5" />
+                <button type="submit" className="text-charcoal/30 hover:text-charcoal ml-2 transition-colors">
+                  <LogOut className="h-4 w-4 stroke-[1.2]" />
                 </button>
               </form>
             </div>

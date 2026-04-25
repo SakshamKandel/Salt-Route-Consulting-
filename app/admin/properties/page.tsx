@@ -7,11 +7,22 @@ import { Plus } from "lucide-react"
 export default async function AdminPropertiesPage() {
   const properties = await prisma.property.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      owner: { select: { name: true, email: true } },
-      _count: { select: { bookings: true } }
-    }
+    select: {
+      id: true,
+      title: true,
+      location: true,
+      status: true,
+      pricePerNight: true,
+    },
   })
+
+  const rows = properties.map((p) => ({
+    id: p.id,
+    title: p.title,
+    location: p.location,
+    status: p.status,
+    pricePerNight: Number(p.pricePerNight),
+  }))
 
   return (
     <div className="space-y-8">
@@ -27,7 +38,7 @@ export default async function AdminPropertiesPage() {
         </Button>
       </div>
 
-      <PropertiesTable properties={properties} />
+      <PropertiesTable properties={rows} />
     </div>
   )
 }

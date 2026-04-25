@@ -3,14 +3,19 @@ import { DataTable, Column } from "@/components/admin/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { isInquiryUnreadForAdmin } from "@/lib/inquiries"
+import type { InquirySender, InquiryStatus } from "@prisma/client"
 
 type InquiryTableRow = {
   id: string
   name: string
   email: string
   message: string
-  status: string
+  status: InquiryStatus
   createdAt: Date | string
+  lastMessageAt: Date | string
+  lastMessageBy: InquirySender
+  adminLastReadAt: Date | string | null
   property?: { title: string } | null
 }
 
@@ -22,7 +27,12 @@ export function InquiriesTable({ inquiries }: { inquiries: InquiryTableRow[] }) 
     },
     {
       header: "Name",
-      accessorKey: "name"
+      cell: (row) => (
+        <span className="inline-flex items-center gap-2">
+          {isInquiryUnreadForAdmin(row) && <span className="h-2 w-2 rounded-full bg-gold" />}
+          {row.name}
+        </span>
+      )
     },
     {
       header: "Email",

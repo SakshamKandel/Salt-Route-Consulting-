@@ -1,11 +1,11 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { HeartOff } from "lucide-react"
+import { Heart, X, ArrowRight } from "lucide-react"
+import { formatNpr } from "@/lib/currency"
+import { getPrimaryImageUrl } from "@/lib/property-media"
 
 export default async function WishlistPage() {
   const session = await auth()
@@ -15,62 +15,120 @@ export default async function WishlistPage() {
     where: { userId: session.user.id },
     include: {
       property: {
-        include: { images: { take: 1 } }
+        include: { images: { take: 6, orderBy: { order: "asc" } } }
       }
     },
     orderBy: { createdAt: "desc" }
   })
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-display text-navy">My Wishlist</h1>
+    <div className="space-y-12">
+      {/* ─── PAGE HEADER ─── */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-[1px] bg-charcoal/20" />
+          <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
+            Your Collection
+          </h1>
+          {wishlists.length > 0 && (
+            <span className="text-[9px] text-charcoal/25 font-sans">{wishlists.length} saved</span>
+          )}
+        </div>
+        <Link
+          href="/properties"
+          className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-charcoal/30 hover:text-charcoal transition-colors"
+        >
+          <span>Discover More</span>
+          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" strokeWidth={1.5} />
+        </Link>
+      </div>
 
       {wishlists.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          Your wishlist is empty.
-          <div className="mt-4">
-            <Button asChild className="bg-gold text-navy hover:bg-gold/90">
-              <Link href="/properties">Browse Properties</Link>
-            </Button>
-          </div>
+        <div className="text-center py-24 bg-white border border-charcoal/5">
+          <Heart className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
+          <p className="font-display text-xl text-charcoal/60 mb-3">Start Curating</p>
+          <p className="text-charcoal/30 text-sm font-sans max-w-sm mx-auto mb-8 leading-relaxed">
+            Save your favourite properties to build a personal collection of exceptional stays.
+          </p>
+          <Link
+            href="/properties"
+            className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors"
+          >
+            <span>Explore Properties</span>
+            <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlists.map((item) => (
-            <Card key={item.id} className="overflow-hidden group">
-              <div className="relative w-full h-48">
-                {item.property.images[0] ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {wishlists.map((item) => {
+            const imageUrl = getPrimaryImageUrl(item.property.images) || "/placeholder-property.jpg"
+
+            return (
+              <div key={item.id} className="group bg-white border border-charcoal/5 overflow-hidden hover:border-charcoal/15 transition-all duration-300">
+                {/* Image */}
+                <div className="relative aspect-[4/5] overflow-hidden">
                   <Image
-                    src={item.property.images[0].url}
+                    src={imageUrl}
                     alt={item.property.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-[2s] group-hover:scale-105"
                   />
-                ) : (
-                  <div className="w-full h-full bg-gray-200" />
-                )}
-                <div className="absolute top-2 right-2">
-                  <form action={async () => {
-                    "use server"
-                    const { revalidatePath } = await import("next/cache")
-                    await prisma.wishlist.delete({ where: { id: item.id } })
-                    revalidatePath("/account/wishlist")
-                  }}>
-                    <Button type="submit" size="icon" variant="destructive" className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                      <HeartOff size={16} />
-                    </Button>
-                  </form>
+                  
+                  {/* Remove Button */}
+                  <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <form action={async () => {
+                      "use server"
+                      const { revalidatePath } = await import("next/cache")
+                      await prisma.wishlist.delete({ where: { id: item.id } })
+                      revalidatePath("/account/wishlist")
+                    }}>
+                      <button
+                        type="submit"
+                        className="w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-charcoal/10 text-charcoal/40 hover:text-red-500 hover:border-red-200 transition-all duration-300"
+                      >
+                        <X size={12} strokeWidth={1.5} />
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Saved Badge */}
+                  <div className="absolute bottom-4 left-4">
+                    <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 text-[8px] uppercase tracking-[0.2em] text-charcoal/60 flex items-center gap-1.5">
+                      <Heart className="w-2.5 h-2.5 fill-current" />
+                      Saved
+                    </span>
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="p-5 md:p-6">
+                  <Link href={`/properties/${item.property.slug}`}>
+                    <h3 className="font-display text-lg text-charcoal tracking-wide mb-1 group-hover:text-charcoal/70 transition-colors">
+                      {item.property.title}
+                    </h3>
+                  </Link>
+                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 mb-4">
+                    {item.property.location}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-charcoal/5">
+                    <p className="font-display text-sm text-charcoal tracking-wider">
+                      {formatNpr(item.property.pricePerNight)}
+                      <span className="text-[8px] font-sans tracking-[0.1em] uppercase text-charcoal/25 ml-1">/ night</span>
+                    </p>
+                    <Link
+                      href={`/properties/${item.property.slug}`}
+                      className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] text-charcoal/30 hover:text-charcoal transition-colors"
+                    >
+                      <span>View</span>
+                      <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+                    </Link>
+                  </div>
                 </div>
               </div>
-              <CardContent className="p-4">
-                <Link href={`/properties/${item.property.id}`}>
-                  <h3 className="font-bold text-lg hover:underline truncate">{item.property.title}</h3>
-                </Link>
-                <p className="text-gray-500 text-sm mt-1 truncate">{item.property.location}</p>
-                <p className="font-medium mt-2">${item.property.pricePerNight.toString()} <span className="text-sm font-normal text-gray-500">/ night</span></p>
-              </CardContent>
-            </Card>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

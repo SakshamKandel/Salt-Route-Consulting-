@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/db"
 import { UsersTable } from "../users/UsersTable"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Plus, Mail } from "lucide-react"
 
 export default async function AdminOwnersPage() {
   const owners = await prisma.user.findMany({
@@ -10,7 +13,6 @@ export default async function AdminOwnersPage() {
     }
   })
 
-  // Add the property count to the data
   const ownersWithCount = owners.map(owner => ({
     ...owner,
     propertiesCount: owner._count.properties
@@ -18,9 +20,23 @@ export default async function AdminOwnersPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-display text-navy">Owners</h2>
-        <p className="text-slate-500">Manage property owners and their assigned properties.</p>
+      <div className="flex justify-between items-start gap-4 flex-wrap">
+        <div>
+          <h2 className="text-3xl font-display text-navy">Owners</h2>
+          <p className="text-slate-500">Manage property owners and their assigned properties.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="text-navy border-navy/20">
+            <Link href="/admin/invitations/new">
+              <Mail className="w-4 h-4 mr-2" /> Invite by Email
+            </Link>
+          </Button>
+          <Button asChild className="bg-navy text-cream">
+            <Link href="/admin/users/new?role=OWNER">
+              <Plus className="w-4 h-4 mr-2" /> Add Owner
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <UsersTable users={ownersWithCount} />

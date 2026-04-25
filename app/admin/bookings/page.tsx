@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 import { BookingStatus } from "@prisma/client"
+import { serializeForClient } from "@/lib/serialize"
 
 export default async function AdminBookingsPage({
   searchParams,
@@ -24,12 +25,20 @@ export default async function AdminBookingsPage({
     }
   })
 
+  const counts = await prisma.booking.groupBy({
+    by: ["status"],
+    _count: { _all: true },
+  })
+  const countMap = Object.fromEntries(counts.map((c) => [c.status, c._count._all]))
+
   const tabs = [
-    { label: "Pending", value: "PENDING" },
-    { label: "Confirmed", value: "CONFIRMED" },
-    { label: "Cancelled", value: "CANCELLED" },
-    { label: "Rejected", value: "REJECTED" },
-    { label: "All", value: "ALL" },
+    { label: "Pending", value: "PENDING", color: "bg-amber-500" },
+    { label: "Confirmed", value: "CONFIRMED", color: "bg-green-500" },
+    { label: "Checked In", value: "CHECKED_IN", color: "bg-sky-500" },
+    { label: "Completed", value: "COMPLETED", color: "bg-blue-500" },
+    { label: "No Show", value: "NO_SHOW", color: "bg-orange-500" },
+    { label: "Cancelled", value: "CANCELLED", color: "bg-red-500" },
+    { label: "All", value: "ALL", color: "bg-gray-500" },
   ]
 
   return (
@@ -47,19 +56,29 @@ export default async function AdminBookingsPage({
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.value}
-            asChild
-            variant={statusFilter === tab.value ? "default" : "outline"}
-            className={statusFilter === tab.value ? "bg-navy" : "text-navy"}
-          >
-            <Link href={`/admin/bookings?status=${tab.value}`}>{tab.label}</Link>
-          </Button>
-        ))}
+        {tabs.map((tab) => {
+          const count = tab.value === "ALL"
+            ? Object.values(countMap).reduce((a, b) => a + b, 0)
+            : (countMap[tab.value] ?? 0)
+          return (
+            <Button
+              key={tab.value}
+              asChild
+              variant={statusFilter === tab.value ? "default" : "outline"}
+              className={statusFilter === tab.value ? "bg-navy" : "text-navy"}
+              size="sm"
+            >
+              <Link href={`/admin/bookings?status=${tab.value}`}>
+                <span className={`w-2 h-2 rounded-full ${tab.color} mr-2`} />
+                {tab.label}
+                {count > 0 && <span className="ml-1.5 bg-white/20 rounded-full px-1.5 text-xs">{count}</span>}
+              </Link>
+            </Button>
+          )
+        })}
       </div>
 
-      <BookingsTable bookings={bookings} />
+      <BookingsTable bookings={serializeForClient(bookings)} />
     </div>
   )
 }

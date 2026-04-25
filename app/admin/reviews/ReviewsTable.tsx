@@ -4,12 +4,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Star } from "lucide-react"
+import type { ReviewStatus } from "@prisma/client"
 
 type ReviewTableRow = {
   id: string
   comment: string
   rating: number
   isApproved: boolean
+  status: ReviewStatus
   createdAt: Date | string
   property: { title: string }
   guest: { name: string | null; email: string | null } | null
@@ -42,7 +44,7 @@ export function ReviewsTable({ reviews }: { reviews: ReviewTableRow[] }) {
       header: "Status",
       cell: (row) => (
         <Badge variant={row.isApproved ? "default" : "secondary"}>
-          {row.isApproved ? "Approved" : "Pending"}
+          {row.status === "PUBLISHED" ? "Published" : row.status === "HIDDEN" ? "Hidden" : "Pending"}
         </Badge>
       )
     },

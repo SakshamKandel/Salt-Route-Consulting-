@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react"
 import { Heart } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -30,23 +29,29 @@ export function WishlistButton({
         if (!res.ok) throw new Error()
         const data = await res.json()
         setWishlisted(data.wishlisted)
-        toast.success(data.wishlisted ? "Added to wishlist" : "Removed from wishlist")
+        toast.success(data.wishlisted ? "Saved to Sanctuary Collection" : "Removed from Sanctuary Collection")
       } catch {
-        toast.error("Failed to update wishlist")
+        toast.error("Failed to update collection")
       }
     })
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
+    <button
       onClick={toggle}
       disabled={pending}
-      className={`border-navy/20 ${wishlisted ? "bg-red-50 text-red-500 border-red-200" : "text-navy hover:text-red-500"}`}
+      className={`group flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] font-sans transition-all duration-500 pb-1 border-b ${
+        wishlisted 
+          ? "text-gold/80 border-gold/80 hover:text-charcoal hover:border-charcoal" 
+          : "text-charcoal/40 border-transparent hover:text-gold/80 hover:border-gold/30"
+      }`}
     >
-      <Heart size={16} className={wishlisted ? "fill-red-500" : ""} />
-      {wishlisted ? "Wishlisted" : "Wishlist"}
-    </Button>
+      <Heart 
+        size={14} 
+        strokeWidth={1.5}
+        className={`transition-all duration-500 ${wishlisted ? "fill-gold/80 text-gold/80 group-hover:fill-charcoal group-hover:text-charcoal" : "text-charcoal/40 group-hover:text-gold/80"}`} 
+      />
+      {wishlisted ? "In Your Collection" : "Save to Collection"}
+    </button>
   )
 }

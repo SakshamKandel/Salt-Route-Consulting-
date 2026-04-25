@@ -33,8 +33,8 @@ export default async function AdminReviewDetailPage({
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-3xl font-display text-navy">Review Detail</h2>
-              <Badge variant={review.isApproved ? "default" : "secondary"}>
-                {review.isApproved ? "Approved" : "Pending"}
+              <Badge variant={review.status === "PUBLISHED" ? "default" : "secondary"}>
+                {review.status === "PUBLISHED" ? "Published" : review.status === "HIDDEN" ? "Hidden" : "Pending"}
               </Badge>
             </div>
             <p className="text-slate-500">Submitted on {review.createdAt.toLocaleDateString()}</p>

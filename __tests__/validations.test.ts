@@ -18,6 +18,7 @@ describe("signupSchema", () => {
   const validSignup = {
     name: "Test User",
     email: "test@example.com",
+    phone: "+977 9800000000",
     password: "StrongPass1",
     confirmPassword: "StrongPass1",
   }
@@ -125,7 +126,7 @@ describe("inquirySchema", () => {
 // ─── reviewSchema ─────────────────────────────────────────
 describe("reviewSchema", () => {
   const valid = {
-    propertyId: "clxxxxxxxxxxxxxxxxxxxxxxxxx",
+    bookingId: "clxxxxxxxxxxxxxxxxxxxxxxxxx",
     rating: 5,
     comment: "This was an amazing stay, highly recommended!",
   }

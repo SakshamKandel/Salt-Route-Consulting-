@@ -5,6 +5,8 @@ import { reviewSchema } from "@/lib/validations"
 import { rateLimit } from "@/lib/rate-limit"
 import { safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
+import { canReviewBooking } from "@/lib/booking-lifecycle"
+import { notifyAdmins } from "@/lib/notifications"
 
 // ─── POST  /api/reviews ───────────────────────────────────
 export async function POST(request: Request) {
@@ -27,30 +29,24 @@ export async function POST(request: Request) {
     // 10.2 — Zod
     const validated = reviewSchema.parse(json)
 
-    // Check user actually stayed at this property (completed booking)
-    const completedStay = await prisma.booking.findFirst({
-      where: {
-        guestId: userId,
-        propertyId: validated.propertyId,
-        status: { in: ["CONFIRMED", "COMPLETED"] },
-        checkOut: { lte: new Date() },
-      },
+    const booking = await prisma.booking.findUnique({
+      where: { id: validated.bookingId },
+      include: { property: { select: { title: true } } },
     })
 
-    if (!completedStay) {
+    if (!booking || booking.guestId !== userId || !canReviewBooking(booking)) {
       return NextResponse.json(
-        { error: "You can only review properties where you have completed a stay." },
+        { error: "You can only review a stay after checkout is completed." },
         { status: 403 }
       )
     }
 
-    // One review per property per guest (enforced by schema @@unique too)
     const existing = await prisma.review.findUnique({
-      where: { guestId_propertyId: { guestId: userId, propertyId: validated.propertyId } },
+      where: { bookingId: validated.bookingId },
     })
 
     if (existing) {
-      return NextResponse.json({ error: "You have already reviewed this property." }, { status: 409 })
+      return NextResponse.json({ error: "You have already reviewed this stay." }, { status: 409 })
     }
 
     const review = await prisma.review.create({
@@ -58,7 +54,15 @@ export async function POST(request: Request) {
         rating: validated.rating,
         comment: validated.comment,
         guestId: userId,
-        propertyId: validated.propertyId,
+        propertyId: booking.propertyId,
+        bookingId: booking.id,
+        status: "PUBLISHED",
+        isApproved: true,
+        images: {
+          create: (validated.images || []).map((url) => ({
+            url,
+          })),
+        },
       },
     })
 
@@ -69,6 +73,14 @@ export async function POST(request: Request) {
       entityId: review.id,
       userId,
       ipAddress: getClientIp(request.headers),
+    })
+
+    await notifyAdmins({
+      type: "REVIEW",
+      title: "Review awaiting moderation",
+      body: `${booking.property.title} received a new guest review.`,
+      href: `/admin/reviews/${review.id}`,
+      metadata: { reviewId: review.id, bookingId: booking.id },
     })
 
     return NextResponse.json({ id: review.id })

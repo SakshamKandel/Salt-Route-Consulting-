@@ -5,6 +5,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, User, Home } from "lucide-react"
+import { BookingActions } from "@/app/admin/bookings/[id]/BookingActions"
+import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
+import { formatNpr } from "@/lib/currency"
 
 export default async function OwnerBookingDetailPage({
   params,
@@ -20,7 +23,6 @@ export default async function OwnerBookingDetailPage({
     where: { 
       id,
       property: { ownerId: session.user.id },
-      status: "CONFIRMED" // Only confirmed
     },
     include: {
       guest: { select: { name: true, email: true, phone: true } },
@@ -39,9 +41,10 @@ export default async function OwnerBookingDetailPage({
           </Button>
           <div>
             <h2 className="text-3xl font-display text-navy">{booking.bookingCode}</h2>
-            <Badge variant="default">Confirmed</Badge>
+            <Badge variant="default">{BOOKING_STATUS_LABELS[booking.status]}</Badge>
           </div>
         </div>
+        <BookingActions booking={{ id: booking.id, status: booking.status }} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,7 +59,7 @@ export default async function OwnerBookingDetailPage({
              <p className="flex justify-between"><span className="text-slate-500">Guests:</span> <span className="font-medium">{booking.guests}</span></p>
              <div className="pt-3 mt-3 border-t flex justify-between items-center text-base">
                <span className="text-slate-500 font-semibold">Total Revenue:</span>
-               <span className="font-bold text-green-700">${booking.totalPrice.toString()}</span>
+               <span className="font-bold text-green-700">{formatNpr(booking.totalPrice)}</span>
              </div>
            </div>
         </div>

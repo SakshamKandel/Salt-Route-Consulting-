@@ -37,8 +37,8 @@ export async function loginAction(data: LoginInput) {
     const validated = loginSchema.parse(data)
     const ip = await getIp()
 
-    // 10.3 — Rate limit: 5 login attempts / 15 min / IP
-    const rl = await rateLimit({ identifier: `login:${ip}`, limit: 5, window: 900 })
+    // 10.3 — Rate limit: 15 login attempts / 15 min / IP
+    const rl = await rateLimit({ identifier: `login:${ip}`, limit: 15, window: 900 })
     if (!rl.success) {
       return { error: "Too many login attempts. Please wait 15 minutes." }
     }
@@ -76,8 +76,8 @@ export async function signupAction(data: SignupInput & { website?: string }) {
     const validated = signupSchema.parse(data)
     const ip = await getIp()
 
-    // 10.3 — Rate limit: 5 signups / hr / IP
-    const rl = await rateLimit({ identifier: `signup:${ip}`, limit: 5, window: 3600 })
+    // 10.3 — Rate limit: 15 signups / hr / IP
+    const rl = await rateLimit({ identifier: `signup:${ip}`, limit: 15, window: 3600 })
     if (!rl.success) {
       return { error: "Too many signup attempts. Please try again later." }
     }
@@ -103,6 +103,7 @@ export async function signupAction(data: SignupInput & { website?: string }) {
       data: {
         name: validated.name,
         email: validated.email.toLowerCase(),
+        phone: validated.phone,
         hashedPassword,
       },
     })
@@ -117,7 +118,7 @@ export async function signupAction(data: SignupInput & { website?: string }) {
       },
     })
 
-    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`
+    const verifyUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`
 
     // Fire and forget
     transporter.sendMail({
@@ -170,7 +171,7 @@ export async function forgotPasswordAction(data: ForgotPasswordInput) {
         },
       })
 
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}&email=${encodeURIComponent(user.email)}`
+      const resetUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/reset-password?token=${token}&email=${encodeURIComponent(user.email)}`
 
       transporter.sendMail({
         ...mailOptions,

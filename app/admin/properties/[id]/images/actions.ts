@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { v2 as cloudinary } from "cloudinary"
+import { getCloudinaryResourceType, isVideoUrl } from "@/lib/property-media"
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -26,7 +27,10 @@ export async function addPropertyImageAction(
   await assertAdmin()
 
   const count = await prisma.propertyImage.count({ where: { propertyId } })
-  const isPrimary = count === 0
+  const imageCount = await prisma.propertyImage.count({
+    where: { propertyId, NOT: [{ url: { contains: "/video/upload/" } }] },
+  })
+  const isPrimary = !isVideoUrl(url) && imageCount === 0
 
   await prisma.propertyImage.create({
     data: {
@@ -41,6 +45,8 @@ export async function addPropertyImageAction(
 
   revalidatePath(`/admin/properties/${propertyId}/images`)
   revalidatePath(`/admin/properties/${propertyId}`)
+  revalidatePath("/properties")
+  revalidatePath("/")
 }
 
 export async function deletePropertyImageAction(imageId: string, propertyId: string) {
@@ -51,7 +57,9 @@ export async function deletePropertyImageAction(imageId: string, propertyId: str
 
   // Delete from Cloudinary
   try {
-    await cloudinary.uploader.destroy(image.publicId)
+    await cloudinary.uploader.destroy(image.publicId, {
+      resource_type: getCloudinaryResourceType(image.url),
+    })
   } catch {
     // continue even if Cloudinary delete fails
   }
@@ -61,7 +69,10 @@ export async function deletePropertyImageAction(imageId: string, propertyId: str
   // If deleted image was primary, promote the next one
   if (image.isPrimary) {
     const next = await prisma.propertyImage.findFirst({
-      where: { propertyId },
+      where: {
+        propertyId,
+        NOT: [{ url: { contains: "/video/upload/" } }],
+      },
       orderBy: { order: "asc" },
     })
     if (next) {
@@ -71,10 +82,17 @@ export async function deletePropertyImageAction(imageId: string, propertyId: str
 
   revalidatePath(`/admin/properties/${propertyId}/images`)
   revalidatePath(`/admin/properties/${propertyId}`)
+  revalidatePath("/properties")
+  revalidatePath("/")
 }
 
 export async function setPrimaryImageAction(imageId: string, propertyId: string) {
   await assertAdmin()
+
+  const image = await prisma.propertyImage.findUnique({ where: { id: imageId } })
+  if (!image || isVideoUrl(image.url)) {
+    return { error: "Only images can be set as primary." }
+  }
 
   await prisma.$transaction([
     prisma.propertyImage.updateMany({ where: { propertyId }, data: { isPrimary: false } }),
@@ -82,6 +100,26 @@ export async function setPrimaryImageAction(imageId: string, propertyId: string)
   ])
 
   revalidatePath(`/admin/properties/${propertyId}/images`)
+  revalidatePath("/properties")
+  revalidatePath("/")
+}
+
+export async function setBannerImageAction(imageId: string, propertyId: string) {
+  await assertAdmin()
+
+  const image = await prisma.propertyImage.findUnique({ where: { id: imageId } })
+  if (!image || isVideoUrl(image.url)) {
+    return { error: "Only images can be set as the banner." }
+  }
+
+  await prisma.$transaction([
+    prisma.propertyImage.updateMany({ where: { propertyId }, data: { isBanner: false } }),
+    prisma.propertyImage.update({ where: { id: imageId }, data: { isBanner: true } }),
+  ])
+
+  revalidatePath(`/admin/properties/${propertyId}/images`)
+  revalidatePath(`/properties`)
+  revalidatePath("/")
 }
 
 export async function reorderImagesAction(propertyId: string, orderedIds: string[]) {
@@ -94,4 +132,6 @@ export async function reorderImagesAction(propertyId: string, orderedIds: string
   )
 
   revalidatePath(`/admin/properties/${propertyId}/images`)
+  revalidatePath("/properties")
+  revalidatePath("/")
 }

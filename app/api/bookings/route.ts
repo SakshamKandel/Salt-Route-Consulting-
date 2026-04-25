@@ -7,6 +7,13 @@ import { bookingSchema } from "@/lib/validations"
 import { rateLimit } from "@/lib/rate-limit"
 import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
+import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
+import { notifyAdmins, notifyUser } from "@/lib/notifications"
+import { render } from "@react-email/render"
+import { BookingReceived } from "@/emails/BookingReceived"
+import { NewBookingAdminAlert } from "@/emails/NewBookingAdminAlert"
+
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
 
 // ─── POST  /api/bookings ────────────────────────────────────
 export async function POST(request: Request) {
@@ -39,7 +46,7 @@ export async function POST(request: Request) {
       const overlap = await tx.booking.findFirst({
         where: {
           propertyId: validated.propertyId,
-          status: { in: ["CONFIRMED", "PENDING"] },
+          status: { in: ACTIVE_BOOKING_STATUSES },
           checkIn: { lt: validated.checkOut },
           checkOut: { gt: validated.checkIn },
         },
@@ -49,19 +56,51 @@ export async function POST(request: Request) {
         throw new Error("Property is no longer available for these dates")
       }
 
+      const blockedDate = await tx.blockedDate.findFirst({
+        where: {
+          propertyId: validated.propertyId,
+          date: {
+            gte: validated.checkIn,
+            lt: validated.checkOut,
+          },
+        },
+      })
+
+      if (blockedDate) {
+        throw new Error("Property is blocked for one or more selected dates")
+      }
+
       // Load authoritative price from DB (never trust client-supplied totalPrice)
       const property = await tx.property.findUnique({
         where: { id: validated.propertyId },
-        select: { pricePerNight: true },
+        select: { pricePerNight: true, maxGuests: true, status: true, ownerId: true },
       })
-      if (!property) {
+      if (!property || property.status !== "ACTIVE") {
         throw new Error("Property not found")
+      }
+      if (validated.guests > property.maxGuests) {
+        throw new Error(`This property allows up to ${property.maxGuests} guests`)
       }
 
       const nights = Math.ceil(
         (validated.checkOut.getTime() - validated.checkIn.getTime()) / (1000 * 60 * 60 * 24)
       )
       const totalPrice = Number(property.pricePerNight) * nights
+
+      const guest = await tx.user.findUnique({
+        where: { id: userId },
+        select: { phone: true },
+      })
+      const phone = validated.phone?.trim() || guest?.phone?.trim()
+      if (!phone) {
+        throw new Error("Phone number is required before booking")
+      }
+      if (phone !== guest?.phone) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { phone },
+        })
+      }
 
       const bookingCode = await generateBookingCode()
 
@@ -77,7 +116,10 @@ export async function POST(request: Request) {
           propertyId: validated.propertyId,
           status: "PENDING",
         },
-        include: { property: true, guest: true },
+        include: {
+          property: { include: { owner: true } },
+          guest: true,
+        },
       })
 
       return booking
@@ -92,31 +134,65 @@ export async function POST(request: Request) {
       ipAddress: getClientIp(request.headers),
     })
 
-    // Non-blocking email dispatch (plain HTML, no JSX)
+    await Promise.all([
+      notifyAdmins({
+        type: "BOOKING",
+        title: "New booking request",
+        body: `${result.guest.name || result.guest.email} requested ${result.property.title}.`,
+        href: `/admin/bookings/${result.id}`,
+        metadata: { bookingId: result.id },
+      }),
+      notifyUser(result.property.ownerId, {
+        type: "BOOKING",
+        title: "New request for your property",
+        body: `${result.property.title} has a new booking request.`,
+        href: `/owner/bookings/${result.id}`,
+        metadata: { bookingId: result.id },
+      }),
+    ])
+
+    // Email dispatch — luxury templates
     try {
+      const checkIn = fmt(result.checkIn)
+      const checkOut = fmt(result.checkOut)
+      const dates = `${checkIn} – ${checkOut}`
+      const totalPrice = `NPR ${Math.round(Number(result.totalPrice)).toLocaleString()}`
+
+      const [guestHtml, adminHtml] = await Promise.all([
+        render(BookingReceived({
+          name: result.guest.name || "Guest",
+          propertyName: result.property.title,
+          dates,
+          bookingCode: result.bookingCode,
+          checkIn,
+          checkOut,
+          guests: result.guests,
+          totalPrice,
+        })),
+        render(NewBookingAdminAlert({
+          propertyName: result.property.title,
+          guestName: result.guest.name || "Guest",
+          guestEmail: result.guest.email ?? undefined,
+          dates,
+          bookingCode: result.bookingCode,
+          checkIn,
+          checkOut,
+          guests: result.guests,
+          totalPrice,
+          adminUrl: `${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/bookings/${result.id}`,
+        })),
+      ])
+
       await Promise.all([
         sendEmail({
           to: result.guest.email!,
-          subject: `Booking Request Received: ${result.bookingCode}`,
-          html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
-            <h2 style="color:#0f172a">Booking Request Received</h2>
-            <p>Hi ${result.guest.name},</p>
-            <p>Your booking request <strong>${result.bookingCode}</strong> for <strong>${result.property.title}</strong> has been received.</p>
-            <p>Check-in: ${result.checkIn.toLocaleDateString()}<br/>Check-out: ${result.checkOut.toLocaleDateString()}</p>
-            <p>We will review your request and get back to you shortly.</p>
-            <p>Best regards,<br/>Salt Route Consulting</p>
-          </div>`,
+          subject: `Booking Request Received — ${result.bookingCode}`,
+          html: guestHtml,
         }),
         sendEmail({
           to: process.env.ADMIN_EMAIL || "admin@saltroute.com",
-          subject: `New Booking Request: ${result.bookingCode}`,
-          html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
-            <h2>New Booking Request</h2>
-            <p>Code: <strong>${result.bookingCode}</strong></p>
-            <p>Property: ${result.property.title}</p>
-            <p>Guest: ${result.guest.name} (${result.guest.email})</p>
-            <p>Dates: ${result.checkIn.toLocaleDateString()} → ${result.checkOut.toLocaleDateString()}</p>
-          </div>`,
+          subject: `New Booking Request — ${result.bookingCode} | ${result.property.title}`,
+          html: adminHtml,
         }),
       ])
     } catch (emailError) {

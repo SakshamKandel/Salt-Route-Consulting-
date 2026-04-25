@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { User, Shield, Monitor, Key } from "lucide-react"
+import { Shield, Monitor, Key } from "lucide-react"
 
 export default async function AdminProfilePage() {
   const session = await auth()

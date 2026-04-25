@@ -1,6 +1,7 @@
 "use server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
+import { notifyAdmins } from "@/lib/notifications"
 
 export async function submitOwnerRequestAction(formData: FormData) {
   const session = await auth()
@@ -22,16 +23,36 @@ export async function submitOwnerRequestAction(formData: FormData) {
   if (!property) return { error: "Property not found or unauthorized" }
 
   try {
-    // Create an inquiry clearly marked as an OWNER edit request
-    await prisma.inquiry.create({
+    const body = `Property: ${property.title} (ID: ${property.id})\n\nRequest Type: ${requestType}\n\n${message}`
+    const inquiry = await prisma.inquiry.create({
       data: {
         name: `${session.user.name || "Owner"} (OWNER REQUEST: ${requestType})`,
         email: session.user.email!,
         phone: null,
         subject: `Owner Edit Request: ${requestType} for ${property.title}`,
-        message: `Property: ${property.title} (ID: ${property.id})\n\nRequest Type: ${requestType}\n\n${message}`,
-        status: "NEW"
+        message: body,
+        status: "NEW",
+        source: "OWNER_REQUEST",
+        ownerId: session.user.id,
+        lastMessageAt: new Date(),
+        lastMessageBy: "OWNER",
+        ownerLastReadAt: new Date(),
+        messages: {
+          create: {
+            sender: "OWNER",
+            body,
+            authorId: session.user.id,
+          },
+        },
       }
+    })
+
+    await notifyAdmins({
+      type: "INQUIRY",
+      title: "Owner edit request",
+      body: `${property.title}: ${requestType}`,
+      href: `/admin/inquiries/${inquiry.id}`,
+      metadata: { inquiryId: inquiry.id, propertyId: property.id },
     })
 
     return { success: true }

@@ -47,9 +47,9 @@ export default function AcceptInvitePage({
 
   if (!token) {
     return (
-      <div className="space-y-6 text-center">
-        <h1 className="text-2xl font-display text-cream">Invalid Link</h1>
-        <p className="text-sm text-beige">Missing invitation token.</p>
+      <div className="space-y-10 text-center">
+        <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Invalid Link</h1>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">Missing invitation token.</p>
       </div>
     )
   }
@@ -73,40 +73,40 @@ export default function AcceptInvitePage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-display text-cream">Accept Invitation</h1>
-        <p className="text-sm text-beige">Set up your profile to join the team.</p>
+    <div className="space-y-10">
+      <div className="text-center space-y-4">
+        <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Accept Invitation</h1>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">Set up your profile to join the team.</p>
       </div>
 
       {error && (
-        <Alert variant="destructive" className="bg-red-500/10 text-red-400 border-red-500/20">
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="bg-red-500/10 text-red-400 border-red-500/20 rounded-none">
+          <AlertDescription className="text-xs uppercase tracking-widest">{error}</AlertDescription>
         </Alert>
       )}
 
       {success ? (
-        <div className="space-y-4">
-          <Alert className="bg-green-500/10 text-green-400 border-green-500/20">
-            <AlertDescription>{success}</AlertDescription>
+        <div className="space-y-6">
+          <Alert className="bg-green-500/10 text-green-700 border-green-500/20 rounded-none">
+            <AlertDescription className="text-xs uppercase tracking-widest">{success}</AlertDescription>
           </Alert>
-          <Button asChild className="w-full bg-gold text-navy hover:bg-gold/90">
+          <Button asChild className="w-full bg-charcoal text-white hover:bg-charcoal/90 uppercase tracking-[0.3em] text-[10px] py-6 rounded-none transition-colors">
             <Link href="/login">Login Now</Link>
           </Button>
         </div>
       ) : (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-beige">Full Name</FormLabel>
+                  <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" className="bg-white/5 border-white/10 text-cream placeholder:text-white/30" {...field} />
+                    <Input placeholder="John Doe" className="bg-transparent border-charcoal/20 rounded-none text-charcoal focus-visible:ring-0 focus-visible:border-charcoal/60 placeholder:text-charcoal/30 font-sans text-sm pb-2" {...field} />
                   </FormControl>
-                  <FormMessage className="text-red-400" />
+                  <FormMessage className="text-red-400 text-xs" />
                 </FormItem>
               )}
             />
@@ -115,11 +115,11 @@ export default function AcceptInvitePage({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-beige">Create Password</FormLabel>
+                  <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">Create Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" className="bg-white/5 border-white/10 text-cream placeholder:text-white/30" {...field} />
+                    <Input type="password" placeholder="••••••••" className="bg-transparent border-charcoal/20 rounded-none text-charcoal focus-visible:ring-0 focus-visible:border-charcoal/60 placeholder:text-charcoal/30 font-sans text-sm pb-2" {...field} />
                   </FormControl>
-                  <FormMessage className="text-red-400" />
+                  <FormMessage className="text-red-400 text-xs" />
                 </FormItem>
               )}
             />
@@ -128,15 +128,15 @@ export default function AcceptInvitePage({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-beige">Confirm Password</FormLabel>
+                  <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" className="bg-white/5 border-white/10 text-cream placeholder:text-white/30" {...field} />
+                    <Input type="password" placeholder="••••••••" className="bg-transparent border-charcoal/20 rounded-none text-charcoal focus-visible:ring-0 focus-visible:border-charcoal/60 placeholder:text-charcoal/30 font-sans text-sm pb-2" {...field} />
                   </FormControl>
-                  <FormMessage className="text-red-400" />
+                  <FormMessage className="text-red-400 text-xs" />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-gold text-navy hover:bg-gold/90 font-medium" disabled={isPending}>
+            <Button type="submit" className="w-full bg-charcoal text-white hover:bg-charcoal/90 uppercase tracking-[0.3em] text-[10px] py-6 rounded-none mt-6 transition-colors" disabled={isPending}>
               {isPending ? "Setting up account..." : "Accept & Join"}
             </Button>
           </form>

@@ -1,70 +1,54 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ChevronDown } from "lucide-react"
+import { Plus, Minus } from "lucide-react"
+import { motion } from "framer-motion"
+
 
 export default function FaqPage() {
   return (
-    <div className="min-h-screen bg-cream pt-16">
-      <div className="bg-navy py-20 text-center px-4">
-        <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-3">Help Centre</p>
-        <h1 className="font-display text-4xl md:text-5xl text-cream mb-4">Frequently Asked Questions</h1>
-        <p className="text-cream/60 max-w-xl mx-auto">
-          Everything you need to know before you book. Can&apos;t find an answer? We&apos;re always here.
-        </p>
-      </div>
-
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-20 space-y-3">
-        <FaqItem
-          q="How does the booking process work?"
-          a="Browse our properties and submit a booking request with your preferred dates. Our team reviews availability and contacts you within 24 hours to confirm. Payment is only required once your booking is confirmed."
-        />
-        <FaqItem
-          q="Are the prices per night or for the entire stay?"
-          a="All prices displayed are per night. The total for your stay is calculated based on your check-in and check-out dates, and shown clearly before you confirm."
-        />
-        <FaqItem
-          q="Can I cancel or modify a booking?"
-          a="Yes. We offer free cancellation within 48 hours of booking confirmation. For cancellations after that window, please refer to our Refund Policy page for details on partial refunds based on notice period."
-        />
-        <FaqItem
-          q="Do I need to create an account to book?"
-          a="Yes, a free account is required to make a booking. This lets you track your reservation status, communicate with our team, and access exclusive member pricing."
-        />
-        <FaqItem
-          q="What is included in the price?"
-          a="Pricing varies by property — some include breakfast, guided activities, or airport transfers. Each property listing clearly states what is included. Our consultants can also advise on packages."
-        />
-        <FaqItem
-          q="Are the properties suitable for families with children?"
-          a="Many of our properties are family-friendly. Check the 'Max Guests' and amenities on each listing. Our team can also recommend the best options for families with specific needs."
-        />
-        <FaqItem
-          q="How can I contact my host or property?"
-          a="Once your booking is confirmed, your dedicated consultant will share property contact details and assist with any direct communication. All coordination flows through our team for your convenience."
-        />
-        <FaqItem
-          q="What payment methods are accepted?"
-          a="We accept all major credit and debit cards. Bank transfer is also available for longer stays. Our team will guide you through payment options once your booking is confirmed."
-        />
-        <FaqItem
-          q="Is travel insurance required?"
-          a="We strongly recommend travel insurance for all Nepal visits. While not mandatory, it provides peace of mind for flight changes, medical emergencies, and trek cancellations."
-        />
-        <FaqItem
-          q="What if my question isn't answered here?"
-          a="Please reach out via our contact form, email, or WhatsApp. Our team responds within 24 hours — often much sooner."
-        />
+    <div className="bg-background text-charcoal min-h-screen">
+      
+      {/* HEADER */}
+      <section className="pt-40 pb-20 px-6 md:px-12 text-center bg-[#FAFAFA] border-b border-charcoal/5">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5 }}
+            className="max-w-3xl mx-auto"
+        >
+            <p className="text-[10px] uppercase tracking-[0.6em] text-charcoal/40 mb-8 font-medium">Registry &amp; Inquiries</p>
+            <h1 className="font-display text-5xl md:text-7xl lg:text-[7rem] tracking-wide mb-10 font-normal">
+                Common<br/>Inquiries.
+            </h1>
+            <div className="w-16 h-[1px] bg-charcoal/10 mx-auto" />
+        </motion.div>
       </section>
 
-      <section className="bg-gold py-16 text-center px-4">
-        <h2 className="font-display text-3xl text-navy mb-4">Still have questions?</h2>
-        <p className="text-navy/70 mb-8">Our consultants are available 7 days a week to help you plan.</p>
-        <Button asChild size="lg" className="bg-navy text-cream hover:bg-navy/90 px-10">
-          <Link href="/contact">Contact Us</Link>
-        </Button>
+      {/* ACCORDION */}
+      <section className="py-32 bg-white flex items-center justify-center px-6 md:px-12">
+        <div className="max-w-4xl w-full border-t border-charcoal/10">
+            <FaqItem
+              q="How does the booking process work?"
+              a="Browse our collection and submit a request with your preferred dates. Our team will review availability and contact you within 24 hours to coordinate your stay."
+            />
+            <FaqItem
+              q="Are the prices per night or for the entire stay?"
+              a="All prices displayed are per night. The total for your sanctuary experience is calculated based on your duration and shown clearly before confirmation."
+            />
+            <FaqItem
+              q="Can I cancel or modify a booking?"
+              a="Yes. We offer free cancellation within 48 hours of confirmation. For later adjustments, our boutique policies apply to ensure the integrity of our partner properties."
+            />
+            <FaqItem
+              q="Do I need to create an account to book?"
+              a="A private account is required to maintain the security of our communications and provide you with a bespoke dashboard for your itineraries."
+            />
+            <FaqItem
+              q="What is included in the price?"
+              a="Each sanctuary includes signature amenities. Specific details regarding breakfast, transfers, and experiences are listed clearly on each property profile."
+            />
+        </div>
       </section>
     </div>
   )
@@ -73,22 +57,23 @@ export default function FaqPage() {
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="bg-white rounded-xl border border-beige overflow-hidden">
+    <div className="border-b border-charcoal/10 overflow-hidden bg-white">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-6 py-5 text-left"
+        className="w-full flex items-center justify-between py-10 text-left group"
       >
-        <span className="font-medium text-navy pr-4">{q}</span>
-        <ChevronDown
-          size={18}
-          className={`shrink-0 text-gold transition-transform ${open ? "rotate-180" : ""}`}
-        />
+        <span className="font-display text-2xl text-charcoal tracking-wide group-hover:text-gold transition-colors">{q}</span>
+        <span className="shrink-0 text-charcoal/30 group-hover:text-gold transition-colors duration-500 ml-6">
+          {open ? <Minus size={20} strokeWidth={1} /> : <Plus size={20} strokeWidth={1} />}
+        </span>
       </button>
-      {open && (
-        <div className="px-6 pb-5">
-          <p className="text-navy/70 text-sm leading-relaxed">{a}</p>
+      <div 
+        className={`overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <div className="pb-10 pt-2 pr-12">
+            <p className="font-sans text-base text-charcoal/60 leading-relaxed font-light">{a}</p>
         </div>
-      )}
+      </div>
     </div>
   )
 }
