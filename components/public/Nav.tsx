@@ -65,7 +65,7 @@ export function Nav() {
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-700 border-b ${scrolled ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 h-full flex items-center justify-between relative">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 h-full flex items-center justify-between relative">
           
           {/* Left Actions (Mobile Toggle & Language) */}
           <div className="flex items-center gap-4 lg:hidden">
@@ -128,7 +128,7 @@ export function Nav() {
             
             <Link
               href={isOwnerSection ? "/contact" : "/properties"}
-              className={`px-8 py-3.5 text-[9px] uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/30 hover:bg-white/10 md:hover:border-white/60'}`}
+              className={`hidden sm:inline-flex px-5 md:px-8 py-3.5 text-[9px] uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/30 hover:bg-white/10 md:hover:border-white/60'}`}
             >
               {isOwnerSection ? "Partner With Us" : "Reserve Stays"}
             </Link>
@@ -157,7 +157,7 @@ export function Nav() {
                   <Link
                     href={link.href}
                     onClick={closeMobile}
-                    className="font-display text-4xl uppercase tracking-[0.1em] text-charcoal hover:text-charcoal/70 transition-colors"
+                    className="block text-center font-display text-3xl sm:text-4xl uppercase tracking-[0.1em] text-charcoal hover:text-charcoal/70 transition-colors"
                   >
                     {link.label}
                   </Link>

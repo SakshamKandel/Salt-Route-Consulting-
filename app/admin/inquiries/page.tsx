@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { InquiryStatus } from "@prisma/client"
 import { isInquiryUnreadForAdmin } from "@/lib/inquiries"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function AdminInquiriesPage({
   searchParams,
@@ -12,12 +14,19 @@ export default async function AdminInquiriesPage({
 }) {
   const resolvedParams = await searchParams
   const statusFilter = (resolvedParams.status as string) || "NEW"
+  const requestedPage = parsePage(resolvedParams.page)
+  const where = {
+    status: statusFilter !== "ALL" ? (statusFilter as InquiryStatus) : undefined
+  }
+
+  const total = await prisma.inquiry.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const inquiries = await prisma.inquiry.findMany({
-    where: {
-      status: statusFilter !== "ALL" ? (statusFilter as InquiryStatus) : undefined
-    },
-    orderBy: { createdAt: "desc" }
+    where,
+    orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
   })
   const unreadCount = inquiries.filter(isInquiryUnreadForAdmin).length
 
@@ -50,6 +59,16 @@ export default async function AdminInquiriesPage({
       </div>
 
       <InquiriesTable inquiries={inquiries} />
+      <PaginationControls
+        basePath="/admin/inquiries"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        params={{ status: statusFilter }}
+        label="inquiries"
+      />
     </div>
   )
 }

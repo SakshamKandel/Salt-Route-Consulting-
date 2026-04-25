@@ -4,17 +4,32 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { formatNpr } from "@/lib/currency"
 import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
+import { BookingStatus, Prisma } from "@prisma/client"
 
-export default async function OwnerBookingsPage() {
+export default async function OwnerBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const visibleStatuses: BookingStatus[] = ["CONFIRMED", "CHECKED_IN", "COMPLETED"]
+  const where: Prisma.BookingWhereInput = {
+    property: { ownerId: session.user.id },
+    status: { in: visibleStatuses }
+  }
+  const total = await prisma.booking.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const bookings = await prisma.booking.findMany({
-    where: {
-      property: { ownerId: session.user.id },
-      status: { in: ["CONFIRMED", "CHECKED_IN", "COMPLETED"] }
-    },
+    where,
     orderBy: { checkIn: "asc" },
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       guest: { select: { name: true, email: true } },
       property: { select: { title: true } }
@@ -83,6 +98,15 @@ export default async function OwnerBookingsPage() {
           </div>
         )}
       </div>
+      <PaginationControls
+        basePath="/owner/bookings"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="reservations"
+      />
     </div>
   )
 }

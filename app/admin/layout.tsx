@@ -65,11 +65,12 @@ export default async function AdminLayout({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden bg-white">
         {/* Topbar */}
-        <header className="h-24 border-b border-charcoal/5 flex items-center justify-between px-10 z-10 shrink-0">
-          <div className="flex items-center">
-            <h1 className="font-display text-xl text-charcoal tracking-widest uppercase">Admin Dashboard</h1>
+        <header className="min-h-20 md:h-24 border-b border-charcoal/5 flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-10 z-10 shrink-0">
+          <div className="min-w-0">
+            <p className="md:hidden text-[8px] uppercase tracking-[0.35em] text-charcoal/35 font-medium">Salt Route</p>
+            <h1 className="font-display text-lg md:text-xl text-charcoal tracking-widest uppercase truncate">Admin Dashboard</h1>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex shrink-0 items-center gap-3 sm:gap-6">
             <Link href="/admin/notifications" className="relative text-charcoal/30 hover:text-charcoal transition-colors" aria-label="Notifications">
               <Bell className="h-4 w-4 stroke-[1.2]" />
               {unreadNotifications > 0 && (
@@ -78,8 +79,8 @@ export default async function AdminLayout({
                 </span>
               )}
             </Link>
-            <div className="flex items-center gap-4 border-l border-charcoal/10 pl-6">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{session.user.name}</span>
+            <div className="flex items-center gap-3 border-l border-charcoal/10 pl-3 sm:gap-4 sm:pl-6">
+              <span className="hidden max-w-32 truncate text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold sm:inline">{session.user.name}</span>
               <form action={async () => {
                 "use server"
                 const { signOut } = await import("@/auth")
@@ -93,8 +94,23 @@ export default async function AdminLayout({
           </div>
         </header>
 
+        <nav className="md:hidden shrink-0 overflow-x-auto border-b border-charcoal/5 bg-white">
+          <div className="flex min-w-max items-center gap-1 px-3 py-3">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-[9px] uppercase tracking-[0.16em] text-charcoal/45 hover:bg-charcoal/[0.03] hover:text-charcoal"
+              >
+                <item.icon className="h-3.5 w-3.5 stroke-[1.3]" />
+                <span>{item.name}</span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

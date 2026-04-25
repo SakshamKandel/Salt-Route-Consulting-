@@ -33,7 +33,7 @@ export function BookingThankYou({ name, propertyName, checkOut, bookingCode, rev
       </Text>
 
       <Text style={{ fontFamily: sans, fontSize: '13px', color: '#7A7A7A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
-        Your feedback helps us grow. We would love to hear about your stay — a brief review goes a long way in helping other guests discover Salt Route's hidden gems.
+        Your feedback helps us grow. We would love to hear about your stay - a brief review goes a long way in helping other guests discover Salt Route&apos;s hidden gems.
       </Text>
 
       <Button

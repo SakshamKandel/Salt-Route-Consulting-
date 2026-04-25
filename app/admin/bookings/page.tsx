@@ -5,6 +5,8 @@ import Link from "next/link"
 import { Plus } from "lucide-react"
 import { BookingStatus } from "@prisma/client"
 import { serializeForClient } from "@/lib/serialize"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function AdminBookingsPage({
   searchParams,
@@ -13,21 +15,29 @@ export default async function AdminBookingsPage({
 }) {
   const resolvedParams = await searchParams
   const statusFilter = (resolvedParams.status as string) || "PENDING"
+  const requestedPage = parsePage(resolvedParams.page)
+  const where = {
+    status: statusFilter !== "ALL" ? (statusFilter as BookingStatus) : undefined
+  }
+
+  const [total, counts] = await Promise.all([
+    prisma.booking.count({ where }),
+    prisma.booking.groupBy({
+      by: ["status"],
+      _count: { _all: true },
+    }),
+  ])
+  const pagination = getPagination(requestedPage, total)
 
   const bookings = await prisma.booking.findMany({
-    where: {
-      status: statusFilter !== "ALL" ? (statusFilter as BookingStatus) : undefined
-    },
+    where,
     orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       guest: { select: { name: true, email: true } },
       property: { select: { title: true } }
     }
-  })
-
-  const counts = await prisma.booking.groupBy({
-    by: ["status"],
-    _count: { _all: true },
   })
   const countMap = Object.fromEntries(counts.map((c) => [c.status, c._count._all]))
 
@@ -79,6 +89,16 @@ export default async function AdminBookingsPage({
       </div>
 
       <BookingsTable bookings={serializeForClient(bookings)} />
+      <PaginationControls
+        basePath="/admin/bookings"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        params={{ status: statusFilter }}
+        label="bookings"
+      />
     </div>
   )
 }

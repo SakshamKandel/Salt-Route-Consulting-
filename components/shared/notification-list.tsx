@@ -47,19 +47,19 @@ export function NotificationList({ notifications }: { notifications: Notificatio
               <div
                 key={notification.id}
                 className={cn(
-                  "flex items-start space-x-4 p-4 transition-colors hover:bg-muted/50",
+                  "flex items-start gap-3 p-4 transition-colors hover:bg-muted/50 sm:gap-4",
                   !notification.readAt && "bg-blue-50/30"
                 )}
               >
                 <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                   <Bell className="h-4 w-4" />
                 </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm font-medium leading-none">
                       {notification.title}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="shrink-0 text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(notification.createdAt), {
                         addSuffix: true,
                       })}

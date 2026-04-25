@@ -7,6 +7,12 @@ import { compare } from 'bcryptjs'
 import { loginSchema } from '@/lib/validations'
 import GoogleProvider from 'next-auth/providers/google'
 
+type AppRole = "ADMIN" | "OWNER" | "GUEST"
+
+function normalizeRole(role: unknown): AppRole {
+  return role === "ADMIN" || role === "OWNER" || role === "GUEST" ? role : "GUEST"
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
@@ -74,21 +80,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       console.log("Sign in attempt:", { email: user.email, provider: account?.provider })
       return true
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as any
+        session.user.role = normalizeRole(token.role)
       }
       return session
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as any).role
+        token.role = normalizeRole(user.role)
       }
       return token
     },

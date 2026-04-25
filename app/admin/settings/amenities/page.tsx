@@ -2,20 +2,12 @@ import { prisma } from "@/lib/db"
 import { AmenitiesManager } from "./AmenitiesManager"
 
 async function getAmenityData() {
-  const properties = await prisma.property.findMany({
-    select: { amenities: true, title: true },
-  })
-
-  const countMap: Record<string, number> = {}
-  for (const p of properties) {
-    for (const a of p.amenities) {
-      countMap[a] = (countMap[a] ?? 0) + 1
-    }
-  }
-
-  return Object.entries(countMap)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
+  return prisma.$queryRaw<{ name: string; count: number }[]>`
+    SELECT amenity AS name, COUNT(*)::int AS count
+    FROM properties, unnest(amenities) AS amenity
+    GROUP BY amenity
+    ORDER BY count DESC, amenity ASC
+  `
 }
 
 export default async function AmenitiesSettingsPage() {

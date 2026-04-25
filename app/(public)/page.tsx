@@ -4,7 +4,7 @@ import HomeClient from "@/components/public/HomeClient"
 async function getFeaturedProperties() {
   return prisma.property.findMany({
     where: { status: "ACTIVE" },
-    include: { images: { orderBy: { order: "asc" }, take: 6 } },
+    include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     take: 4,
   })

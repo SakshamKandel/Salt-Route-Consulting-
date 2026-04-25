@@ -5,11 +5,24 @@ import Link from "next/link"
 import { Star, Home, Plus } from "lucide-react"
 import { FeaturedToggle } from "./FeaturedToggle"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function HomepageSettingsPage() {
+export default async function HomepageSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const total = await prisma.property.count()
+  const pagination = getPagination(requestedPage, total)
+
   const properties = await prisma.property.findMany({
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    include: { images: { take: 6, orderBy: { order: "asc" } } },
+    skip: pagination.skip,
+    take: pagination.take,
+    include: { images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] } },
   })
 
   const featured = properties.filter((p) => p.featured)
@@ -34,7 +47,7 @@ export default async function HomepageSettingsPage() {
         <div className="px-5 py-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Home size={18} className="text-navy" />
-            <h3 className="font-semibold text-navy">All Properties ({properties.length})</h3>
+            <h3 className="font-semibold text-navy">All Properties ({total})</h3>
           </div>
           <Button asChild size="sm" className="bg-navy text-cream">
             <Link href="/admin/properties/new">
@@ -80,6 +93,15 @@ export default async function HomepageSettingsPage() {
           </div>
         )}
       </div>
+      <PaginationControls
+        basePath="/admin/settings/homepage"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="properties"
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Button } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY, GOLD } from './EmailLayout'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY } from './EmailLayout'
 
 interface BookingReceivedProps {
   name: string

@@ -5,14 +5,27 @@ import { MessageSquare, Send, User, ShieldCheck } from "lucide-react"
 import { SendMessageForm } from "./SendMessageForm"
 import { GuestReplyForm } from "./GuestReplyForm"
 import { isInquiryUnreadForGuest, normalizeInquiryMessages } from "@/lib/inquiries"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function GuestMessagesPage() {
+export default async function GuestMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) return redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { email: session.user.email! }
+  const total = await prisma.inquiry.count({ where })
+  const pagination = getPagination(requestedPage, total, 10)
 
   const inquiries = await prisma.inquiry.findMany({
-    where: { email: session.user.email! },
+    where,
     orderBy: { lastMessageAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       messages: { orderBy: { createdAt: "asc" } },
     },
@@ -129,6 +142,15 @@ export default async function GuestMessagesPage() {
           </div>
         )}
       </div>
+      <PaginationControls
+        basePath="/account/messages"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="conversations"
+      />
     </div>
   )
 }

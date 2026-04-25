@@ -29,7 +29,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
     <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col">
       {/* ─── TOP NAV BAR ─── */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-charcoal/5">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12">
           <div className="h-20 flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-4">
@@ -69,7 +69,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
               <Link
                 href="/properties"
                 className="hidden sm:flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-charcoal transition-colors"
@@ -120,7 +120,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
       {/* ─── GREETING BANNER ─── */}
       <div className="bg-white border-b border-charcoal/5">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 py-10 md:py-14">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-14">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-charcoal/[0.03] flex items-center justify-center border border-charcoal/5">
               <span className="font-display text-xl text-charcoal/60">
@@ -139,7 +139,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
       {/* ─── PAGE CONTENT ─── */}
       <main className="flex-1">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 py-12 md:py-16">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 py-10 md:py-16">
           {children}
         </div>
       </main>

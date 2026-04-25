@@ -3,6 +3,8 @@ import { ReviewsTable } from "./ReviewsTable"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ReviewStatus } from "@prisma/client"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function AdminReviewsPage({
   searchParams,
@@ -11,12 +13,19 @@ export default async function AdminReviewsPage({
 }) {
   const resolvedParams = await searchParams
   const filter = (resolvedParams.filter as string) || "PENDING"
+  const requestedPage = parsePage(resolvedParams.page)
+  const where = {
+    status: filter !== "ALL" ? (filter as ReviewStatus) : undefined
+  }
+
+  const total = await prisma.review.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const reviews = await prisma.review.findMany({
-    where: {
-      status: filter !== "ALL" ? (filter as ReviewStatus) : undefined
-    },
+    where,
     orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       guest: { select: { name: true, email: true } },
       property: { select: { title: true } }
@@ -51,6 +60,16 @@ export default async function AdminReviewsPage({
       </div>
 
       <ReviewsTable reviews={reviews} />
+      <PaginationControls
+        basePath="/admin/reviews"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        params={{ filter }}
+        label="reviews"
+      />
     </div>
   )
 }

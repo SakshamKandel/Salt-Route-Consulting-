@@ -88,18 +88,38 @@ export default async function OwnerLayout({
         <div className="absolute inset-0 pointer-events-none bg-white" />
         
         {/* Top Header */}
-        <header className="h-32 flex items-center justify-between px-12 md:px-16 z-10 shrink-0 border-b border-charcoal/5">
-          <div className="flex items-center gap-6">
+        <header className="min-h-24 md:h-32 flex items-center justify-between px-5 sm:px-8 md:px-16 z-10 shrink-0 border-b border-charcoal/5">
+          <div className="flex min-w-0 items-center gap-4 md:gap-6">
             <span className="w-12 h-[1px] bg-charcoal/20 hidden md:block" />
-            <div>
+            <div className="min-w-0">
               <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/40 mb-2 font-bold">Welcome Back</p>
-              <h1 className="font-display text-2xl text-charcoal tracking-widest uppercase">{session.user.name}</h1>
+              <h1 className="truncate font-display text-xl md:text-2xl text-charcoal tracking-widest uppercase">{session.user.name}</h1>
             </div>
           </div>
         </header>
 
+        <nav className="md:hidden z-10 shrink-0 overflow-x-auto border-b border-charcoal/5 bg-white">
+          <div className="flex min-w-max items-center gap-1 px-3 py-3">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="relative inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-[9px] uppercase tracking-[0.16em] text-charcoal/45 hover:bg-charcoal/[0.03] hover:text-charcoal"
+              >
+                <item.icon className="h-3.5 w-3.5 stroke-[1.3]" />
+                <span>{item.name}</span>
+                {item.href === "/owner/notifications" && unreadNotifications > 0 && (
+                  <span className="min-w-4 rounded-full bg-gold px-1 text-center text-[8px] font-bold text-charcoal">
+                    {unreadNotifications > 9 ? "9+" : unreadNotifications}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </nav>
+
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-12 md:px-16 pb-24 z-10">
+        <main className="flex-1 overflow-y-auto px-5 sm:px-8 md:px-16 pb-16 md:pb-24 z-10">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

@@ -69,7 +69,7 @@ export function DataTable<T>({
         </div>
       )}
       <div className="border border-slate-200 rounded-md bg-white overflow-hidden">
-        <Table>
+        <Table className="min-w-[760px]">
           <TableHeader className="bg-slate-50">
             <TableRow>
               {columns.map((col, i) => (

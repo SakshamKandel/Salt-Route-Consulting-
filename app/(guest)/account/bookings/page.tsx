@@ -7,6 +7,8 @@ import { getPrimaryImageUrl } from "@/lib/property-media"
 import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
 import { formatNpr } from "@/lib/currency"
 import { ArrowRight, Calendar } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function BookingsPage({
   searchParams,
@@ -18,6 +20,7 @@ export default async function BookingsPage({
 
   const resolvedParams = await searchParams
   const statusFilter = resolvedParams.status as string | undefined
+  const requestedPage = parsePage(resolvedParams.page)
 
   const whereClause: Prisma.BookingWhereInput = { guestId: session.user.id }
   if (
@@ -27,12 +30,16 @@ export default async function BookingsPage({
   ) {
     whereClause.status = statusFilter as BookingStatus
   }
+  const total = await prisma.booking.count({ where: whereClause })
+  const pagination = getPagination(requestedPage, total)
 
   const bookings = await prisma.booking.findMany({
     where: whereClause,
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       property: {
-        include: { images: { take: 6, orderBy: { order: "asc" } } }
+        include: { images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] } }
       }
     },
     orderBy: { createdAt: "desc" }
@@ -178,6 +185,16 @@ export default async function BookingsPage({
           })}
         </div>
       )}
+      <PaginationControls
+        basePath="/account/bookings"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        params={{ status: statusFilter }}
+        label="reservations"
+      />
     </div>
   )
 }

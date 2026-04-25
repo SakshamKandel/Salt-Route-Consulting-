@@ -12,7 +12,7 @@ function firstSentence(text: string, max = 180) {
 export default async function ForOwnersPage() {
   const properties = await prisma.property.findMany({
     where: { status: "ACTIVE" },
-    include: { images: { orderBy: { order: "asc" }, take: 6 } },
+    include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     take: 8,
   })

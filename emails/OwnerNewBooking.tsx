@@ -21,7 +21,7 @@ export function OwnerNewBooking({ ownerName, propertyName, guestName, dates, boo
       <HeadlineText>A Guest Has Reserved Your Property.</HeadlineText>
       <GoldRule />
       <BodyText>
-        Dear {ownerName}, a booking for {propertyName} has been confirmed. Please review the details below and ensure your property is prepared for the guest's arrival.
+        Dear {ownerName}, a booking for {propertyName} has been confirmed. Please review the details below and ensure your property is prepared for the guest&apos;s arrival.
       </BodyText>
 
       <DetailsCard>

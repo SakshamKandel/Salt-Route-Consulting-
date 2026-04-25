@@ -3,10 +3,23 @@ import { PropertiesTable } from "./PropertiesTable"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function AdminPropertiesPage() {
+export default async function AdminPropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const total = await prisma.property.count()
+  const pagination = getPagination(requestedPage, total)
+
   const properties = await prisma.property.findMany({
     orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
     select: {
       id: true,
       title: true,
@@ -39,6 +52,15 @@ export default async function AdminPropertiesPage() {
       </div>
 
       <PropertiesTable properties={rows} />
+      <PaginationControls
+        basePath="/admin/properties"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="properties"
+      />
     </div>
   )
 }

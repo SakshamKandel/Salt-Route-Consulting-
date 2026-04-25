@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Role } from "@prisma/client"
 import { Plus } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function AdminUsersPage({
   searchParams,
@@ -13,12 +15,27 @@ export default async function AdminUsersPage({
   const resolvedParams = await searchParams
   const roleParam = typeof resolvedParams.role === "string" ? resolvedParams.role : "ALL"
   const roleFilter = Object.values(Role).includes(roleParam as Role) ? (roleParam as Role) : "ALL"
+  const requestedPage = parsePage(resolvedParams.page)
+  const where = {
+    role: roleFilter !== "ALL" ? roleFilter : undefined
+  }
+
+  const total = await prisma.user.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const users = await prisma.user.findMany({
-    where: {
-      role: roleFilter !== "ALL" ? roleFilter : undefined
+    where,
+    orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
     },
-    orderBy: { createdAt: "desc" }
   })
 
   const tabs = [
@@ -56,6 +73,16 @@ export default async function AdminUsersPage({
       </div>
 
       <UsersTable users={users} />
+      <PaginationControls
+        basePath="/admin/users"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        params={{ role: roleFilter }}
+        label="users"
+      />
     </div>
   )
 }

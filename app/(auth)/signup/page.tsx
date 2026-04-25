@@ -10,12 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
-import { fetchSessionRole, getSafeCallback, getDestination } from "@/lib/auth-utils"
+import { getSafeCallback } from "@/lib/auth-utils"
 
 function SignupForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)

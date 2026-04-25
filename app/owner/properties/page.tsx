@@ -4,18 +4,31 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function OwnerPropertiesPage() {
+export default async function OwnerPropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { ownerId: session.user.id, status: "ACTIVE" as const }
+  const total = await prisma.property.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const properties = await prisma.property.findMany({
-    where: { ownerId: session.user.id, status: "ACTIVE" },
+    where,
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       _count: {
         select: { bookings: { where: { status: "CONFIRMED" } } }
       },
-      images: { take: 6, orderBy: { order: "asc" } }
+      images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] }
     },
     orderBy: { createdAt: "desc" },
   })
@@ -75,6 +88,15 @@ export default async function OwnerPropertiesPage() {
           })}
         </div>
       )}
+      <PaginationControls
+        basePath="/owner/properties"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="properties"
+      />
     </div>
   )
 }

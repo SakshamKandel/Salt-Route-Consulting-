@@ -4,14 +4,27 @@ import { redirect } from "next/navigation"
 import { MessageSquare, ShieldCheck, User } from "lucide-react"
 import { GuestReplyForm } from "@/app/(guest)/account/messages/GuestReplyForm"
 import { isInquiryUnreadForOwner, normalizeInquiryMessages } from "@/lib/inquiries"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function OwnerMessagesPage() {
+export default async function OwnerMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { ownerId: session.user.id }
+  const total = await prisma.inquiry.count({ where })
+  const pagination = getPagination(requestedPage, total, 10)
 
   const inquiries = await prisma.inquiry.findMany({
-    where: { ownerId: session.user.id },
+    where,
     orderBy: { lastMessageAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       messages: { orderBy: { createdAt: "asc" } },
     },
@@ -97,6 +110,15 @@ export default async function OwnerMessagesPage() {
           })}
         </div>
       )}
+      <PaginationControls
+        basePath="/owner/messages"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="conversations"
+      />
     </div>
   )
 }

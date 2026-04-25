@@ -3,15 +3,27 @@ import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { NotificationList } from "@/components/shared/notification-list"
 import { Bell } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { userId: session.user.id }
+  const total = await prisma.notification.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const notifications = await prisma.notification.findMany({
-    where: { userId: session.user.id },
+    where,
     orderBy: { createdAt: "desc" },
-    take: 100,
+    skip: pagination.skip,
+    take: pagination.take,
   })
 
   return (
@@ -39,6 +51,15 @@ export default async function NotificationsPage() {
           <NotificationList notifications={notifications} />
         </div>
       )}
+      <PaginationControls
+        basePath="/account/notifications"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="notifications"
+      />
     </div>
   )
 }

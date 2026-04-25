@@ -3,10 +3,23 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function AdminInvitationsPage() {
+export default async function AdminInvitationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const total = await prisma.invitation.count()
+  const pagination = getPagination(requestedPage, total)
+
   const invitations = await prisma.invitation.findMany({
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
+    skip: pagination.skip,
+    take: pagination.take,
   })
 
   // We need a client component for the table or just render it server side.
@@ -26,6 +39,7 @@ export default async function AdminInvitationsPage() {
       </div>
 
       <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 text-slate-600 border-b">
             <tr>
@@ -61,7 +75,17 @@ export default async function AdminInvitationsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
+      <PaginationControls
+        basePath="/admin/invitations"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="invitations"
+      />
     </div>
   )
 }

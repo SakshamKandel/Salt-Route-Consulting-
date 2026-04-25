@@ -4,21 +4,16 @@ import { Button } from "@/components/ui/button"
 import { MapPin } from "lucide-react"
 
 async function getCityData() {
-  const properties = await prisma.property.findMany({
-    select: { location: true, status: true },
-  })
-
-  const countMap: Record<string, { total: number; active: number }> = {}
-  for (const p of properties) {
-    const loc = p.location.trim()
-    if (!countMap[loc]) countMap[loc] = { total: 0, active: 0 }
-    countMap[loc].total++
-    if (p.status === "ACTIVE") countMap[loc].active++
-  }
-
-  return Object.entries(countMap)
-    .map(([name, counts]) => ({ name, ...counts }))
-    .sort((a, b) => b.total - a.total)
+  return prisma.$queryRaw<{ name: string; total: number; active: number }[]>`
+    SELECT
+      trim(location) AS name,
+      COUNT(*)::int AS total,
+      COUNT(*) FILTER (WHERE status = 'ACTIVE')::int AS active
+    FROM properties
+    WHERE trim(location) <> ''
+    GROUP BY trim(location)
+    ORDER BY total DESC, name ASC
+  `
 }
 
 export default async function CitiesSettingsPage() {

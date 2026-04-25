@@ -6,16 +6,29 @@ import Image from "next/image"
 import { Heart, X, ArrowRight } from "lucide-react"
 import { formatNpr } from "@/lib/currency"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function WishlistPage() {
+export default async function WishlistPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) return redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { userId: session.user.id }
+  const total = await prisma.wishlist.count({ where })
+  const pagination = getPagination(requestedPage, total)
 
   const wishlists = await prisma.wishlist.findMany({
-    where: { userId: session.user.id },
+    where,
+    skip: pagination.skip,
+    take: pagination.take,
     include: {
       property: {
-        include: { images: { take: 6, orderBy: { order: "asc" } } }
+        include: { images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] } }
       }
     },
     orderBy: { createdAt: "desc" }
@@ -131,6 +144,15 @@ export default async function WishlistPage() {
           })}
         </div>
       )}
+      <PaginationControls
+        basePath="/account/wishlist"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="saved properties"
+      />
     </div>
   )
 }

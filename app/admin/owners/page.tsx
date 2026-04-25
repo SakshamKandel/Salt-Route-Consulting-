@@ -3,14 +3,34 @@ import { UsersTable } from "../users/UsersTable"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus, Mail } from "lucide-react"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function AdminOwnersPage() {
+export default async function AdminOwnersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const where = { role: "OWNER" as const }
+  const total = await prisma.user.count({ where })
+  const pagination = getPagination(requestedPage, total)
+
   const owners = await prisma.user.findMany({
-    where: { role: "OWNER" },
+    where,
     orderBy: { createdAt: "desc" },
-    include: {
+    skip: pagination.skip,
+    take: pagination.take,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
       _count: { select: { properties: true } }
-    }
+    },
   })
 
   const ownersWithCount = owners.map(owner => ({
@@ -40,6 +60,15 @@ export default async function AdminOwnersPage() {
       </div>
 
       <UsersTable users={ownersWithCount} />
+      <PaginationControls
+        basePath="/admin/owners"
+        page={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={total}
+        startItem={pagination.startItem}
+        endItem={pagination.endItem}
+        label="owners"
+      />
     </div>
   )
 }

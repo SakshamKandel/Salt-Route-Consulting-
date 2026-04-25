@@ -4,20 +4,37 @@ import { redirect } from "next/navigation"
 import { Star, Trash, PenLine, Quote } from "lucide-react"
 import { WriteReviewForm } from "./WriteReviewForm"
 import { canReviewBooking } from "@/lib/booking-lifecycle"
-import Image from "next/image"
 import { ReviewImageGallery } from "@/components/public/ReviewImageGallery"
+import { getPagination, parsePage } from "@/lib/pagination"
+import { PaginationControls } from "@/components/shared/pagination-controls"
 
-export default async function ReviewsPage() {
+export default async function ReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth()
   if (!session?.user?.id) return redirect("/login")
+  const params = await searchParams
+  const requestedPage = parsePage(params.page)
+  const total = await prisma.review.count({ where: { guestId: session.user.id } })
+  const pagination = getPagination(requestedPage, total)
 
-  const reviews = await prisma.review.findMany({
-    where: { guestId: session.user.id },
-    include: { property: true, images: true },
-    orderBy: { createdAt: "desc" }
-  })
+  const [reviews, reviewedRows] = await Promise.all([
+    prisma.review.findMany({
+      where: { guestId: session.user.id },
+      include: { property: true, images: true },
+      orderBy: { createdAt: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.review.findMany({
+      where: { guestId: session.user.id, bookingId: { not: null } },
+      select: { bookingId: true },
+    }),
+  ])
 
-  const reviewedBookingIds = reviews.map((review) => review.bookingId).filter(Boolean) as string[]
+  const reviewedBookingIds = reviewedRows.map((review) => review.bookingId).filter(Boolean) as string[]
   const reviewableBookings = await prisma.booking.findMany({
     where: {
       guestId: session.user.id,
@@ -27,6 +44,7 @@ export default async function ReviewsPage() {
     },
     include: { property: { select: { id: true, title: true } } },
     orderBy: { checkOut: "desc" },
+    take: 10,
   })
   const eligibleBookings = reviewableBookings.filter(canReviewBooking)
 
@@ -157,6 +175,15 @@ export default async function ReviewsPage() {
               ))}
             </div>
           )}
+          <PaginationControls
+            basePath="/account/reviews"
+            page={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalItems={total}
+            startItem={pagination.startItem}
+            endItem={pagination.endItem}
+            label="reviews"
+          />
         </div>
 
       </div>
