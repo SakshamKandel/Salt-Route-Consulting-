@@ -37,8 +37,8 @@ export async function loginAction(data: LoginInput) {
     const validated = loginSchema.parse(data)
     const ip = await getIp()
 
-    // 10.3 — Rate limit: 15 login attempts / 15 min / IP
-    const rl = await rateLimit({ identifier: `login:${ip}`, limit: 15, window: 900 })
+    // 10.3 — Rate limit: 50 login attempts / 15 min / IP
+    const rl = await rateLimit({ identifier: `login:${ip}`, limit: 50, window: 900 })
     if (!rl.success) {
       return { error: "Too many login attempts. Please wait 15 minutes." }
     }
@@ -52,14 +52,22 @@ export async function loginAction(data: LoginInput) {
     return { success: true }
   } catch (error) {
     if (error instanceof AuthError) {
+      // Check for custom error message from authorize
+      if (error.cause?.err?.message === "EMAIL_NOT_VERIFIED") {
+        return { error: "Please verify your email address before logging in." }
+      }
+      if (error.cause?.err?.message === "USER_SUSPENDED") {
+        return { error: "Your account has been suspended. Please contact support." }
+      }
+
       switch (error.type) {
         case "CredentialsSignin":
-          // 10.9 — Generic error, don't reveal whether email exists
-          return { error: "Invalid credentials." }
+          return { error: "Invalid email or password." }
         default:
-          return { error: "Something went wrong." }
+          return { error: "Authentication failed. Please try again." }
       }
     }
+    console.error("Login Error:", error)
     return { error: "An unexpected error occurred." }
   }
 }
@@ -76,8 +84,8 @@ export async function signupAction(data: SignupInput & { website?: string }) {
     const validated = signupSchema.parse(data)
     const ip = await getIp()
 
-    // 10.3 — Rate limit: 15 signups / hr / IP
-    const rl = await rateLimit({ identifier: `signup:${ip}`, limit: 15, window: 3600 })
+    // 10.3 — Rate limit: 50 signups / hr / IP
+    const rl = await rateLimit({ identifier: `signup:${ip}`, limit: 50, window: 3600 })
     if (!rl.success) {
       return { error: "Too many signup attempts. Please try again later." }
     }
@@ -136,6 +144,48 @@ export async function signupAction(data: SignupInput & { website?: string }) {
       ipAddress: ip,
     })
 
+    // Notify admins
+    try {
+      const { notifyAdmins, getAdminEmails } = await import("@/lib/notifications")
+      const { sendEmailToMany } = await import("@/lib/email/transporter")
+      
+      await notifyAdmins({
+        type: "SYSTEM",
+        title: "New user registered",
+        body: `${user.name || user.email} joined the platform.`,
+        href: `/admin/users/${user.id}`,
+        metadata: { userId: user.id },
+      })
+
+      const adminEmails = await getAdminEmails()
+      const allAdminRecipients = Array.from(new Set([
+        ...adminEmails,
+        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+      ]))
+
+      await sendEmailToMany({
+        to: allAdminRecipients,
+        subject: "New User Registration — Salt Route",
+        html: `
+           <div style="font-family: sans-serif; color: #1B3A5C; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #102943;">New User Joined</h2>
+            <p>A new user has registered on the platform.</p>
+            <div style="background-color: #FBF9F4; border-left: 4px solid #C9A96E; padding: 16px; margin: 20px 0;">
+              <p style="margin: 4px 0;"><strong>Name:</strong> ${user.name || "N/A"}</p>
+              <p style="margin: 4px 0;"><strong>Email:</strong> ${user.email}</p>
+              <p style="margin: 4px 0;"><strong>Joined:</strong> ${user.createdAt.toLocaleString()}</p>
+            </div>
+            <a href="${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/users/${user.id}" 
+               style="display: inline-block; background-color: #1B3A5C; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: bold;">
+              View User Profile
+            </a>
+          </div>
+        `
+      })
+    } catch (adminError) {
+      console.error("[SIGNUP] Admin notification failed:", adminError)
+    }
+
     return { success: "Account created! Please check your email to verify." }
   } catch (error) {
     // 10.9 — Generic error
@@ -150,8 +200,8 @@ export async function forgotPasswordAction(data: ForgotPasswordInput) {
     const validated = forgotPasswordSchema.parse(data)
     const ip = await getIp()
 
-    // 10.3 — Rate limit: 3 forgot-pw / hr / IP
-    const rl = await rateLimit({ identifier: `forgot-pw:${ip}`, limit: 3, window: 3600 })
+    // 10.3 — Rate limit: 50 forgot-pw / hr / IP
+    const rl = await rateLimit({ identifier: `forgot-pw:${ip}`, limit: 50, window: 3600 })
     if (!rl.success) {
       return { error: "Too many requests. Please try again later." }
     }

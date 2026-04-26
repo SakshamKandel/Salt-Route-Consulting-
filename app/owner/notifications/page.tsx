@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { markAllCurrentUserNotificationsReadAction, markNotificationReadAction } from "@/app/notifications/actions"
@@ -32,7 +32,7 @@ export default async function OwnerNotificationsPage({
   return (
     <div className="space-y-14">
 
-      {/* ─── PAGE HEADER ─── */}
+      {/* â”€â”€â”€ PAGE HEADER â”€â”€â”€ */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
         <div className="space-y-3">
           <div className="flex items-center gap-4">
@@ -61,7 +61,7 @@ export default async function OwnerNotificationsPage({
             <button
               type="submit"
               className="text-[9px] uppercase tracking-[0.35em] font-medium text-sand/40 hover:text-gold transition-colors duration-500 px-6 py-3"
-              style={{ border: "1px solid rgba(197,168,128,0.12)" }}
+              style={{ border: "1px solid rgba(201,169,110,0.12)" }}
             >
               Mark All Read
             </button>
@@ -69,11 +69,11 @@ export default async function OwnerNotificationsPage({
         )}
       </div>
 
-      {/* ─── NOTIFICATIONS ─── */}
+      {/* â”€â”€â”€ NOTIFICATIONS â”€â”€â”€ */}
       {notifications.length === 0 ? (
         <div
           className="py-24 flex flex-col items-center justify-center text-center"
-          style={{ border: "1px solid rgba(197,168,128,0.07)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.07)" }}
         >
           <div className="w-10 h-px bg-gold/20 mb-6" />
           <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25 font-medium">
@@ -84,7 +84,7 @@ export default async function OwnerNotificationsPage({
           </p>
         </div>
       ) : (
-        <div style={{ border: "1px solid rgba(197,168,128,0.08)" }}>
+        <div style={{ border: "1px solid rgba(201,169,110,0.08)" }}>
           {notifications.map((notification, i) => {
             const isUnread = !notification.readAt
             const isLast = i === notifications.length - 1
@@ -94,8 +94,8 @@ export default async function OwnerNotificationsPage({
                 key={notification.id}
                 className="flex items-start gap-5 px-8 py-7 transition-all duration-500 hover:bg-white/[0.015] group"
                 style={{
-                  background: isUnread ? "rgba(197,168,128,0.035)" : "transparent",
-                  borderBottom: isLast ? "none" : "1px solid rgba(197,168,128,0.05)",
+                  background: isUnread ? "rgba(201,169,110,0.035)" : "transparent",
+                  borderBottom: isLast ? "none" : "1px solid rgba(201,169,110,0.05)",
                 }}
               >
                 {/* Unread indicator */}
@@ -157,3 +157,4 @@ export default async function OwnerNotificationsPage({
     </div>
   )
 }
+

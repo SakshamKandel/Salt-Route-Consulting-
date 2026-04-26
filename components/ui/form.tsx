@@ -98,7 +98,7 @@ function FormControl({ children, ...props }: React.PropsWithChildren<{ className
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   // Clone child element to inject form-related props
-  if (!React.isValidElement(children)) {
+  if (!React.isValidElement(children) || children.type === React.Fragment) {
     return <>{children}</>
   }
 

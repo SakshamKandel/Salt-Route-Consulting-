@@ -14,11 +14,11 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!subject.trim() || !message.trim()) {
-      setError("Subject and message are required.")
+      setError("Please add a subject and message.")
       return
     }
     if (message.trim().length < 10) {
-      setError("Message must be at least 10 characters.")
+      setError("Please share a little more detail.")
       return
     }
 
@@ -47,10 +47,10 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
         }, 2000)
       } else {
         const data = await res.json().catch(() => ({}))
-        setError(data.error || "Failed to send message. Please try again.")
+        setError(data.error || "We could not send your message yet. Please try again.")
       }
     } catch {
-      setError("Network error. Please try again.")
+      setError("We could not reach the team just now. Please try again.")
     } finally {
       setIsPending(false)
     }
@@ -64,7 +64,7 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
           type="text"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          placeholder="e.g. Question about Sunshine Villa"
+          placeholder="Question about Sunshine Villa"
           className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors"
         />
       </div>
@@ -73,7 +73,7 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Write your message here..."
+          placeholder="Share what you would like help with..."
           rows={4}
           className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors resize-none"
         />
@@ -83,7 +83,7 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
         <p className="text-red-500 text-[10px] uppercase tracking-[0.2em] font-medium">{error}</p>
       )}
       {success && (
-        <p className="text-green-600 text-[10px] uppercase tracking-[0.2em] font-medium">Message sent successfully.</p>
+        <p className="text-green-600 text-[10px] uppercase tracking-[0.2em] font-medium">Your message has been sent.</p>
       )}
 
       <button

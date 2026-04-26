@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -23,7 +23,7 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
       return
     }
     if (comment.trim().length < 10) {
-      setError("Review must be at least 10 characters.")
+      setError("Please share a little more about the stay.")
       return
     }
 
@@ -38,7 +38,10 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
           bookingId, 
           rating, 
           comment,
-          images: images.map(img => img.url)
+          images: images.map(img => ({
+            url: img.url,
+            publicId: img.publicId
+          }))
         }),
       })
 
@@ -47,10 +50,10 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
         setTimeout(() => router.refresh(), 1500)
       } else {
         const data = await res.json().catch(() => ({}))
-        setError(data.error || "Failed to submit review.")
+        setError(data.error || "We could not share your review yet.")
       }
     } catch {
-      setError("Network error. Please try again.")
+      setError("We could not reach the team just now. Please try again.")
     } finally {
       setIsPending(false)
     }
@@ -62,10 +65,10 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
 
   if (success) {
     return (
-      <div className="border border-charcoal/10 bg-[#FAFAFA] p-12 text-center">
+      <div className="border border-charcoal/10 bg-[#FBF9F4] p-12 text-center">
         <div className="w-12 h-[1px] bg-gold mx-auto mb-6" />
         <p className="text-charcoal text-[10px] uppercase tracking-[0.3em] font-sans font-medium">
-          Journal Entry Published.
+          Thank You For Sharing.
         </p>
         <p className="text-charcoal/50 text-[10px] uppercase tracking-[0.2em] mt-2 font-light">
           Thank you for sharing your experience.
@@ -78,14 +81,14 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
     <form onSubmit={handleSubmit} className="space-y-10">
       <div className="space-y-2">
         <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 font-sans font-medium">
-          Property Narrative
+          Your Stay
         </p>
         <h3 className="font-display text-2xl text-charcoal tracking-wide">{propertyName}</h3>
       </div>
       
       {/* Star Rating */}
       <div className="space-y-4">
-        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">Visual Rating</label>
+        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">How Did It Feel?</label>
         <div className="flex items-center gap-3">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -122,14 +125,14 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
           onChange={(e) => setComment(e.target.value)}
           placeholder="Describe the atmosphere, the service, and the stay..."
           rows={5}
-          className="w-full bg-[#FAFAFA] border-b border-charcoal/10 text-charcoal px-0 py-4 text-sm font-sans placeholder:text-charcoal/20 focus:outline-none focus:border-charcoal/30 transition-colors resize-none font-light"
+          className="w-full bg-[#FBF9F4] border-b border-charcoal/10 text-charcoal px-0 py-4 text-sm font-sans placeholder:text-charcoal/20 focus:outline-none focus:border-charcoal/30 transition-colors resize-none font-light"
         />
       </div>
 
       {/* Image Upload */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">Visual Attachments</label>
+        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">Photos From Your Stay</label>
           <span className="text-[8px] uppercase tracking-[0.1em] text-charcoal/30 font-light">{images.length} of 5 photos</span>
         </div>
         
@@ -161,7 +164,7 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
             onAdd={(m) => setImages(prev => [...prev, m])}
             multiple={true}
             maxFiles={5 - images.length}
-            label="Attach Atmosphere Photos"
+            label="Attach Stay Photos"
             className="w-full"
           />
         )}
@@ -178,8 +181,9 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
         disabled={isPending}
         className="w-full bg-charcoal text-white py-5 text-[10px] uppercase tracking-[0.4em] font-sans hover:bg-gold hover:text-white transition-all duration-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
       >
-        {isPending ? "Publishing Journal..." : "Publish Review"}
+        {isPending ? "Sharing..." : "Share Review"}
       </button>
     </form>
   )
 }
+

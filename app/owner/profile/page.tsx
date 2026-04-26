@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -20,21 +20,21 @@ export default async function OwnerProfilePage() {
   })
 
   const fields = [
-    { label: "Full Name",     value: user.name  || "—" },
-    { label: "Email Address", value: user.email || "—" },
-    { label: "Phone Number",  value: user.phone || "—" },
+    { label: "Full Name",     value: user.name  || "â€”" },
+    { label: "Email Address", value: user.email || "â€”" },
+    { label: "Phone Number",  value: user.phone || "â€”" },
     { label: "Member Since",  value: memberSince },
   ]
 
   return (
     <div className="space-y-14 max-w-2xl">
 
-      {/* ─── PAGE HEADER ─── */}
+      {/* â”€â”€â”€ PAGE HEADER â”€â”€â”€ */}
       <div className="space-y-3">
         <div className="flex items-center gap-4">
           <span className="w-8 h-px bg-gold/40" />
           <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-            Owner Identity
+            Owner Details
           </p>
         </div>
         <h1 className="font-display text-3xl md:text-4xl text-sand/85 tracking-wide">
@@ -42,13 +42,13 @@ export default async function OwnerProfilePage() {
         </h1>
       </div>
 
-      {/* ─── AVATAR + IDENTITY ─── */}
+      {/* â”€â”€â”€ AVATAR + IDENTITY â”€â”€â”€ */}
       <div className="flex items-center gap-7">
         <div
           className="w-16 h-16 flex items-center justify-center shrink-0"
           style={{
-            border: "1px solid rgba(197,168,128,0.3)",
-            background: "rgba(197,168,128,0.06)",
+            border: "1px solid rgba(201,169,110,0.3)",
+            background: "rgba(201,169,110,0.06)",
           }}
         >
           <span className="font-display text-2xl tracking-wider text-gold/80">
@@ -69,7 +69,7 @@ export default async function OwnerProfilePage() {
         </div>
       </div>
 
-      {/* ─── PERSONAL DETAILS ─── */}
+      {/* â”€â”€â”€ PERSONAL DETAILS â”€â”€â”€ */}
       <div className="space-y-8">
         <div className="flex items-center gap-4">
           <span className="w-8 h-px bg-gold/30" />
@@ -80,14 +80,14 @@ export default async function OwnerProfilePage() {
 
         <div
           className="overflow-hidden"
-          style={{ border: "1px solid rgba(197,168,128,0.08)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)" }}
         >
           {fields.map((field, i) => (
             <div
               key={field.label}
               className="flex flex-col sm:flex-row sm:items-center px-8 py-5 gap-3 hover:bg-white/[0.015] transition-colors duration-500"
               style={{
-                borderBottom: i < fields.length - 1 ? "1px solid rgba(197,168,128,0.05)" : "none",
+                borderBottom: i < fields.length - 1 ? "1px solid rgba(201,169,110,0.05)" : "none",
               }}
             >
               <p className="text-[9px] uppercase tracking-[0.35em] text-sand/30 font-medium w-36 shrink-0">
@@ -103,7 +103,7 @@ export default async function OwnerProfilePage() {
         </p>
       </div>
 
-      {/* ─── SECURITY ─── */}
+      {/* â”€â”€â”€ SECURITY â”€â”€â”€ */}
       <div className="space-y-8">
         <div className="flex items-center gap-4">
           <span className="w-8 h-px bg-gold/30" />
@@ -114,18 +114,18 @@ export default async function OwnerProfilePage() {
 
         <div
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-8 py-7"
-          style={{ border: "1px solid rgba(197,168,128,0.08)", background: "rgba(197,168,128,0.02)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)", background: "rgba(201,169,110,0.02)" }}
         >
           <div className="space-y-1">
             <p className="text-[13px] text-sand/65 font-medium">Password</p>
             <p className="text-[11px] text-sand/30 font-light">
-              Update your account password to keep your portal secure.
+          Update your password to keep your owner area secure.
             </p>
           </div>
           <Link
             href="/owner/profile/change-password"
             className="shrink-0 px-7 py-3.5 text-[9px] uppercase tracking-[0.35em] font-medium text-gold/70 hover:text-gold transition-all duration-500"
-            style={{ border: "1px solid rgba(197,168,128,0.2)" }}
+            style={{ border: "1px solid rgba(201,169,110,0.2)" }}
           >
             Change Password
           </Link>
@@ -134,3 +134,4 @@ export default async function OwnerProfilePage() {
     </div>
   )
 }
+

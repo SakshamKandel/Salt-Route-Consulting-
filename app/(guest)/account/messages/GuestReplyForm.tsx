@@ -14,7 +14,7 @@ export function GuestReplyForm({ inquiryId }: { inquiryId: string }) {
     e.preventDefault()
     if (!message.trim()) return
     if (message.trim().length < 5) {
-      setError("Reply is too short.")
+      setError("Please share a little more detail.")
       return
     }
 
@@ -27,10 +27,10 @@ export function GuestReplyForm({ inquiryId }: { inquiryId: string }) {
         setMessage("")
         router.refresh()
       } else {
-        setError(res.error || "Failed to send reply.")
+        setError(res.error || "We could not send your reply yet.")
       }
     } catch {
-      setError("Network error.")
+      setError("We could not reach the team just now.")
     } finally {
       setIsPending(false)
     }
@@ -38,11 +38,11 @@ export function GuestReplyForm({ inquiryId }: { inquiryId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <label className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-sans font-medium block">Your Reply</label>
+      <label className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-sans font-medium block">Your Note</label>
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type your response here..."
+        placeholder="Write your note here..."
         rows={3}
         className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors resize-none"
       />

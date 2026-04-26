@@ -59,15 +59,15 @@ export default async function WishlistPage({
       {wishlists.length === 0 ? (
         <div className="text-center py-24 bg-white border border-charcoal/5">
           <Heart className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
-          <p className="font-display text-xl text-charcoal/60 mb-3">Start Curating</p>
+          <p className="font-display text-xl text-charcoal/60 mb-3">Start Saving Stays</p>
           <p className="text-charcoal/30 text-sm font-sans max-w-sm mx-auto mb-8 leading-relaxed">
-            Save your favourite properties to build a personal collection of exceptional stays.
+            Save your favourite properties and keep every stay you love close at hand.
           </p>
           <Link
             href="/properties"
             className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors"
           >
-            <span>Explore Properties</span>
+            <span>Explore Stays</span>
             <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
           </Link>
         </div>

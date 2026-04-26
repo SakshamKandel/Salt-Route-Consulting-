@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +15,6 @@ import { PropertyStatus } from "@prisma/client"
 import { Film, Image as ImageIcon, Sparkles, Trash2 } from "lucide-react"
 import { isVideoUrl } from "@/lib/property-media"
 import { MediaUploader, type UploadedMedia } from "@/components/admin/media-uploader"
-import { LocationPicker } from "@/components/admin/location-picker"
 
 const schema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -26,8 +25,6 @@ const schema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   location: z.string().min(3, "Location is required"),
   address: z.string().optional(),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
   bedrooms: z.number({ error: "Enter a number" }).int().min(0),
   bathrooms: z.number({ error: "Enter a number" }).int().min(0),
   maxGuests: z.number({ error: "Enter a number" }).int().min(1, "At least 1 guest"),
@@ -41,12 +38,10 @@ const schema = z.object({
 })
 
 type PropertyFormValues = z.infer<typeof schema>
-type PropertyFormInitialData = Omit<Partial<PropertyFormValues>, "address" | "pricePerNight" | "latitude" | "longitude"> & {
+type PropertyFormInitialData = Omit<Partial<PropertyFormValues>, "address" | "pricePerNight"> & {
   id?: string
   address?: string | null
   pricePerNight?: number | { toString(): string } | null
-  latitude?: number | null
-  longitude?: number | null
   highlights?: string[] | null
   amenities?: string[] | null
   rules?: string[] | null
@@ -137,8 +132,6 @@ export function PropertyForm({
       description: initialData?.description || "",
       location: initialData?.location || "",
       address: initialData?.address || "",
-      latitude: initialData?.latitude ?? null,
-      longitude: initialData?.longitude ?? null,
       bedrooms: initialData?.bedrooms ?? 1,
       bathrooms: initialData?.bathrooms ?? 1,
       maxGuests: initialData?.maxGuests ?? 2,
@@ -151,9 +144,6 @@ export function PropertyForm({
       ownerId: initialData?.ownerId || "",
     }
   })
-  const latitude = useWatch({ control: form.control, name: "latitude" })
-  const longitude = useWatch({ control: form.control, name: "longitude" })
-
   function slugify(value: string) {
     return value
       .toLowerCase()
@@ -234,28 +224,24 @@ export function PropertyForm({
           <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea className="min-h-[150px]" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field: locationField }) => (
-            <FormItem>
-              <FormControl>
-                <LocationPicker
-                  knownLocations={knownLocations}
-                  location={locationField.value || ""}
-                  latitude={latitude ?? null}
-                  longitude={longitude ?? null}
-                  onLocationChange={(value) => locationField.onChange(value)}
-                  onLatLngChange={(lat, lng) => {
-                    form.setValue("latitude", lat, { shouldDirty: true })
-                    form.setValue("longitude", lng, { shouldDirty: true })
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormField control={form.control} name="location" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Location</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                list="known-property-locations"
+                placeholder="e.g. Lalitpur, Nepal"
+              />
+            </FormControl>
+            <datalist id="known-property-locations">
+              {knownLocations.map((loc) => (
+                <option key={loc} value={loc} />
+              ))}
+            </datalist>
+            <FormMessage />
+          </FormItem>
+        )} />
 
         <FormField control={form.control} name="address" render={({ field }) => (
           <FormItem>

@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Image from "next/image"
@@ -35,11 +35,11 @@ export default async function BookingRequestPage({
   const heroImage = getPrimaryImageUrl(property.images)
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] pt-32 pb-24">
+    <div className="min-h-screen bg-[#FBF9F4] pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="mb-12">
           <LuxuryLink href={`/properties/${property.slug}`} className="inline-flex">
-            ← BACK TO PROPERTY
+            â† BACK TO PROPERTY
           </LuxuryLink>
         </div>
 
@@ -131,3 +131,4 @@ export default async function BookingRequestPage({
     </div>
   )
 }
+

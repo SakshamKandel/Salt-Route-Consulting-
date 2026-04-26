@@ -17,8 +17,6 @@ const propertySchema = z.object({
   description: z.string().min(10),
   location: z.string().min(3),
   address: z.string().optional(),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
   bedrooms: z.number().min(0),
   bathrooms: z.number().min(0),
   maxGuests: z.number().min(1),
@@ -188,6 +186,7 @@ export async function deletePropertyAction(id: string) {
       return { error: "Property not found." }
     }
 
+    // 1. Delete property images & videos from Cloudinary
     await Promise.all(
       property.images.map(async (media) => {
         try {
@@ -199,6 +198,29 @@ export async function deletePropertyAction(id: string) {
         }
       })
     )
+
+    // 2. Delete review images from Cloudinary (since review records will be cascaded)
+    const reviewsWithImages = await prisma.review.findMany({
+      where: { propertyId: id },
+      include: { images: true },
+    })
+
+    const reviewImagePublicIds = reviewsWithImages
+      .flatMap((r) => r.images)
+      .map((img) => img.publicId)
+      .filter((pid): pid is string => !!pid)
+
+    if (reviewImagePublicIds.length > 0) {
+      await Promise.all(
+        reviewImagePublicIds.map(async (pid) => {
+          try {
+            await cloudinary.uploader.destroy(pid)
+          } catch (err) {
+            console.error("[REVIEW_IMAGE_CLEANUP_ERROR]", err)
+          }
+        })
+      )
+    }
 
     await prisma.property.delete({ where: { id } })
 
@@ -225,5 +247,28 @@ export async function deletePropertyAction(id: string) {
       }
     }
     return { error: error instanceof Error ? error.message : "Failed to delete property." }
+  }
+}
+
+export async function geocodeAction(location: string): Promise<{ lat: number; lng: number } | null> {
+  const session = await auth()
+  if (!session?.user || session.user.role !== "ADMIN") return null
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`, {
+      headers: { "User-Agent": "SaltRouteAdminApp/1.0" },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    if (Array.isArray(data) && data.length > 0) {
+      return {
+        lat: Number(data[0].lat),
+        lng: Number(data[0].lon),
+      }
+    }
+    return null
+  } catch (err) {
+    console.error("[GEOCODE_ERROR]", err)
+    return null
   }
 }

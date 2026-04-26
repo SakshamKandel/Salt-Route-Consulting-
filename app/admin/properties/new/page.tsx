@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 export default async function NewPropertyPage() {
   const [owners, locationRows] = await Promise.all([
     prisma.user.findMany({
-      where: { role: { in: ["OWNER", "ADMIN"] } },
+      where: { role: "OWNER" },
       select: { id: true, name: true, email: true }
     }),
     prisma.property.findMany({

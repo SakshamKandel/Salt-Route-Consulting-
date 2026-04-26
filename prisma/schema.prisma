@@ -6,7 +6,308 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── ENUMS ─────────────────────────────────────────────
+model User {
+  id                      String           @id @default(cuid())
+  name                    String?
+  email                   String           @unique
+  emailVerified           DateTime?
+  hashedPassword          String?
+  phone                   String?
+  image                   String?
+  role                    Role             @default(GUEST)
+  twoFactorEnabled        Boolean          @default(false)
+  twoFactorSecret         String?
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  status                  UserStatus       @default(ACTIVE)
+  accounts                Account[]
+  auditLogs               AuditLog[]
+  bookings                Booking[]
+  ownerInquiries          Inquiry[]        @relation("OwnerInquiries")
+  authoredInquiryMessages InquiryMessage[] @relation("InquiryMessageAuthor")
+  invitations             Invitation[]     @relation("InvitedBy")
+  notifications           Notification[]
+  properties              Property[]       @relation("OwnerProperties")
+  reviews                 Review[]
+  sessions                Session[]
+  wishlists               Wishlist[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Property {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  description   String
+  highlights    String[]
+  location      String
+  address       String?
+  pricePerNight Decimal         @db.Decimal(10, 2)
+  maxGuests     Int             @default(2)
+  bedrooms      Int             @default(1)
+  bathrooms     Int             @default(1)
+  amenities     String[]
+  rules         String[]
+  status        PropertyStatus  @default(DRAFT)
+  featured      Boolean         @default(false)
+  ownerId       String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  blockedDates  BlockedDate[]
+  bookings      Booking[]
+  owner         User            @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
+  images        PropertyImage[]
+  reviews       Review[]
+  wishlists     Wishlist[]
+
+  @@index([status])
+  @@index([ownerId])
+  @@index([slug])
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  url        String
+  publicId   String
+  alt        String?
+  order      Int      @default(0)
+  isPrimary  Boolean  @default(false)
+  propertyId String
+  createdAt  DateTime @default(now())
+  isBanner   Boolean  @default(false)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_images")
+}
+
+model Booking {
+  id                 String        @id @default(cuid())
+  checkIn            DateTime
+  checkOut           DateTime
+  guests             Int
+  totalPrice         Decimal       @db.Decimal(10, 2)
+  status             BookingStatus @default(PENDING)
+  notes              String?
+  cancellationReason String?
+  guestId            String
+  propertyId         String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  bookingCode        String        @unique @default(cuid())
+  cancelledAt        DateTime?
+  checkedInAt        DateTime?
+  checkedOutAt       DateTime?
+  confirmedAt        DateTime?
+  noShowAt           DateTime?
+  guest              User          @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  property           Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  review             Review?
+
+  @@index([guestId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([checkIn, checkOut])
+  @@map("bookings")
+}
+
+model BlockedDate {
+  id         String   @id @default(cuid())
+  date       DateTime
+  reason     String?
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, date])
+  @@index([propertyId])
+  @@map("blocked_dates")
+}
+
+model Review {
+  id         String        @id @default(cuid())
+  rating     Int
+  comment    String
+  reply      String?
+  guestId    String
+  propertyId String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  isApproved Boolean       @default(false)
+  bookingId  String?       @unique
+  status     ReviewStatus  @default(PENDING)
+  images     ReviewImage[]
+  booking    Booking?      @relation(fields: [bookingId], references: [id])
+  guest      User          @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([guestId, propertyId])
+  @@index([status])
+  @@map("reviews")
+}
+
+model ReviewImage {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String?
+  alt       String?
+  reviewId  String
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+  @@map("review_images")
+}
+
+model Wishlist {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  createdAt  DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@map("wishlists")
+}
+
+model Invitation {
+  id          String           @id @default(cuid())
+  email       String
+  role        Role             @default(OWNER)
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  expiresAt   DateTime
+  invitedById String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  invitedBy   User             @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([token])
+  @@map("invitations")
+}
+
+model Inquiry {
+  id              String           @id @default(cuid())
+  name            String
+  email           String
+  phone           String?
+  subject         String
+  message         String
+  status          InquiryStatus    @default(NEW)
+  reply           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  replies         Json?
+  adminLastReadAt DateTime?
+  guestLastReadAt DateTime?
+  lastMessageAt   DateTime         @default(now())
+  lastMessageBy   InquirySender    @default(GUEST)
+  ownerId         String?
+  ownerLastReadAt DateTime?
+  source          InquirySource    @default(PUBLIC_CONTACT)
+  owner           User?            @relation("OwnerInquiries", fields: [ownerId], references: [id])
+  messages        InquiryMessage[]
+
+  @@index([status])
+  @@index([source])
+  @@index([ownerId])
+  @@index([lastMessageAt])
+  @@map("inquiries")
+}
+
+model InquiryMessage {
+  id        String        @id @default(cuid())
+  sender    InquirySender
+  body      String
+  authorId  String?
+  inquiryId String
+  createdAt DateTime      @default(now())
+  author    User?         @relation("InquiryMessageAuthor", fields: [authorId], references: [id])
+  inquiry   Inquiry       @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@index([sender])
+  @@index([createdAt])
+  @@map("inquiry_messages")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  metadata  Json?
+  userId    String
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  action    AuditAction
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  userId    String?
+  createdAt DateTime    @default(now())
+  user      User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
 
 enum Role {
   GUEST
@@ -29,10 +330,10 @@ enum PropertyStatus {
 enum BookingStatus {
   PENDING
   CONFIRMED
-  CHECKED_IN
   CANCELLED
   COMPLETED
   NO_SHOW
+  CHECKED_IN
 }
 
 enum InquiryStatus {
@@ -87,363 +388,10 @@ enum AuditAction {
   BOOKING_CREATE
   BOOKING_CANCEL
   BOOKING_CONFIRM
-  BOOKING_CHECK_IN
-  BOOKING_CHECK_OUT
   PROPERTY_PUBLISH
   PROPERTY_ARCHIVE
   INVITATION_SEND
   INVITATION_ACCEPT
-}
-
-// ─── USER ──────────────────────────────────────────────
-
-model User {
-  id               String    @id @default(cuid())
-  name             String?
-  email            String    @unique
-  emailVerified    DateTime?
-  hashedPassword   String?
-  phone            String?
-  image            String?
-  role             Role       @default(GUEST)
-  status           UserStatus @default(ACTIVE)
-  twoFactorEnabled Boolean    @default(false)
-  twoFactorSecret  String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  accounts    Account[]
-  sessions    Session[]
-  properties  Property[]   @relation("OwnerProperties")
-  bookings    Booking[]
-  reviews     Review[]
-  wishlists   Wishlist[]
-  invitations Invitation[] @relation("InvitedBy")
-  auditLogs   AuditLog[]
-  notifications Notification[]
-  authoredInquiryMessages InquiryMessage[] @relation("InquiryMessageAuthor")
-  ownerInquiries Inquiry[] @relation("OwnerInquiries")
-
-  @@map("users")
-}
-
-// ─── AUTH (NextAuth) ───────────────────────────────────
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-// ─── PROPERTY ──────────────────────────────────────────
-
-model Property {
-  id            String         @id @default(cuid())
-  title         String
-  slug          String         @unique
-  description   String         @db.Text
-  highlights    String[]
-  location      String
-  address       String?
-  latitude      Float?
-  longitude     Float?
-  pricePerNight Decimal        @db.Decimal(10, 2)
-  maxGuests     Int            @default(2)
-  bedrooms      Int            @default(1)
-  bathrooms     Int            @default(1)
-  amenities     String[]
-  rules         String[]
-  status        PropertyStatus @default(DRAFT)
-  featured      Boolean        @default(false)
-
-  ownerId String
-  owner   User   @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  images       PropertyImage[]
-  bookings     Booking[]
-  blockedDates BlockedDate[]
-  reviews      Review[]
-  wishlists    Wishlist[]
-
-  @@index([status])
-  @@index([ownerId])
-  @@index([slug])
-  @@map("properties")
-}
-
-model PropertyImage {
-  id        String  @id @default(cuid())
-  url       String
-  publicId  String
-  alt       String?
-  order     Int     @default(0)
-  isPrimary Boolean @default(false)
-  isBanner  Boolean @default(false)
-
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([propertyId])
-  @@map("property_images")
-}
-
-// ─── BOOKING ───────────────────────────────────────────
-
-model Booking {
-  id                 String        @id @default(cuid())
-  bookingCode        String        @unique @default(cuid())
-  checkIn            DateTime
-  checkOut           DateTime
-  guests             Int
-  totalPrice         Decimal       @db.Decimal(10, 2)
-  status             BookingStatus @default(PENDING)
-  notes              String?       @db.Text
-  cancellationReason String?
-  confirmedAt        DateTime?
-  checkedInAt        DateTime?
-  checkedOutAt       DateTime?
-  cancelledAt        DateTime?
-  noShowAt           DateTime?
-
-  guestId    String
-  guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  review     Review?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([guestId])
-  @@index([propertyId])
-  @@index([status])
-  @@index([checkIn, checkOut])
-  @@map("bookings")
-}
-
-model BlockedDate {
-  id     String   @id @default(cuid())
-  date   DateTime
-  reason String?
-
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  @@unique([propertyId, date])
-  @@index([propertyId])
-  @@map("blocked_dates")
-}
-
-// ─── REVIEW ────────────────────────────────────────────
-
-model Review {
-  id         String       @id @default(cuid())
-  rating     Int
-  comment    String       @db.Text
-  reply      String?      @db.Text
-  isApproved Boolean      @default(false)
-  status     ReviewStatus @default(PENDING)
-
-  guestId    String
-  guest      User     @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  bookingId  String?  @unique
-  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  images    ReviewImage[]
-
-  @@index([propertyId])
-  @@index([guestId, propertyId])
-  @@index([status])
-  @@map("reviews")
-}
-
-model ReviewImage {
-  id        String  @id @default(cuid())
-  url       String
-  publicId  String?
-  alt       String?
-  
-  reviewId  String
-  review    Review  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  
-  @@index([reviewId])
-  @@map("review_images")
-}
-
-// ─── WISHLIST ──────────────────────────────────────────
-
-model Wishlist {
-  id String @id @default(cuid())
-
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, propertyId])
-  @@map("wishlists")
-}
-
-// ─── INVITATION ────────────────────────────────────────
-
-model Invitation {
-  id        String           @id @default(cuid())
-  email     String
-  role      Role             @default(OWNER)
-  token     String           @unique
-  status    InvitationStatus @default(PENDING)
-  expiresAt DateTime
-
-  invitedById String
-  invitedBy   User   @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([email])
-  @@index([token])
-  @@map("invitations")
-}
-
-// ─── INQUIRY (Contact Form) ───────────────────────────
-
-model Inquiry {
-  id      String        @id @default(cuid())
-  name    String
-  email   String
-  phone   String?
-  subject String
-  message String        @db.Text
-  status  InquiryStatus @default(NEW)
-  source  InquirySource @default(PUBLIC_CONTACT)
-  reply   String?       @db.Text
-  replies Json?         // Legacy array of { sender: "guest"|"admin", message: string, timestamp: string }
-  lastMessageAt DateTime @default(now())
-  lastMessageBy InquirySender @default(GUEST)
-  adminLastReadAt DateTime?
-  guestLastReadAt DateTime?
-  ownerLastReadAt DateTime?
-
-  ownerId String?
-  owner   User? @relation("OwnerInquiries", fields: [ownerId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  messages InquiryMessage[]
-
-  @@index([status])
-  @@index([source])
-  @@index([ownerId])
-  @@index([lastMessageAt])
-  @@map("inquiries")
-}
-
-model InquiryMessage {
-  id       String        @id @default(cuid())
-  sender   InquirySender
-  body     String        @db.Text
-  authorId String?
-  author   User?         @relation("InquiryMessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-
-  inquiryId String
-  inquiry   Inquiry      @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([inquiryId])
-  @@index([sender])
-  @@index([createdAt])
-  @@map("inquiry_messages")
-}
-
-model Notification {
-  id       String           @id @default(cuid())
-  type     NotificationType
-  title    String
-  body     String
-  href     String?
-  readAt   DateTime?
-  metadata Json?
-
-  userId String
-  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([userId, readAt])
-  @@index([type])
-  @@index([createdAt])
-  @@map("notifications")
-}
-
-// ─── AUDIT LOG ─────────────────────────────────────────
-
-model AuditLog {
-  id        String      @id @default(cuid())
-  action    AuditAction
-  entity    String
-  entityId  String?
-  details   Json?
-  ipAddress String?
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@index([action])
-  @@index([entity, entityId])
-  @@index([createdAt])
-  @@map("audit_logs")
+  BOOKING_CHECK_IN
+  BOOKING_CHECK_OUT
 }

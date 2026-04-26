@@ -53,6 +53,14 @@ export async function notifyAdmins(input: NotificationInput) {
   await notifyRole("ADMIN", input)
 }
 
+export async function getAdminEmails() {
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN", status: "ACTIVE" },
+    select: { email: true },
+  })
+  return admins.map((a) => a.email)
+}
+
 export async function getUnreadNotificationCount(userId: string) {
   return prisma.notification.count({
     where: { userId, readAt: null },

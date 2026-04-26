@@ -6,12 +6,14 @@ import { Role } from "@prisma/client"
 import { Plus } from "lucide-react"
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
+import { auth } from "@/auth"
 
 export default async function AdminUsersPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const session = await auth()
   const resolvedParams = await searchParams
   const roleParam = typeof resolvedParams.role === "string" ? resolvedParams.role : "ALL"
   const roleFilter = Object.values(Role).includes(roleParam as Role) ? (roleParam as Role) : "ALL"
@@ -34,6 +36,7 @@ export default async function AdminUsersPage({
       email: true,
       role: true,
       status: true,
+      image: true,
       createdAt: true,
     },
   })
@@ -72,7 +75,7 @@ export default async function AdminUsersPage({
         ))}
       </div>
 
-      <UsersTable users={users} />
+      <UsersTable users={users} currentUser={session?.user} />
       <PaginationControls
         basePath="/admin/users"
         page={pagination.currentPage}

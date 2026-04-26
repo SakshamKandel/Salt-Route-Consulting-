@@ -88,7 +88,7 @@ export default async function BookingsPage({
             href="/properties"
             className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors"
           >
-            <span>Browse Properties</span>
+            <span>Browse Stays</span>
             <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
           </Link>
         </div>
@@ -174,7 +174,7 @@ export default async function BookingsPage({
                         Ref: {booking.bookingCode}
                       </p>
                       <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-charcoal/30 group-hover:text-charcoal/60 transition-colors">
-                        <span>Details</span>
+                        <span>Stay Details</span>
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" strokeWidth={1.5} />
                       </span>
                     </div>

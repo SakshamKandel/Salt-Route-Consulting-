@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button, Text } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY, GOLD, VELLUM, sans } from './EmailLayout'
+import { Text } from '@react-email/components'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, CHARCOAL, GOLD, VELLUM, sans, ActionButton } from './EmailLayout'
 
 interface BookingConfirmedProps {
   name: string
@@ -42,20 +42,17 @@ export function BookingConfirmed({ name, propertyName, dates, bookingCode, check
       </DetailsCard>
 
       {/* Arrival note */}
-      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#7A7A7A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderTop: `1px solid ${GOLD}`, borderBottom: `1px solid ${GOLD}`, backgroundColor: VELLUM }}>
+      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderTop: `1px solid ${GOLD}`, borderBottom: `1px solid ${GOLD}`, backgroundColor: VELLUM }}>
         Should you require any assistance arranging your arrival, local transportation, or special requests, please contact us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: NAVY, textDecoration: 'none', fontWeight: '600' }}>
+        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
           info@saltroutegroup.com
         </a>
         . We are here to make your journey seamless.
       </Text>
 
-      <Button
-        href={bookingUrl || 'https://saltroutegroup.com/account/bookings'}
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' }}
-      >
+      <ActionButton href={bookingUrl || 'https://saltroutegroup.com/account/bookings'}>
         View Booking Details
-      </Button>
+      </ActionButton>
     </EmailLayout>
   )
 }

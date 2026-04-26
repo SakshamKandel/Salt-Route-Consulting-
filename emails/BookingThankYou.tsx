@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button, Text } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY, GOLD, VELLUM, sans } from './EmailLayout'
+import { Text, Button } from '@react-email/components'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, CHARCOAL, GOLD, VELLUM, sans, ActionButton } from './EmailLayout'
 
 interface BookingThankYouProps {
   name: string
@@ -28,24 +28,21 @@ export function BookingThankYou({ name, propertyName, checkOut, bookingCode, rev
         </DetailsCard>
       )}
 
-      <Text style={{ fontFamily: sans, fontSize: '15px', color: '#5A5A5A', lineHeight: '1.8', margin: '0 0 16px 0', fontStyle: 'italic' }}>
+      <Text style={{ fontFamily: sans, fontSize: '15px', color: '#4A6A85', lineHeight: '1.8', margin: '0 0 16px 0', fontStyle: 'italic' }}>
         &ldquo;Travel is not just movement — it is transformation. We are honoured to have been part of yours.&rdquo;
       </Text>
 
-      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#7A7A7A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
+      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
         Your feedback helps us grow. We would love to hear about your stay - a brief review goes a long way in helping other guests discover Salt Route&apos;s hidden gems.
       </Text>
 
-      <Button
-        href={reviewUrl || 'https://saltroutegroup.com/account/reviews'}
-        style={{ backgroundColor: GOLD, color: NAVY, padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none', marginBottom: '16px' }}
-      >
+      <ActionButton href={reviewUrl || 'https://saltroutegroup.com/account/reviews'}>
         Share Your Experience
-      </Button>
+      </ActionButton>
 
       <Button
         href="https://saltroutegroup.com/properties"
-        style={{ backgroundColor: 'transparent', color: NAVY, padding: '13px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none', border: `1px solid ${NAVY}` }}
+        style={{ backgroundColor: 'transparent', color: CHARCOAL, padding: '13px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.3em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none', border: `1px solid ${CHARCOAL}` }}
       >
         Plan Your Next Stay
       </Button>

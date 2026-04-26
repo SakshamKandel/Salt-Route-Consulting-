@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db"
+import { auth } from "@/auth"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,7 @@ export default async function AdminUserDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const session = await auth()
   const { id } = await params
 
   const user = await prisma.user.findUnique({
@@ -50,7 +52,7 @@ export default async function AdminUserDetailPage({
             <p className="text-slate-500">Member since {user.createdAt.toLocaleDateString()}</p>
           </div>
         </div>
-        <UserActions userId={user.id} status={user.status} />
+        <UserActions userId={user.id} status={user.status} currentUser={session?.user} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -8,13 +8,25 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
-      const isOnAdminPanel = nextUrl.pathname.startsWith('/admin')
-      const isOnOwnerPanel = nextUrl.pathname.startsWith('/owner')
-      const isOnAccount = nextUrl.pathname.startsWith('/account')
+      const { pathname } = nextUrl
+
+      // Redirect authenticated users away from auth pages to their dashboard
+      if (isLoggedIn && (pathname === '/login' || pathname === '/signup')) {
+        const role = auth.user.role as string
+        const dest =
+          role === 'ADMIN' ? '/admin/dashboard' :
+          role === 'OWNER' ? '/owner/dashboard' :
+          '/account'
+        return Response.redirect(new URL(dest, nextUrl))
+      }
+
+      const isOnAdminPanel = pathname.startsWith('/admin')
+      const isOnOwnerPanel = pathname.startsWith('/owner')
+      const isOnAccount = pathname.startsWith('/account')
 
       if (isOnAdminPanel) {
         if (isLoggedIn && auth.user.role === 'ADMIN') return true
-        return false // Redirect unauthenticated or non-admin users to login page
+        return false
       }
 
       if (isOnOwnerPanel) {
@@ -24,7 +36,7 @@ export const authConfig = {
 
       if (isOnAccount) {
         if (isLoggedIn) return true
-        return false // Redirect unauthenticated users to login page
+        return false
       }
 
       return true

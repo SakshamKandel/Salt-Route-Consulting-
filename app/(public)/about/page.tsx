@@ -1,201 +1,272 @@
-"use client"
+﻿"use client"
 
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { LuxuryButton } from "@/components/ui/luxury-button"
+import { ShieldCheck, Target, Award, Users, Map, Compass } from "lucide-react"
 
+function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <motion.div
+        initial={{ scale: 1.1 }}
+        whileInView={{ scale: 1 }}
+        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full h-full relative"
+      >
+        <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
+      </motion.div>
+    </div>
+  )
+}
+
+function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 const values = [
   {
-    num: "01",
-    title: "Heritage",
+    icon: Award,
+    title: "Heritage Vetting",
     desc: "We honor the architectural and cultural lineage of every space we manage, ensuring each property tells a story rooted in Nepal's rich tradition.",
   },
   {
-    num: "02",
-    title: "Excellence",
-    desc: "A commitment to world-class service standards — from the properties we select to the guest experiences we create — in the heart of Nepal.",
+    icon: ShieldCheck,
+    title: "Absolute Excellence",
+    desc: "A commitment to world-class service standards â€” from the properties we select to the guest experiences we create.",
   },
   {
-    num: "03",
-    title: "Stewardship",
-    desc: "Preserving the untamed beauty of Nepal's landscapes through conscious, responsible travel and hospitality that gives back to local communities.",
+    icon: Target,
+    title: "Thoughtful Stewardship",
+    desc: "Preserving the untamed beauty of Nepal's landscapes through conscious, responsible travel and hospitality management.",
   },
 ]
 
 export default function AboutPage() {
   return (
     <div className="bg-background text-charcoal min-h-screen">
-
-      {/* HERO */}
-      <section className="relative h-[85vh] w-full flex flex-col justify-center pt-20 bg-[#FAFAFA]">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2.5, ease: "easeOut" }}
-          className="absolute inset-0 z-0 overflow-hidden"
-        >
+      
+      {/* HERO SECTION - SIGNATURE EXTERIOR */}
+      <section className="relative h-[85svh] w-full flex items-center justify-center overflow-hidden bg-charcoal">
+        <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1518173946687-a4c8a9833d8e?q=80&w=1974&auto=format&fit=crop"
-            alt="Nepal landscape"
+            src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2000&auto=format&fit=crop"
+            alt="Salt Route Himalayan Heritage"
             fill
-            className="object-cover opacity-90"
+            className="object-cover opacity-70 scale-105"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/90" />
-        </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/80" />
+        </div>
 
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 mt-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5 }}
-          >
-            <p className="text-[10px] uppercase tracking-[0.6em] text-charcoal/60 font-sans mb-8 font-medium">Our Story</p>
-            <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] text-charcoal tracking-wide leading-[1.05] mb-10 font-normal">
-              Who We Are.
+        <div className="relative z-10 text-center px-6 max-w-5xl">
+          <FadeUp>
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.6em] text-white/90 font-sans mb-8 font-light">
+              Connecting Local Roots
+            </p>
+            <h1 className="font-display text-5xl md:text-7xl lg:text-[9rem] text-white tracking-tight leading-[0.95] mb-12 font-normal uppercase">
+              To Global<br/><span className="text-gold/80 italic">Routes.</span>
             </h1>
-            <p className="font-sans text-base md:text-lg text-charcoal/60 max-w-xl mx-auto leading-relaxed font-light">
-              A boutique consultancy focused on bespoke stays and world-class hospitality management across Nepal.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STORY */}
-      <section className="py-32 md:py-48 bg-white flex items-center justify-center p-8 md:p-16 border-t border-charcoal/5">
-        <div className="max-w-screen-xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2 }}
-          >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">The Essence</p>
-            <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-10 tracking-wide leading-[1.2]">
-              Nepal&apos;s Finest<br />Hospitality.
-            </h2>
-            <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-6 font-light">
-              Salt Route was established to bridge the gap between Nepal&apos;s untamed landscapes and the world&apos;s most discerning travelers. We are a boutique consultancy focused on bespoke stays and world-class hospitality management.
-            </p>
-            <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-12 font-light">
-              Our collection is limited, our vetting is rigorous, and our standards are absolute. We believe that true luxury is found in the intersection of authentic heritage and modern comfort.
-            </p>
-            <div className="w-16 h-[1px] bg-charcoal/10 mb-12" />
-            <div className="grid grid-cols-3 gap-8">
-              <div>
-                <p className="font-display text-4xl text-charcoal mb-2">3+</p>
-                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Properties</p>
-              </div>
-              <div>
-                <p className="font-display text-4xl text-charcoal mb-2">100%</p>
-                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Satisfaction</p>
-              </div>
-              <div>
-                <p className="font-display text-4xl text-charcoal mb-2">2026</p>
-                <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40">Founded</p>
-              </div>
+            <div className="flex items-center justify-center gap-8 text-white/40">
+                <span className="w-16 h-[1px] bg-white/20" />
+                <p className="text-[9px] uppercase tracking-[0.5em] font-sans">Purpose-Driven Ambition</p>
+                <span className="w-16 h-[1px] bg-white/20" />
             </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative aspect-[4/5] overflow-hidden hidden lg:block bg-[#FAFAFA] border border-charcoal/5"
-          >
-            <Image
-              src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=1974&auto=format&fit=crop"
-              alt="Salt Route hospitality"
-              fill
-              className="object-cover"
-            />
-          </motion.div>
+          </FadeUp>
         </div>
       </section>
 
-      {/* VALUES */}
-      <section className="py-32 md:py-48 bg-[#FAFAFA] flex items-center justify-center p-8 md:p-16 border-y border-charcoal/5">
-        <div className="max-w-screen-xl w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-20 text-center"
-          >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">What We Stand For</p>
-            <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide">Our Values.</h2>
-          </motion.div>
+      {/* STORY SECTION - SIGNATURE INTERIOR */}
+      <section className="py-16 md:py-24 bg-white border-b border-charcoal/5 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+            {/* Image side */}
+            <div className="lg:col-span-5 order-2 lg:order-1">
+              <RevealImage 
+                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
+                alt="Heritage Interior Craftsmanship"
+                className="aspect-[4/5] border border-charcoal/10"
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-16 gap-y-12">
-            {values.map((v, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.15 }}
-                className="pt-8 border-t border-charcoal/10 flex flex-col gap-8 group"
-              >
-                <span className="font-sans text-[10px] tracking-[0.2em] text-charcoal/30 font-semibold group-hover:text-gold transition-colors">N° {v.num}</span>
-                <div>
-                  <h3 className="font-display text-3xl text-charcoal mb-4 tracking-wide">
-                    {v.title}
-                  </h3>
-                  <p className="font-sans text-base text-charcoal/60 leading-relaxed font-light">{v.desc}</p>
+            {/* Text side */}
+            <div className="lg:col-span-7 order-1 lg:order-2 space-y-12">
+              <FadeUp>
+                <div className="space-y-6">
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Our Mission</p>
+                  <h2 className="font-display text-4xl md:text-5xl lg:text-[4.5rem] text-charcoal tracking-wide leading-[1.05] uppercase">
+                    Purpose meets<br/>Bold Ambition.
+                  </h2>
                 </div>
-              </motion.div>
-            ))}
+              </FadeUp>
+
+              <FadeUp delay={0.2} className="space-y-8">
+                <p className="font-sans text-[17px] text-charcoal/60 leading-relaxed font-light first-letter:text-6xl first-letter:font-display first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:text-gold">
+                  Welcome to Salt Route Group, where purpose-driven business meets bold ambition. We are a Nepal-based collective building pathways from local innovation to global opportunityâ€”through transformative consulting, meaningful travel experiences, and sustainable development.
+                </p>
+                <p className="font-sans text-[16px] text-charcoal/60 leading-relaxed font-light">
+                  At our core, we believe in doing business that uplifts people, protects the planet, and redefines what&apos;s possible from Nepal. We are committed to building ventures that reflect our values and deliver impact with integrity.
+                </p>
+                
+                <div className="grid grid-cols-3 gap-12 pt-12 border-t border-charcoal/10">
+                  <div className="space-y-1">
+                    <p className="font-display text-4xl text-charcoal">03+</p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Boutique Properties</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-display text-4xl text-charcoal">80%</p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Local Talent Goal</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-display text-4xl text-charcoal">2030</p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Net-Zero Aim</p>
+                  </div>
+                </div>
+              </FadeUp>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-32 md:py-48 bg-white flex items-center justify-center p-8 md:p-16 relative">
-        <div className="max-w-screen-xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2 }}
-          >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-medium">Experience Salt Route</p>
-            <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-[1.2] mb-10">
-              Ready to<br />Discover Nepal?
-            </h2>
-            <div className="w-16 h-[1px] bg-charcoal/10 mb-10" />
-            <p className="font-sans text-lg text-charcoal/60 leading-relaxed mb-12 font-light">
-              Browse our curated collection of properties or reach out to plan a bespoke stay tailored to your journey.
-            </p>
-            <div className="flex gap-6 flex-wrap">
-              <Link href="/properties" className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:bg-charcoal/90 transition-all duration-700">
-                Explore Stays
-              </Link>
-              <Link href="/contact" className="border border-charcoal/20 text-charcoal px-10 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-700">
-                Contact Us
-              </Link>
+      {/* THE ETHOS - LUXURY BOUTIQUE REWORK */}
+      <section className="py-20 md:py-32 bg-[#FBF9F4] overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+            
+            {/* Module 01: Heritage */}
+            <div className="lg:col-span-5 space-y-12">
+              <FadeUp className="relative">
+                
+                <div className="space-y-6 pt-12">
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The Foundation</p>
+                  <h3 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-tight">
+                    Ethical<br/>Practices.
+                  </h3>
+                  <div className="w-12 h-[1px] bg-charcoal/20" />
+                  <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
+                    We operate with honesty, fairness, and a deep respect for human dignity in everything we do.
+                  </p>
+                </div>
+              </FadeUp>
+              
+              {/* Image break within the grid */}
+              <FadeUp delay={0.2} className="pt-12">
+                 <RevealImage 
+                   src="https://images.unsplash.com/photo-1550642249-6e5605421172?q=80&w=2000&auto=format&fit=crop" 
+                   alt="Heritage Detail" 
+                   className="aspect-[16/9] border border-charcoal/5 grayscale-[0.4]"
+                 />
+              </FadeUp>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.5, delay: 0.2 }}
-            className="relative aspect-square overflow-hidden hidden lg:block bg-[#FAFAFA] border border-charcoal/5"
-          >
-            <Image
-              src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2070&auto=format&fit=crop"
-              alt="Nepal property"
-              fill
-              className="object-cover"
-            />
-          </motion.div>
+            {/* Middle Spacer / Divider */}
+            <div className="hidden lg:block lg:col-span-1 h-full w-[1px] bg-charcoal/[0.08] mx-auto" />
+
+            {/* Right Side: Modules 02 & 03 */}
+            <div className="lg:col-span-6 space-y-32 lg:pt-24">
+              {/* Module 02: Excellence */}
+              <FadeUp delay={0.1} className="relative">
+                
+                <div className="space-y-6 pt-12">
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The People</p>
+                  <h3 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-tight">
+                    Diversity &<br/>Inclusion.
+                  </h3>
+                  <div className="w-12 h-[1px] bg-charcoal/20" />
+                  <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
+                    We believe diversity is strengthâ€”and we strive to create inclusive spaces that value every voice.
+                  </p>
+                </div>
+              </FadeUp>
+
+              {/* Module 03: Stewardship */}
+              <FadeUp delay={0.3} className="relative">
+                
+                <div className="space-y-6 pt-12">
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The Impact</p>
+                  <h3 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-tight">
+                    Sustainability &<br/>Community.
+                  </h3>
+                  <div className="w-12 h-[1px] bg-charcoal/20" />
+                  <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
+                    Environmental stewardship guides our strategies. We prioritize local employment, uplift communities, and reinvest in the ecosystems that support us.
+                  </p>
+                </div>
+              </FadeUp>
+            </div>
+
+          </div>
         </div>
       </section>
+
+      {/* THE TEAM / MASTERS - NEW SECTION */}
+      <section className="py-20 md:py-28 bg-white overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-12">
+              <FadeUp>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">The People</p>
+                <h2 className="font-display text-4xl md:text-6xl text-charcoal tracking-wide uppercase">
+                  The People Behind<br/>The Route.
+                </h2>
+              </FadeUp>
+              <FadeUp delay={0.2} className="space-y-8">
+                <p className="font-sans text-[16px] text-charcoal/60 leading-relaxed font-light">
+                  Salt Route brings together hospitality thinkers, travel makers, property partners, and local teams who believe that every stay should feel personal, responsible, and rooted in Nepal.
+                </p>
+                <div className="space-y-6">
+                  <div className="flex items-center gap-6 pb-6 border-b border-charcoal/5">
+                    <Users className="w-5 h-5 text-gold/60" strokeWidth={1} />
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Local Talent And Makers Engaged</p>
+                  </div>
+                  <div className="flex items-center gap-6 pb-6 border-b border-charcoal/5">
+                    <Compass className="w-5 h-5 text-gold/60" strokeWidth={1} />
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Property Care Across Nepal</p>
+                  </div>
+                  <div className="flex items-center gap-6 pb-6 border-b border-charcoal/5">
+                    <Map className="w-5 h-5 text-gold/60" strokeWidth={1} />
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Growing Family of Boutique Stays</p>
+                  </div>
+                </div>
+              </FadeUp>
+            </div>
+            <div className="relative">
+              <RevealImage 
+                src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=2000&auto=format&fit=crop"
+                alt="Cinematic Himalayan Landscape"
+                className="aspect-square border border-charcoal/10 grayscale-[0.2]"
+              />
+              <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-gold/10 -z-10" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL QUOTE */}
+      <section className="py-24 md:py-32 bg-[#FBF9F4] text-center px-6">
+        <FadeUp className="max-w-4xl mx-auto space-y-12">
+          <div className="w-16 h-[1px] bg-gold mx-auto" />
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl text-charcoal leading-tight uppercase font-normal italic">
+            &ldquo;We view sustainability not as a checklist, but as a responsibility to create long-term value for people, places, and the planet.&rdquo;
+          </h2>
+          <div className="pt-8">
+            <LuxuryButton href="/contact">Start a Conversation</LuxuryButton>
+          </div>
+        </FadeUp>
+      </section>
+
     </div>
   )
 }
+

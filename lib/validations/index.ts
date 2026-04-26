@@ -86,8 +86,6 @@ export const propertySchema = z.object({
   highlights: z.array(z.string().max(200)).max(10).optional(),
   location: z.string().min(2, 'Location is required').max(200),
   address: z.string().max(300).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
   pricePerNight: z.number().positive('Price must be positive').max(100000),
   maxGuests: z.number().int().min(1).max(50),
   bedrooms: z.number().int().min(0).max(50),
@@ -102,7 +100,14 @@ export const reviewSchema = z.object({
   bookingId: z.string().cuid('Invalid booking'),
   rating: z.number().int().min(1, 'Minimum 1 star').max(5, 'Maximum 5 stars'),
   comment: z.string().min(10, 'Review must be at least 10 characters').max(2000),
-  images: z.array(z.string().url()).optional(),
+  images: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        publicId: z.string().min(1),
+      })
+    )
+    .optional(),
 })
 
 export const reviewReplySchema = z.object({

@@ -76,7 +76,7 @@ export default async function OwnerBookingDetailPage({
           className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-sand/30 hover:text-gold transition-colors duration-500"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
-          Stay Ledger
+          Guest Stays
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
@@ -105,19 +105,19 @@ export default async function OwnerBookingDetailPage({
       <div
         className="px-10 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         style={{
-          border: "1px solid rgba(197,168,128,0.15)",
-          background: "rgba(197,168,128,0.04)",
+          border: "1px solid rgba(201,169,110,0.15)",
+          background: "rgba(201,169,110,0.04)",
         }}
       >
         <div>
           <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
-            Total Revenue
+            Total Stay Value
           </p>
           <p className="font-display text-3xl text-gold tracking-wide">
             {formatNpr(booking.totalPrice)}
           </p>
         </div>
-        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(197,168,128,0.1)" }} />
+        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
         <div>
           <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
             Duration
@@ -126,7 +126,7 @@ export default async function OwnerBookingDetailPage({
             {nights} night{nights !== 1 ? "s" : ""}
           </p>
         </div>
-        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(197,168,128,0.1)" }} />
+        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
         <div>
           <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
             Booked
@@ -143,11 +143,11 @@ export default async function OwnerBookingDetailPage({
         {/* Stay Information */}
         <div
           className="overflow-hidden"
-          style={{ border: "1px solid rgba(197,168,128,0.08)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)" }}
         >
           <div
             className="px-8 py-5 flex items-center gap-4"
-            style={{ borderBottom: "1px solid rgba(197,168,128,0.07)" }}
+            style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
           >
             <span className="w-5 h-px bg-gold/40" />
             <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-sand/40 font-medium">
@@ -160,7 +160,7 @@ export default async function OwnerBookingDetailPage({
                 key={row.label}
                 className="flex items-start px-8 py-4.5 gap-4 hover:bg-white/[0.015] transition-colors duration-500"
                 style={{
-                  borderBottom: i < stayDetails.length - 1 ? "1px solid rgba(197,168,128,0.04)" : "none",
+                  borderBottom: i < stayDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
                 }}
               >
                 <p className="text-[9px] uppercase tracking-[0.3em] text-sand/30 font-medium w-24 shrink-0 pt-0.5">
@@ -184,11 +184,11 @@ export default async function OwnerBookingDetailPage({
         {/* Guest Details */}
         <div
           className="overflow-hidden"
-          style={{ border: "1px solid rgba(197,168,128,0.08)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)" }}
         >
           <div
             className="px-8 py-5 flex items-center gap-4"
-            style={{ borderBottom: "1px solid rgba(197,168,128,0.07)" }}
+            style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
           >
             <span className="w-5 h-px bg-gold/40" />
             <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-sand/40 font-medium">
@@ -201,7 +201,7 @@ export default async function OwnerBookingDetailPage({
                 key={row.label}
                 className="flex items-start px-8 py-4.5 gap-4 hover:bg-white/[0.015] transition-colors duration-500"
                 style={{
-                  borderBottom: i < guestDetails.length - 1 ? "1px solid rgba(197,168,128,0.04)" : "none",
+                  borderBottom: i < guestDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
                 }}
               >
                 <p className="text-[9px] uppercase tracking-[0.3em] text-sand/30 font-medium w-24 shrink-0 pt-0.5">
@@ -234,7 +234,7 @@ export default async function OwnerBookingDetailPage({
           </div>
           <div
             className="px-8 py-6"
-            style={{ border: "1px solid rgba(197,168,128,0.08)", background: "rgba(197,168,128,0.02)" }}
+            style={{ border: "1px solid rgba(201,169,110,0.08)", background: "rgba(201,169,110,0.02)" }}
           >
             <p className="text-[13px] text-sand/50 font-light leading-[1.9] whitespace-pre-wrap italic">
               &ldquo;{booking.notes}&rdquo;
@@ -246,7 +246,7 @@ export default async function OwnerBookingDetailPage({
       {/* ─── FOOTER ACTION ─── */}
       <div
         className="flex flex-col sm:flex-row items-center justify-between gap-6 px-8 py-7"
-        style={{ border: "1px solid rgba(197,168,128,0.08)" }}
+        style={{ border: "1px solid rgba(201,169,110,0.08)" }}
       >
         <p className="text-[11.5px] text-sand/30 font-light">
           Questions about this stay or property preparation? Contact the Salt Route team.
@@ -254,7 +254,7 @@ export default async function OwnerBookingDetailPage({
         <Link
           href="/owner/messages"
           className="shrink-0 px-7 py-3.5 text-[9px] uppercase tracking-[0.35em] font-medium text-gold/70 hover:text-gold transition-all duration-500"
-          style={{ border: "1px solid rgba(197,168,128,0.2)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.2)" }}
         >
           Open Messages
         </Link>

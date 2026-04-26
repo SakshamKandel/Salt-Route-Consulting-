@@ -47,9 +47,8 @@ function LoginForm() {
     setIsPending(true)
     setError(null)
     const callbackUrl = getSafeCallback(searchParams.get("callbackUrl"))
-    // In NextAuth v5, we can pass the callbackUrl directly
-    signIn("google", { 
-      callbackUrl: callbackUrl || undefined 
+    signIn("google", {
+      callbackUrl: callbackUrl || "/",
     })
   }
 

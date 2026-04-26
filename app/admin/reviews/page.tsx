@@ -27,7 +27,7 @@ export default async function AdminReviewsPage({
     skip: pagination.skip,
     take: pagination.take,
     include: {
-      guest: { select: { name: true, email: true } },
+      guest: { select: { name: true, email: true, image: true } },
       property: { select: { title: true } }
     }
   })

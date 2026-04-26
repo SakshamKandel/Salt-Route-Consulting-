@@ -6,6 +6,7 @@ import { WriteReviewForm } from "./WriteReviewForm"
 import { canReviewBooking } from "@/lib/booking-lifecycle"
 import { ReviewImageGallery } from "@/components/public/ReviewImageGallery"
 import { getPagination, parsePage } from "@/lib/pagination"
+import { deleteGuestReviewAction } from "./actions"
 import { PaginationControls } from "@/components/shared/pagination-controls"
 
 export default async function ReviewsPage({
@@ -56,7 +57,7 @@ export default async function ReviewsPage({
         <div className="flex items-center gap-4">
           <div className="w-12 h-[1px] bg-charcoal/20" />
           <h1 className="text-[11px] uppercase tracking-[0.4em] text-charcoal/50 font-bold">
-            Guest Impressions
+            Guest Reflections
           </h1>
         </div>
         <h2 className="font-display text-5xl text-charcoal tracking-tight">Your <span className="text-charcoal/40">Reviews</span></h2>
@@ -67,12 +68,12 @@ export default async function ReviewsPage({
         {/* ─── LEFT: WRITE REVIEWS ─── */}
         <div className="lg:col-span-4 space-y-12">
           <div className="space-y-6">
-            <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">Awaiting Feedback</h3>
+            <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">Ready For Your Note</h3>
             
             {eligibleBookings.length > 0 ? (
               <div className="space-y-8">
                 <p className="text-sm text-charcoal/50 leading-relaxed italic">
-                  &ldquo;Your perspective shapes our community. We invite you to share your experience at our curated retreats.&rdquo;
+                  &ldquo;Your words help future guests feel the place before they arrive.&rdquo;
                 </p>
                 
                 <div className="space-y-6">
@@ -89,7 +90,7 @@ export default async function ReviewsPage({
             ) : (
               <div className="bg-white border border-charcoal/5 p-8 text-center space-y-4">
                 <PenLine className="w-6 h-6 text-charcoal/10 mx-auto" strokeWidth={1} />
-                <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/30 font-medium">No pending reviews</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/30 font-medium">No stays awaiting a review</p>
               </div>
             )}
           </div>
@@ -97,7 +98,7 @@ export default async function ReviewsPage({
 
         {/* ─── RIGHT: PUBLISHED REVIEWS ─── */}
         <div className="lg:col-span-8 space-y-12">
-          <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">Published Journals</h3>
+          <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">My Reviews</h3>
           
           {reviews.length === 0 ? (
             <div className="text-center py-24 bg-white border border-charcoal/10 shadow-sm">
@@ -139,9 +140,7 @@ export default async function ReviewsPage({
                         
                         <form action={async () => {
                           "use server"
-                          const { revalidatePath } = await import("next/cache")
-                          await prisma.review.delete({ where: { id: review.id } })
-                          revalidatePath("/account/reviews")
+                          await deleteGuestReviewAction(review.id)
                         }}>
                           <button
                             type="submit"
@@ -167,7 +166,7 @@ export default async function ReviewsPage({
 
                     <div className="mt-12 pt-8 border-t border-charcoal/5 flex justify-between items-center">
                       <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/20 font-bold">
-                        Published on {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                        Submitted on {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                       </p>
                     </div>
                   </div>

@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Users, Home, Calendar, MessageSquare, Settings, FileText, Bell, LogOut, ChartBar, Mail } from "lucide-react"
@@ -32,11 +32,11 @@ export default async function AdminLayout({
 
   return (
     <div className="flex h-screen bg-background text-charcoal overflow-hidden font-sans selection:bg-gold/30">
-      {/* ─── QUIET LUXURY SIDEBAR ─── */}
-      <aside className="w-64 bg-[#FAFAFA] border-r border-charcoal/5 flex flex-col hidden md:flex">
+      {/* â”€â”€â”€ QUIET LUXURY SIDEBAR â”€â”€â”€ */}
+      <aside className="w-64 bg-[#FBF9F4] border-r border-charcoal/5 flex flex-col hidden md:flex">
         <div className="h-24 flex items-center justify-center px-6 border-b border-charcoal/5">
           <Link href="/" className="flex flex-col items-center group">
-            <span className="font-display text-xl tracking-[0.3em] uppercase leading-none text-charcoal group-hover:text-gold transition-colors duration-700">
+            <span className="font-display text-xl tracking-[0.3em] uppercase leading-none text-charcoal group-hover:text-gold">
               Salt Route
             </span>
             <span className="text-[8px] tracking-[0.5em] text-charcoal/40 uppercase font-sans font-medium mt-2">
@@ -50,11 +50,11 @@ export default async function AdminLayout({
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className="flex items-center px-6 py-4 rounded-none text-sm font-light hover:bg-charcoal/5 transition-all duration-500 group relative overflow-hidden"
+                  className="flex items-center px-6 py-4 rounded-none text-sm font-light hover:bg-charcoal/5 group relative overflow-hidden"
                 >
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-0 bg-charcoal/30 group-hover:h-3/4 transition-all duration-500 ease-out" />
-                  <item.icon className="mr-4 h-4 w-4 flex-shrink-0 text-charcoal/30 group-hover:text-charcoal transition-colors duration-500 stroke-[1.2]" />
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 group-hover:text-charcoal transition-colors duration-500 font-medium">{item.name}</span>
+                  <item.icon className="mr-4 h-4 w-4 flex-shrink-0 text-charcoal/30 group-hover:text-charcoal stroke-[1.2]" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 group-hover:text-charcoal font-medium">{item.name}</span>
                 </Link>
               </li>
             ))}
@@ -71,7 +71,7 @@ export default async function AdminLayout({
             <h1 className="font-display text-lg md:text-xl text-charcoal tracking-widest uppercase truncate">Admin Dashboard</h1>
           </div>
           <div className="flex shrink-0 items-center gap-3 sm:gap-6">
-            <Link href="/admin/notifications" className="relative text-charcoal/30 hover:text-charcoal transition-colors" aria-label="Notifications">
+            <Link href="/admin/notifications" className="relative text-charcoal/30 hover:text-charcoal" aria-label="Notifications">
               <Bell className="h-4 w-4 stroke-[1.2]" />
               {unreadNotifications > 0 && (
                 <span className="absolute -right-2 -top-2 min-w-4 rounded-full bg-red-600 px-1 text-center text-[10px] font-bold text-white">
@@ -80,13 +80,25 @@ export default async function AdminLayout({
               )}
             </Link>
             <div className="flex items-center gap-3 border-l border-charcoal/10 pl-3 sm:gap-4 sm:pl-6">
-              <span className="hidden max-w-32 truncate text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold sm:inline">{session.user.name}</span>
+              <div className="flex flex-col items-end hidden sm:flex">
+                <span className="max-w-32 truncate text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{session.user.name}</span>
+                <span className="text-[8px] uppercase tracking-[0.1em] text-charcoal/30 font-medium">Administrator</span>
+              </div>
+              <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-charcoal/5">
+                {session.user.image ? (
+                  <img src={session.user.image} alt={session.user.name || ""} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-xs font-bold text-charcoal/40 uppercase">
+                    {session.user.name?.charAt(0) || "A"}
+                  </span>
+                )}
+              </div>
               <form action={async () => {
                 "use server"
                 const { signOut } = await import("@/auth")
                 await signOut({ redirectTo: "/login" })
               }}>
-                <button type="submit" className="text-charcoal/30 hover:text-charcoal ml-2 transition-colors">
+                <button type="submit" className="text-charcoal/30 hover:text-charcoal ml-2">
                   <LogOut className="h-4 w-4 stroke-[1.2]" />
                 </button>
               </form>
@@ -119,3 +131,4 @@ export default async function AdminLayout({
     </div>
   )
 }
+

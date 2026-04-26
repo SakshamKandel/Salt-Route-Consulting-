@@ -3,6 +3,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { createAuditLog } from "@/lib/audit"
+import { cloudinary } from "@/lib/cloudinary"
 
 export async function approveReviewAction(id: string) {
   const session = await auth()
@@ -65,6 +66,28 @@ export async function deleteReviewAction(id: string) {
   if (!session?.user || session.user.role !== "ADMIN") return { error: "Unauthorized" }
 
   try {
+    const review = await prisma.review.findUnique({
+      where: { id },
+      include: { images: true },
+    })
+
+    if (!review) return { error: "Review not found" }
+
+    // Delete images from Cloudinary
+    if (review.images.length > 0) {
+      await Promise.all(
+        review.images.map(async (img) => {
+          if (img.publicId) {
+            try {
+              await cloudinary.uploader.destroy(img.publicId)
+            } catch (err) {
+              console.error("[REVIEW_MEDIA_DELETE_ERROR]", err)
+            }
+          }
+        })
+      )
+    }
+
     await prisma.review.delete({ where: { id } })
 
     await createAuditLog({

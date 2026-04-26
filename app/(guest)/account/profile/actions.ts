@@ -28,6 +28,6 @@ export async function updateProfileAction(data: z.infer<typeof updateProfileSche
 
     return { success: "Profile updated successfully" }
   } catch {
-    return { error: "Failed to update profile" }
+    return { error: "We could not update your profile yet." }
   }
 }

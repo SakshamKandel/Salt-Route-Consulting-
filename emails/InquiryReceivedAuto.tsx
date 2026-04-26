@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Text } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, GOLD, VELLUM, NAVY, sans } from './EmailLayout'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, GOLD, VELLUM, CHARCOAL, sans, ActionButton } from './EmailLayout'
 
 interface InquiryReceivedAutoProps {
   name: string
@@ -19,9 +19,9 @@ export function InquiryReceivedAuto({ name, subject, message }: InquiryReceivedA
       </BodyText>
 
       {(subject || message) && (
-        <Text style={{ fontFamily: sans, fontSize: '13px', color: '#7A7A7A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
+        <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
           {subject && (
-            <span style={{ display: 'block', fontWeight: '700', color: '#4A4A4A', marginBottom: '8px', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ display: 'block', fontWeight: '700', color: '#3A5A75', marginBottom: '8px', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               {subject}
             </span>
           )}
@@ -31,7 +31,7 @@ export function InquiryReceivedAuto({ name, subject, message }: InquiryReceivedA
 
       <BodyText>
         In the meantime, you are welcome to explore our curated collection of properties at{' '}
-        <a href="https://saltroutegroup.com/properties" style={{ color: NAVY, textDecoration: 'none', fontWeight: '600' }}>
+        <a href="https://saltroutegroup.com/properties" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
           saltroutegroup.com
         </a>
         .

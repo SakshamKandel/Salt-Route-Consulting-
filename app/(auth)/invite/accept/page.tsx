@@ -4,11 +4,12 @@ import { useState, use } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { acceptInviteAction } from "../actions"
+import { acceptInviteAction, checkInviteTokenAction } from "../actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useEffect } from "react"
 import Link from "next/link"
 
 const schema = z
@@ -36,6 +37,8 @@ export default function AcceptInvitePage({
   const resolvedParams = use(searchParams)
   const token = resolvedParams.token as string | undefined
 
+  const [tokenStatus, setTokenStatus] = useState<"loading" | "valid" | "invalid">("loading")
+  const [tokenError, setTokenError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
@@ -45,11 +48,37 @@ export default function AcceptInvitePage({
     defaultValues: { token: token || "", name: "", password: "", confirmPassword: "" },
   })
 
-  if (!token) {
+  useEffect(() => {
+    if (!token) {
+      setTokenStatus("invalid")
+      setTokenError("Missing invitation token.")
+      return
+    }
+
+    checkInviteTokenAction(token).then((res) => {
+      if (res.error) {
+        setTokenStatus("invalid")
+        setTokenError(res.error)
+      } else {
+        setTokenStatus("valid")
+      }
+    })
+  }, [token])
+
+  if (tokenStatus === "loading") {
+    return (
+      <div className="space-y-10 text-center">
+        <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Checking...</h1>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">Verifying your invitation link.</p>
+      </div>
+    )
+  }
+
+  if (tokenStatus === "invalid") {
     return (
       <div className="space-y-10 text-center">
         <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Invalid Link</h1>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">Missing invitation token.</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-red-500/80 font-semibold">{tokenError}</p>
       </div>
     )
   }

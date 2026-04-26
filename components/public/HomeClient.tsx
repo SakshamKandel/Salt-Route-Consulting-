@@ -1,15 +1,15 @@
-"use client"
+﻿"use client"
 
 import { useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { Calendar, Users, MapPin, ShieldCheck, Globe, Star } from "lucide-react"
 import { getPrimaryImageUrl, type PropertyMediaLike } from "@/lib/property-media"
 import { LuxuryButton } from "@/components/ui/luxury-button"
-import { LuxuryArrow } from "@/components/ui/luxury-arrow"
-import { LuxuryLink } from "@/components/ui/luxury-link"
+import { LuxuryLinkWithArrow } from "@/components/ui/luxury-link-with-arrow"
+import { LocationCombobox, type ComboboxProperty } from "@/components/public/LocationCombobox"
 
 function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
   return (
@@ -50,19 +50,23 @@ type FeaturedProperty = {
 }
 
 function HeroImage() {
+  const { scrollY } = useScroll()
+  const y = useTransform(scrollY, [0, 1000], [0, 300])
+  const textY = useTransform(scrollY, [0, 1000], [0, 150])
+
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-charcoal">
-      <div className="absolute inset-0">
+      <motion.div className="absolute inset-0" style={{ y }}>
         <Image
           src="/Sunshine Villa Main.png"
           alt="The Pinnacle of Living"
           fill
           sizes="100vw"
-          className="object-cover"
+          className="object-cover scale-[1.1]"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/60" />
-      </div>
+      </motion.div>
       
       {/* Central Text Overlay */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
@@ -70,12 +74,13 @@ function HeroImage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+          style={{ y: textY }}
         >
           <p className="text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/90 font-sans mb-8 font-light">
-            Curated Estates
+            Boutique Stays Across Nepal
           </p>
           <h1 className="font-display text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-[1.1] mb-10 font-normal shadow-sm">
-            The Pinnacle of Living
+            Stays with Soul
           </h1>
           <div className="flex items-center justify-center gap-6 text-white/70">
               <span className="w-8 h-[1px] bg-white/40" />
@@ -88,7 +93,7 @@ function HeroImage() {
   )
 }
 
-function HeroSearch({ locations }: { locations: string[] }) {
+function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
   const router = useRouter()
   const today = new Date()
   const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
@@ -116,31 +121,26 @@ function HeroSearch({ locations }: { locations: string[] }) {
       className="bg-white/95 backdrop-blur-md shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col md:flex-row items-stretch border border-charcoal/10"
     >
       {/* Location */}
-      <label className="flex-1 w-full md:w-auto p-5 md:p-6 border-b md:border-b-0 md:border-r border-charcoal/10 group hover:bg-[#FAFAFA] transition-all duration-500 cursor-pointer">
+      <label className="flex-1 w-full md:w-auto p-5 md:p-6 border-b md:border-b-0 md:border-r border-charcoal/10 group hover:bg-[#FBF9F4] transition-all duration-500 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 border border-charcoal/10 flex items-center justify-center shrink-0">
             <MapPin className="w-3 h-3 text-charcoal/50" strokeWidth={1} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 mb-1 font-bold">Location</p>
-            <input
-              list="hero-locations"
+            <LocationCombobox
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={setLocation}
+              properties={properties}
               placeholder="Anywhere in Nepal"
-              className="w-full font-sans text-sm text-charcoal font-medium tracking-wide bg-transparent border-0 outline-none placeholder:text-charcoal/30 placeholder:font-light"
+              inputClassName="w-full font-sans text-sm text-charcoal font-medium tracking-wide bg-transparent border-0 outline-none placeholder:text-charcoal/30 placeholder:font-light"
             />
-            <datalist id="hero-locations">
-              {locations.map((loc) => (
-                <option key={loc} value={loc} />
-              ))}
-            </datalist>
           </div>
         </div>
       </label>
 
       {/* Stay Period */}
-      <label className="flex-1 w-full md:w-auto p-5 md:p-6 border-b md:border-b-0 md:border-r border-charcoal/10 group hover:bg-[#FAFAFA] transition-all duration-500 cursor-pointer">
+      <label className="flex-1 w-full md:w-auto p-5 md:p-6 border-b md:border-b-0 md:border-r border-charcoal/10 group hover:bg-[#FBF9F4] transition-all duration-500 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 border border-charcoal/10 flex items-center justify-center shrink-0">
             <Calendar className="w-3 h-3 text-charcoal/50" strokeWidth={1} />
@@ -160,7 +160,7 @@ function HeroSearch({ locations }: { locations: string[] }) {
                 }}
                 className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none w-[7.5rem]"
               />
-              <span className="text-charcoal/30 text-xs">—</span>
+              <span className="text-charcoal/30 text-xs">â€”</span>
               <input
                 type="date"
                 value={checkOut}
@@ -174,7 +174,7 @@ function HeroSearch({ locations }: { locations: string[] }) {
       </label>
 
       {/* Guests */}
-      <label className="flex-1 w-full md:w-auto p-5 md:p-6 group hover:bg-[#FAFAFA] transition-all duration-500 cursor-pointer">
+      <label className="flex-1 w-full md:w-auto p-5 md:p-6 group hover:bg-[#FBF9F4] transition-all duration-500 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 border border-charcoal/10 flex items-center justify-center shrink-0">
             <Users className="w-3 h-3 text-charcoal/50" strokeWidth={1} />
@@ -204,7 +204,45 @@ function HeroSearch({ locations }: { locations: string[] }) {
   )
 }
 
-export default function HomeClient({ featured = [] }: { featured?: FeaturedProperty[] }) {
+function ImmersiveSection() {
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  })
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"])
+
+  return (
+    <section ref={ref} className="h-[40vh] md:h-[50vh] w-full relative overflow-hidden">
+      <motion.div
+        initial={{ clipPath: "inset(0% 5% 0% 5%)" }}
+        whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-0 w-full h-full"
+      >
+        <motion.div className="absolute inset-0 w-full h-full" style={{ y }}>
+          <Image
+            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop"
+            alt="Immersive Nature"
+            fill
+            sizes="100vw"
+            className="object-cover scale-[1.3]"
+          />
+        </motion.div>
+        <div className="absolute inset-0 bg-black/10" />
+      </motion.div>
+    </section>
+  )
+}
+
+export default function HomeClient({
+  featured = [],
+  allProperties = [],
+}: {
+  featured?: FeaturedProperty[]
+  allProperties?: ComboboxProperty[]
+}) {
   const containerRef = useRef(null)
 
   const estates = useMemo(
@@ -220,56 +258,42 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
     [featured]
   )
 
-  const knownLocations = useMemo(() => {
-    const seen = new Set<string>()
-    const out: string[] = []
-    for (const p of featured) {
-      const city = p.location.split(",")[0]?.trim()
-      if (city && !seen.has(city)) {
-        seen.add(city)
-        out.push(city)
-      }
-    }
-    return out
-  }, [featured])
-
   return (
     <div className="bg-background relative overflow-x-hidden" ref={containerRef}>
 
-      {/* ─── HERO SECTION ─── */}
+      {/* â”€â”€â”€ HERO SECTION â”€â”€â”€ */}
       <section className="relative h-[80vh] w-full flex flex-col justify-between pt-24 mb-12 md:mb-16">
         <HeroImage />
 
-        {/* ─── SEARCH BAR ─── */}
+        {/* â”€â”€â”€ SEARCH BAR â”€â”€â”€ */}
         <div className="relative z-30 w-full max-w-screen-xl mx-auto px-6 md:px-12 mb-[-45px] mt-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <HeroSearch locations={knownLocations} />
+            <HeroSearch properties={allProperties} />
           </motion.div>
         </div>
       </section>
 
-      {/* ─── THE VISION SECTION (SALT ROUTE) ─── */}
+      {/* â”€â”€â”€ THE VISION SECTION (SALT ROUTE) â”€â”€â”€ */}
       <section className="py-12 md:py-20 bg-background">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <FadeUp className="lg:col-span-5">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">Our Heritage</p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">Our Story</p>
                 <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-charcoal leading-[1.1] tracking-tight mb-8">
-                    The Salt Route <br/> Legacy
+                    Local Roots, <br/> Gracious Routes
                 </h2>
                 <div className="w-16 h-[1px] bg-gold mb-8" />
                 <p className="font-sans text-lg md:text-xl text-charcoal/80 leading-relaxed font-light mb-6">
-                    Inspired by the ancient trade routes that connected the mountains to the plains, Salt Route Consulting curates an exclusive collection of residences that honor tradition while defining modern luxury.
+                    Salt Route Consulting is the hospitality and development arm of Salt Route Group, shaping thoughtful stays and property partnerships across Nepal.
                 </p>
                 <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-10 font-light">
-                    We don&apos;t just manage properties; we steward sanctuaries. Each estate in our portfolio is selected for its soul, its architecture, and its ability to offer an uncompromising connection to the spirit of Nepal.
+                    From tea country retreats to mountain-view apartments, we help each property carry its own sense of place, warmth, and quiet refinement.
                 </p>
                 <div className="flex items-center gap-6 mt-4">
-                    <LuxuryLink href="/about" color="charcoal">Our Philosophy</LuxuryLink>
-                    <LuxuryArrow color="gold" />
+                    <LuxuryLinkWithArrow href="/about">Our Story</LuxuryLinkWithArrow>
                 </div>
             </FadeUp>
 
@@ -280,25 +304,24 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
                     className="w-full h-full shadow-2xl"
                 />
                 <div className="absolute -bottom-8 -left-8 bg-white border border-charcoal/10 p-8 hidden md:block z-10 shadow-xl">
-                    <p className="font-display text-4xl mb-2 text-charcoal">Est. 2024</p>
-                    <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/50">Nepal&apos;s Finest Boutique Estates</p>
+                    <p className="font-display text-4xl mb-2 text-charcoal">SRC</p>
+                    <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/50">Nepal&apos;s Finest Boutique Hospitality</p>
                 </div>
             </FadeUp>
         </div>
       </section>
 
-      {/* ─── HORIZONTAL SCROLL / CAROUSEL FOR ESTATES ─── */}
-      <section className="py-16 md:py-20 bg-[#FAFAFA] overflow-hidden">
+      {/* â”€â”€â”€ HORIZONTAL SCROLL / CAROUSEL FOR ESTATES â”€â”€â”€ */}
+      <section className="py-16 md:py-20 bg-[#FBF9F4] overflow-hidden">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12 mb-10 flex flex-col md:flex-row justify-between items-end gap-8">
           <FadeUp className="text-left max-w-2xl">
             <h2 className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">The Collection</h2>
-            <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-none">Curated Estates</h3>
-            <p className="mt-6 font-sans text-lg text-charcoal/60 font-light">From colonial manors to alpine retreats, discover our handpicked selection of residences.</p>
+            <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-none">Boutique Stays</h3>
+            <p className="mt-6 font-sans text-lg text-charcoal/60 font-light">From Sunshine Villa in Ilam to intimate city and nature-led stays, discover places chosen for comfort, character, and care.</p>
           </FadeUp>
           <FadeUp delay={0.2}>
             <div className="flex items-center gap-6 mt-4">
-              <LuxuryLink href="/properties" color="charcoal">View All Residences</LuxuryLink>
-              <LuxuryArrow color="gold" />
+              <LuxuryLinkWithArrow href="/properties">View All Stays</LuxuryLinkWithArrow>
             </div>
           </FadeUp>
         </div>
@@ -310,13 +333,13 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
                   Coming Soon
                 </p>
                 <p className="font-sans text-charcoal/50 font-light max-w-xl mx-auto mb-10">
-                  Our curated collection is being prepared. New residences will appear here as they are added to the registry.
+                  Our collection is being prepared. New stays will appear here as they are ready to welcome guests.
                 </p>
                 <Link
                   href="/contact"
                   className="inline-block bg-charcoal text-white px-12 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gold transition-all duration-700"
                 >
-                  Speak to Concierge
+                  Speak to Our Team
                 </Link>
               </div>
           ) : (
@@ -326,7 +349,7 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
                 return (
                   <div key={estate.id} className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[40vw] flex flex-col group">
                     <Link href={estate.href} className="cursor-pointer block">
-                      <div className="relative aspect-[4/3] overflow-hidden mb-6 bg-[#EFEFEF] shadow-lg">
+                      <div className="relative aspect-[4/3] overflow-hidden mb-6 bg-[#F5F1E8] shadow-lg">
                         {estate.image ? (
                           <RevealImage src={estate.image} alt={estate.name} className="w-full h-full group-hover:scale-105 transition-transform duration-1000" />
                         ) : (
@@ -341,14 +364,14 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center gap-4 mb-2">
-                              <span className="text-[10px] font-sans text-charcoal/40 font-bold">N° {formattedIdx}</span>
+                              <span className="text-[10px] font-sans text-charcoal/40 font-bold">NÂ° {formattedIdx}</span>
                               <span className="w-6 h-[1px] bg-charcoal/20" />
                               <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{estate.location}</p>
                           </div>
                           <h4 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide mb-3 group-hover:text-gold transition-colors duration-700">{estate.name}</h4>
                           <div className="flex items-center gap-2">
                               <Star className="w-3 h-3 text-gold" strokeWidth={1.5} />
-                              <span className="text-[9px] uppercase tracking-[0.1em] text-charcoal/50 font-sans font-bold">Heritage Sanctuary</span>
+                              <span className="text-[9px] uppercase tracking-[0.1em] text-charcoal/50 font-sans font-bold">Signature Stay</span>
                           </div>
                         </div>
                       </div>
@@ -361,7 +384,56 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
         </FadeUp>
       </section>
 
-      {/* ─── FOR PROPERTY OWNERS (PARTNER PORTAL) ─── */}
+      {/* â”€â”€â”€ OUR APPROACH (EDITORIAL GRID) â”€â”€â”€ */}
+      <section className="py-20 md:py-24 bg-white border-t border-charcoal/5">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <FadeUp>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">Thoughtful Hospitality</p>
+              <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide mb-8">Our Approach</h3>
+              <p className="font-sans text-xl text-charcoal/60 leading-relaxed font-light">
+                We blend warm Nepali hosting, careful property care, and responsible growth so every stay feels effortless.
+              </p>
+            </FadeUp>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 bg-charcoal/5 border border-charcoal/10">
+            {[
+              { 
+                title: "Property Selection", 
+                image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop",
+                desc: "We choose homes with a clear sense of place, strong comfort, and a story guests can feel." 
+              },
+              { 
+                title: "Guest Experience", 
+                image: "https://images.unsplash.com/photo-1544161515-4af6b1d83181?q=80&w=2070&auto=format&fit=crop",
+                desc: "Every stay is shaped with attentive service, gentle detail, and the ease guests remember." 
+              },
+              { 
+                title: "Sustainable Stewardship", 
+                image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=2070&auto=format&fit=crop",
+                desc: "We balance refined comfort with respect for local communities, traditions, and the environment." 
+              },
+            ].map((item, i) => (
+              <FadeUp key={i} delay={i * 0.1} className="bg-white p-10 flex flex-col gap-8 group hover:bg-[#FBF9F4] transition-all duration-700 border-charcoal/5 border-r border-b">
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-charcoal/10 group-hover:bg-transparent transition-colors duration-700" />
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-display text-2xl text-charcoal uppercase tracking-wide group-hover:text-gold transition-colors duration-500">{item.title}</h3>
+                  <p className="text-[14px] text-charcoal/50 leading-relaxed font-light">{item.desc}</p>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <FadeUp className="order-2 lg:order-1 relative h-[400px] md:h-[500px] w-full">
@@ -373,58 +445,42 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
             </FadeUp>
 
             <FadeUp className="order-1 lg:order-2 lg:pl-12">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">Partner Portal</p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">For Property Owners</p>
                 <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-tight leading-[1.1] mb-8">
-                    Stewardship <br/> & Strategy
+                    Care, Story <br/> & Growth
                 </h2>
                 <div className="w-16 h-[1px] bg-gold mb-8" />
                 <p className="font-sans text-lg text-charcoal/70 leading-relaxed font-light mb-10">
-                    We partner with discerning property owners to transform their residences into world-class hospitality destinations.
+                    We partner with property owners to prepare homes for memorable stays, stronger visibility, and steady long-term value.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-3">
                             <ShieldCheck className="w-4 h-4 text-gold" strokeWidth={1.5} />
-                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Asset Protection</h4>
+                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Property Care</h4>
                         </div>
-                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Rigorous maintenance and white-glove security for your legacy.</p>
+                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Careful upkeep, guest-ready presentation, and respectful attention to your property.</p>
                     </div>
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-3">
                             <Globe className="w-4 h-4 text-gold" strokeWidth={1.5} />
-                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Global Reach</h4>
+                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Guest Reach</h4>
                         </div>
-                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Exclusive access to ultra-high-net-worth travelers worldwide.</p>
+                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Thoughtful visibility for domestic and international guests looking for meaningful stays.</p>
                     </div>
                 </div>
                 <div className="mt-8">
-                  <LuxuryButton href="/for-owners" dark={false}>Become a Partner</LuxuryButton>
+                  <LuxuryButton href="/for-owners" dark={false}>Partner With Us</LuxuryButton>
                 </div>
             </FadeUp>
         </div>
       </section>
 
-      <section className="h-[40vh] md:h-[50vh] w-full relative">
-        <motion.div
-          initial={{ clipPath: "inset(0% 5% 0% 5%)" }}
-          whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
-          viewport={{ once: true, margin: "-10%" }}
-          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 w-full h-full"
-        >
-          <Image
-            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop"
-            alt="Immersive Nature"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/10" />
-        </motion.div>
-      </section>
 
-      {/* ─── SERVICES & EXPERIENCES ─── */}
-      <section className="py-16 md:py-20 bg-[#FAFAFA]">
+      <ImmersiveSection />
+
+      {/* â”€â”€â”€ SERVICES & EXPERIENCES â”€â”€â”€ */}
+      <section className="py-16 md:py-20 bg-[#FBF9F4]">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row justify-between gap-12 lg:gap-16">
 
           <div className="lg:w-5/12">
@@ -435,20 +491,18 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
               </div>
               <h3 className="font-display text-4xl md:text-5xl text-charcoal mb-8 tracking-wide leading-tight">Tailored<br/>Journeys</h3>
               <p className="font-sans text-xl text-charcoal/60 leading-relaxed font-light mb-10">
-                Elevate your senses through authentic encounters. Every moment is meticulously crafted to connect you with the soul of Nepal.
+                Travel through Nepal with care and authenticity, from curated stays to local encounters that honor people and place.
               </p>
               <div className="flex items-center gap-6 mt-6">
-                <LuxuryLink href="/services" color="charcoal">Explore Experiences</LuxuryLink>
-                <LuxuryArrow color="gold" />
+                <LuxuryLinkWithArrow href="/services">Explore Experiences</LuxuryLinkWithArrow>
               </div>
             </FadeUp>
           </div>
-
           <div className="lg:w-7/12 flex flex-col pt-6 lg:pt-0 justify-center">
             {[
               { title: "Culinary Immersion", desc: "Private dining featuring heritage recipes and local organic produce." },
-              { title: "Guided Excursions", desc: "Trek the hidden trails led by expert local naturalists." },
-              { title: "Wellness & Spa", desc: "Ancient healing traditions integrated into holistic wellness." }
+              { title: "Guided Excursions", desc: "Walk nearby trails and cultural routes with trusted local insight." },
+              { title: "Quiet Wellness", desc: "Unhurried moments for rest, reflection, and gentle renewal." }
             ].map((exp, i) => (
               <FadeUp key={exp.title} delay={0.1 * i}>
                 <div className="border-b border-charcoal/10 py-8 group cursor-pointer hover:pl-6 transition-all duration-500 hover:bg-white px-4 rounded-xl -mx-4">
@@ -465,7 +519,7 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
         </div>
       </section>
 
-      {/* ─── THE SALT ROUTE STANDARD (AMENITIES) ─── */}
+      {/* â”€â”€â”€ THE SALT ROUTE STANDARD (AMENITIES) â”€â”€â”€ */}
       <section className="py-16 md:py-20 bg-white border-t border-charcoal/5">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 text-center">
           <FadeUp>
@@ -474,8 +528,8 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
           </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 text-left">
             {[
-              { icon: <ShieldCheck className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Private Concierge", desc: "24/7 dedicated assistance tailored to your every whim." },
-              { icon: <Users className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Curated Staff", desc: "Private chefs and housekeepers trained in luxury hospitality." },
+              { icon: <ShieldCheck className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Personal Care", desc: "Warm assistance before and during your stay, shaped around what matters to you." },
+              { icon: <Users className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Gracious Hosting", desc: "Thoughtful housekeeping, meal support, and local guidance where available." },
               { icon: <Star className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Heritage Design", desc: "Authentic local architecture fused with modern comforts." },
               { icon: <Globe className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Seamless Transfers", desc: "Chauffeur-driven arrivals ensuring peace of mind from the start." }
             ].map((feature, i) => (
@@ -491,8 +545,8 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
         </div>
       </section>
 
-      {/* ─── GUEST REFLECTIONS (TESTIMONIALS) ─── */}
-      <section className="py-16 md:py-20 bg-[#FAFAFA] border-t border-charcoal/5">
+      {/* â”€â”€â”€ GUEST REFLECTIONS (TESTIMONIALS) â”€â”€â”€ */}
+      <section className="py-16 md:py-20 bg-[#FBF9F4] border-t border-charcoal/5">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
           <FadeUp className="text-center mb-12">
             <h3 className="font-display text-3xl md:text-4xl text-charcoal tracking-wide mb-6">Guest Reflections</h3>
@@ -500,9 +554,9 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
           </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {[
-              { quote: "A sanctuary of peace in the heart of the Himalayas. The attention to detail and bespoke service was entirely unmatched.", author: "E. Rothschild", location: "London" },
-              { quote: "Every architectural detail told a story. It wasn't just a stay; it was an immersion into the very soul of Nepalese heritage.", author: "M. Chen", location: "Singapore" },
-              { quote: "From the private chef to the curated excursions, Salt Route redefined our understanding of luxury travel in South Asia.", author: "J. & A. Dupont", location: "Paris" }
+              { quote: "Quiet mornings, thoughtful care, and a deep sense of place made the stay feel personal from the first welcome.", author: "Salt Route Guest", location: "Nepal" },
+              { quote: "The property felt close to nature without losing comfort. Every detail made it easy to slow down.", author: "Salt Route Guest", location: "Ilam" },
+              { quote: "A warm and polished stay, shaped by local hospitality and the calm beauty of Nepal.", author: "Salt Route Guest", location: "Kathmandu" }
             ].map((testimonial, i) => (
               <FadeUp key={i} delay={0.2 * i} className="flex flex-col text-center items-center">
                 <p className="font-display text-lg md:text-xl text-charcoal/80 italic leading-relaxed mb-8">
@@ -518,7 +572,7 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
         </div>
       </section>
 
-      {/* ─── VISUAL JOURNAL (IMAGE CAROUSEL) ─── */}
+      {/* â”€â”€â”€ VISUAL JOURNAL (IMAGE CAROUSEL) â”€â”€â”€ */}
       <section className="py-16 md:py-20 bg-white border-t border-charcoal/5 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 mb-10 flex flex-col md:flex-row justify-between items-end gap-8">
           <FadeUp className="text-left max-w-2xl">
@@ -536,7 +590,7 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
               { src: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop", title: "Morning Light", location: "Lalitpur" }
             ].map((img, idx) => (
               <div key={idx} className="snap-center shrink-0 w-[80vw] md:w-[45vw] lg:w-[30vw] flex flex-col group cursor-pointer">
-                <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-[#EFEFEF] shadow-lg">
+                <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-[#F5F1E8] shadow-lg">
                   <RevealImage src={img.src} alt={img.title} className="w-full h-full group-hover:scale-105 transition-transform duration-1000" />
                 </div>
                 <div className="flex justify-between items-center px-2">
@@ -549,13 +603,13 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
         </FadeUp>
       </section>
 
-      {/* ─── FINAL CALL TO ACTION ─── */}
+      {/* â”€â”€â”€ FINAL CALL TO ACTION â”€â”€â”€ */}
       <section className="py-16 md:py-24 bg-white text-center px-6 border-t border-charcoal/5">
         <div className="max-w-3xl mx-auto relative z-20">
           <FadeUp>
             <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-bold">Your Invitation</p>
             <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-10 tracking-wide leading-[1.1]">
-              Define Your Sanctuary.
+              Find Your Place in Nepal.
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-8">
                 <LuxuryButton href="/properties" dark={false}>
@@ -581,3 +635,4 @@ export default function HomeClient({ featured = [] }: { featured?: FeaturedPrope
     </div>
   )
 }
+

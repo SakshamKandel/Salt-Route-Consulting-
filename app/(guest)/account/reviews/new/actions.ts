@@ -69,8 +69,8 @@ export async function createReviewAction(data: z.infer<typeof createReviewSchema
 
     revalidatePath("/account/reviews")
     revalidatePath(`/account/bookings/${booking.id}`)
-    return { success: "Review submitted!" }
+    return { success: "Thank you for sharing your stay." }
   } catch {
-    return { error: "Failed to submit review." }
+    return { error: "We could not share your review yet." }
   }
 }

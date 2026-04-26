@@ -1,0 +1,11 @@
+
+> salt-route@0.1.0 dev E:\Salt Route Consulting
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.89:3001
+- Environments: .env.local, .env
+✓ Ready in 599ms
+[?25h
+ ELIFECYCLE  Command failed with exit code 1.

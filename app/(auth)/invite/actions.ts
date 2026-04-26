@@ -75,3 +75,20 @@ export async function acceptInviteAction(data: z.infer<typeof acceptInviteSchema
     return { error: "Failed to accept invitation." }
   }
 }
+
+export async function checkInviteTokenAction(token: string) {
+  try {
+    const invitation = await prisma.invitation.findUnique({
+      where: { token }
+    })
+
+    if (!invitation) return { error: "Invalid invitation link." }
+    if (invitation.status === "ACCEPTED") return { error: "This invitation has already been used." }
+    if (new Date() > invitation.expiresAt) return { error: "This invitation has expired." }
+    if (invitation.status !== "PENDING") return { error: "This invitation is no longer valid." }
+
+    return { success: true }
+  } catch {
+    return { error: "Failed to verify invitation." }
+  }
+}

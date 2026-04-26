@@ -20,22 +20,22 @@ export default async function ProfilePage() {
       <div className="flex items-center gap-4">
         <div className="w-8 h-[1px] bg-charcoal/20" />
         <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
-          Account Settings
+          Personal Profile
         </h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12 lg:gap-16">
         {/* ─── PROFILE FORM ─── */}
         <div className="bg-white border border-charcoal/5 p-8 md:p-12">
-          <h2 className="font-display text-xl text-charcoal tracking-wide mb-2">Personal Information</h2>
-          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 mb-10">Update your details below</p>
+          <h2 className="font-display text-xl text-charcoal tracking-wide mb-2">Your Details</h2>
+          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 mb-10">Keep your contact details current</p>
           <ProfileForm initialData={{ name: user.name || "", phone: user.phone || "", image: user.image || "" }} />
         </div>
 
         {/* ─── SIDEBAR INFO ─── */}
         <div className="space-y-6">
           <div className="bg-white border border-charcoal/5 p-8">
-            <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-6">Account Details</h3>
+            <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-6">Guest Details</h3>
             <div className="space-y-5">
               <div>
                 <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Email</p>
@@ -54,7 +54,7 @@ export default async function ProfilePage() {
           <div className="bg-charcoal/[0.02] border border-charcoal/5 p-8">
             <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-4">Need Help?</h3>
             <p className="text-xs text-charcoal/40 leading-relaxed font-sans mb-4">
-              Our concierge team is available to assist you with any account inquiries.
+              The Salt Route team is available to help with stay questions, profile updates, or guest care.
             </p>
             <a
               href="mailto:support@saltroutegroup.com"

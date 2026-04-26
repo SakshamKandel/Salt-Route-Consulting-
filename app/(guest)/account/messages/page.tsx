@@ -37,7 +37,7 @@ export default async function GuestMessagesPage({
       <div className="flex items-center gap-4">
         <div className="w-8 h-[1px] bg-charcoal/20" />
         <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
-          Messages & Inquiries
+          Conversations
         </h1>
       </div>
 
@@ -47,7 +47,7 @@ export default async function GuestMessagesPage({
           <div className="w-8 h-8 rounded-full bg-charcoal/[0.03] flex items-center justify-center border border-charcoal/5">
             <Send className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.5} />
           </div>
-          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">New Message</h2>
+          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">Start a Conversation</h2>
         </div>
         <SendMessageForm userEmail={session.user.email!} userName={session.user.name || "Guest"} />
       </div>
@@ -58,7 +58,7 @@ export default async function GuestMessagesPage({
           <div className="w-8 h-8 rounded-full bg-charcoal/[0.03] flex items-center justify-center border border-charcoal/5">
             <MessageSquare className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.5} />
           </div>
-          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">Conversations</h2>
+          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">Your Notes</h2>
         </div>
 
         {inquiries.length === 0 ? (

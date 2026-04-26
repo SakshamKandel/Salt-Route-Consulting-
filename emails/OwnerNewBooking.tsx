@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY } from './EmailLayout'
+
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, ActionButton, CHARCOAL } from './EmailLayout'
 
 interface OwnerNewBookingProps {
   ownerName: string
@@ -43,12 +43,9 @@ export function OwnerNewBooking({ ownerName, propertyName, guestName, dates, boo
         If you have any questions or concerns about this booking, please contact the Salt Route team at info@saltroutegroup.com.
       </BodyText>
 
-      <Button
-        href={ownerUrl || 'https://saltroutegroup.com/owner/bookings'}
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' }}
-      >
+      <ActionButton href={ownerUrl || 'https://saltroutegroup.com/owner/bookings'}>
         View Booking Details
-      </Button>
+      </ActionButton>
     </EmailLayout>
   )
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button, Text } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY, GOLD, VELLUM, sans } from './EmailLayout'
+import { Text } from '@react-email/components'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, CHARCOAL, GOLD, VELLUM, sans, ActionButton } from './EmailLayout'
 
 interface NewInquiryAdminAlertProps {
   name: string
@@ -29,17 +29,14 @@ export function NewInquiryAdminAlert({ name, email, subject, message, phone, inq
       </DetailsCard>
 
       {message && (
-        <Text style={{ fontFamily: sans, fontSize: '14px', color: '#5A5A5A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM, fontStyle: 'italic' }}>
+        <Text style={{ fontFamily: sans, fontSize: '14px', color: '#4A6A85', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM, fontStyle: 'italic' }}>
           &ldquo;{message}&rdquo;
         </Text>
       )}
 
-      <Button
-        href={inquiryUrl || 'https://saltroutegroup.com/admin/inquiries'}
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' }}
-      >
+      <ActionButton href={inquiryUrl || 'https://saltroutegroup.com/admin/inquiries'}>
         View Inquiry
-      </Button>
+      </ActionButton>
     </EmailLayout>
   )
 }

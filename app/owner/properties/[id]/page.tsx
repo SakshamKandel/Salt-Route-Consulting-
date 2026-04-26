@@ -70,7 +70,7 @@ export default async function OwnerPropertyDetailPage({
       {/* ─── BREADCRUMB ─── */}
       <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.35em]">
         <Link href="/owner/properties" className="text-sand/30 hover:text-gold transition-colors duration-500">
-              Property Rooms
+              Properties
         </Link>
         <span className="text-sand/20">·</span>
         <span className="text-sand/50">{property.title}</span>
@@ -80,7 +80,7 @@ export default async function OwnerPropertyDetailPage({
       {galleryImages.length > 0 ? (
         <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[420px] md:h-[520px]">
           {/* Hero image - spans 2 cols and 2 rows */}
-          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#0F2133]">
+          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#163350]">
             {heroImage && (
               <Image
                 src={heroImage}
@@ -97,8 +97,8 @@ export default async function OwnerPropertyDetailPage({
                 style={{
                   background: "rgba(8,15,24,0.75)",
                   backdropFilter: "blur(8px)",
-                  border: "1px solid rgba(197,168,128,0.25)",
-                  color: "#C5A880",
+                  border: "1px solid rgba(201,169,110,0.25)",
+                  color: "#C9A96E",
                 }}
               >
                 {property.status}
@@ -110,7 +110,7 @@ export default async function OwnerPropertyDetailPage({
           {galleryImages.slice(1, 5).map((img, i) => (
             <div
               key={img.id}
-              className={`hidden md:block relative overflow-hidden bg-[#0F2133] ${
+              className={`hidden md:block relative overflow-hidden bg-[#163350] ${
                 i >= 2 ? "row-start-2" : ""
               }`}
             >
@@ -128,8 +128,8 @@ export default async function OwnerPropertyDetailPage({
             (_, i) => (
               <div
                 key={`ph-${i}`}
-                className="hidden md:block bg-[#0F2133]"
-                style={{ border: "1px solid rgba(197,168,128,0.06)" }}
+                className="hidden md:block bg-[#163350]"
+                style={{ border: "1px solid rgba(201,169,110,0.06)" }}
               />
             )
           )}
@@ -137,7 +137,7 @@ export default async function OwnerPropertyDetailPage({
       ) : (
         <div
           className="h-64 flex items-center justify-center"
-          style={{ border: "1px solid rgba(197,168,128,0.08)", background: "#0F2133" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)", background: "#163350" }}
         >
           <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">
             No images uploaded
@@ -169,9 +169,9 @@ export default async function OwnerPropertyDetailPage({
         <Link
           href={`/owner/request-edit?propertyId=${property.id}`}
           className="inline-flex items-center gap-3 px-7 py-4 text-[9px] uppercase tracking-[0.35em] font-medium text-gold transition-all duration-500 hover:bg-gold/8 shrink-0"
-          style={{ border: "1px solid rgba(197,168,128,0.3)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.3)" }}
         >
-              Request Listing Edit
+              Request Update
           <span className="text-gold/60">→</span>
         </Link>
       </div>
@@ -181,17 +181,17 @@ export default async function OwnerPropertyDetailPage({
         <div className="flex items-center gap-4 mb-8">
           <span className="w-8 h-px bg-gold/30" />
           <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
-            Listing Performance
+            Stay Results
           </h2>
         </div>
         <div
           className="grid grid-cols-2 md:grid-cols-4 gap-px"
-          style={{ background: "rgba(197,168,128,0.06)" }}
+          style={{ background: "rgba(201,169,110,0.06)" }}
         >
           {performanceMetrics.map((m) => (
             <div
               key={m.label}
-              className="bg-[#0A1826] px-7 py-8 group hover:bg-[#0D1F30] transition-colors duration-700"
+              className="bg-[#102943] px-7 py-8 group hover:bg-[#0D1F30] transition-colors duration-700"
             >
               <p className="text-[8.5px] uppercase tracking-[0.4em] text-sand/30 mb-2 font-medium">
                 {m.label}
@@ -214,7 +214,7 @@ export default async function OwnerPropertyDetailPage({
             <div className="flex items-center gap-4 mb-6">
               <span className="w-8 h-px bg-gold/30" />
               <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
-                Owner Property Room
+                Property Story
               </h2>
             </div>
             <p className="text-[13px] text-sand/55 leading-[1.95] font-light">
@@ -288,7 +288,7 @@ export default async function OwnerPropertyDetailPage({
               <div
                 key={review.id}
                 className="p-7 space-y-4"
-                style={{ border: "1px solid rgba(197,168,128,0.07)", background: "rgba(197,168,128,0.02)" }}
+                style={{ border: "1px solid rgba(201,169,110,0.07)", background: "rgba(201,169,110,0.02)" }}
               >
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] text-sand/60 font-medium tracking-wide">
@@ -325,21 +325,21 @@ export default async function OwnerPropertyDetailPage({
       {/* ─── FOOTER CTA ─── */}
       <div
         className="flex flex-col sm:flex-row items-center justify-between gap-6 px-10 py-8"
-        style={{ border: "1px solid rgba(197,168,128,0.1)", background: "rgba(197,168,128,0.025)" }}
+        style={{ border: "1px solid rgba(201,169,110,0.1)", background: "rgba(201,169,110,0.025)" }}
       >
         <div>
           <p className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium mb-1">
-            Need to update this property room?
+            Need to update this property?
           </p>
           <p className="text-[12px] text-sand/30 font-light">
-            Submit listing, calendar, feature, amenity, pricing, or photo updates to the Salt Route team.
+            Send property, calendar, feature, amenity, pricing, or photo updates to the Salt Route team.
           </p>
         </div>
         <Link
           href={`/owner/request-edit?propertyId=${property.id}`}
-          className="shrink-0 px-8 py-4 text-[9px] uppercase tracking-[0.35em] font-medium text-[#060E18] bg-gold hover:bg-gold/90 transition-all duration-500"
+          className="shrink-0 px-8 py-4 text-[9px] uppercase tracking-[0.35em] font-medium text-[#0C1F33] bg-gold hover:bg-gold/90 transition-all duration-500"
         >
-          Request Edit
+          Request Update
         </Link>
       </div>
     </div>

@@ -44,6 +44,33 @@ export async function sendEmail({
   })
 }
 
+/**
+ * Send the same email to multiple recipients
+ */
+export async function sendEmailToMany({
+  to,
+  subject,
+  html,
+}: {
+  to: string[]
+  subject: string
+  html: string
+}) {
+  const uniqueTo = Array.from(new Set(to.filter(Boolean)))
+  if (uniqueTo.length === 0) return
+
+  return Promise.all(
+    uniqueTo.map((email) =>
+      transporter.sendMail({
+        ...mailOptions,
+        to: email,
+        subject,
+        html,
+      })
+    )
+  )
+}
+
 // Verification function (use in development to test connection)
 export const verifyConnection = async () => {
   try {

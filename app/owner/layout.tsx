@@ -30,16 +30,16 @@ export default async function OwnerLayout({
   const firstName = session.user.name?.split(" ")[0] ?? "Partner"
 
   return (
-    <div className="flex h-screen overflow-hidden font-sans bg-[#0A1826]">
+    <div className="flex h-screen overflow-hidden font-sans bg-[#102943]">
 
       {/* ─── SIDEBAR ─── */}
-      <aside className="w-[280px] flex-col hidden md:flex shrink-0 relative z-20 bg-[#060E18]">
+      <aside className="w-[280px] flex-col hidden md:flex shrink-0 relative z-20 bg-[#0C1F33]">
         {/* Gold accent line on right edge */}
         <div
           className="absolute top-0 right-0 w-px h-full pointer-events-none"
           style={{
             background:
-              "linear-gradient(to bottom, transparent 0%, rgba(197,168,128,0.18) 40%, rgba(197,168,128,0.18) 60%, transparent 100%)",
+              "linear-gradient(to bottom, transparent 0%, rgba(201,169,110,0.18) 40%, rgba(201,169,110,0.18) 60%, transparent 100%)",
           }}
         />
 
@@ -50,7 +50,7 @@ export default async function OwnerLayout({
               Salt Route
             </span>
             <span className="text-[7.5px] tracking-[0.55em] uppercase font-sans font-light text-gold/50 mt-2 leading-none">
-              Partner Portal
+              Owner Care
             </span>
           </Link>
         </div>
@@ -66,12 +66,12 @@ export default async function OwnerLayout({
         {/* Bottom: user info + sign out */}
         <div
           className="px-8 pt-6 pb-10 shrink-0"
-          style={{ borderTop: "1px solid rgba(197,168,128,0.08)" }}
+          style={{ borderTop: "1px solid rgba(201,169,110,0.08)" }}
         >
           <div className="flex items-center gap-3.5 mb-5">
             <div
               className="w-9 h-9 flex items-center justify-center shrink-0 overflow-hidden"
-              style={{ border: "1px solid rgba(197,168,128,0.2)", background: "rgba(197,168,128,0.06)" }}
+              style={{ border: "1px solid rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.06)" }}
             >
               {session.user.image ? (
                 <img src={session.user.image} alt={session.user.name || ""} className="w-full h-full object-cover" />
@@ -101,7 +101,7 @@ export default async function OwnerLayout({
             <button
               type="submit"
               className="w-full flex items-center justify-between px-4 py-3 text-sand/30 hover:text-sand/55 group"
-              style={{ border: "1px solid rgba(247,245,240,0.06)" }}
+              style={{ border: "1px solid rgba(251,249,244,0.06)" }}
             >
               <span className="text-[9px] uppercase tracking-[0.3em] font-medium">Sign Out</span>
               <LogOut className="h-3.5 w-3.5 stroke-[1.3] group-hover:-translate-x-0.5" />
@@ -117,8 +117,8 @@ export default async function OwnerLayout({
         <header
           className="h-[72px] flex items-center justify-between px-6 sm:px-10 md:px-14 shrink-0 z-10"
           style={{
-            borderBottom: "1px solid rgba(197,168,128,0.08)",
-            background: "rgba(6,14,24,0.7)",
+            borderBottom: "1px solid rgba(201,169,110,0.08)",
+            background: "rgba(12,31,51,0.7)",
             backdropFilter: "blur(12px)",
           }}
         >
@@ -129,7 +129,7 @@ export default async function OwnerLayout({
             <div className="hidden md:flex items-center gap-4">
               <span className="w-8 h-px bg-gold/20" />
               <p className="text-[9px] uppercase tracking-[0.34em] text-sand/35 font-medium">
-                Owner portfolio, {firstName}
+                Your properties, {firstName}
               </p>
             </div>
           </div>
@@ -137,14 +137,14 @@ export default async function OwnerLayout({
             href="/properties"
             className="text-[9px] uppercase tracking-[0.24em] text-sand/25 hover:text-gold"
           >
-            Public Collection
+            View Stays
           </Link>
         </header>
 
         {/* Mobile scrollable nav — only passes a number */}
         <nav
           className="md:hidden shrink-0 overflow-x-auto z-10"
-          style={{ borderBottom: "1px solid rgba(197,168,128,0.08)", background: "#060E18" }}
+          style={{ borderBottom: "1px solid rgba(201,169,110,0.08)", background: "#0C1F33" }}
         >
           <OwnerMobileNav notificationBadge={unreadNotifications} />
         </nav>

@@ -6,7 +6,10 @@ import { rateLimit } from "@/lib/rate-limit"
 import { safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
 import { canReviewBooking } from "@/lib/booking-lifecycle"
-import { notifyAdmins } from "@/lib/notifications"
+import { notifyAdmins, getAdminEmails } from "@/lib/notifications"
+import { sendEmailToMany } from "@/lib/email/transporter"
+import { render } from "@react-email/render"
+import { NewReviewAdminAlert } from "@/emails/NewReviewAdminAlert"
 
 // ─── POST  /api/reviews ───────────────────────────────────
 export async function POST(request: Request) {
@@ -56,11 +59,12 @@ export async function POST(request: Request) {
         guestId: userId,
         propertyId: booking.propertyId,
         bookingId: booking.id,
-        status: "PUBLISHED",
-        isApproved: true,
+        status: "PENDING",
+        isApproved: false,
         images: {
-          create: (validated.images || []).map((url) => ({
-            url,
+          create: (validated.images || []).map((img) => ({
+            url: img.url,
+            publicId: img.publicId,
           })),
         },
       },
@@ -82,6 +86,31 @@ export async function POST(request: Request) {
       href: `/admin/reviews/${review.id}`,
       metadata: { reviewId: review.id, bookingId: booking.id },
     })
+
+    // Notify all admins via email
+    try {
+      const adminEmails = await getAdminEmails()
+      const allAdminRecipients = Array.from(new Set([
+        ...adminEmails,
+        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+      ]))
+
+      const adminHtml = await render(NewReviewAdminAlert({
+        propertyName: booking.property.title,
+        guestName: session.user.name || "Guest",
+        rating: validated.rating,
+        comment: validated.comment,
+        adminUrl: `${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/reviews/${review.id}`,
+      }))
+
+      await sendEmailToMany({
+        to: allAdminRecipients,
+        subject: `New Review for Moderation: ${booking.property.title}`,
+        html: adminHtml,
+      })
+    } catch (emailError) {
+      console.error("[EMAIL] Review admin notification failed:", emailError)
+    }
 
     return NextResponse.json({ id: review.id })
   } catch (error: unknown) {

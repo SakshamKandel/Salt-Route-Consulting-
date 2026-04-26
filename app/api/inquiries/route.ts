@@ -4,12 +4,12 @@ import { inquirySchema } from "@/lib/validations"
 import { rateLimit } from "@/lib/rate-limit"
 import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
-import { sendEmail } from "@/lib/email/transporter"
+import { auth } from "@/auth"
+import { notifyAdmins, getAdminEmails } from "@/lib/notifications"
+import { sendEmail, sendEmailToMany } from "@/lib/email/transporter"
 import { InquiryReceivedAuto } from "@/emails/InquiryReceivedAuto"
 import { NewInquiryAdminAlert } from "@/emails/NewInquiryAdminAlert"
 import { render } from "@react-email/render"
-import { auth } from "@/auth"
-import { notifyAdmins } from "@/lib/notifications"
 
 // ─── POST  /api/inquiries ─────────────────────────────────
 export async function POST(request: Request) {
@@ -91,14 +91,20 @@ export async function POST(request: Request) {
         })),
       ])
 
+      const adminEmails = await getAdminEmails()
+      const allAdminRecipients = Array.from(new Set([
+        ...adminEmails,
+        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+      ]))
+
       await Promise.all([
         sendEmail({
           to: validated.email,
           subject: "We Received Your Enquiry — Salt Route",
           html: autoHtml,
         }),
-        sendEmail({
-          to: process.env.ADMIN_EMAIL || "admin@saltroute.com",
+        sendEmailToMany({
+          to: allAdminRecipients,
           subject: `New Enquiry: ${validated.subject}`,
           html: adminHtml,
         }),

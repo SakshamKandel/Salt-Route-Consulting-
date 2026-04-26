@@ -13,7 +13,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
 
   const handleCancel = async () => {
     if (reason.trim().length < 5) {
-      setError("Please provide a reason (at least 5 characters).")
+      setError("Please share a short note for our team.")
       return
     }
     setIsPending(true)
@@ -27,7 +27,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
       router.refresh()
     } else {
       const data = await res.json().catch(() => ({}))
-      setError(data.error || "Failed to cancel booking.")
+      setError(data.error || "We could not send the cancellation yet.")
       setIsPending(false)
     }
   }
@@ -48,12 +48,12 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
       <div className="space-y-2">
         <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold">Cancellation Request</p>
         <p className="text-xs text-charcoal/40 font-sans leading-relaxed">
-          Please provide a brief explanation for your cancellation. This helps our team process your request efficiently.
+          Please share a brief note for our team. It helps us care for your reservation properly.
         </p>
       </div>
 
       <Textarea
-        placeholder="Reason for cancellation..."
+        placeholder="Share your note here..."
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         rows={4}
@@ -68,7 +68,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
           disabled={isPending}
           className="flex-1 bg-red-500 text-white py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-red-600 disabled:opacity-50 transition-all"
         >
-          {isPending ? "Processing..." : "Confirm Cancellation"}
+          {isPending ? "Sending..." : "Confirm Cancellation"}
         </button>
         <button
           onClick={() => { setOpen(false); setError(null); setReason("") }}

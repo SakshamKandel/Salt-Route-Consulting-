@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card"
+﻿import { Card, CardContent } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
 
 interface StatCardProps {
@@ -16,7 +16,7 @@ export function StatCard({ title, value, icon: Icon, description, trend, trendVa
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal/60">{title}</h3>
-          <div className="p-2 bg-[#FAFAFA] border border-charcoal/5">
+          <div className="p-2 bg-[#FBF9F4] border border-charcoal/5">
             <Icon className="w-4 h-4 text-charcoal/60" />
           </div>
         </div>
@@ -27,7 +27,7 @@ export function StatCard({ title, value, icon: Icon, description, trend, trendVa
               trend === "up" ? "text-green-600" : 
               trend === "down" ? "text-red-600" : "text-charcoal/50"
             }`}>
-              {trend === "up" ? "↑" : trend === "down" ? "↓" : ""} {trendValue}
+              {trend === "up" ? "â†‘" : trend === "down" ? "â†“" : ""} {trendValue}
             </span>
           )}
         </div>
@@ -38,3 +38,4 @@ export function StatCard({ title, value, icon: Icon, description, trend, trendVa
     </Card>
   )
 }
+

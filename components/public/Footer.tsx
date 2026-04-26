@@ -5,7 +5,7 @@ import Image from "next/image"
 
 const guestLinks = [
   { href: "/properties", label: "Properties" },
-  { href: "/about", label: "Philosophy" },
+  { href: "/about", label: "Our Story" },
   { href: "/services", label: "Experiences" },
 ]
 

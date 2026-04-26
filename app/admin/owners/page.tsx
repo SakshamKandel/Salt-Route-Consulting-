@@ -28,6 +28,7 @@ export default async function AdminOwnersPage({
       email: true,
       role: true,
       status: true,
+      image: true,
       createdAt: true,
       _count: { select: { properties: true } }
     },

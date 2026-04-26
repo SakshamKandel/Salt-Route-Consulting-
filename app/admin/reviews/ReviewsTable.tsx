@@ -14,7 +14,7 @@ type ReviewTableRow = {
   status: ReviewStatus
   createdAt: Date | string
   property: { title: string }
-  guest: { name: string | null; email: string | null } | null
+  guest: { name: string | null; email: string | null; image: string | null } | null
 }
 
 export function ReviewsTable({ reviews }: { reviews: ReviewTableRow[] }) {
@@ -29,7 +29,20 @@ export function ReviewsTable({ reviews }: { reviews: ReviewTableRow[] }) {
     },
     {
       header: "Guest",
-      cell: (row) => <span>{row.guest?.name || row.guest?.email}</span>
+      cell: (row) => (
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+            {row.guest?.image ? (
+              <img src={row.guest.image} alt={row.guest.name || ""} className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-[10px] text-slate-400 font-bold uppercase">
+                {row.guest?.name?.charAt(0) || "G"}
+              </span>
+            )}
+          </div>
+          <span className="truncate max-w-[120px]">{row.guest?.name || row.guest?.email}</span>
+        </div>
+      )
     },
     {
       header: "Rating",

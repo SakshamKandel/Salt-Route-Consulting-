@@ -1,6 +1,4 @@
-import * as React from 'react'
-import { Button } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY } from './EmailLayout'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, ActionButton, CHARCOAL } from './EmailLayout'
 
 interface BookingReceivedProps {
   name: string
@@ -42,12 +40,9 @@ export function BookingReceived({ name, propertyName, dates, bookingCode, checkI
         You will receive a confirmation email once your reservation has been reviewed. If you have any questions, please do not hesitate to reach us at info@saltroutegroup.com.
       </BodyText>
 
-      <Button
-        href="https://saltroutegroup.com/account/bookings"
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none', marginTop: '8px' }}
-      >
+      <ActionButton href="https://saltroutegroup.com/account/bookings">
         View My Bookings
-      </Button>
+      </ActionButton>
     </EmailLayout>
   )
 }

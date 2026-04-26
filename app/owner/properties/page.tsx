@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -47,13 +47,13 @@ export default async function OwnerPropertiesPage({
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <span className="h-px w-8 bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Portfolio Rooms</p>
+            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Owner Properties</p>
           </div>
           <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
-            Every property in its own polished owner view.
+            Every property, beautifully kept in one view.
           </h1>
           <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
-            Open any asset to review its guest-facing story, gallery, amenities, arrivals, reviews, revenue, and listing update requests.
+            Open any property to review its guest story, gallery, amenities, arrivals, reviews, stay value, and update requests.
           </p>
         </div>
 
@@ -62,7 +62,7 @@ export default async function OwnerPropertiesPage({
             ["Total", total],
             ["Shown", properties.length],
           ].map(([label, value]) => (
-            <div key={label} className="bg-[#0A1826] p-6">
+            <div key={label} className="bg-[#102943] p-6">
               <p className="text-[8px] uppercase tracking-[0.3em] text-sand/28">{label}</p>
               <p className="mt-3 font-display text-3xl text-gold/75">{value}</p>
             </div>
@@ -74,10 +74,10 @@ export default async function OwnerPropertiesPage({
         <div className="border border-gold/8 py-24 text-center">
           <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
           <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">
-            No active properties in your portfolio yet
+            No active properties listed yet
           </p>
           <p className="mt-3 text-[11px] font-light text-sand/20">
-            Contact Salt Route to prepare your first property room.
+            Contact Salt Route to prepare your first property for guests.
           </p>
         </div>
       ) : (
@@ -95,9 +95,9 @@ export default async function OwnerPropertiesPage({
               <Link
                 key={p.id}
                 href={`/owner/properties/${p.id}`}
-                className="group flex min-h-[500px] flex-col bg-[#0A1826] transition-colors duration-700 hover:bg-[#0F2133]"
+                className="group flex min-h-[500px] flex-col bg-[#102943] transition-colors duration-700 hover:bg-[#163350]"
               >
-                <div className="relative aspect-[16/10] overflow-hidden bg-[#10243A]">
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#1B3A5C]">
                   <Image
                     src={imageUrl}
                     alt={p.title}
@@ -105,8 +105,8 @@ export default async function OwnerPropertiesPage({
                     sizes="(min-width: 1280px) 31vw, (min-width: 768px) 48vw, 100vw"
                     className="object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-[#06111D]/22 transition-colors duration-700 group-hover:bg-transparent" />
-                  <div className="absolute left-5 top-5 border border-gold/20 bg-[#06111D]/78 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-gold backdrop-blur">
+                  <div className="absolute inset-0 bg-[#0C1F33]/22 transition-colors duration-700 group-hover:bg-transparent" />
+                  <div className="absolute left-5 top-5 border border-gold/20 bg-[#0C1F33]/78 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-gold backdrop-blur">
                     {p.status}
                   </div>
                   {p.featured && (
@@ -151,7 +151,7 @@ export default async function OwnerPropertiesPage({
                     </div>
                     <div>
                       <p className="font-display text-2xl text-gold/72">{readiness}/4</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Ready</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Details</p>
                     </div>
                   </div>
 
@@ -161,7 +161,7 @@ export default async function OwnerPropertiesPage({
                       {p.amenities.length} amenities
                     </span>
                     <span className="inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-gold/55 transition-colors duration-500 group-hover:text-gold">
-                      Open room
+                      Open property
                       <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
                     </span>
                   </div>
@@ -184,3 +184,4 @@ export default async function OwnerPropertiesPage({
     </div>
   )
 }
+

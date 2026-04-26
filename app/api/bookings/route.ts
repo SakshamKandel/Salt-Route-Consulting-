@@ -1,17 +1,17 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { generateBookingCode } from "@/lib/booking-code"
-import { sendEmail } from "@/lib/email/transporter"
 import { NextResponse } from "next/server"
 import { bookingSchema } from "@/lib/validations"
 import { rateLimit } from "@/lib/rate-limit"
 import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
 import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
-import { notifyAdmins, notifyUser } from "@/lib/notifications"
+import { notifyAdmins, notifyUser, getAdminEmails } from "@/lib/notifications"
 import { render } from "@react-email/render"
 import { BookingReceived } from "@/emails/BookingReceived"
 import { NewBookingAdminAlert } from "@/emails/NewBookingAdminAlert"
+import { sendEmail, sendEmailToMany } from "@/lib/email/transporter"
 
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
 
@@ -183,14 +183,20 @@ export async function POST(request: Request) {
         })),
       ])
 
+      const adminEmails = await getAdminEmails()
+      const allAdminRecipients = Array.from(new Set([
+        ...adminEmails,
+        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+      ]))
+
       await Promise.all([
         sendEmail({
           to: result.guest.email!,
           subject: `Booking Request Received — ${result.bookingCode}`,
           html: guestHtml,
         }),
-        sendEmail({
-          to: process.env.ADMIN_EMAIL || "admin@saltroute.com",
+        sendEmailToMany({
+          to: allAdminRecipients,
           subject: `New Booking Request — ${result.bookingCode} | ${result.property.title}`,
           html: adminHtml,
         }),

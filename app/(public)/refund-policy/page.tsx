@@ -1,4 +1,4 @@
-
+﻿
 
 export const metadata = {
   title: "Refund Policy | Salt Route",
@@ -17,12 +17,12 @@ export default function RefundPolicyPage() {
 
         <article className="bg-white border border-charcoal/5 p-10 md:p-16">
           <div className="space-y-12 text-charcoal/60 text-base leading-relaxed font-light">
-            <div className="bg-[#FAFAFA] border border-charcoal/10 p-6 text-charcoal/80 text-sm">
+            <div className="bg-[#FBF9F4] border border-charcoal/10 p-6 text-charcoal/80 text-sm">
               <p className="font-semibold mb-2 uppercase tracking-[0.1em] text-[10px]">Summary</p>
-              <p>Free cancellation within 48 hours of confirmation. Partial refunds apply for cancellations 7–30 days before check-in. No refund within 7 days of check-in.</p>
+              <p>Free cancellation within 48 hours of confirmation. Partial refunds apply for cancellations 7â€“30 days before check-in. No refund within 7 days of check-in.</p>
             </div>
 
-            <Section title="Full Refund — 48-Hour Window">
+            <Section title="Full Refund â€” 48-Hour Window">
               If you cancel within 48 hours of receiving your booking confirmation, you will receive a full refund regardless of the check-in date, provided check-in is at least 14 days away.
             </Section>
 
@@ -30,7 +30,7 @@ export default function RefundPolicyPage() {
               Cancellations made 30 or more days before the check-in date (outside the 48-hour window) will receive a 90% refund of the total booking amount. A 10% administrative fee is retained to cover processing costs.
             </Section>
 
-            <Section title="Cancellation 7–29 Days Before Check-In">
+            <Section title="Cancellation 7â€“29 Days Before Check-In">
               Cancellations made between 7 and 29 days before check-in will receive a 50% refund of the total booking amount.
             </Section>
 
@@ -43,7 +43,7 @@ export default function RefundPolicyPage() {
             </Section>
 
             <Section title="Property-Initiated Cancellations">
-              In the rare event that a property cancellation is initiated by Salt Route Consulting or the property owner, you will receive a full refund within 5–10 business days, plus our best effort to arrange an equivalent alternative property.
+              In the rare event that a property cancellation is initiated by Salt Route Consulting or the property owner, you will receive a full refund within 5â€“10 business days, plus our best effort to arrange an equivalent alternative property.
             </Section>
 
             <Section title="Force Majeure">
@@ -51,7 +51,7 @@ export default function RefundPolicyPage() {
             </Section>
 
             <Section title="Refund Processing">
-              Approved refunds are processed to the original payment method within 5–10 business days. Processing times may vary depending on your bank or card issuer.
+              Approved refunds are processed to the original payment method within 5â€“10 business days. Processing times may vary depending on your bank or card issuer.
             </Section>
 
             <Section title="How to Cancel">
@@ -75,3 +75,4 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   )
 }
+

@@ -55,6 +55,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           
           if (!user || !user.hashedPassword) return null
           
+          if (!user.emailVerified) {
+            throw new Error("EMAIL_NOT_VERIFIED")
+          }
+
           if (user.status !== "ACTIVE") {
             throw new Error("USER_SUSPENDED")
           }
@@ -88,6 +92,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = normalizeRole(token.role)
+        session.user.image = token.image as string | null
       }
       return session
     },
@@ -95,6 +100,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id
         token.role = normalizeRole(user.role)
+        token.image = user.image
       }
       return token
     },

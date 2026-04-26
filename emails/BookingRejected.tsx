@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button, Text } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY, GOLD, VELLUM, sans } from './EmailLayout'
+import { Text, Button } from '@react-email/components'
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, CHARCOAL, GOLD, VELLUM, sans, ActionButton } from './EmailLayout'
 
 interface BookingRejectedProps {
   name: string
@@ -30,9 +30,9 @@ export function BookingRejected({ name, propertyName, reason, bookingCode }: Boo
         </DetailsCard>
       )}
 
-      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#7A7A7A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
+      <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
         We warmly invite you to explore our other available properties, or to reach us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: NAVY, textDecoration: 'none', fontWeight: '600' }}>
+        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
           info@saltroutegroup.com
         </a>{' '}
         to discuss alternative arrangements. It would be our pleasure to find the right experience for you.
@@ -40,7 +40,7 @@ export function BookingRejected({ name, propertyName, reason, bookingCode }: Boo
 
       <Button
         href="https://saltroutegroup.com/properties"
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' }}
+        style={{ backgroundColor: CHARCOAL, color: '#ffffff', padding: '16px 36px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.3em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' , border: `1px solid ${CHARCOAL}`}}
       >
         Explore Properties
       </Button>

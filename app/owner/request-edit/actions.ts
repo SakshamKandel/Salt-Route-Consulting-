@@ -58,6 +58,6 @@ export async function submitOwnerRequestAction(formData: FormData) {
     return { success: true }
   } catch (err: unknown) {
     console.error("[OWNER_REQUEST]", err)
-    return { error: "Failed to submit request." }
+    return { error: "We could not send your request yet." }
   }
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button } from '@react-email/components'
-import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, NAVY } from './EmailLayout'
+
+import { EmailLayout, LabelText, HeadlineText, GoldRule, BodyText, DetailsCard, DetailRow, ActionButton, CHARCOAL } from './EmailLayout'
 
 interface NewBookingAdminAlertProps {
   propertyName: string
@@ -42,12 +42,9 @@ export function NewBookingAdminAlert({ propertyName, guestName, dates, bookingCo
         {totalPrice && <DetailRow label="Total" value={totalPrice} />}
       </DetailsCard>
 
-      <Button
-        href={adminUrl || 'https://saltroutegroup.com/admin/bookings'}
-        style={{ backgroundColor: NAVY, color: '#ffffff', padding: '15px 32px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.25em', textTransform: 'uppercase', display: 'block', textAlign: 'center', textDecoration: 'none' }}
-      >
+      <ActionButton href={adminUrl || 'https://saltroutegroup.com/admin/bookings'}>
         Review Booking
-      </Button>
+      </ActionButton>
     </EmailLayout>
   )
 }

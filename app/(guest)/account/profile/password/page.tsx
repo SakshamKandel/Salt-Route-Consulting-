@@ -90,7 +90,7 @@ export default function ChangePasswordPage() {
           />
 
           <Button type="submit" className="bg-navy text-cream w-full" disabled={isPending}>
-            {isPending ? "Updating..." : "Update Password"}
+            {isPending ? "Saving..." : "Update Password"}
           </Button>
         </form>
       </Form>

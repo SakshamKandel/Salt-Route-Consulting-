@@ -1,0 +1,36 @@
+
+> salt-route@0.1.0 dev E:\Salt Route Consulting
+> next dev "--hostname" "127.0.0.1" "--port" "3000"
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+- Environments: .env.local, .env
+✓ Ready in 342ms
+
+ GET / 200 in 1912ms (next.js: 230ms, proxy.ts: 303ms, application-code: 1379ms)
+ GET / 200 in 299ms (next.js: 5ms, proxy.ts: 7ms, application-code: 287ms)
+ GET /about 200 in 153ms (next.js: 36ms, proxy.ts: 7ms, application-code: 110ms)
+ GET /services 200 in 150ms (next.js: 33ms, proxy.ts: 6ms, application-code: 111ms)
+ GET /for-owners 200 in 257ms (next.js: 51ms, proxy.ts: 3ms, application-code: 204ms)
+ GET /properties 200 in 431ms (next.js: 54ms, proxy.ts: 7ms, application-code: 370ms)
+ GET /properties/sunshine-villa 200 in 917ms (next.js: 615ms, proxy.ts: 3ms, application-code: 299ms)
+ GET /contact 200 in 160ms (next.js: 36ms, proxy.ts: 7ms, application-code: 117ms)
+ GET /faq 200 in 2.3s (next.js: 2.2s, proxy.ts: 8ms, application-code: 71ms)
+ GET / 200 in 233ms (next.js: 8ms, proxy.ts: 58ms, application-code: 167ms)
+ GET /api/auth/session 200 in 863ms (next.js: 815ms, application-code: 48ms)
+ GET /api/auth/session 200 in 20ms (next.js: 9ms, application-code: 12ms)
+ GET /for-owners 200 in 132ms (next.js: 11ms, proxy.ts: 29ms, application-code: 92ms)
+ GET /properties 200 in 137ms (next.js: 4ms, proxy.ts: 15ms, application-code: 118ms)
+ GET /properties/sunshine-villa 200 in 135ms (next.js: 19ms, proxy.ts: 11ms, application-code: 104ms)
+ GET /api/auth/session 200 in 51ms (next.js: 21ms, application-code: 31ms)
+ GET /api/auth/session 200 in 20ms (next.js: 4ms, application-code: 16ms)
+ GET /for-owners 200 in 934ms (next.js: 34ms, proxy.ts: 189ms, application-code: 710ms)
+ GET /api/auth/session 200 in 2.1s (next.js: 2.1s, application-code: 25ms)
+ GET /api/auth/session 200 in 14ms (next.js: 1910µs, application-code: 12ms)
+ GET /api/auth/session 200 in 12ms (next.js: 1958µs, application-code: 10ms)
+ GET / 200 in 135ms (next.js: 16ms, proxy.ts: 22ms, application-code: 97ms)
+ GET /api/auth/session 200 in 105ms (next.js: 54ms, application-code: 51ms)
+ GET /api/auth/session 200 in 21ms (next.js: 3ms, application-code: 18ms)
+ GET /api/auth/session 200 in 28ms (next.js: 3ms, application-code: 25ms)
+ ELIFECYCLE  Command failed with exit code 3221225786.

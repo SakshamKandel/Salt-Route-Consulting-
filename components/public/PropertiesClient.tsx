@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { type FormEvent, useMemo, useState } from "react"
 import Image from "next/image"
@@ -9,6 +9,8 @@ import { motion } from "framer-motion"
 import { formatNpr } from "@/lib/currency"
 import { getPrimaryImageUrl, type PropertyMediaLike } from "@/lib/property-media"
 import { Calendar, Users, MapPin, ChevronLeft, ChevronRight, Star, Search, X } from "lucide-react"
+import { LocationCombobox, type ComboboxProperty } from "@/components/public/LocationCombobox"
+import { PropertyMap, type MapProperty } from "@/components/public/PropertyMap"
 
 type PropertyListItem = {
   id: string
@@ -36,6 +38,8 @@ export default function PropertiesClient({
   totalProperties,
   totalPages,
   knownLocations,
+  knownProperties = [],
+  mapProperties = [],
 }: {
   properties: PropertyListItem[]
   location?: string
@@ -47,12 +51,23 @@ export default function PropertiesClient({
   totalProperties: number
   totalPages: number
   knownLocations: string[]
+  knownProperties?: ComboboxProperty[]
+  mapProperties?: MapProperty[]
 }) {
   const router = useRouter()
   const [locationInput, setLocationInput] = useState(location ?? "")
   const [checkInInput, setCheckInInput] = useState(checkIn ?? "")
   const [checkOutInput, setCheckOutInput] = useState(checkOut ?? "")
   const [guestsInput, setGuestsInput] = useState(guests ?? 1)
+  const [mapSearch, setMapSearch] = useState("")
+
+  const filteredMapProperties = useMemo(() => {
+    if (!mapSearch.trim()) return mapProperties
+    const q = mapSearch.toLowerCase()
+    return mapProperties.filter(
+      (p) => p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q)
+    )
+  }, [mapProperties, mapSearch])
 
   const today = new Date().toISOString().slice(0, 10)
   const hasFilters = !!(location || checkIn || checkOut || (guests && guests > 1))
@@ -121,7 +136,7 @@ export default function PropertiesClient({
             transition={{ duration: 1.5 }}
           >
             <p className="text-[10px] uppercase tracking-[0.5em] text-white/80 font-sans mb-6 font-light">
-              Nepal&apos;s Finest Registry
+              Boutique Stays Across Nepal
             </p>
             <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] text-white tracking-wide leading-[1.05] mb-10 font-normal">
               The Collection
@@ -141,18 +156,12 @@ export default function PropertiesClient({
               <MapPin className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
                 <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Location</p>
-                <input
-                  list="prop-locations"
+                <LocationCombobox
                   value={locationInput}
-                  onChange={(event) => setLocationInput(event.target.value)}
+                  onChange={setLocationInput}
+                  properties={knownProperties}
                   placeholder="Anywhere"
-                  className="w-full bg-transparent border-0 outline-none text-sm text-charcoal placeholder:text-charcoal/30 font-light"
                 />
-                <datalist id="prop-locations">
-                  {knownLocations.map((loc) => (
-                    <option key={loc} value={loc} />
-                  ))}
-                </datalist>
               </div>
             </label>
 
@@ -229,13 +238,66 @@ export default function PropertiesClient({
         </form>
       </div>
 
-      <section className="py-20 md:py-28 bg-[#FAFAFA]">
+      {/* â”€â”€â”€ MAP SECTION â”€â”€â”€ */}
+      {mapProperties.length > 0 && (
+        <section className="bg-[#0C1F33]">
+          <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-[360px_1fr]">
+            {/* Left panel */}
+            <div className="px-10 py-14 lg:py-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.05]">
+              <p className="text-[8px] uppercase tracking-[0.45em] text-gold/60 font-bold mb-5">
+                Our Locations
+              </p>
+              <h2 className="font-display text-3xl xl:text-4xl text-white leading-[1.15] tracking-tight mb-5">
+                Explore Our<br />
+                Properties<br />
+                Across Nepal
+              </h2>
+              <div className="w-8 h-[1px] bg-gold mb-10" />
+
+              <div className="space-y-6">
+                {mapProperties.map((p, i) => (
+                  <Link
+                    key={p.id}
+                    href={`/properties/${p.slug}`}
+                    className="flex items-center gap-5 group"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-gold/10 border border-gold/25 flex items-center justify-center shrink-0 group-hover:bg-gold group-hover:border-gold transition-all duration-300">
+                      <span className="text-[12px] font-bold text-gold group-hover:text-[#0C1F33] transition-colors duration-300">
+                        {i + 1}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white/90 group-hover:text-gold transition-colors duration-300 leading-tight truncate">
+                        {p.title}
+                      </p>
+                      <p className="text-[11px] text-white/35 mt-0.5">{p.location}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-12 pt-8 border-t border-white/[0.06]">
+                <p className="text-[10px] text-white/20 leading-relaxed">
+                  Click any pin on the map to view property details.
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Map */}
+            <div className="h-[400px] lg:h-[560px]">
+              <PropertyMap properties={mapProperties} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="py-20 md:py-28 bg-[#FBF9F4]">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
           {totalProperties > 0 && (
             <div className="mb-12 flex flex-col gap-3 border-b border-charcoal/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.25em] text-charcoal/40 font-semibold">
-                  Available Registry
+                  Available Stays
                 </p>
                 <p className="mt-2 text-sm text-charcoal/60">
                   Showing {resultStart}-{resultEnd} of {totalProperties} properties
@@ -256,7 +318,7 @@ export default function PropertiesClient({
                 href="/properties"
                 className="border border-charcoal text-charcoal px-12 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:bg-charcoal hover:text-white transition-all duration-700"
               >
-                Reset Registry
+                Reset Search
               </Link>
             </div>
           ) : (
@@ -406,3 +468,4 @@ export default function PropertiesClient({
     </div>
   )
 }
+

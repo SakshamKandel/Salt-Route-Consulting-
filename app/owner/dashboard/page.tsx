@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import Image from "next/image"
 import Link from "next/link"
@@ -114,23 +114,23 @@ export default async function OwnerDashboardPage() {
     },
     {
       icon: TrendingUp,
-      label: "Portfolio Revenue",
+      label: "Total Stay Value",
       value: formatNpr(totalRevenue._sum.totalPrice),
       href: "/owner/reports",
     },
   ]
 
   const quickActions = [
-    { label: "Open Portfolio", href: "/owner/properties", desc: "Review each property room" },
-    { label: "Reservation Ledger", href: "/owner/bookings", desc: "Track guests and stay dates" },
-    { label: "Performance", href: "/owner/reports", desc: "Read revenue and booking signals" },
-    { label: "Request Listing Edit", href: "/owner/request-edit", desc: "Update photos, pricing, amenities" },
+    { label: "Open Properties", href: "/owner/properties", desc: "Review each property story" },
+    { label: "Guest Stays", href: "/owner/bookings", desc: "See guests and stay dates" },
+    { label: "Earnings", href: "/owner/reports", desc: "Read revenue and stay notes" },
+    { label: "Request An Update", href: "/owner/request-edit", desc: "Refresh photos, pricing, or amenities" },
   ]
 
   return (
     <div className="space-y-14">
       <section
-        className="relative overflow-hidden border border-gold/12 bg-[#07111C]"
+        className="relative overflow-hidden border border-gold/12 bg-[#0C1F33]"
         style={{ minHeight: "360px" }}
       >
         {heroImage ? (
@@ -143,27 +143,27 @@ export default async function OwnerDashboardPage() {
             className="object-cover opacity-[0.45]"
           />
         ) : (
-          <div className="absolute inset-0 bg-[#07111C]" />
+          <div className="absolute inset-0 bg-[#0C1F33]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07111C] via-[#07111C]/82 to-[#07111C]/28" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0C1F33] via-[#0C1F33]/82 to-[#0C1F33]/28" />
 
         <div className="relative z-10 grid gap-8 px-6 py-10 sm:px-9 md:px-12 lg:grid-cols-[1fr_340px] lg:items-end">
           <div className="max-w-3xl">
             <div className="flex items-center gap-4">
               <span className="h-px w-8 bg-gold/55" />
-              <p className="text-[9px] uppercase tracking-[0.42em] text-gold/70">Property Partner Portal</p>
+              <p className="text-[9px] uppercase tracking-[0.42em] text-gold/70">Owner Care</p>
             </div>
             <h1 className="mt-6 font-display text-4xl leading-[1.08] tracking-wide text-sand/92 md:text-6xl">
               Good day, {firstName}. Your properties are ready.
             </h1>
             <p className="mt-6 max-w-2xl text-sm font-light leading-[1.9] text-sand/48 md:text-base">
-              Review portfolio health, upcoming guest movement, listing readiness, and Salt Route support from one property-focused view.
+              See your property stories, upcoming guests, stay value, and Salt Route support from one calm owner view.
             </p>
 
             {unreadMessages > 0 && (
               <Link
                 href="/owner/messages"
-                className="mt-7 inline-flex items-center gap-3 border border-gold/25 bg-gold/8 px-5 py-3 text-[9px] font-medium uppercase tracking-[0.3em] text-gold transition-colors duration-500 hover:bg-gold hover:text-[#07111C]"
+                className="mt-7 inline-flex items-center gap-3 border border-gold/25 bg-gold/8 px-5 py-3 text-[9px] font-medium uppercase tracking-[0.3em] text-gold transition-colors duration-500 hover:bg-gold hover:text-[#0C1F33]"
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-gold" />
                 {unreadMessages} new message{unreadMessages > 1 ? "s" : ""}
@@ -171,13 +171,13 @@ export default async function OwnerDashboardPage() {
             )}
           </div>
 
-          <div className="border border-gold/14 bg-[#07111C]/72 p-6 backdrop-blur">
+          <div className="border border-gold/14 bg-[#0C1F33]/72 p-6 backdrop-blur">
             <p className="text-[9px] uppercase tracking-[0.34em] text-sand/35">Featured Property</p>
             <p className="mt-4 font-display text-2xl tracking-wide text-sand/85">
-              {heroProperty?.title ?? "Portfolio setup"}
+              {heroProperty?.title ?? "Property welcome"}
             </p>
             <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-gold/55">
-              {heroProperty?.location ?? "Add your first property"}
+              {heroProperty?.location ?? "Salt Route will prepare your first property"}
             </p>
             <div className="mt-7 grid grid-cols-3 gap-3">
               {[
@@ -200,7 +200,7 @@ export default async function OwnerDashboardPage() {
           <Link
             key={m.label}
             href={m.href}
-            className="group bg-[#0A1826] px-5 py-7 transition-colors duration-700 hover:bg-[#0F2133] sm:px-8 sm:py-9"
+            className="group bg-[#102943] px-5 py-7 transition-colors duration-700 hover:bg-[#163350] sm:px-8 sm:py-9"
           >
             <m.icon className="mb-6 h-4 w-4 text-gold/35 stroke-[1.3] transition-colors duration-700 group-hover:text-gold" />
             <p className="mb-3 text-[8px] uppercase tracking-[0.34em] text-sand/30 sm:text-[8.5px]">
@@ -218,7 +218,7 @@ export default async function OwnerDashboardPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-center gap-4">
               <span className="h-px w-8 bg-gold/35" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Property Rooms</h2>
+              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Properties</h2>
             </div>
             {visiblePropertyCount > 0 && (
               <Link
@@ -246,9 +246,9 @@ export default async function OwnerDashboardPage() {
                   <Link
                     key={property.id}
                     href={`/owner/properties/${property.id}`}
-                    className="group grid min-h-[260px] grid-cols-[130px_1fr] bg-[#0A1826] transition-colors duration-700 hover:bg-[#0F2133] sm:grid-cols-[170px_1fr]"
+                    className="group grid min-h-[260px] grid-cols-[130px_1fr] bg-[#102943] transition-colors duration-700 hover:bg-[#163350] sm:grid-cols-[170px_1fr]"
                   >
-                    <div className="relative overflow-hidden bg-[#10243A]">
+                    <div className="relative overflow-hidden bg-[#1B3A5C]">
                       <Image
                         src={image}
                         alt={property.title}
@@ -273,7 +273,7 @@ export default async function OwnerDashboardPage() {
                         </div>
                         <div>
                           <p className="font-display text-xl text-gold/75">{readiness}/4</p>
-                          <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Ready</p>
+                          <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Details</p>
                         </div>
                       </div>
                     </div>
@@ -285,7 +285,7 @@ export default async function OwnerDashboardPage() {
             <div className="border border-gold/8 py-20 text-center">
               <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
               <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">No properties listed yet</p>
-              <p className="mt-3 text-[12px] font-light text-sand/25">Salt Route will add your property room once onboarding begins.</p>
+              <p className="mt-3 text-[12px] font-light text-sand/25">Salt Route will add your property once preparations begin.</p>
             </div>
           )}
         </div>
@@ -294,7 +294,7 @@ export default async function OwnerDashboardPage() {
           <div className="space-y-5">
             <div className="flex items-center gap-4">
               <span className="h-px w-8 bg-gold/35" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Quick Moves</h2>
+              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Helpful Shortcuts</h2>
             </div>
             <div className="space-y-2">
               {quickActions.map((action) => (
@@ -317,9 +317,9 @@ export default async function OwnerDashboardPage() {
 
           <div className="border border-gold/10 bg-gold/[0.025] p-6">
             <Camera className="mb-5 h-5 w-5 text-gold/55 stroke-[1.3]" />
-            <p className="font-display text-xl tracking-wide text-sand/78">Listing care note</p>
+            <p className="font-display text-xl tracking-wide text-sand/78">Property care note</p>
             <p className="mt-4 text-[12px] font-light leading-[1.85] text-sand/35">
-              Keep photos, amenities, house rules, and seasonal pricing current so every property page stays guest-ready.
+              Keep photos, amenities, house notes, and seasonal pricing current so every property feels ready to welcome.
             </p>
             <Link
               href="/owner/request-edit"
@@ -336,14 +336,14 @@ export default async function OwnerDashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-center gap-4">
             <span className="h-px w-8 bg-gold/35" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Upcoming Guest Movement</h2>
+            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Upcoming Guests</h2>
           </div>
           {recentBookings.length > 0 && (
             <Link
               href="/owner/bookings"
               className="text-[9px] uppercase tracking-[0.3em] text-gold/50 transition-colors duration-500 hover:text-gold"
             >
-              View ledger
+              View stays
             </Link>
           )}
         </div>
@@ -354,7 +354,7 @@ export default async function OwnerDashboardPage() {
               <Link
                 key={booking.id}
                 href={`/owner/bookings/${booking.id}`}
-                className="group bg-[#0A1826] p-6 transition-colors duration-500 hover:bg-[#0F2133]"
+                className="group bg-[#102943] p-6 transition-colors duration-500 hover:bg-[#163350]"
               >
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                   <div>

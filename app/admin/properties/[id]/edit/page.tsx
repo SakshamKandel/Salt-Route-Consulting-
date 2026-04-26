@@ -15,7 +15,7 @@ export default async function EditPropertyPage({
   const [property, owners, locationRows] = await Promise.all([
     prisma.property.findUnique({ where: { id } }),
     prisma.user.findMany({
-      where: { role: { in: ["OWNER", "ADMIN"] } },
+      where: { role: "OWNER" },
       select: { id: true, name: true, email: true }
     }),
     prisma.property.findMany({

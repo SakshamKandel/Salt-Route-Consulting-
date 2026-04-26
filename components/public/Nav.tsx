@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 const guestLinks = [
   { href: "/properties", label: "Stays" },
-  { href: "/about", label: "Philosophy" },
+  { href: "/about", label: "Our Story" },
   { href: "/services", label: "Experiences" },
   { href: "/for-owners", label: "For Owners" },
   { href: "/contact", label: "Contact" },
@@ -64,14 +64,14 @@ export function Nav() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-700 border-b ${scrolled ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-700 border-b ${scrolled ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 h-full flex items-center justify-between relative">
           
           {/* Left Actions (Mobile Toggle & Language) */}
           <div className="flex items-center gap-4 lg:hidden">
             <button
               onClick={toggleMobile}
-              className="flex flex-col justify-center items-center w-8 h-8 z-[80]"
+              className="flex flex-col justify-center items-center w-8 h-8 z-[10001]"
             >
               <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[1px] bg-charcoal' : (scrolled ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} -translate-y-1`} />
               <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[0px] bg-charcoal' : (scrolled ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} translate-y-1`} />
@@ -144,7 +144,7 @@ export function Nav() {
             animate={{ opacity: 1, y: "0%" }}
             exit={{ opacity: 0, y: "-100%" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[60] bg-background flex flex-col justify-center items-center"
+            className="fixed inset-0 z-[9999] bg-background flex flex-col justify-center items-center"
           >
             <div className="flex flex-col items-center gap-8 w-full px-6">
               {navLinks.map((link, i) => (

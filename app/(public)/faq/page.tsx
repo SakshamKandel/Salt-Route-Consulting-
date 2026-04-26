@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Plus, Minus } from "lucide-react"
@@ -10,14 +10,14 @@ export default function FaqPage() {
     <div className="bg-background text-charcoal min-h-screen">
       
       {/* HEADER */}
-      <section className="pt-40 pb-20 px-6 md:px-12 text-center bg-[#FAFAFA] border-b border-charcoal/5">
+      <section className="pt-40 pb-20 px-6 md:px-12 text-center bg-[#FBF9F4] border-b border-charcoal/5">
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5 }}
             className="max-w-3xl mx-auto"
         >
-            <p className="text-[10px] uppercase tracking-[0.6em] text-charcoal/40 mb-8 font-medium">Registry &amp; Inquiries</p>
+            <p className="text-[10px] uppercase tracking-[0.6em] text-charcoal/40 mb-8 font-medium">Stays &amp; Enquiries</p>
             <h1 className="font-display text-5xl md:text-7xl lg:text-[7rem] tracking-wide mb-10 font-normal">
                 Common<br/>Inquiries.
             </h1>
@@ -34,7 +34,7 @@ export default function FaqPage() {
             />
             <FaqItem
               q="Are the prices per night or for the entire stay?"
-              a="All prices displayed are per night. The total for your sanctuary experience is calculated based on your duration and shown clearly before confirmation."
+              a="All prices displayed are per night. The total for your stay is calculated based on your dates and shown clearly before confirmation."
             />
             <FaqItem
               q="Can I cancel or modify a booking?"
@@ -42,11 +42,11 @@ export default function FaqPage() {
             />
             <FaqItem
               q="Do I need to create an account to book?"
-              a="A private account is required to maintain the security of our communications and provide you with a bespoke dashboard for your itineraries."
+              a="A private account keeps your stay details, messages, and reservations together in one simple guest area."
             />
             <FaqItem
               q="What is included in the price?"
-              a="Each sanctuary includes signature amenities. Specific details regarding breakfast, transfers, and experiences are listed clearly on each property profile."
+              a="Each stay includes the amenities listed on its property page. Breakfast, transfers, and experiences are shown clearly where available."
             />
         </div>
       </section>
@@ -77,3 +77,4 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     </div>
   )
 }
+

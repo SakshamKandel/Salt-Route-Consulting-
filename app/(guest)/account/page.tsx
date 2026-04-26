@@ -51,7 +51,7 @@ export default async function AccountDashboard() {
       {/* ─── GREETING ─── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Dashboard Overview</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Your Salt Route Journey</p>
           <h1 className="font-display text-4xl md:text-5xl text-charcoal tracking-tight">
             {greeting()}, <span className="text-charcoal/60">{session.user.name?.split(' ')[0]}</span>
           </h1>
@@ -122,7 +122,7 @@ export default async function AccountDashboard() {
                   href={`/account/bookings/${upcomingBooking.id}`}
                   className="inline-flex items-center gap-4 bg-charcoal text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-charcoal/90 transition-all group/btn"
                 >
-                  <span>Manage Reservation</span>
+                  <span>View Stay Details</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" strokeWidth={2} />
                 </Link>
               </div>
@@ -138,13 +138,13 @@ export default async function AccountDashboard() {
                 </div>
                 <h2 className="font-display text-3xl text-charcoal tracking-wide">No upcoming stays yet</h2>
                 <p className="text-charcoal/40 text-sm font-sans leading-relaxed">
-                  The world is waiting. Explore our handpicked collection of luxury retreats and begin your next chapter.
+                  Nepal is waiting. Explore our handpicked stays and begin your next quiet escape.
                 </p>
                 <Link
                   href="/properties"
                   className="inline-flex items-center gap-4 border border-charcoal text-charcoal px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-charcoal hover:text-white transition-all"
                 >
-                  <span>Discover Properties</span>
+                  <span>Explore Stays</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
              </div>
@@ -277,7 +277,7 @@ export default async function AccountDashboard() {
               href="/account/profile"
               className="border border-white/20 text-white px-8 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white/10 transition-all"
             >
-              Account Settings
+              Personal Profile
             </Link>
           </div>
         </div>

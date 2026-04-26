@@ -1,7 +1,5 @@
-import { CheckCircle2, ArrowRight } from "lucide-react"
+import { ArrowRight, Check } from "lucide-react"
 import Link from "next/link"
-import { LuxuryButton } from "@/components/ui/luxury-button"
-import Image from "next/image"
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -12,83 +10,99 @@ export default async function BookingSuccessPage({
   const code = resolvedParams.code as string | undefined
 
   return (
-    <div className="min-h-[90vh] flex flex-col items-center justify-center p-6 bg-[#FDFBF7]">
-      <div className="max-w-2xl w-full">
-        {/* Branding Header */}
-        <div className="flex flex-col items-center mb-16">
-          <div className="relative w-24 h-12 mb-12">
-            <Image 
-              src="/logo.png" 
-              alt="Salt Route Group" 
-              fill 
-              className="object-contain grayscale opacity-60" 
-            />
-          </div>
-          
-          <div className="h-20 w-20 flex items-center justify-center border border-charcoal/10 rounded-full mb-8">
-            <CheckCircle2 className="w-8 h-8 text-charcoal/40" strokeWidth={1} />
-          </div>
-          
-          <h1 className="font-display text-4xl md:text-5xl text-charcoal tracking-tight mb-4 text-center">
-            Request Received
-          </h1>
-          <p className="text-charcoal/50 font-sans text-sm tracking-[0.2em] uppercase text-center max-w-md mx-auto leading-relaxed">
-            Your journey with Salt Route begins. Our concierge team is now reviewing your request.
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 bg-[#E6E2DA] selection:bg-charcoal selection:text-white">
+      <div className="max-w-3xl w-full bg-[#F7F5F0] border border-charcoal relative shadow-2xl shadow-charcoal/5">
+        
+        {/* Top thick black bar */}
+        <div className="absolute top-0 left-0 w-full h-2 bg-charcoal" />
 
-        {/* Reference & Next Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 border-t border-b border-charcoal/10 py-16">
-          <div className="space-y-6">
-            <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40">Booking Reference</p>
-            <p className="font-display text-4xl text-charcoal tracking-wider">
-              {code || "SLT-PENDING"}
-            </p>
-            <div className="w-12 h-[1px] bg-charcoal/20" />
-            <p className="text-xs text-charcoal/50 font-sans leading-relaxed">
-              Please quote this reference number in any communication regarding your stay.
+        <div className="p-8 sm:p-16">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-16 border-b border-charcoal pb-8">
+            <div className="flex flex-col">
+              <span className="font-display text-2xl tracking-widest uppercase text-charcoal leading-none">Salt Route</span>
+              <span className="font-sans text-[8px] tracking-[0.5em] text-gold uppercase mt-2">Consulting</span>
+            </div>
+            <div className="text-right flex flex-col items-end">
+              <span className="text-[9px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal">Status</span>
+              <div className="flex items-center gap-2 mt-2 border border-charcoal px-3 py-1 bg-charcoal text-white">
+                <Check className="w-3 h-3" />
+                <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Received</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Title Area */}
+          <div className="mb-16">
+            <h1 className="font-display text-5xl md:text-6xl text-charcoal tracking-tight leading-none mb-6">
+              Request <br/> <span className="italic text-charcoal/70">Confirmed.</span>
+            </h1>
+            <p className="font-sans text-xs md:text-sm tracking-[0.1em] text-charcoal/60 leading-relaxed max-w-md uppercase">
+              Your journey begins here. Our team is currently reviewing your exclusive request and will formalize your itinerary shortly.
             </p>
           </div>
 
-          <div className="space-y-6">
-            <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40">Concierge Protocol</p>
-            <ul className="space-y-4">
-              {[
-                "Personal advisor verification",
-                "Confirmation within 24 hours",
-                "Digital itinerary generation"
-              ].map((step, i) => (
-                <li key={i} className="flex items-start gap-4 text-xs text-charcoal/70 font-sans">
-                  <span className="text-[10px] text-gold/60 font-bold mt-0.5">0{i+1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+          {/* Reference Folio */}
+          <div className="border border-charcoal bg-white mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="p-8 border-b md:border-b-0 md:border-r border-charcoal flex flex-col justify-between">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-2">Folio Reference</p>
+                  <p className="font-mono text-3xl text-charcoal tracking-widest">
+                    {code || "SLT-PENDING"}
+                  </p>
+                </div>
+                <div className="mt-8">
+                  <p className="text-[10px] text-charcoal/50 font-sans uppercase tracking-wider leading-relaxed">
+                    Please quote this reference number in all future correspondence regarding this specific arrangement.
+                  </p>
+                </div>
+              </div>
 
-        {/* Actions */}
-        <div className="flex flex-col items-center gap-8">
-          <div className="flex flex-col sm:flex-row items-center gap-6 w-full max-w-xl mx-auto">
-            <Link href="/account/bookings" className="w-full">
-              <LuxuryButton className="w-full">
-                View My Itinerary
-              </LuxuryButton>
+              <div className="p-8 flex flex-col justify-center bg-[#F9F9F8]">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-6">Next Steps Protocol</p>
+                <ul className="space-y-4">
+                  {[
+                    "Executive review by curation team",
+                    "Confirmation dossier sent within 24H",
+                    "Dedicated concierge assigned"
+                  ].map((step, i) => (
+                    <li key={i} className="flex items-start gap-4 text-xs text-charcoal/80 font-sans tracking-wide uppercase">
+                      <span className="text-[10px] text-gold font-bold mt-0.5">0{i+1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link 
+              href="/account/bookings" 
+              className="w-full sm:w-auto bg-charcoal text-white border border-charcoal text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-white hover:text-charcoal transition-all duration-500 ease-out text-center font-bold"
+            >
+              View Itinerary
             </Link>
             
             {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER && (
               <Link 
                 href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-                className="w-full py-5 border border-charcoal/10 text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal hover:bg-charcoal hover:text-white transition-all text-center"
+                className="w-full sm:w-auto border border-charcoal text-charcoal bg-transparent text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-[#E6E2DA] transition-all duration-500 ease-out text-center font-bold"
               >
-                Immediate Inquiry
+                Message Concierge
               </Link>
             )}
           </div>
-          
-          <Link href="/contact" className="group flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-charcoal/40 hover:text-charcoal transition-all">
-            <span>Contact Support Team</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" strokeWidth={1} />
+        </div>
+        
+        {/* Footer Bar */}
+        <div className="bg-charcoal text-white p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-white/50">Salt Route Group © {new Date().getFullYear()}</span>
+          <Link href="/contact" className="group flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-white/70 hover:text-gold transition-all">
+            <span>Contact Support</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>

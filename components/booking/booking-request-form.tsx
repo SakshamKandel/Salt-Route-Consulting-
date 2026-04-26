@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -148,13 +148,13 @@ export function BookingRequestForm({
           router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
           return
         }
-        throw new Error(data.error || "Failed to create booking")
+        throw new Error(data.error || "We could not send your stay request. Please try again.")
       }
 
       window.localStorage.removeItem(draftKey)
       router.push(`/booking-request/success?code=${data.bookingCode}`)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to create booking")
+      setError(err instanceof Error ? err.message : "We could not send your stay request. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -164,7 +164,7 @@ export function BookingRequestForm({
   const inputClass = "rounded-none border-0 border-b border-charcoal/20 bg-transparent px-0 py-3 text-sm focus-visible:border-charcoal focus-visible:ring-0 placeholder:text-charcoal/30 font-sans"
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#FDFBF7] p-8 md:p-12 border border-charcoal/10">
+    <div className="w-full max-w-lg mx-auto bg-[#FBF9F4] p-8 md:p-12 border border-charcoal/10">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-display text-charcoal mb-4">RESERVE YOUR STAY</h2>
         <p className="text-charcoal/60 font-sans text-sm tracking-widest uppercase">
@@ -240,7 +240,7 @@ export function BookingRequestForm({
           </Label>
           <Textarea 
             id="notes" 
-            placeholder="Tell us about any specific requirements..."
+          placeholder="Tell us about arrival needs, food preferences, or anything that would make the stay easier..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className={`${inputClass} min-h-[100px] resize-none`}
@@ -276,8 +276,8 @@ export function BookingRequestForm({
           >
             {isSubmitting
               ? isAuthenticated
-                ? "Processing..."
-                : "Redirecting..."
+                ? "Sending Request..."
+                : "Taking You There..."
               : isAuthenticated
               ? "Request Booking"
               : "Sign in to Request"}
@@ -287,3 +287,4 @@ export function BookingRequestForm({
     </div>
   )
 }
+

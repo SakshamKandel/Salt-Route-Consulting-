@@ -16,7 +16,7 @@ import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudi
 const schema = z.object({
   bookingId: z.string().min(1),
   rating: z.number().min(1, "Please select a rating").max(5),
-  comment: z.string().min(10, "Comment must be at least 10 characters"),
+  comment: z.string().min(10, "Please share a little more about the stay"),
   images: z.array(z.object({ url: z.string(), publicId: z.string().optional() })).optional(),
 })
 
@@ -41,8 +41,8 @@ export default function NewReviewPage({
   if (!bookingId) {
     return (
       <div className="space-y-6 max-w-2xl text-center">
-        <h1 className="text-3xl font-display text-navy">Invalid Request</h1>
-        <p className="text-gray-500">Missing booking ID to review.</p>
+        <h1 className="text-3xl font-display text-navy">Review Not Ready</h1>
+        <p className="text-gray-500">Please choose a completed stay before writing a review.</p>
         <Button asChild><Link href="/account/bookings">Back to Bookings</Link></Button>
       </div>
     )
@@ -75,7 +75,7 @@ export default function NewReviewPage({
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-display text-navy">Write a Review</h1>
+      <h1 className="text-3xl font-display text-navy">Share Your Stay</h1>
       
       {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
 
@@ -115,7 +115,7 @@ export default function NewReviewPage({
             name="comment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Review</FormLabel>
+                <FormLabel>Your Reflection</FormLabel>
                 <FormControl>
                   <Textarea 
                     placeholder="Tell us about your stay..." 
@@ -174,7 +174,7 @@ export default function NewReviewPage({
           </div>
 
           <Button type="submit" className="bg-navy text-cream" disabled={isPending}>
-            {isPending ? "Submitting..." : "Submit Review"}
+            {isPending ? "Sharing..." : "Share Review"}
           </Button>
         </form>
       </Form>

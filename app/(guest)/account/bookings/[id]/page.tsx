@@ -90,14 +90,14 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
 
       {/* ─── PRICING ─── */}
       <div className="border border-charcoal/5 bg-white p-10">
-        <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/30 mb-8 font-sans font-bold">Pricing Breakdown</p>
+        <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/30 mb-8 font-sans font-bold">Stay Summary</p>
         <div className="space-y-4">
           <div className="flex justify-between text-charcoal/50 text-sm font-sans">
             <span>{nights} night{nights > 1 ? "s" : ""} x {formatNpr(Number(booking.totalPrice) / nights)}</span>
             <span>{formatNpr(booking.totalPrice)}</span>
           </div>
           <div className="pt-4 border-t border-charcoal/5 flex justify-between items-center">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/25 font-bold">Total Amount</span>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/25 font-bold">Total</span>
             <span className="text-2xl font-display text-charcoal tracking-widest">{formatNpr(booking.totalPrice)}</span>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
       {/* ─── CANCELLATION INFO ─── */}
       {booking.cancellationReason && (
         <div className="border border-red-900/20 bg-red-950/10 p-10">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-red-400/60 mb-6 font-sans font-bold">Cancellation Reason</p>
+          <p className="text-[9px] uppercase tracking-[0.4em] text-red-400/60 mb-6 font-sans font-bold">Cancellation Note</p>
           <p className="text-red-300/80 text-sm leading-relaxed font-sans font-light">{booking.cancellationReason}</p>
         </div>
       )}
@@ -127,7 +127,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
           <TimelineStep
             label="Confirmed"
             active={["CONFIRMED", "CHECKED_IN", "COMPLETED"].includes(booking.status)}
-            note={booking.status === "PENDING" ? "Awaiting host approval" : undefined}
+            note={booking.status === "PENDING" ? "Awaiting Salt Route confirmation" : undefined}
           />
           <TimelineStep
             label="Checked in"

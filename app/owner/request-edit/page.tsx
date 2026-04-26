@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { CalendarDays, Camera, Edit3, Sparkles } from "lucide-react"
@@ -27,8 +27,8 @@ export default async function OwnerRequestEditPage({
     "Update Images",
     "Description Update",
     "Amenities Update",
-    "Additional Features",
-    "House Rules",
+    "Guest Details",
+    "House Notes",
     "Other",
   ]
 
@@ -38,13 +38,13 @@ export default async function OwnerRequestEditPage({
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <span className="h-px w-8 bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Listing Edits</p>
+            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Property Updates</p>
           </div>
           <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
-            Send precise property updates to Salt Route.
+            Send property updates to Salt Route.
           </h1>
           <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
-            Request calendar blocks, price changes, image refreshes, amenities, house rules, or additional client-facing features for any property.
+            Request calendar blocks, price changes, image refreshes, amenities, house notes, or guest-facing details for any property.
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default async function OwnerRequestEditPage({
             { icon: Camera, label: "Media" },
             { icon: Sparkles, label: "Features" },
           ].map(({ icon: Icon, label }) => (
-            <div key={label} className="bg-[#0A1826] p-5 text-center">
+            <div key={label} className="bg-[#102943] p-5 text-center">
               <Icon className="mx-auto mb-4 h-4 w-4 text-gold/45 stroke-[1.3]" />
               <p className="text-[8px] uppercase tracking-[0.22em] text-sand/30">{label}</p>
             </div>
@@ -66,8 +66,8 @@ export default async function OwnerRequestEditPage({
         <div
           className="p-6 sm:p-8 lg:p-10"
           style={{
-            border: "1px solid rgba(197,168,128,0.1)",
-            background: "rgba(197,168,128,0.025)",
+            border: "1px solid rgba(201,169,110,0.1)",
+            background: "rgba(201,169,110,0.025)",
           }}
         >
           <form
@@ -89,13 +89,13 @@ export default async function OwnerRequestEditPage({
                 defaultValue={defaultPropertyId ?? ""}
                 required
                 className="w-full appearance-none bg-transparent px-5 py-4 text-[12.5px] font-light text-sand/72 outline-none transition-all duration-500 focus:border-gold/40"
-                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+                style={{ border: "1px solid rgba(201,169,110,0.18)" }}
               >
-                <option value="" disabled className="bg-[#0A1826]">
+                <option value="" disabled className="bg-[#102943]">
                   Select a property...
                 </option>
                 {properties.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-[#0A1826]">
+                  <option key={p.id} value={p.id} className="bg-[#102943]">
                     {p.title} - {p.location}
                   </option>
                 ))}
@@ -104,16 +104,16 @@ export default async function OwnerRequestEditPage({
 
             <div className="space-y-2.5">
               <label className="block text-[9px] uppercase tracking-[0.36em] text-sand/40">
-                Type of Change
+                What Would You Like To Update?
               </label>
               <select
                 name="requestType"
                 required
                 className="w-full appearance-none bg-transparent px-5 py-4 text-[12.5px] font-light text-sand/72 outline-none transition-all duration-500 focus:border-gold/40"
-                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+                style={{ border: "1px solid rgba(201,169,110,0.18)" }}
               >
                 {requestTypes.map((type) => (
-                  <option key={type} value={type} className="bg-[#0A1826]">
+                  <option key={type} value={type} className="bg-[#102943]">
                     {type}
                   </option>
                 ))}
@@ -128,17 +128,17 @@ export default async function OwnerRequestEditPage({
                 name="message"
                 required
                 rows={7}
-                placeholder="Add exact dates, new prices, feature details, amenity changes, photo notes, or guest-facing copy updates."
+                placeholder="Add dates, new prices, feature details, amenity changes, photo notes, or guest-facing copy updates."
                 className="w-full resize-y bg-transparent px-5 py-4 text-[12.5px] font-light leading-[1.8] text-sand/65 outline-none transition-all duration-500 placeholder:text-sand/20 focus:border-gold/40"
-                style={{ border: "1px solid rgba(197,168,128,0.18)" }}
+                style={{ border: "1px solid rgba(201,169,110,0.18)" }}
               />
             </div>
 
             <button
               type="submit"
-              className="inline-flex w-full items-center justify-center gap-3 bg-gold px-10 py-4 text-[9px] font-semibold uppercase tracking-[0.36em] text-[#060E18] transition-colors duration-500 hover:bg-sand sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-3 bg-gold px-10 py-4 text-[9px] font-semibold uppercase tracking-[0.36em] text-[#0C1F33] transition-colors duration-500 hover:bg-sand sm:w-auto"
             >
-              Submit Request
+              Send Request
               <Edit3 className="h-3.5 w-3.5 stroke-[1.4]" />
             </button>
           </form>
@@ -146,11 +146,11 @@ export default async function OwnerRequestEditPage({
 
         <aside className="space-y-5">
           {[
-            ["Use exact data", "For calendar blocks and price changes, include dates, amounts, and whether the change is temporary."],
-            ["Think guest-facing", "For additional features, write the benefit a client should notice, such as mountain-view balcony or chef on request."],
-            ["Media updates", "For photos, mention the room, priority order, and whether it should become the primary cover image."],
+            ["Share clear details", "For calendar blocks and price changes, include dates, amounts, and whether the change is temporary."],
+            ["Think guest-first", "For guest details, write the benefit a traveller should notice, such as mountain-view balcony or chef on request."],
+            ["Photo updates", "For photos, mention the space, priority order, and whether it should become the primary cover image."],
           ].map(([title, body]) => (
-            <div key={title} className="border border-gold/8 bg-[#0A1826] p-6">
+            <div key={title} className="border border-gold/8 bg-[#102943] p-6">
               <p className="font-display text-xl tracking-wide text-sand/78">{title}</p>
               <p className="mt-3 text-[11.5px] font-light leading-[1.85] text-sand/32">{body}</p>
             </div>
@@ -161,9 +161,10 @@ export default async function OwnerRequestEditPage({
       <div className="flex items-start gap-5 border border-gold/8 px-7 py-6">
         <span className="mt-2 h-px w-4 shrink-0 bg-gold/40" />
         <p className="text-[11.5px] font-light leading-[1.8] text-sand/30">
-          The Salt Route team reviews partner requests within 24 hours. For urgent same-day changes, use the support messages section as well.
+          The Salt Route team reviews owner requests within 24 hours. For urgent same-day changes, use the support messages section as well.
         </p>
       </div>
     </div>
   )
 }
+

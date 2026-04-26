@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { ShieldCheck, User, MessageSquare } from "lucide-react"
@@ -8,9 +8,9 @@ import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
 
 const statusConfig: Record<string, { label: string; color: string; border: string }> = {
-  NEW:         { label: "New",         color: "rgba(197,168,128,0.9)", border: "rgba(197,168,128,0.25)" },
+  NEW:         { label: "New",         color: "rgba(201,169,110,0.9)", border: "rgba(201,169,110,0.25)" },
   OPEN:        { label: "Open",        color: "rgba(96,165,250,0.8)",  border: "rgba(96,165,250,0.2)"  },
-  IN_PROGRESS: { label: "In Progress", color: "rgba(251,191,36,0.8)",  border: "rgba(251,191,36,0.2)"  },
+  IN_PROGRESS: { label: "In Care",     color: "rgba(251,191,36,0.8)",  border: "rgba(251,191,36,0.2)"  },
   RESPONDED:   { label: "Responded",   color: "rgba(52,211,153,0.8)",  border: "rgba(52,211,153,0.2)"  },
   CLOSED:      { label: "Closed",      color: "rgba(247,245,240,0.3)", border: "rgba(247,245,240,0.08)" },
 }
@@ -40,30 +40,30 @@ export default async function OwnerMessagesPage({
   return (
     <div className="space-y-14">
 
-      {/* ─── PAGE HEADER ─── */}
+      {/* â”€â”€â”€ PAGE HEADER â”€â”€â”€ */}
       <div className="space-y-3">
         <div className="flex items-center gap-4">
           <span className="w-8 h-px bg-gold/40" />
           <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-            Owner Support
+            Owner Conversations
           </p>
         </div>
         <h1 className="font-display text-3xl md:text-4xl text-sand/85 tracking-wide">
           Salt Route Support
         </h1>
         <p className="text-[12.5px] text-sand/35 font-light max-w-lg leading-[1.8]">
-          Your direct channel for property edits, guest operations, calendar questions, listing care, and owner support.
+          Your direct channel for property updates, guest care, calendar questions, and Salt Route support.
         </p>
       </div>
 
       {inquiries.length === 0 ? (
         <div
           className="py-24 flex flex-col items-center justify-center text-center"
-          style={{ border: "1px solid rgba(197,168,128,0.07)" }}
+          style={{ border: "1px solid rgba(201,169,110,0.07)" }}
         >
           <MessageSquare
             className="mb-6 h-8 w-8 stroke-[1.2]"
-            style={{ color: "rgba(197,168,128,0.25)" }}
+            style={{ color: "rgba(201,169,110,0.25)" }}
           />
           <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25 font-medium">
             No communications yet
@@ -85,17 +85,17 @@ export default async function OwnerMessagesPage({
                 className="space-y-0 overflow-hidden transition-all duration-500"
                 style={{
                   border: unread
-                    ? "1px solid rgba(197,168,128,0.25)"
-                    : "1px solid rgba(197,168,128,0.08)",
+                    ? "1px solid rgba(201,169,110,0.25)"
+                    : "1px solid rgba(201,169,110,0.08)",
                   background: unread
-                    ? "rgba(197,168,128,0.04)"
-                    : "rgba(197,168,128,0.015)",
+                    ? "rgba(201,169,110,0.04)"
+                    : "rgba(201,169,110,0.015)",
                 }}
               >
                 {/* Thread header */}
                 <div
                   className="px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-                  style={{ borderBottom: "1px solid rgba(197,168,128,0.07)" }}
+                  style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-3">
@@ -137,8 +137,8 @@ export default async function OwnerMessagesPage({
                         <div
                           className="w-8 h-8 flex items-center justify-center shrink-0 mt-0.5"
                           style={{
-                            background: isAdmin ? "rgba(197,168,128,0.1)" : "rgba(247,245,240,0.05)",
-                            border: isAdmin ? "1px solid rgba(197,168,128,0.2)" : "1px solid rgba(247,245,240,0.08)",
+                            background: isAdmin ? "rgba(201,169,110,0.1)" : "rgba(247,245,240,0.05)",
+                            border: isAdmin ? "1px solid rgba(201,169,110,0.2)" : "1px solid rgba(247,245,240,0.08)",
                           }}
                         >
                           {isAdmin ? (
@@ -150,7 +150,7 @@ export default async function OwnerMessagesPage({
                         <div className="space-y-2 flex-1 min-w-0">
                           <p
                             className="text-[9px] uppercase tracking-[0.35em] font-medium"
-                            style={{ color: isAdmin ? "rgba(197,168,128,0.8)" : "rgba(247,245,240,0.35)" }}
+                            style={{ color: isAdmin ? "rgba(201,169,110,0.8)" : "rgba(247,245,240,0.35)" }}
                           >
                             {isAdmin ? "Salt Route Team" : "You"}
                           </p>
@@ -195,3 +195,4 @@ export default async function OwnerMessagesPage({
     </div>
   )
 }
+

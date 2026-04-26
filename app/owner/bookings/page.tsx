@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+﻿import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -62,13 +62,13 @@ export default async function OwnerBookingsPage({
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <span className="h-px w-8 bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Reservation Ledger</p>
+            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Guest Stays</p>
           </div>
           <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
             Guest stays, property by property.
           </h1>
           <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
-            A bulk-friendly ledger of confirmed, checked-in, and completed stays across your Salt Route portfolio.
+            A clear view of confirmed, checked-in, and completed stays across your Salt Route properties.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default async function OwnerBookingsPage({
             ["Shown", bookings.length],
             ["Value", formatNpr(revenue._sum.totalPrice)],
           ].map(([label, value]) => (
-            <div key={label} className="bg-[#0A1826] p-5">
+            <div key={label} className="bg-[#102943] p-5">
               <p className="text-[8px] uppercase tracking-[0.28em] text-sand/28">{label}</p>
               <p className="mt-3 break-words font-display text-2xl text-gold/75">{value}</p>
             </div>
@@ -99,7 +99,7 @@ export default async function OwnerBookingsPage({
               <Link
                 key={booking.id}
                 href={`/owner/bookings/${booking.id}`}
-                className="group bg-[#0A1826] p-6 transition-colors duration-500 hover:bg-[#0F2133] sm:p-7"
+                className="group bg-[#102943] p-6 transition-colors duration-500 hover:bg-[#163350] sm:p-7"
               >
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
@@ -122,21 +122,21 @@ export default async function OwnerBookingsPage({
                 </div>
 
                 <div className="mt-8 grid gap-px bg-gold/8 sm:grid-cols-3">
-                  <div className="bg-[#0A1826] p-4">
+                  <div className="bg-[#102943] p-4">
                     <CalendarDays className="mb-4 h-4 w-4 text-gold/35 stroke-[1.3]" />
                     <p className="text-[8px] uppercase tracking-[0.25em] text-sand/25">Dates</p>
                     <p className="mt-2 text-[12px] font-light leading-[1.6] text-sand/62">
                       {formatDate(booking.checkIn)} to {formatDate(booking.checkOut)}
                     </p>
                   </div>
-                  <div className="bg-[#0A1826] p-4">
+                  <div className="bg-[#102943] p-4">
                     <Users className="mb-4 h-4 w-4 text-gold/35 stroke-[1.3]" />
                     <p className="text-[8px] uppercase tracking-[0.25em] text-sand/25">Guest</p>
                     <p className="mt-2 text-[12px] font-light leading-[1.6] text-sand/62">
                       {booking.guest.name || booking.guest.email}
                     </p>
                   </div>
-                  <div className="bg-[#0A1826] p-4">
+                  <div className="bg-[#102943] p-4">
                     <Home className="mb-4 h-4 w-4 text-gold/35 stroke-[1.3]" />
                     <p className="text-[8px] uppercase tracking-[0.25em] text-sand/25">Value</p>
                     <p className="mt-2 font-display text-xl text-gold/72">
@@ -150,7 +150,7 @@ export default async function OwnerBookingsPage({
                     {nights} night{nights !== 1 ? "s" : ""} stay
                   </p>
                   <span className="inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-gold/55 transition-colors duration-500 group-hover:text-gold">
-                    Details
+                    Stay Details
                     <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
                   </span>
                 </div>
@@ -182,3 +182,4 @@ export default async function OwnerBookingsPage({
     </div>
   )
 }
+

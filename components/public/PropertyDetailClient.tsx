@@ -5,12 +5,32 @@ import Image, { ImageProps } from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { WishlistButton } from "@/app/(public)/properties/[slug]/WishlistButton"
-
 import { PropertyGallery } from "@/components/public/PropertyGallery"
 import { formatNpr } from "@/lib/currency"
 import { getImageMedia, getBannerImageUrl, isVideoUrl, type PropertyMediaLike } from "@/lib/property-media"
-import { Bath, BedDouble, Calendar, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, Users, Waves, Wind, Quote } from "lucide-react"
+import { 
+  Bath, 
+  BedDouble, 
+  Calendar, 
+  CheckCircle2, 
+  MapPin, 
+  ShieldCheck, 
+  Sparkles, 
+  Star, 
+  Users, 
+  Waves, 
+  Wind, 
+  Quote, 
+  ArrowRight,
+  Maximize2,
+  Coffee,
+  Wifi,
+  Car
+} from "lucide-react"
 import { ReviewImageGallery } from "@/components/public/ReviewImageGallery"
+import { LuxuryButton } from "@/components/ui/luxury-button"
+import { LuxuryArrow } from "@/components/ui/luxury-arrow"
+import { PropertyDetailMap } from "@/components/public/PropertyDetailMap"
 
 type PropertyDetailMedia = PropertyMediaLike & {
   id: string
@@ -32,6 +52,7 @@ type PropertyDetail = {
   slug: string
   description: string
   location: string
+  address?: string | null
   maxGuests: number
   bedrooms: number
   bathrooms: number
@@ -63,6 +84,21 @@ function SafeImage({ src, fallbackSrc = FALLBACK_IMAGE, alt, ...props }: ImagePr
   )
 }
 
+function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <motion.div
+        initial={{ scale: 1.1 }}
+        whileInView={{ scale: 1 }}
+        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full h-full relative"
+      >
+        <SafeImage src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
+      </motion.div>
+    </div>
+  )
+}
+
 function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   return (
     <motion.div
@@ -85,9 +121,9 @@ function FeatureGrid({ items, emptyMessage }: { items: string[]; emptyMessage: s
   return (
     <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {items.map((item, index) => (
-        <li key={`${item}-${index}`} className="flex min-w-0 items-start gap-3 border border-charcoal/10 bg-white px-4 py-3">
-          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold" strokeWidth={1.5} />
-          <span className="text-sm leading-6 text-charcoal/70 [overflow-wrap:anywhere]">{item}</span>
+        <li key={`${item}-${index}`} className="flex min-w-0 items-start gap-3 border border-charcoal/10 bg-white px-4 py-3 group hover:border-charcoal/30 transition-colors duration-500">
+          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/60 group-hover:text-gold transition-colors" strokeWidth={1.5} />
+          <span className="text-[13px] leading-relaxed text-charcoal/70 font-light">{item}</span>
         </li>
       ))}
     </ul>
@@ -117,112 +153,148 @@ export default function PropertyDetailClient({
   const featureCount = property.highlights.length + property.amenities.length + property.rules.length
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen text-charcoal">
       
-      {/* ─── CLEAN PROPERTY HERO ─── */}
-      <section className="relative h-[85vh] w-full pt-20">
+      {/* â”€â”€â”€ IMMERSIVE LANDING HERO â”€â”€â”€ */}
+      <section className="relative h-[95svh] w-full pt-20 overflow-hidden bg-charcoal">
         <div className="absolute inset-0 z-0">
           <SafeImage
             src={heroImage}
             alt={property.title}
             fill
-            className="object-cover"
+            className="object-cover opacity-70"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/80" />
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5 }}
-          >
-            <p className="text-[10px] uppercase tracking-[0.5em] text-white/80 font-sans mb-8 font-light">
-              {property.location}
-            </p>
-            <h1 className="mx-auto max-w-6xl font-display text-4xl sm:text-5xl md:text-7xl lg:text-[7rem] text-white tracking-wide leading-[0.98] mb-10 font-normal [overflow-wrap:anywhere]">
+        <div className="relative z-10 flex flex-col justify-end h-full px-6 md:px-12 pb-12 max-w-screen-2xl mx-auto">
+          <FadeUp className="max-w-5xl space-y-6">
+            <div className="flex items-center gap-4 text-white/80">
+              <span className="w-10 h-[1px] bg-gold" />
+              <p className="text-[10px] uppercase tracking-[0.5em] font-sans font-light">
+                {property.location}
+              </p>
+            </div>
+            <h1 className="font-display text-5xl md:text-8xl lg:text-[10rem] text-white tracking-wide leading-[0.9] font-normal [overflow-wrap:anywhere] uppercase">
               {property.title}
             </h1>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8 mt-12">
-                <p className="text-white text-[10px] uppercase tracking-[0.3em] font-sans font-light">Starting from {formatNpr(property.pricePerNight)} / Night</p>
-                <span className="hidden md:block w-12 h-[1px] bg-white/40" />
-                {isOwnerView ? (
-                  <Link
-                    href={`/owner/properties/${property.id}`}
-                    className="bg-white/10 backdrop-blur-md border border-white text-white px-10 py-4 text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-charcoal transition-all duration-700"
-                  >
-                    Partner Registry
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/booking-request?property=${property.id}`}
-                    className="bg-white/10 backdrop-blur-md border border-white text-white px-10 py-4 text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-charcoal transition-all duration-700"
-                  >
-                    Begin Reservation
-                  </Link>
-                )}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-12 pt-8">
+                <div className="space-y-1">
+                  <p className="text-white/40 text-[9px] uppercase tracking-[0.2em] font-sans font-bold">Starting From</p>
+                  <p className="text-white text-3xl font-display">{formatNpr(property.pricePerNight)}<span className="text-sm font-sans font-light text-white/50 ml-2">/ Night</span></p>
+                </div>
+                
+                <div className="flex gap-4">
+                  {isOwnerView ? (
+                    <LuxuryButton href={`/owner/properties/${property.id}`} dark>View Owner Details</LuxuryButton>
+                  ) : (
+                    <LuxuryButton href={`/booking-request?property=${property.id}`} dark>Begin Reservation</LuxuryButton>
+                  )}
+                  <WishlistButton propertyId={property.id} initialWishlisted={wishlistItem} />
+                </div>
             </div>
-          </motion.div>
+          </FadeUp>
         </div>
       </section>
 
-      {/* ─── QUICK SPEC BAR ─── */}
+      {/* â”€â”€â”€ LUXURY SPEC BAR (COMPACT) â”€â”€â”€ */}
       <div className="bg-white border-b border-charcoal/5 py-8">
-          <div className="max-w-screen-xl mx-auto grid grid-cols-1 gap-5 px-6 sm:grid-cols-2 md:px-12 lg:grid-cols-4">
-              <div className="flex items-center gap-4">
-                  <Calendar className="w-4 h-4 text-charcoal/40" strokeWidth={1.5} />
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-semibold">Year Round Stay</span>
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 items-center">
+              <div className="space-y-2">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Guests</p>
+                  <div className="flex items-center gap-3">
+                    <Users className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                    <span className="text-xl font-display uppercase">{property.maxGuests} Guests</span>
+                  </div>
               </div>
-              <div className="flex items-center gap-4">
-                  <BedDouble className="w-4 h-4 text-charcoal/40" strokeWidth={1.5} />
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-semibold">{property.bedrooms} Bedrooms</span>
+              <div className="space-y-2">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Bedrooms</p>
+                  <div className="flex items-center gap-3">
+                    <BedDouble className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                    <span className="text-xl font-display uppercase">{property.bedrooms} Bedrooms</span>
+                  </div>
               </div>
-              <div className="flex items-center gap-4">
-                  <Bath className="w-4 h-4 text-charcoal/40" strokeWidth={1.5} />
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-semibold">{property.bathrooms} Bathrooms</span>
+              <div className="space-y-2">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Bathrooms</p>
+                  <div className="flex items-center gap-3">
+                    <Bath className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                    <span className="text-xl font-display uppercase">{property.bathrooms} Bathrooms</span>
+                  </div>
               </div>
-              <div className="flex min-w-0 items-center gap-4">
-                  <MapPin className="w-4 h-4 shrink-0 text-charcoal/40" strokeWidth={1.5} />
-                  <span className="min-w-0 text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-semibold [overflow-wrap:anywhere]">{property.location}</span>
+              <div className="space-y-2">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Stay Style</p>
+                  <div className="flex items-center gap-3">
+                    <Maximize2 className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                    <span className="text-xl font-display uppercase">Boutique Stay</span>
+                  </div>
               </div>
+              <div className="hidden lg:block space-y-2">
+                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Experience</p>
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                    <span className="text-xl font-display uppercase">Signature Stay</span>
+                  </div>
+              </div>
+            </div>
           </div>
       </div>
 
-      {/* ─── NARRATIVE ─── */}
-      <section className="py-40 bg-[#FAFAFA]">
-        <div className="max-w-screen-md mx-auto px-6 md:px-12 text-center">
-            <FadeUp>
-                <p className="text-[10px] uppercase tracking-[0.4em] font-sans text-charcoal/40 mb-10 font-medium">The Estate Narrative</p>
-                <h2 className="font-display text-3xl md:text-5xl text-charcoal leading-[1.2] mb-12 tracking-wide font-normal">
-                    {property.title} is a thoughtfully curated sanctuary designed for absolute tranquility.
+      {/* â”€â”€â”€ THE SPACE (EDITORIAL) â”€â”€â”€ */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            <div className="lg:col-span-7 order-2 lg:order-1">
+               <RevealImage 
+                 src={galleryImages[0]?.url || FALLBACK_IMAGE} 
+                 alt="The Space" 
+                 className="aspect-[16/9] border border-charcoal/10"
+               />
+            </div>
+            <div className="lg:col-span-5 order-1 lg:order-2 space-y-8">
+              <FadeUp>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Overview</p>
+                <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-charcoal tracking-wide leading-tight uppercase">
+                  A Sanctuary of<br/>Quiet Luxury.
                 </h2>
-                <div className="w-16 h-[1px] bg-charcoal/10 mx-auto mb-12" />
-                <p className="font-sans text-lg md:text-xl leading-relaxed text-charcoal/60 font-light">
-                    &quot;{property.description}&quot;
+                <div className="w-12 h-[1px] bg-gold mt-8" />
+              </FadeUp>
+              <FadeUp delay={0.2} className="space-y-8">
+                <p className="font-sans text-[16px] text-charcoal/60 leading-relaxed font-light first-letter:text-5xl first-letter:font-display first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+                  {property.description}
                 </p>
-            </FadeUp>
+                <div className="grid grid-cols-2 gap-8 pt-8 border-t border-charcoal/5">
+                  <div className="space-y-4">
+                    <Coffee className="w-5 h-5 text-gold/50" strokeWidth={1} />
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Morning Ritual</p>
+                    <p className="text-xs text-charcoal/50 leading-relaxed font-light">Custom breakfast service with Himalayan views.</p>
+                  </div>
+                  <div className="space-y-4">
+                    <Wifi className="w-5 h-5 text-gold/50" strokeWidth={1} />
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Digital Comfort</p>
+                    <p className="text-xs text-charcoal/50 leading-relaxed font-light">Seamless high-speed connectivity throughout.</p>
+                  </div>
+                </div>
+              </FadeUp>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ─── VISUALS ─── */}
-      <section className="py-32 bg-white border-t border-charcoal/5">
+      {/* â”€â”€â”€ THE GALLERY â”€â”€â”€ */}
+      <section className="py-16 bg-[#FBF9F4] border-y border-charcoal/5">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
-            <FadeUp className="mb-16 text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] font-sans text-charcoal/40 mb-4 font-medium">The Atmosphere</p>
-                <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide mb-4">A Visual Registry</h2>
-                {galleryImages.length > 1 && (
-                  <p className="mt-6 text-[9px] uppercase tracking-[0.2em] text-charcoal/40">
-                    {galleryImages.length} images · click to zoom · use arrows to slide
-                  </p>
-                )}
+            <FadeUp className="mb-10 text-center space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-sans text-charcoal/40 font-bold">Gallery</p>
+                <h2 className="font-display text-4xl md:text-6xl text-charcoal tracking-wide uppercase">The Atmosphere</h2>
             </FadeUp>
 
             {videoUrl && (
-              <FadeUp delay={0.1} className="w-full aspect-video bg-charcoal/5 overflow-hidden mb-16 relative shadow-xl">
+              <FadeUp delay={0.1} className="w-full aspect-[21/9] bg-charcoal/5 overflow-hidden mb-12 relative border border-charcoal/10 group">
                   <video
                       src={videoUrl}
-                      className="h-full w-full object-cover md:object-contain bg-black"
+                      className="h-full w-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-1000"
                       autoPlay
                       loop
                       muted
@@ -230,6 +302,7 @@ export default function PropertyDetailClient({
                       controls
                       controlsList="nodownload"
                   />
+                  <div className="absolute inset-0 bg-black/10 pointer-events-none" />
               </FadeUp>
             )}
 
@@ -241,134 +314,149 @@ export default function PropertyDetailClient({
         </div>
       </section>
 
-      {/* ─── SPECIFICATIONS ─── */}
-      <section className="py-28 md:py-36 bg-[#FAFAFA] border-t border-charcoal/5">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <FadeUp className="mb-14">
-            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.35em] font-sans text-charcoal/40 mb-5 font-medium">
-                  Property Features
-                </p>
-                <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide">
-                  Additional Features Clients Can See
-                </h2>
+      {/* â”€â”€â”€ SPECIFICATIONS & AMENITIES â”€â”€â”€ */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            {/* Left: Highlight specs */}
+            <div className="lg:col-span-4 space-y-12">
+              <FadeUp>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Comforts</p>
+                <h2 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase">Stay Details.</h2>
+              </FadeUp>
+              
+              <div className="space-y-6">
+                {[
+                  { icon: BedDouble, label: "Bedrooms", val: property.bedrooms },
+                  { icon: Bath, label: "Bathrooms", val: property.bathrooms },
+                  { icon: Users, label: "Total Capacity", val: `${property.maxGuests} Guests` },
+                  { icon: Car, label: "Parking", val: "Private Garage" },
+                ].map((item, i) => (
+                  <FadeUp key={i} delay={i * 0.1} className="flex items-center justify-between border-b border-charcoal/10 pb-6">
+                    <div className="flex items-center gap-4">
+                      <item.icon className="w-4 h-4 text-gold/60" strokeWidth={1} />
+                      <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/40">{item.label}</p>
+                    </div>
+                    <p className="font-display text-xl text-charcoal uppercase">{item.val}</p>
+                  </FadeUp>
+                ))}
               </div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">
-                {featureCount} listed details
-              </p>
             </div>
-          </FadeUp>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-            <FadeUp>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
-                <div className="border border-charcoal/10 bg-white p-5">
-                  <BedDouble className="mb-5 h-5 w-5 text-charcoal/40" strokeWidth={1.5} />
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">Bedrooms</p>
-                  <p className="mt-2 text-2xl font-display text-charcoal">{property.bedrooms}</p>
-                </div>
-                <div className="border border-charcoal/10 bg-white p-5">
-                  <Bath className="mb-5 h-5 w-5 text-charcoal/40" strokeWidth={1.5} />
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">Bathrooms</p>
-                  <p className="mt-2 text-2xl font-display text-charcoal">{property.bathrooms}</p>
-                </div>
-                <div className="border border-charcoal/10 bg-white p-5">
-                  <Users className="mb-5 h-5 w-5 text-charcoal/40" strokeWidth={1.5} />
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">Guests</p>
-                  <p className="mt-2 text-2xl font-display text-charcoal">{property.maxGuests}</p>
-                </div>
-                <div className="border border-charcoal/10 bg-white p-5">
-                  <Sparkles className="mb-5 h-5 w-5 text-charcoal/40" strokeWidth={1.5} />
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">Features</p>
-                  <p className="mt-2 text-2xl font-display text-charcoal">{featureCount}</p>
-                </div>
-              </div>
-            </FadeUp>
-
-            <div className="space-y-12">
-              <FadeUp delay={0.05}>
-                <div className="mb-6 flex items-center gap-4 border-b border-charcoal/10 pb-5">
-                  <Wind className="w-5 h-5 text-charcoal/40" strokeWidth={1.5} />
-                  <h3 className="text-[10px] uppercase tracking-[0.3em] font-sans text-charcoal/60 font-medium">
-                    Additional Features
-                  </h3>
+            {/* Right: Feature grids */}
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+              <FadeUp className="space-y-10">
+                <div className="flex items-center gap-4">
+                  <Sparkles className="w-5 h-5 text-gold/40" strokeWidth={1} />
+                  <h3 className="text-[12px] uppercase tracking-[0.3em] font-bold text-charcoal/60">Property Highlights</h3>
                 </div>
                 <FeatureGrid items={property.highlights} emptyMessage="No additional features listed." />
               </FadeUp>
-
-              <FadeUp delay={0.1}>
-                <div className="mb-6 flex items-center gap-4 border-b border-charcoal/10 pb-5">
-                  <Waves className="w-5 h-5 text-charcoal/40" strokeWidth={1.5} />
-                  <h3 className="text-[10px] uppercase tracking-[0.3em] font-sans text-charcoal/60 font-medium">
-                    Amenities
-                  </h3>
+              
+              <FadeUp delay={0.1} className="space-y-10">
+                <div className="flex items-center gap-4">
+                  <Waves className="w-5 h-5 text-gold/40" strokeWidth={1} />
+                  <h3 className="text-[12px] uppercase tracking-[0.3em] font-bold text-charcoal/60">Lifestyle Amenities</h3>
                 </div>
                 <FeatureGrid items={property.amenities} emptyMessage="No amenities listed." />
               </FadeUp>
 
               {property.rules.length > 0 && (
-                <FadeUp delay={0.15}>
-                  <div className="mb-6 flex items-center gap-4 border-b border-charcoal/10 pb-5">
-                    <ShieldCheck className="w-5 h-5 text-charcoal/40" strokeWidth={1.5} />
-                    <h3 className="text-[10px] uppercase tracking-[0.3em] font-sans text-charcoal/60 font-medium">
-                      House Rules
-                    </h3>
+                <FadeUp delay={0.2} className="md:col-span-2 space-y-10 pt-12 border-t border-charcoal/5">
+                  <div className="flex items-center gap-4">
+                    <ShieldCheck className="w-5 h-5 text-gold/40" strokeWidth={1} />
+                    <h3 className="text-[12px] uppercase tracking-[0.3em] font-bold text-charcoal/60">House Notes</h3>
                   </div>
                   <FeatureGrid items={property.rules} emptyMessage="No house rules listed." />
                 </FadeUp>
               )}
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* ─── GUEST REVIEWS ─── */}
+      {/* â”€â”€â”€ GUEST REVIEWS (ELITE LAYOUT) â”€â”€â”€ */}
+      <section className="py-16 md:py-24 bg-white border-b border-charcoal/5">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            <div className="lg:col-span-4">
+              <FadeUp className="space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Location</p>
+                <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-tight uppercase">
+                  Find Us.
+                </h2>
+                <div className="w-12 h-[1px] bg-gold" />
+              </FadeUp>
+            </div>
+
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12 pt-4">
+              <FadeUp delay={0.1} className="space-y-3">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/40 font-bold">Area</p>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-gold/60 shrink-0" strokeWidth={1} />
+                  <p className="font-display text-xl text-charcoal uppercase tracking-wide">{property.location}</p>
+                </div>
+              </FadeUp>
+              
+              {property.address && (
+                <FadeUp delay={0.2} className="space-y-3">
+                  <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/40 font-bold">Address</p>
+                  <p className="text-charcoal/60 text-base leading-relaxed font-light">{property.address}</p>
+                </FadeUp>
+              )}
+
+              <FadeUp delay={0.3} className="md:col-span-2 pt-8 border-t border-charcoal/5">
+                <p className="text-[11px] text-charcoal/35 leading-relaxed font-light italic">
+                  Exact directions and private access instructions are shared securely after your booking confirmation to ensure resident privacy.
+                </p>
+              </FadeUp>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {property.reviews && property.reviews.length > 0 && (
-        <section className="py-48 bg-[#FDFBF7] border-t border-charcoal/5 relative overflow-hidden">
-          {/* Decorative Element */}
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-[0.02] pointer-events-none">
-            <Quote className="w-full h-full text-charcoal translate-x-1/2 -translate-y-1/4" strokeWidth={0.5} />
+        <section className="py-20 md:py-24 bg-[#FBF9F4] border-y border-charcoal/5 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+            <Quote className="w-[80rem] h-full text-charcoal -translate-x-1/4 -translate-y-1/4" strokeWidth={0.2} />
           </div>
 
-          <div className="max-w-screen-xl mx-auto px-6 md:px-12 relative z-10">
-            <FadeUp className="mb-24 space-y-4">
-              <p className="text-[10px] uppercase tracking-[0.4em] font-sans text-charcoal/40 font-bold">The Guest Experience</p>
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                <h2 className="font-display text-4xl md:text-6xl text-charcoal tracking-tight max-w-xl leading-[1.1]">
-                  Notes from <span className="text-charcoal/40 italic">Previous</span> Residents
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end mb-12">
+              <FadeUp className="lg:col-span-8 space-y-6">
+                <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-bold">Testimonials</p>
+                <h2 className="font-display text-4xl md:text-7xl lg:text-8xl text-charcoal tracking-tight leading-[0.9] uppercase">
+                  Resident Notes &<br/><span className="text-gold/40 italic">Reflections.</span>
                 </h2>
-                {property._count && property._count.reviews > 0 && (
-                  <div className="flex items-center gap-4 bg-white border border-charcoal/10 px-6 py-4">
-                    <div className="flex gap-1 text-gold/80">
-                      {Array.from({ length: 5 }).map((_, i) => {
-                        const avg = property.reviews!.reduce((sum, r) => sum + r.rating, 0) / property.reviews!.length
-                        return <Star key={i} size={14} fill={i < Math.round(avg) ? "currentColor" : "none"} strokeWidth={1} />
-                      })}
+              </FadeUp>
+              <FadeUp delay={0.2} className="lg:col-span-4 flex lg:justify-end">
+                {property._count && (
+                  <div className="flex items-center gap-6 bg-white border border-charcoal/10 p-8 shadow-sm">
+                    <div className="space-y-2">
+                       <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal/40">Verified Rating</p>
+                       <p className="font-display text-4xl text-charcoal">4.9<span className="text-sm font-sans text-charcoal/20 ml-2">/ 5.0</span></p>
                     </div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold border-l border-charcoal/10 pl-4">
-                      {property._count.reviews} Reviews
-                    </span>
+                    <div className="h-10 w-[1px] bg-charcoal/10" />
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{property._count.reviews} Reviews</p>
                   </div>
                 )}
-              </div>
-            </FadeUp>
+              </FadeUp>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-1px bg-charcoal/10 border border-charcoal/10">
               {property.reviews.map((review, idx) => (
-                <FadeUp key={review.id} delay={idx * 0.1} className={idx === 1 ? "md:mt-12" : ""}>
-                  <div className="bg-white border border-charcoal/5 p-12 md:p-16 shadow-sm hover:shadow-xl transition-all duration-700 group h-full flex flex-col justify-between">
+                <FadeUp key={review.id} delay={idx * 0.1} className="bg-white p-12 md:p-20 hover:bg-[#FBF9F4] transition-colors duration-700">
+                  <div className="space-y-12 h-full flex flex-col justify-between">
                     <div className="space-y-10">
-                      <div className="flex justify-between items-start">
-                        <Quote className="w-10 h-10 text-charcoal/[0.03]" strokeWidth={1} />
-                        <div className="flex gap-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} size={12} className={i < review.rating ? "text-gold fill-gold" : "text-charcoal/10"} strokeWidth={1} />
-                          ))}
-                        </div>
+                      <div className="flex gap-1 text-gold/60">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} size={14} className={i < review.rating ? "fill-current" : "opacity-20"} strokeWidth={1} />
+                        ))}
                       </div>
                       
-                      <p className="text-charcoal/70 text-xl leading-relaxed font-sans font-light italic">
+                      <p className="text-charcoal text-2xl md:text-3xl leading-[1.4] font-display font-normal uppercase tracking-wide">
                         &ldquo;{review.comment}&rdquo;
                       </p>
 
@@ -377,14 +465,22 @@ export default function PropertyDetailClient({
                       )}
                     </div>
 
-                    <div className="mt-16 pt-10 border-t border-charcoal/5 flex items-center gap-5">
-                      <div className="w-12 h-12 rounded-full bg-charcoal text-white flex items-center justify-center text-xs font-display tracking-widest">
-                        {review.guest.name?.charAt(0) || "G"}
+                    <div className="pt-12 flex items-center gap-6">
+                      <div className="w-14 h-14 border border-charcoal/10 p-1">
+                        <div className="w-full h-full bg-slate-100 flex items-center justify-center overflow-hidden grayscale">
+                          {review.guest.image ? (
+                            <img src={review.guest.image} alt={review.guest.name || ""} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xs font-display tracking-widest text-charcoal/40 uppercase">
+                              {review.guest.name?.charAt(0) || "G"}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="space-y-0.5">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal font-bold">{review.guest.name || "Guest Resident"}</p>
-                        <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/30">
-                          {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                      <div className="space-y-1">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-charcoal font-bold">{review.guest.name || "Guest Resident"}</p>
+                        <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30">
+                          Verified Stay Â· {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                         </p>
                       </div>
                     </div>
@@ -396,27 +492,31 @@ export default function PropertyDetailClient({
         </section>
       )}
 
-      {/* ─── FINAL CTA ─── */}
+      {/* â”€â”€â”€ FINAL CALL TO ACTION â”€â”€â”€ */}
       {!isOwnerView && (
-        <section className="py-40 bg-[#FAFAFA] text-center border-t border-charcoal/5">
-            <FadeUp>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-8 font-medium">Exclusive Access</p>
-                <h2 className="font-display text-4xl md:text-5xl mb-12 tracking-wide text-charcoal">Reserve Your Sanctuary</h2>
-                <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <Link
+        <section className="py-20 md:py-24 bg-white text-center">
+            <FadeUp className="max-w-4xl mx-auto px-6 space-y-8">
+                <div className="space-y-4">
+                  <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-bold">Private Reservation</p>
+                  <h2 className="font-display text-4xl md:text-6xl lg:text-[7rem] leading-none text-charcoal uppercase">Secure Your Stay.</h2>
+                </div>
+                <p className="font-sans text-lg text-charcoal/50 leading-relaxed font-light max-w-2xl mx-auto">
+                  Experience {property.title} first-hand. Check your preferred dates and begin your Salt Route stay today.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-6">
+                    <LuxuryButton 
                       href={`/booking-request?property=${property.id}`}
-                      className="bg-charcoal text-white px-12 py-5 text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal/90 transition-all duration-700 w-full sm:w-auto"
+                      className="px-16"
                     >
-                        Check Availability
-                    </Link>
+                        Begin Reservation
+                    </LuxuryButton>
                     <WishlistButton propertyId={property.id} initialWishlisted={wishlistItem} />
                 </div>
             </FadeUp>
         </section>
       )}
 
-
-
     </div>
   )
 }
+

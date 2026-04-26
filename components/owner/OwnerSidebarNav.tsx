@@ -14,13 +14,13 @@ import {
 } from "lucide-react"
 
 const NAV_ITEMS = [
-  { name: "Portfolio Hub", href: "/owner/dashboard",     icon: ChartBar,      isBadge: false },
-  { name: "Property Rooms", href: "/owner/properties",   icon: Home,          isBadge: false },
-  { name: "Stay Ledger",    href: "/owner/bookings",     icon: Calendar,      isBadge: false },
+  { name: "Overview",       href: "/owner/dashboard",     icon: ChartBar,      isBadge: false },
+  { name: "Properties",     href: "/owner/properties",   icon: Home,          isBadge: false },
+  { name: "Stays",          href: "/owner/bookings",     icon: Calendar,      isBadge: false },
   { name: "Support",        href: "/owner/messages",     icon: MessageSquare, isBadge: false },
   { name: "Alerts",         href: "/owner/notifications",icon: Bell,          isBadge: true  },
-  { name: "Performance",    href: "/owner/reports",      icon: TrendingUp,    isBadge: false },
-  { name: "Listing Edits",  href: "/owner/request-edit", icon: Edit3,         isBadge: false },
+  { name: "Earnings",       href: "/owner/reports",      icon: TrendingUp,    isBadge: false },
+  { name: "Updates",        href: "/owner/request-edit", icon: Edit3,         isBadge: false },
   { name: "Profile",        href: "/owner/profile",      icon: User,          isBadge: false },
 ]
 

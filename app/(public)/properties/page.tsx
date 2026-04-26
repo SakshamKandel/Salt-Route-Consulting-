@@ -12,6 +12,27 @@ type SearchFilters = {
 
 const PAGE_SIZE = 12
 
+// Fallback used only when Nominatim is unavailable.
+const NEPAL_CENTER: [number, number] = [27.7172, 85.3240]
+
+// Geocodes a location string via Nominatim with a 7-day Next.js Data Cache entry.
+async function geocodeForMap(location: string): Promise<[number, number]> {
+  try {
+    const query = /nepal/i.test(location) ? location : `${location}, Nepal`
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=np`
+    const res = await fetch(url, {
+      headers: { "User-Agent": "SaltRouteConsulting/1.0 (contact@saltroutegroup.com)" },
+      next: { revalidate: 604800 },
+    })
+    if (!res.ok) return NEPAL_CENTER
+    const data: { lat: string; lon: string }[] = await res.json()
+    if (!data[0]) return NEPAL_CENTER
+    return [Number(data[0].lat), Number(data[0].lon)]
+  } catch {
+    return NEPAL_CENTER
+  }
+}
+
 async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: SearchFilters) {
   const where: Prisma.PropertyWhereInput = { status: "ACTIVE" }
 
@@ -40,13 +61,34 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
     ]
   }
 
-  const [totalProperties, locationRows] = await Promise.all([
+  const [totalProperties, locationRows, propertyList, mapProperties] = await Promise.all([
     prisma.property.count({ where }),
     prisma.property.findMany({
       where: { status: "ACTIVE", location: { not: "" } },
       select: { location: true },
       distinct: ["location"],
       orderBy: { location: "asc" },
+    }),
+    prisma.property.findMany({
+      where: { status: "ACTIVE" },
+      select: { title: true, slug: true, location: true },
+      orderBy: [{ featured: "desc" }, { title: "asc" }],
+    }),
+    prisma.property.findMany({
+      where: { status: "ACTIVE" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        location: true,
+        pricePerNight: true,
+        images: {
+          orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
+          select: { url: true },
+          take: 1,
+        },
+      },
+      orderBy: [{ featured: "desc" }, { title: "asc" }],
     }),
   ])
 
@@ -92,6 +134,34 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       const city = row.location.split(",")[0]?.trim()
       return city ? [city] : []
     }),
+    knownProperties: propertyList,
+    mapProperties: await (async () => {
+      // Geocode unique locations in parallel, then apply a small jitter
+      // when multiple properties share the same location so markers don't overlap.
+      const uniqueLocations = [...new Set(mapProperties.map((p) => p.location))]
+      const coordsMap = new Map<string, [number, number]>()
+      await Promise.all(
+        uniqueLocations.map(async (loc) => {
+          coordsMap.set(loc, await geocodeForMap(loc))
+        })
+      )
+      const locationCount = new Map<string, number>()
+      return mapProperties.map((p) => {
+        const idx = locationCount.get(p.location) ?? 0
+        locationCount.set(p.location, idx + 1)
+        const [lat, lng] = coordsMap.get(p.location) ?? NEPAL_CENTER
+        return {
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          location: p.location,
+          pricePerNight: Number(p.pricePerNight),
+          latitude: lat + idx * 0.002,
+          longitude: lng + idx * 0.002,
+          imageUrl: p.images[0]?.url ?? undefined,
+        }
+      })
+    })(),
   }
 }
 
@@ -133,7 +203,7 @@ export default async function PropertiesPage({
     guests,
     page,
   })
-  const { properties, totalProperties, totalPages, knownLocations } = propertiesResult
+  const { properties, totalProperties, totalPages, knownLocations, knownProperties, mapProperties } = propertiesResult
   const serializedProperties = properties.map((p) => ({
     ...p,
     pricePerNight: Number(p.pricePerNight),
@@ -151,6 +221,8 @@ export default async function PropertiesPage({
       totalProperties={totalProperties}
       totalPages={totalPages}
       knownLocations={dedupe(knownLocations)}
+      knownProperties={knownProperties}
+      mapProperties={mapProperties}
     />
   )
 }

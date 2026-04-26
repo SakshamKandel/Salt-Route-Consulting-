@@ -44,6 +44,6 @@ export async function changePasswordAction(data: z.infer<typeof changePasswordSc
 
     return { success: "Password successfully updated." }
   } catch {
-    return { error: "Failed to update password." }
+    return { error: "We could not update your password yet." }
   }
 }

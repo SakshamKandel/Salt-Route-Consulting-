@@ -89,15 +89,15 @@ export async function replyToInquiryAction(id: string, replyMessage: string) {
       to: inquiry.email,
       subject: `Re: Your Inquiry to Salt Route Consulting`,
       html: `
-        <div style="font-family: sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #0f172a;">Response from Salt Route Consulting</h2>
+        <div style="font-family: sans-serif; color: #1B3A5C; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #102943;">Response from Salt Route Consulting</h2>
           <p>Hi ${inquiry.name},</p>
-          <div style="background-color: #f8fafc; border-left: 4px solid #d4af37; padding: 16px; margin: 20px 0; white-space: pre-wrap;">
+          <div style="background-color: #FBF9F4; border-left: 4px solid #C9A96E; padding: 16px; margin: 20px 0; white-space: pre-wrap;">
             ${replyMessage}
           </div>
           <p>Best regards,<br>The Salt Route Team</p>
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-          <p style="color: #64748b; font-size: 12px;">Original message:<br><em>${inquiry.message}</em></p>
+          <hr style="border: none; border-top: 1px solid #E8E2D6; margin: 24px 0;" />
+          <p style="color: #5A7A9A; font-size: 12px;">Original message:<br><em>${inquiry.message}</em></p>
         </div>
       `
     }).catch(e => console.error("[EMAIL_FAIL] Admin reply email failed:", e))
@@ -166,6 +166,39 @@ export async function guestReplyAction(id: string, message: string) {
       href: `/admin/inquiries/${id}`,
       metadata: { inquiryId: id },
     })
+
+    // Notify all admins via email
+    try {
+      const { getAdminEmails } = await import("@/lib/notifications")
+      const { sendEmailToMany } = await import("@/lib/email/transporter")
+      
+      const adminEmails = await getAdminEmails()
+      const allAdminRecipients = Array.from(new Set([
+        ...adminEmails,
+        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+      ]))
+
+      await sendEmailToMany({
+        to: allAdminRecipients,
+        subject: `New Message: ${inquiry.subject}`,
+        html: `
+          <div style="font-family: sans-serif; color: #1B3A5C; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #102943;">New Message Received</h2>
+            <p><strong>From:</strong> ${sender === "OWNER" ? "Property Partner" : "Guest"}</p>
+            <p><strong>Subject:</strong> ${inquiry.subject}</p>
+            <div style="background-color: #FBF9F4; border-left: 4px solid #C9A96E; padding: 16px; margin: 20px 0; white-space: pre-wrap;">
+              ${message}
+            </div>
+            <a href="${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/inquiries/${id}" 
+               style="display: inline-block; background-color: #102943; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: bold;">
+              View Conversation
+            </a>
+          </div>
+        `
+      })
+    } catch (emailError) {
+      console.error("[EMAIL] Admin message notification failed:", emailError)
+    }
 
     revalidatePath(`/account/messages`)
     revalidatePath(`/owner/messages`)
