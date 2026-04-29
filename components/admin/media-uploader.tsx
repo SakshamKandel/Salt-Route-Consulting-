@@ -120,6 +120,7 @@ export function MediaUploader({
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
+      console.error("[uploader] upload failed", { status: res.status, body: data })
       toast.error(`${file.name}: ${data.error || `Upload failed (${res.status})`}`)
       return null
     }
