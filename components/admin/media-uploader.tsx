@@ -26,7 +26,44 @@ const LABEL_BY_KIND: Record<MediaKind, string> = {
   auto: "Upload Media",
 }
 
-const MAX_BYTES = 10 * 1024 * 1024
+const MAX_BYTES = 4 * 1024 * 1024
+const COMPRESS_TARGET_BYTES = 3.5 * 1024 * 1024
+const MAX_DIMENSION = 2400
+
+async function compressImage(file: File): Promise<Blob> {
+  const dataUrl: string = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const i = new Image()
+    i.onload = () => resolve(i)
+    i.onerror = reject
+    i.src = dataUrl
+  })
+
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height))
+  const canvas = document.createElement("canvas")
+  canvas.width = Math.round(img.width * scale)
+  canvas.height = Math.round(img.height * scale)
+  const ctx = canvas.getContext("2d")
+  if (!ctx) throw new Error("Canvas not supported")
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+  // Try decreasing quality steps until under the size budget
+  for (const quality of [0.88, 0.8, 0.72, 0.64, 0.56, 0.48]) {
+    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality))
+    if (!blob) continue
+    if (blob.size <= COMPRESS_TARGET_BYTES) return blob
+  }
+  // Last resort: return whatever the lowest quality produced
+  const finalBlob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.4))
+  if (!finalBlob) throw new Error("Could not compress image")
+  return finalBlob
+}
 
 export function MediaUploader({
   onAdd,
@@ -54,12 +91,26 @@ export function MediaUploader({
   const Icon = kind === "video" ? Film : kind === "image" ? ImageIcon : Upload
 
   async function uploadOne(file: File): Promise<UploadedMedia | null> {
-    if (file.size > MAX_BYTES) {
-      toast.error(`${file.name} is too large. Max 10MB.`)
+    let payload: Blob = file
+    let payloadName = file.name
+
+    if (file.type.startsWith("image/") && file.size > COMPRESS_TARGET_BYTES) {
+      try {
+        payload = await compressImage(file)
+        payloadName = file.name.replace(/\.[^.]+$/, "") + ".jpg"
+      } catch (err) {
+        console.error("[uploader] compress failed", err)
+        // fall through with original file; the server will reject if too large
+      }
+    }
+
+    if (payload.size > MAX_BYTES) {
+      toast.error(`${file.name} is too large even after compression. Max 4MB.`)
       return null
     }
+
     const formData = new FormData()
-    formData.append("file", file)
+    formData.append("file", payload, payloadName)
     if (folder) formData.append("folder", folder)
 
     const res = await fetch("/api/upload/direct", {
@@ -191,7 +242,7 @@ export function MediaUploader({
 
       {pasteError && <p className="text-xs text-red-600">{pasteError}</p>}
       <p className="text-[10px] text-charcoal/40">
-        Max 10MB per file. JPG, PNG, WebP, AVIF for images. MP4, WebM, MOV for video.
+        Images compressed automatically. Max 4MB after compression for video. JPG, PNG, WebP, AVIF, MP4, WebM, MOV.
       </p>
     </div>
   )

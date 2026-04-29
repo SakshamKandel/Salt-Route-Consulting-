@@ -8,18 +8,32 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const MAX_BYTES = 10 * 1024 * 1024 // 10MB cap (Vercel function payload limit aware)
+// Vercel serverless functions cap payload at 4.5MB. We cap at 4MB to leave
+// headroom for multipart overhead.
+const MAX_BYTES = 4 * 1024 * 1024
+
+export const maxDuration = 30
 
 export async function POST(req: NextRequest) {
   const session = await auth()
 
   if (!session?.user?.id) {
+    console.warn("[upload/direct] unauthorized")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET || !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.CLOUDINARY_API_KEY
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    console.error("[upload/direct] missing cloudinary env", {
+      hasCloudName: !!cloudName,
+      hasApiKey: !!apiKey,
+      hasApiSecret: !!apiSecret,
+    })
     return NextResponse.json(
-      { error: "Cloudinary is not configured. Set CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, and NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME on the server." },
+      { error: "Cloudinary is not configured on the server. Check NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET on Vercel." },
       { status: 500 }
     )
   }
@@ -27,7 +41,8 @@ export async function POST(req: NextRequest) {
   let formData: FormData
   try {
     formData = await req.formData()
-  } catch {
+  } catch (err) {
+    console.error("[upload/direct] formData parse failed:", err)
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
@@ -39,13 +54,21 @@ export async function POST(req: NextRequest) {
 
   if (file.size > MAX_BYTES) {
     return NextResponse.json(
-      { error: `File too large. Max ${Math.round(MAX_BYTES / 1024 / 1024)}MB.` },
+      { error: `File too large after compression. Max ${Math.round(MAX_BYTES / 1024 / 1024)}MB.` },
       { status: 413 }
     )
   }
 
   const folder = typeof formData.get("folder") === "string" ? (formData.get("folder") as string) : "salt-route"
   const resourceType = file.type.startsWith("video/") ? "video" : "image"
+
+  console.log("[upload/direct] uploading", {
+    name: file instanceof File ? file.name : "blob",
+    size: file.size,
+    type: file.type,
+    folder,
+    resourceType,
+  })
 
   const buffer = Buffer.from(await file.arrayBuffer())
 
@@ -64,6 +87,8 @@ export async function POST(req: NextRequest) {
       stream.end(buffer)
     })
 
+    console.log("[upload/direct] success", { publicId: result.public_id, bytes: result.bytes })
+
     return NextResponse.json({
       url: result.secure_url,
       publicId: result.public_id,
@@ -73,8 +98,8 @@ export async function POST(req: NextRequest) {
       resourceType: result.resource_type,
     })
   } catch (err) {
-    console.error("[upload/direct] cloudinary error:", err)
     const message = err instanceof Error ? err.message : "Upload failed"
+    console.error("[upload/direct] cloudinary error:", message, err)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
