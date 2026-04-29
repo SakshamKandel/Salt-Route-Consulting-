@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary"
+import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Upload, Link as LinkIcon, AlertTriangle, Film, Image as ImageIcon } from "lucide-react"
+import { Upload, Link as LinkIcon, Film, Image as ImageIcon, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 export type UploadedMedia = {
   url: string
@@ -14,18 +14,10 @@ export type UploadedMedia = {
 
 export type MediaKind = "image" | "video" | "auto"
 
-const isCloudinaryConfigured = () => {
-  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
-  if (!cloud || cloud === "xxx" || cloud === "your-cloud") return false
-  if (!apiKey || apiKey === "xxx" || apiKey === "your-key") return false
-  return true
-}
-
-const FORMATS_BY_KIND: Record<MediaKind, string[]> = {
-  image: ["jpg", "jpeg", "png", "webp", "avif"],
-  video: ["mp4", "webm", "mov"],
-  auto: ["jpg", "jpeg", "png", "webp", "avif", "mp4", "webm", "mov"],
+const ACCEPT_BY_KIND: Record<MediaKind, string> = {
+  image: "image/jpeg,image/jpg,image/png,image/webp,image/avif",
+  video: "video/mp4,video/webm,video/quicktime",
+  auto: "image/jpeg,image/jpg,image/png,image/webp,image/avif,video/mp4,video/webm,video/quicktime",
 }
 
 const LABEL_BY_KIND: Record<MediaKind, string> = {
@@ -34,13 +26,15 @@ const LABEL_BY_KIND: Record<MediaKind, string> = {
   auto: "Upload Media",
 }
 
+const MAX_BYTES = 10 * 1024 * 1024
+
 export function MediaUploader({
   onAdd,
   multiple = true,
-  maxFiles = 30,
   className = "",
   kind = "auto",
   label,
+  folder,
 }: {
   onAdd: (media: UploadedMedia) => void
   multiple?: boolean
@@ -48,26 +42,70 @@ export function MediaUploader({
   className?: string
   kind?: MediaKind
   label?: string
+  folder?: string
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [pasteUrl, setPasteUrl] = useState("")
   const [pasteError, setPasteError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
 
-  const configured = isCloudinaryConfigured()
   const buttonLabel = label ?? LABEL_BY_KIND[kind]
   const Icon = kind === "video" ? Film : kind === "image" ? ImageIcon : Upload
 
-  // Cloudinary's resourceType for the upload widget: image/video/raw/auto.
-  // For "image" kind we explicitly set "image" so the widget rejects videos at the picker.
-  const resourceType: "image" | "video" | "auto" = kind === "image" ? "image" : kind === "video" ? "video" : "auto"
+  async function uploadOne(file: File): Promise<UploadedMedia | null> {
+    if (file.size > MAX_BYTES) {
+      toast.error(`${file.name} is too large. Max 10MB.`)
+      return null
+    }
+    const formData = new FormData()
+    formData.append("file", file)
+    if (folder) formData.append("folder", folder)
 
-  function handleCloudinarySuccess(result: CloudinaryUploadWidgetResults) {
-    const info = typeof result.info === "object" ? result.info : undefined
-    if (!info?.secure_url || !info?.public_id) return
-    onAdd({
-      url: info.secure_url,
-      publicId: info.public_id,
-      alt: info.original_filename || null,
+    const res = await fetch("/api/upload/direct", {
+      method: "POST",
+      body: formData,
     })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      toast.error(`${file.name}: ${data.error || `Upload failed (${res.status})`}`)
+      return null
+    }
+
+    const data = await res.json()
+    return {
+      url: data.url,
+      publicId: data.publicId,
+      alt: file.name.replace(/\.[^.]+$/, ""),
+    }
+  }
+
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    const arr = Array.from(files)
+    setProgress({ done: 0, total: arr.length })
+
+    let succeeded = 0
+    for (let i = 0; i < arr.length; i++) {
+      const result = await uploadOne(arr[i])
+      if (result) {
+        onAdd(result)
+        succeeded++
+      }
+      setProgress({ done: i + 1, total: arr.length })
+    }
+
+    setUploading(false)
+    setProgress(null)
+
+    if (succeeded > 0) {
+      toast.success(`Uploaded ${succeeded} ${succeeded === 1 ? "file" : "files"}.`)
+    }
+
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   function handlePasteAdd() {
@@ -84,82 +122,77 @@ export function MediaUploader({
       setPasteError("That doesn't look like a valid URL.")
       return
     }
-    const filename = pasteUrl.split("/").pop()?.split("?")[0] || "external-media"
+    const filename = trimmed.split("/").pop()?.split("?")[0] || "external-media"
     onAdd({
-      url: pasteUrl.trim(),
+      url: trimmed,
       publicId: `external:${filename}-${Date.now()}`,
-      alt: filename,
+      alt: filename.replace(/\.[^.]+$/, ""),
     })
     setPasteUrl("")
   }
 
-  if (configured) {
-    return (
-      <div className={className}>
-        <CldUploadWidget
-          signatureEndpoint="/api/upload/signature"
-          onSuccess={handleCloudinarySuccess}
-          options={{
-            multiple,
-            maxFiles,
-            resourceType,
-            clientAllowedFormats: FORMATS_BY_KIND[kind],
-            maxFileSize: kind === "video" ? 200 * 1024 * 1024 : 100 * 1024 * 1024,
-            sources: ["local", "url", "camera"],
-          }}
-        >
-          {({ open }) => (
-            <Button
-              type="button"
-              onClick={() => open()}
-              variant="outline"
-              className="border-navy/20 text-navy"
-            >
-              <Icon className="w-4 h-4 mr-2" />
-              {buttonLabel}
-            </Button>
-          )}
-        </CldUploadWidget>
-      </div>
-    )
-  }
-
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-        <div>
-          <p className="font-medium">Cloudinary not configured.</p>
-          <p>
-            To enable drag-and-drop uploads, set <code className="font-mono">NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> and{" "}
-            <code className="font-mono">NEXT_PUBLIC_CLOUDINARY_API_KEY</code> in <code className="font-mono">.env.local</code>. For
-            now, paste an image or video URL below.
-          </p>
-        </div>
-      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPT_BY_KIND[kind]}
+        multiple={multiple}
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+
       <div className="flex flex-col sm:flex-row gap-2">
-        <Input
-          value={pasteUrl}
-          onChange={(e) => setPasteUrl(e.target.value)}
-          placeholder="https://example.com/photo.jpg"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              handlePasteAdd()
-            }
-          }}
-        />
         <Button
           type="button"
-          onClick={handlePasteAdd}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
           variant="outline"
-          className="border-navy/20 text-navy shrink-0"
+          className="border-navy/20 text-navy"
         >
-          <LinkIcon className="w-4 h-4 mr-2" />
-          Add URL
+          {uploading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              {progress ? `Uploading ${progress.done} / ${progress.total}` : "Uploading..."}
+            </>
+          ) : (
+            <>
+              <Icon className="w-4 h-4 mr-2" />
+              {buttonLabel}
+            </>
+          )}
         </Button>
+
+        <div className="flex flex-1 gap-2">
+          <Input
+            value={pasteUrl}
+            onChange={(e) => setPasteUrl(e.target.value)}
+            placeholder="or paste an image URL"
+            disabled={uploading}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                handlePasteAdd()
+              }
+            }}
+          />
+          <Button
+            type="button"
+            onClick={handlePasteAdd}
+            disabled={uploading}
+            variant="outline"
+            className="border-navy/20 text-navy shrink-0"
+          >
+            <LinkIcon className="w-4 h-4 mr-2" />
+            Add URL
+          </Button>
+        </div>
       </div>
+
       {pasteError && <p className="text-xs text-red-600">{pasteError}</p>}
+      <p className="text-[10px] text-charcoal/40">
+        Max 10MB per file. JPG, PNG, WebP, AVIF for images. MP4, WebM, MOV for video.
+      </p>
     </div>
   )
 }
