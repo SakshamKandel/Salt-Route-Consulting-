@@ -1,9 +1,11 @@
 "use client"
 
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "9779801300001"
+
 export function WhatsAppFloat() {
   return (
     <a
-      href="https://wa.me/9779800000000"
+      href={`https://wa.me/${WHATSAPP_NUMBER}`}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-charcoal/90 backdrop-blur-sm border border-charcoal text-sand hover:bg-sand hover:text-charcoal hover:border-charcoal transition-all duration-500 shadow-xl"

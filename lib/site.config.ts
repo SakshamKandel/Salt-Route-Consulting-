@@ -42,7 +42,7 @@ export const siteConfig = {
   social: {
     instagram: process.env.SOCIAL_INSTAGRAM ?? "",
     facebook: process.env.SOCIAL_FACEBOOK ?? "",
-    whatsapp: process.env.SOCIAL_WHATSAPP ?? "",
+    whatsapp: process.env.SOCIAL_WHATSAPP ?? "https://wa.me/9779801300001",
   },
 
   /** Currency configuration */
