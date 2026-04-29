@@ -27,20 +27,6 @@ export type ForOwnersPortfolioItem = {
   featured: boolean
 }
 
-const fallbackPortfolio: ForOwnersPortfolioItem[] = [
-  {
-    slug: "sunshine-villa-ilam",
-    name: "Sunshine Villa Ilam",
-    location: "Ilam, Eastern Nepal",
-    desc: "A premium villa retreat surrounded by Ilam's tea gardens, fresh air, quiet hills, and slow hospitality.",
-    image: "/Sunshine Villa Main.png",
-    bedrooms: 3,
-    bathrooms: 3,
-    maxGuests: 6,
-    featured: true,
-  },
-]
-
 const ownerPromises = [
   {
     num: "01",
@@ -124,8 +110,7 @@ function ParallaxFigure({
 }
 
 export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPortfolioItem[] }) {
-  const featuredPortfolio = portfolio.length > 0 ? portfolio : fallbackPortfolio
-  const heroImage = featuredPortfolio.find((item) => item.image)?.image ?? "/Sunshine Villa Main.png"
+  const heroImage = portfolio.find((item) => item.image)?.image ?? "/Sunshine Villa Main.png"
   const [ownerEnquiryStatus, setOwnerEnquiryStatus] = useState<"idle" | "loading" | "sent" | "error">("idle")
 
   const heroRef = useRef<HTMLElement>(null)
@@ -314,47 +299,58 @@ export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPor
             <LuxuryLinkWithArrow href="/properties" className="text-[10px]">View Full Collection</LuxuryLinkWithArrow>
           </FadeUp>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-charcoal/10 border border-charcoal/10">
-            {featuredPortfolio.map((property, index) => (
-              <FadeUp key={property.slug} delay={index * 0.1} className="bg-white group overflow-hidden">
-                <Link href={`/properties/${property.slug}`} className="block h-full">
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src={property.image || "/Sunshine Villa Main.png"}
-                      alt={property.name}
-                      fill
-                      className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                    />
-                    <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700" />
-                  </div>
-                  <div className="p-10 space-y-6">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/35 flex items-center gap-2">
-                        <MapPin className="w-3 h-3" strokeWidth={1.2} /> {property.location}
+          {portfolio.length === 0 ? (
+            <div className="border border-charcoal/10 bg-white py-28 md:py-32 px-8 text-center space-y-6">
+              <p className="font-display text-2xl md:text-3xl tracking-wide text-charcoal/40">
+                Portfolio coming soon
+              </p>
+              <p className="font-sans text-[14px] text-charcoal/50 font-light max-w-xl mx-auto leading-[1.8]">
+                New managed properties will appear here as they are ready to welcome guests.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-charcoal/10 border border-charcoal/10">
+              {portfolio.map((property, index) => (
+                <FadeUp key={property.slug} delay={index * 0.1} className="bg-white group overflow-hidden">
+                  <Link href={`/properties/${property.slug}`} className="block h-full">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={property.image || "/Sunshine Villa Main.png"}
+                        alt={property.name}
+                        fill
+                        className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                      />
+                      <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700" />
+                    </div>
+                    <div className="p-10 space-y-6">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/35 flex items-center gap-2">
+                          <MapPin className="w-3 h-3" strokeWidth={1.2} /> {property.location}
+                        </p>
+                        <ArrowRight className="w-5 h-5 text-gold opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-700" strokeWidth={1} />
+                      </div>
+                      <h3 className="font-display text-3xl text-charcoal tracking-wide uppercase leading-[1.1]">
+                        {property.name}
+                      </h3>
+                      <p className="text-[14px] text-charcoal/55 leading-[1.8] font-light line-clamp-2">
+                        {property.desc}
                       </p>
-                      <ArrowRight className="w-5 h-5 text-gold opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-700" strokeWidth={1} />
-                    </div>
-                    <h3 className="font-display text-3xl text-charcoal tracking-wide uppercase leading-[1.1]">
-                      {property.name}
-                    </h3>
-                    <p className="text-[14px] text-charcoal/55 leading-[1.8] font-light line-clamp-2">
-                      {property.desc}
-                    </p>
-                    <div className="pt-5 flex items-center gap-7 border-t border-charcoal/8">
-                      <div className="flex items-center gap-2">
-                        <BedDouble className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
-                        <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.bedrooms} Beds</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
-                        <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.maxGuests} Guests</span>
+                      <div className="pt-5 flex items-center gap-7 border-t border-charcoal/8">
+                        <div className="flex items-center gap-2">
+                          <BedDouble className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
+                          <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.bedrooms} Beds</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
+                          <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.maxGuests} Guests</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </FadeUp>
-            ))}
-          </div>
+                  </Link>
+                </FadeUp>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

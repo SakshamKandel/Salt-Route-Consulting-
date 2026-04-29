@@ -204,6 +204,17 @@ export default async function PropertiesPage({
     ...validRange,
     guests,
     page,
+  }).catch((err) => {
+    console.error("[properties] fetch failed:", err)
+    return {
+      properties: [] as Awaited<ReturnType<typeof getProperties>>["properties"],
+      page,
+      totalProperties: 0,
+      totalPages: 1,
+      knownLocations: [] as string[],
+      knownProperties: [] as Awaited<ReturnType<typeof getProperties>>["knownProperties"],
+      mapProperties: [] as Awaited<ReturnType<typeof getProperties>>["mapProperties"],
+    }
   })
   const { properties, totalProperties, totalPages, knownLocations, knownProperties, mapProperties } = propertiesResult
   const serializedProperties = properties.map((p) => ({
