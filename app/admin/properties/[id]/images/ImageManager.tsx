@@ -222,54 +222,67 @@ export function ImageManager({
                   {isVideo ? "Video" : "Image"}
                 </span>
               </div>
-              <div className="p-3 flex items-center justify-between gap-2">
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMove(index, "up")}
-                    disabled={index === 0 || pending === "reorder"}
-                    title="Move up"
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMove(index, "down")}
-                    disabled={index === images.length - 1 || pending === "reorder"}
-                    title="Move down"
-                  >
-                    <ArrowDown className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="flex gap-1">
-                  {!img.isPrimary && !isVideo && (
+              <div className="p-3 space-y-2">
+                {!isVideo && (
+                  <div className="grid grid-cols-2 gap-2">
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-amber-500 hover:text-amber-700 hover:bg-amber-50"
+                      type="button"
+                      variant={img.isPrimary ? "default" : "outline"}
+                      size="sm"
+                      className={`h-8 text-xs ${
+                        img.isPrimary
+                          ? "bg-navy text-cream hover:bg-navy/90"
+                          : "border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                      }`}
                       onClick={() => handleSetPrimary(img.id)}
-                      disabled={pending === img.id + "-primary"}
-                      title="Set as thumbnail (used on listing cards)"
+                      disabled={img.isPrimary || pending === img.id + "-primary"}
+                      title="Used on property listing cards"
                     >
-                      <Star className="w-4 h-4" />
+                      <Star className={`w-3.5 h-3.5 mr-1.5 ${img.isPrimary ? "fill-current" : ""}`} />
+                      {img.isPrimary ? "Thumbnail" : "Make Thumbnail"}
                     </Button>
-                  )}
-                  {!img.isBanner && !isVideo && (
+                    <Button
+                      type="button"
+                      variant={img.isBanner ? "default" : "outline"}
+                      size="sm"
+                      className={`h-8 text-xs ${
+                        img.isBanner
+                          ? "bg-gold text-charcoal hover:bg-gold/90"
+                          : "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                      }`}
+                      onClick={() => handleSetBanner(img.id)}
+                      disabled={img.isBanner || pending === img.id + "-banner"}
+                      title="Used as the large hero image on the property detail page"
+                    >
+                      <Monitor className={`w-3.5 h-3.5 mr-1.5 ${img.isBanner ? "fill-current" : ""}`} />
+                      {img.isBanner ? "Banner" : "Make Banner"}
+                    </Button>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                      onClick={() => handleSetBanner(img.id)}
-                      disabled={pending === img.id + "-banner"}
-                      title="Set as banner (large hero image on detail page)"
+                      className="h-8 w-8"
+                      onClick={() => handleMove(index, "up")}
+                      disabled={index === 0 || pending === "reorder"}
+                      title="Move up"
                     >
-                      <Monitor className="w-4 h-4" />
+                      <ArrowUp className="w-4 h-4" />
                     </Button>
-                  )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleMove(index, "down")}
+                      disabled={index === images.length - 1 || pending === "reorder"}
+                      title="Move down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
