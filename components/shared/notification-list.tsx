@@ -1,3 +1,5 @@
+"use client"
+
 import { Bell, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { markAllCurrentUserNotificationsReadAction, markNotificationReadAction } from "@/app/notifications/actions"
@@ -17,76 +19,80 @@ export function NotificationList({ notifications }: { notifications: Notificatio
   const unreadCount = notifications.filter((notification) => !notification.readAt).length
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-slate-500">{unreadCount} unread notification{unreadCount === 1 ? "" : "s"}</p>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-navy/40 text-[10px] uppercase font-bold tracking-widest">
+          {unreadCount} unread notification{unreadCount === 1 ? "" : "s"}
+        </p>
         {unreadCount > 0 && (
           <form action={async () => {
-            "use server"
             await markAllCurrentUserNotificationsReadAction()
           }}>
-            <Button type="submit" variant="outline" size="sm">
-              <CheckCircle2 className="mr-2 h-4 w-4" />
+            <Button type="submit" variant="outline" className="text-[10px] font-semibold uppercase tracking-widest h-8 px-3">
+              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 opacity-60" />
               Mark all read
             </Button>
           </form>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFDF8] overflow-hidden divide-y divide-[#1B3A5C]/5">
         {notifications.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center space-y-2 p-4 text-center">
-            <Bell className="h-8 w-8 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">No notifications yet</p>
+          <div className="flex flex-col items-center justify-center p-12 text-center">
+            <Bell className="h-6 w-6 text-navy/20 mb-3" />
+            <p className="text-xs text-navy/40 font-light">No notifications yet</p>
           </div>
         ) : (
-          <div className="divide-y">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={cn(
-                  "flex items-start gap-3 p-4 transition-colors hover:bg-muted/50 sm:gap-4",
-                  !notification.readAt && "bg-blue-50/30"
-                )}
-              >
-                <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                  <Bell className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm font-medium leading-none">
-                      {notification.title}
-                    </p>
-                    <p className="shrink-0 text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(notification.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {notification.body}
-                  </p>
-                  {!notification.readAt && (
-                    <form action={async () => {
-                      "use server"
-                      await markNotificationReadAction(notification.id)
-                    }}>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="h-auto p-0 text-xs text-blue-600"
-                        type="submit"
-                      >
-                        Mark as read
-                      </Button>
-                    </form>
-                  )}
-                </div>
+          notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={cn(
+                "flex items-start gap-4 p-5 transition-colors",
+                !notification.readAt ? "bg-gold/5" : "hover:bg-navy/[0.01]"
+              )}
+            >
+              <div className={cn(
+                "mt-0.5 flex h-7 w-7 items-center justify-center rounded-xl border shrink-0",
+                !notification.readAt 
+                  ? "bg-gold/10 border-gold/20 text-gold" 
+                  : "bg-navy/5 border-navy/5 text-navy/40"
+              )}>
+                <Bell className="h-3.5 w-3.5" />
               </div>
-            ))}
-          </div>
+              
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs font-semibold text-navy leading-none">
+                    {notification.title}
+                  </p>
+                  <p className="shrink-0 text-[10px] text-navy/40 font-light">
+                    {formatDistanceToNow(new Date(notification.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+                <p className="text-navy/60 text-xs font-light mt-1.5 leading-relaxed">
+                  {notification.body}
+                </p>
+                
+                {!notification.readAt && (
+                  <form 
+                    className="mt-2"
+                    action={async () => {
+                      await markNotificationReadAction(notification.id)
+                    }}
+                  >
+                    <button
+                      className="text-[10px] text-gold font-semibold uppercase tracking-widest hover:underline"
+                      type="submit"
+                    >
+                      Mark as read
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>

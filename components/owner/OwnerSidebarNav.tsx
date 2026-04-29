@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   Home,
   Calendar,
-  ChartBar,
+  BarChart2,
   User,
   MessageSquare,
   Edit3,
@@ -14,17 +14,22 @@ import {
 } from "lucide-react"
 
 const NAV_ITEMS = [
-  { name: "Overview",       href: "/owner/dashboard",     icon: ChartBar,      isBadge: false },
-  { name: "Properties",     href: "/owner/properties",   icon: Home,          isBadge: false },
-  { name: "Stays",          href: "/owner/bookings",     icon: Calendar,      isBadge: false },
-  { name: "Support",        href: "/owner/messages",     icon: MessageSquare, isBadge: false },
-  { name: "Alerts",         href: "/owner/notifications",icon: Bell,          isBadge: true  },
-  { name: "Earnings",       href: "/owner/reports",      icon: TrendingUp,    isBadge: false },
-  { name: "Updates",        href: "/owner/request-edit", icon: Edit3,         isBadge: false },
-  { name: "Profile",        href: "/owner/profile",      icon: User,          isBadge: false },
+  { name: "Overview",    href: "/owner/dashboard",      icon: BarChart2,      isBadge: false },
+  { name: "Properties",  href: "/owner/properties",     icon: Home,           isBadge: false },
+  { name: "Stays",       href: "/owner/bookings",       icon: Calendar,       isBadge: false },
+  { name: "Messages",    href: "/owner/messages",       icon: MessageSquare,  isBadge: false },
+  { name: "Alerts",      href: "/owner/notifications",  icon: Bell,           isBadge: true  },
+  { name: "Earnings",    href: "/owner/reports",        icon: TrendingUp,     isBadge: false },
+  { name: "Updates",     href: "/owner/request-edit",   icon: Edit3,          isBadge: false },
+  { name: "Profile",     href: "/owner/profile",        icon: User,           isBadge: false },
 ]
 
-export function OwnerSidebarNav({ notificationBadge }: { notificationBadge: number }) {
+type Props = {
+  notificationBadge: number
+  onNavigate?: () => void
+}
+
+export function OwnerSidebarNav({ notificationBadge, onNavigate }: Props) {
   const pathname = usePathname()
 
   return (
@@ -39,27 +44,27 @@ export function OwnerSidebarNav({ notificationBadge }: { notificationBadge: numb
           <li key={item.name}>
             <Link
               href={item.href}
-              className={`flex items-center px-8 py-3.5 relative group ${
+              onClick={onNavigate}
+              className={`flex items-center gap-3 px-2 py-2.5 rounded-lg transition-colors duration-150 group ${
                 isActive
-                  ? "bg-gold/5 text-gold"
-                  : "text-sand/35 hover:text-sand/70 hover:bg-white/[0.02]"
+                  ? "bg-[#1B3A5C] text-[#FFFDF8]"
+                  : "text-[#1B3A5C]/55 hover:bg-[#F5F1E8] hover:text-[#1B3A5C]"
               }`}
             >
-              <div
-                className={`absolute left-0 top-0 bottom-0 w-[2px] bg-gold ${
-                  isActive ? "opacity-100" : "opacity-0 group-hover:opacity-20 transition-opacity duration-500"
-                }`}
-              />
               <item.icon
-                className={`mr-5 h-3.5 w-3.5 flex-shrink-0 stroke-[1.3] ${
-                  isActive ? "text-gold" : "text-sand/25 group-hover:text-sand/50"
+                className={`h-4 w-4 flex-shrink-0 ${
+                  isActive ? "text-[#FFFDF8]" : "text-[#1B3A5C]/35 group-hover:text-[#1B3A5C]/70"
                 }`}
               />
-              <span className="text-[10px] uppercase tracking-[0.22em] font-medium">
+              <span className={`text-[13px] flex-1 ${isActive ? "font-semibold" : "font-medium"}`}>
                 {item.name}
               </span>
               {badge > 0 && (
-                <span className="ml-auto min-w-5 rounded-full bg-gold/15 border border-gold/25 text-gold px-1.5 text-center text-[9px] font-bold">
+                <span className={`min-w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center px-1.5 leading-none ${
+                  isActive
+                    ? "bg-[#C9A96E] text-[#1B3A5C]"
+                    : "bg-[#1B3A5C]/8 text-[#1B3A5C]/60"
+                }`}>
                   {badge > 9 ? "9+" : badge}
                 </span>
               )}
@@ -86,14 +91,16 @@ export function OwnerMobileNav({ notificationBadge }: { notificationBadge: numbe
           <Link
             key={item.name}
             href={item.href}
-            className={`inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-[9px] uppercase tracking-[0.14em] transition-colors ${
-              isActive ? "text-gold" : "text-sand/35 hover:text-sand/70"
+            className={`inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-[10px] font-medium border-b-2 transition-colors ${
+              isActive
+                ? "border-[#C9A96E] text-[#1B3A5C]"
+                : "border-transparent text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/20"
             }`}
           >
-            <item.icon className="h-3.5 w-3.5 stroke-[1.3]" />
+            <item.icon className="h-3.5 w-3.5" />
             <span>{item.name}</span>
             {badge > 0 && (
-              <span className="min-w-4 text-center text-[8px] font-bold text-gold bg-gold/15 px-1 rounded-full">
+              <span className="min-w-4 text-center text-[8px] font-bold text-[#1B3A5C] bg-[#1B3A5C]/8 px-1 rounded-full">
                 {badge > 9 ? "9+" : badge}
               </span>
             )}

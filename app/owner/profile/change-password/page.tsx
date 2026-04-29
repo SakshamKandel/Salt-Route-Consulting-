@@ -29,7 +29,7 @@ export default function OwnerChangePasswordPage() {
   }
 
   const inputClass =
-    "w-full bg-transparent text-sand/70 text-[12.5px] px-5 py-4 outline-none transition-all duration-500 placeholder:text-sand/20 font-light"
+    "w-full bg-transparent text-[#1B3A5C]/70 text-[12.5px] px-5 py-4 outline-none transition-all duration-500 placeholder:text-[#1B3A5C]/30 font-light"
   const inputStyle = { border: "1px solid rgba(201,169,110,0.15)" }
 
   const fields = [
@@ -45,7 +45,7 @@ export default function OwnerChangePasswordPage() {
       <div className="space-y-4">
         <Link
           href="/owner/profile"
-          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-sand/30 hover:text-gold transition-colors duration-500"
+          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
           Back to Profile
@@ -57,7 +57,7 @@ export default function OwnerChangePasswordPage() {
               Security
             </p>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl text-sand/85 tracking-wide">
+          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
             Change Password
           </h1>
         </div>
@@ -90,7 +90,7 @@ export default function OwnerChangePasswordPage() {
             <div key={field.id} className="space-y-2.5">
               <label
                 htmlFor={field.id}
-                className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium block"
+                className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block"
               >
                 {field.label}
               </label>
@@ -103,7 +103,7 @@ export default function OwnerChangePasswordPage() {
                 minLength={field.id === "next" ? 8 : undefined}
                 className={inputClass}
                 style={inputStyle}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
               />
             </div>
           ))}
@@ -126,7 +126,7 @@ export default function OwnerChangePasswordPage() {
         style={{ border: "1px solid rgba(201,169,110,0.07)" }}
       >
         <span className="w-4 h-px bg-gold/35 mt-2 shrink-0" />
-        <p className="text-[11.5px] text-sand/28 font-light leading-[1.8]">
+        <p className="text-[11.5px] text-[#1B3A5C]/30 font-light leading-[1.8]">
           Your new password must be at least 8 characters. If you&apos;ve forgotten your
           current password, sign out and use the &ldquo;Forgot password&rdquo; link on the login page.
         </p>

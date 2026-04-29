@@ -2,9 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Shield, Monitor, Key } from "lucide-react"
+import { Key, Shield, Monitor, ArrowRight } from "lucide-react"
 
 export default async function AdminProfilePage() {
   const session = await auth()
@@ -13,132 +11,94 @@ export default async function AdminProfilePage() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      role: true,
-      status: true,
-      emailVerified: true,
-      twoFactorEnabled: true,
-      createdAt: true,
-      _count: { select: { auditLogs: true } },
+      id: true, name: true, email: true, phone: true, role: true,
+      status: true, emailVerified: true, twoFactorEnabled: true,
+      createdAt: true, _count: { select: { auditLogs: true } },
     },
   })
 
   if (!user) redirect("/login")
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="space-y-6 max-w-2xl">
+
+      {/* Header */}
       <div>
-        <h2 className="text-3xl font-display text-navy">My Profile</h2>
-        <p className="text-slate-500">Manage your account settings and security preferences.</p>
+        <h1 className="text-xl font-bold text-slate-800">My Profile</h1>
+        <p className="text-sm text-slate-500 mt-0.5">Account info and security settings.</p>
       </div>
 
-      {/* Profile card */}
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="bg-navy p-6 flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center text-cream text-2xl font-bold">
-            {user.name?.[0]?.toUpperCase() ?? "A"}
+      {/* Identity card */}
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="bg-[#1B3A5C] px-6 py-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+            <span className="text-[#C9A96E] text-lg font-bold">{user.name?.[0]?.toUpperCase() ?? "A"}</span>
           </div>
           <div>
-            <p className="text-cream font-display text-xl">{user.name ?? "Admin"}</p>
-            <p className="text-cream/60 text-sm">{user.email}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">{user.role}</Badge>
-              <Badge className="bg-green-500/20 text-green-400 border-green-400/30 text-xs">{user.status}</Badge>
+            <p className="text-white font-semibold text-base">{user.name ?? "Admin"}</p>
+            <p className="text-white/50 text-sm">{user.email}</p>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#C9A96E]/20 text-[#C9A96E]">{user.role}</span>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                user.status === "ACTIVE" ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
+              }`}>{user.status}</span>
             </div>
           </div>
         </div>
-
-        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Member Since</p>
-            <p className="text-navy">{new Date(user.createdAt).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Email Verified</p>
-            <p className="text-navy">{user.emailVerified ? new Date(user.emailVerified).toLocaleDateString() : "Not verified"}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Phone</p>
-            <p className="text-navy">{user.phone ?? "Not set"}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Activity Log Entries</p>
-            <p className="text-navy">{user._count.auditLogs}</p>
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-slate-100 border-t border-slate-100">
+          {[
+            { label: "Member since", value: user.createdAt.toLocaleDateString() },
+            { label: "Email verified", value: user.emailVerified ? "Yes" : "No" },
+            { label: "Phone", value: user.phone ?? "—" },
+            { label: "Audit entries", value: String(user._count.auditLogs) },
+          ].map(({ label, value }) => (
+            <div key={label} className="px-4 py-3.5">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
+              <p className="text-sm font-medium text-slate-700 mt-0.5">{value}</p>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Security section */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-navy text-lg">Security</h3>
-
-        <SecurityCard
-          icon={Key}
-          title="Password"
-          desc="Change your account password. Use a strong, unique password."
-          action="Change Password"
-          href="/admin/profile/change-password"
-        />
-        <SecurityCard
-          icon={Shield}
-          title="Two-Factor Authentication"
-          desc={user.twoFactorEnabled ? "2FA is enabled on your account." : "Add an extra layer of security with 2FA."}
-          badge={user.twoFactorEnabled ? "Enabled" : "Disabled"}
-          badgeColor={user.twoFactorEnabled ? "text-green-600 bg-green-50" : "text-yellow-600 bg-yellow-50"}
-          action="Manage 2FA"
-          href="/admin/profile/2fa"
-        />
-        <SecurityCard
-          icon={Monitor}
-          title="Active Sessions"
-          desc="View and revoke all active sessions on other devices."
-          action="View Sessions"
-          href="/admin/profile/sessions"
-        />
+      {/* Security links */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">Security</p>
+        {[
+          { icon: Key,     title: "Change Password",          desc: "Update your login password",                   href: "/admin/profile/change-password" },
+          { icon: Shield,  title: "Two-Factor Authentication", desc: user.twoFactorEnabled ? "2FA is enabled" : "Add an extra layer of security", href: "/admin/profile/2fa",     badge: user.twoFactorEnabled ? "Enabled" : "Off" },
+          { icon: Monitor, title: "Active Sessions",          desc: "View and revoke sessions on other devices",    href: "/admin/profile/sessions" },
+        ].map(({ icon: Icon, title, desc, href, badge }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl px-5 py-4 hover:border-slate-300 hover:bg-slate-50 transition-colors group"
+          >
+            <div className="flex items-center gap-4">
+              <Icon className="h-4 w-4 text-slate-400 shrink-0" />
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-slate-800">{title}</p>
+                  {badge && (
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                      badge === "Enabled" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
+                    }`}>{badge}</span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">{desc}</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors shrink-0" />
+          </Link>
+        ))}
       </div>
-    </div>
-  )
-}
 
-function SecurityCard({
-  icon: Icon,
-  title,
-  desc,
-  action,
-  href,
-  badge,
-  badgeColor,
-}: {
-  icon: React.ElementType
-  title: string
-  desc: string
-  action: string
-  href: string
-  badge?: string
-  badgeColor?: string
-}) {
-  return (
-    <div className="bg-white border rounded-xl p-5 flex items-center justify-between gap-4">
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-navy/5 flex items-center justify-center shrink-0">
-          <Icon size={18} className="text-navy" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="font-medium text-navy">{title}</p>
-            {badge && (
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badgeColor}`}>{badge}</span>
-            )}
-          </div>
-          <p className="text-sm text-slate-500 mt-0.5">{desc}</p>
-        </div>
-      </div>
-      <Button asChild variant="outline" size="sm" className="shrink-0 border-navy/20 text-navy">
-        <Link href={href}>{action}</Link>
-      </Button>
+      {/* Link to full settings */}
+      <p className="text-xs text-slate-400 text-center">
+        To edit your profile details, go to{" "}
+        <Link href="/admin/settings" className="text-[#1B3A5C] font-medium underline underline-offset-2">
+          Settings
+        </Link>
+      </p>
     </div>
   )
 }

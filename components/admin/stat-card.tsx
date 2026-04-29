@@ -1,41 +1,41 @@
-﻿import { Card, CardContent } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
+import Link from "next/link"
+import { ReactNode } from "react"
+
+export type AccentColor = "neutral" | "blue" | "purple" | "amber" | "green" | "red" | "gold"
 
 interface StatCardProps {
   title: string
   value: string | number
   icon: LucideIcon
-  description?: string
+  description?: ReactNode
   trend?: "up" | "down" | "neutral"
   trendValue?: string
+  accent?: AccentColor
+  href?: string
 }
 
-export function StatCard({ title, value, icon: Icon, description, trend, trendValue }: StatCardProps) {
-  return (
-    <Card className="shadow-none border border-charcoal/10 rounded-none bg-white">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal/60">{title}</h3>
-          <div className="p-2 bg-[#FBF9F4] border border-charcoal/5">
-            <Icon className="w-4 h-4 text-charcoal/60" />
-          </div>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-3xl font-display text-charcoal">{value}</h2>
-          {trendValue && (
-            <span className={`text-[10px] uppercase tracking-[0.1em] font-bold ${
-              trend === "up" ? "text-green-600" : 
-              trend === "down" ? "text-red-600" : "text-charcoal/50"
-            }`}>
-              {trend === "up" ? "â†‘" : trend === "down" ? "â†“" : ""} {trendValue}
-            </span>
-          )}
-        </div>
-        {description && (
-          <p className="text-[10px] uppercase tracking-[0.1em] text-charcoal/50 mt-2">{description}</p>
+export function StatCard({ title, value, icon: Icon, description, trend, trendValue, href }: StatCardProps) {
+  const inner = (
+    <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-5 hover:border-[#1B3A5C]/15 transition-colors">
+      <div className="flex items-start justify-between mb-4">
+        <Icon className="w-4 h-4 text-[#1B3A5C]/30" />
+        {trendValue && (
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+            trend === "up"   ? "bg-emerald-50 text-emerald-600" :
+            trend === "down" ? "bg-red-50 text-red-500" :
+            "bg-[#F5F1E8] text-[#1B3A5C]/50"
+          }`}>
+            {trend === "up" ? "↑ " : trend === "down" ? "↓ " : ""}{trendValue}
+          </span>
         )}
-      </CardContent>
-    </Card>
+      </div>
+      <p className="text-2xl font-semibold text-[#1B3A5C] tabular-nums leading-tight">{value}</p>
+      <p className="text-[11px] text-[#1B3A5C]/45 mt-1 uppercase tracking-[0.2em] font-medium">{title}</p>
+      {description && <p className="text-xs text-[#1B3A5C]/35 mt-1.5">{description}</p>}
+    </div>
   )
-}
 
+  if (href) return <Link href={href} className="block">{inner}</Link>
+  return inner
+}

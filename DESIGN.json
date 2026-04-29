@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-29T00:00:00Z",
+  "title": "Design System: Salt Route Consulting",
+  "extensions": {
+    "colorMeta": {
+      "deep-navy":    { "role": "primary",   "displayName": "Deep Himalayan Navy",  "canonical": "oklch(27% 0.06 240)",  "tonalRamp": ["#061420","#0C1F33","#102943","#1B3A5C","#2A4F7A","#3E6B9E","#6891BE","#A0BAD6","#D4E4F4"] },
+      "navy-mid":     { "role": "primary",   "displayName": "Navy Mid",             "canonical": "oklch(34% 0.07 240)",  "tonalRamp": ["#061420","#0C1F33","#102943","#1B3A5C","#2A4F7A","#3E6B9E","#6891BE","#A0BAD6","#D4E4F4"] },
+      "navy-dark":    { "role": "primary",   "displayName": "Night Pass",           "canonical": "oklch(19% 0.055 240)", "tonalRamp": ["#020A11","#061420","#0C1F33","#102943","#1B3A5C","#2A4F7A","#3E6B9E","#6891BE","#A0BAD6"] },
+      "owner-dark":   { "role": "primary",   "displayName": "Owner Dark",           "canonical": "oklch(14% 0.05 240)",  "tonalRamp": ["#010608","#020A11","#061420","#0C1F33","#102943","#1B3A5C","#2A4F7A","#3E6B9E","#6891BE"] },
+      "warm-gold":    { "role": "secondary", "displayName": "Warm Trade Gold",      "canonical": "oklch(73% 0.09 75)",   "tonalRamp": ["#3A2600","#5C3F00","#7A5520","#A88B4A","#C9A96E","#DBCBAA","#EAE0CA","#F3EEE2","#FAF7F0"] },
+      "gold-light":   { "role": "secondary", "displayName": "Gold Light",           "canonical": "oklch(83% 0.055 80)",  "tonalRamp": ["#3A2600","#5C3F00","#7A5520","#A88B4A","#C9A96E","#DBCBAA","#EAE0CA","#F3EEE2","#FAF7F0"] },
+      "gold-deep":    { "role": "secondary", "displayName": "Gold Deep",            "canonical": "oklch(61% 0.09 72)",   "tonalRamp": ["#3A2600","#5C3F00","#7A5520","#A88B4A","#C9A96E","#DBCBAA","#EAE0CA","#F3EEE2","#FAF7F0"] },
+      "cream":        { "role": "neutral",   "displayName": "Cream",                "canonical": "oklch(99.5% 0.005 90)","tonalRamp": ["#8C8680","#B0AA9E","#C8C2B4","#DDD8CE","#EDEAE4","#F5F1E8","#F9F7F2","#FBF9F4","#FFFDF8"] },
+      "sand":         { "role": "neutral",   "displayName": "Sand",                 "canonical": "oklch(98% 0.007 90)",  "tonalRamp": ["#8C8680","#B0AA9E","#C8C2B4","#DDD8CE","#EDEAE4","#F5F1E8","#F9F7F2","#FBF9F4","#FFFDF8"] },
+      "sand-mid":     { "role": "neutral",   "displayName": "Sand Mid",             "canonical": "oklch(93% 0.01 80)",   "tonalRamp": ["#8C8680","#B0AA9E","#C8C2B4","#DDD8CE","#EDEAE4","#F5F1E8","#F9F7F2","#FBF9F4","#FFFDF8"] },
+      "bone":         { "role": "neutral",   "displayName": "Bone",                 "canonical": "oklch(97.5% 0.006 85)","tonalRamp": ["#8C8680","#B0AA9E","#C8C2B4","#DDD8CE","#EDEAE4","#F5F1E8","#F9F7F2","#FBF9F4","#FFFDF8"] },
+      "beige":        { "role": "neutral",   "displayName": "Beige",                "canonical": "oklch(95% 0.01 80)",   "tonalRamp": ["#8C8680","#B0AA9E","#C8C2B4","#DDD8CE","#EDEAE4","#F5F1E8","#F9F7F2","#FBF9F4","#FFFDF8"] },
+      "destructive":  { "role": "semantic",  "displayName": "Destructive",          "canonical": "oklch(46% 0.14 25)",   "tonalRamp": ["#2A0A0A","#4A1111","#6B2020","#8C3030","#B84040","#D46060","#E89090","#F4BBBB","#FDE8E8"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Page-level hero headings. One per page." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings within a page." },
+      "title":    { "displayName": "Title",    "purpose": "UI container headings — card titles, modal headers." },
+      "body":     { "displayName": "Body",     "purpose": "All running text. Max 70ch. Light weight (300)." },
+      "label":    { "displayName": "Label",    "purpose": "Category labels, table headers. Uppercase + wide tracking only at this role." }
+    },
+    "shadows": [
+      { "name": "gold-focus-ring", "value": "0 0 0 3px rgba(201, 169, 110, 0.5)", "purpose": "Keyboard focus ring for inputs and buttons. The only permitted shadow in the system." }
+    ],
+    "motion": [
+      { "name": "ease-standard",  "value": "cubic-bezier(0, 0, 0.2, 1)",    "purpose": "Default easing. State transitions, color changes." },
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Entrance animations: panels, drawers sliding in." },
+      { "name": "duration-fast",  "value": "150ms", "purpose": "Hover color changes, icon swaps." },
+      { "name": "duration-base",  "value": "200ms", "purpose": "Button transitions, input focus." },
+      { "name": "duration-slow",  "value": "300ms", "purpose": "Panel reveals, sidebar expand/collapse." }
+    ],
+    "breakpoints": [
+      { "name": "sm",  "value": "640px"  },
+      { "name": "md",  "value": "768px"  },
+      { "name": "lg",  "value": "1024px" },
+      { "name": "xl",  "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action. Deep Navy fill, Cream text, sentence case.",
+      "html": "<button class=\"ds-btn-primary\">Book Your Stay</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; background-color: #1B3A5C; color: #FFFDF8; padding: 12px 32px; border-radius: 8px; border: none; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; cursor: pointer; transition: background-color 200ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-btn-primary:hover { background-color: #2A4F7A; } .ds-btn-primary:focus-visible { background-color: #2A4F7A; box-shadow: 0 0 0 3px rgba(201,169,110,0.5); } .ds-btn-primary:active { background-color: #102943; transform: translateY(1px); }"
+    },
+    {
+      "name": "Gold Accent Button",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "Warm gold fill. One per view maximum.",
+      "html": "<button class=\"ds-btn-gold\">Reserve Now</button>",
+      "css": ".ds-btn-gold { display: inline-flex; align-items: center; justify-content: center; background-color: #C9A96E; color: #FFFDF8; padding: 12px 32px; border-radius: 8px; border: none; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; cursor: pointer; transition: background-color 200ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-btn-gold:hover { background-color: #DBCBAA; color: #1B3A5C; } .ds-btn-gold:focus-visible { box-shadow: 0 0 0 3px rgba(201,169,110,0.5); } .ds-btn-gold:active { background-color: #A88B4A; transform: translateY(1px); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action. Transparent with ghost border.",
+      "html": "<button class=\"ds-btn-ghost\">View Details</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; background-color: transparent; color: #1B3A5C; padding: 12px 32px; border-radius: 8px; border: 1px solid rgba(27,58,92,0.15); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 200ms cubic-bezier(0,0,0.2,1), border-color 200ms; outline: none; } .ds-btn-ghost:hover { background-color: #F5F1E8; border-color: rgba(27,58,92,0.25); } .ds-btn-ghost:focus-visible { box-shadow: 0 0 0 3px rgba(201,169,110,0.5); } .ds-btn-ghost:active { background-color: #F0EBE0; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard form field. Bone fill, gold focus ring.",
+      "html": "<div class=\"ds-input-wrap\"><label class=\"ds-input-label\">Full Name</label><input class=\"ds-input\" type=\"text\" placeholder=\"Enter your name\" /></div>",
+      "css": ".ds-input-wrap { display: flex; flex-direction: column; gap: 6px; } .ds-input-label { font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(27,58,92,0.6); } .ds-input { height: 42px; width: 100%; background-color: #F9F7F2; border: 1px solid rgba(27,58,92,0.1); border-radius: 8px; padding: 0 14px; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; color: #1B3A5C; outline: none; transition: border-color 200ms, box-shadow 200ms; } .ds-input::placeholder { color: rgba(27,58,92,0.35); } .ds-input:focus { border-color: #C9A96E; box-shadow: 0 0 0 3px rgba(201,169,110,0.5); } .ds-input[aria-invalid='true'] { border-color: #B84040; box-shadow: 0 0 0 3px rgba(184,64,64,0.2); }"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "card-surface",
+      "description": "General content surface. Cream on sand, 12px radius.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><span class=\"ds-card-label\">Property Details</span><h3 class=\"ds-card-title\">Sunshine Villa</h3></div><div class=\"ds-card-body\"><p class=\"ds-card-body-text\">A curated mountain retreat with panoramic views and private access to the salt route trail.</p></div></div>",
+      "css": ".ds-card { background-color: #FFFDF8; border-radius: 12px; padding: 24px; border: 1px solid rgba(27,58,92,0.08); transition: border-color 200ms; } .ds-card:hover { border-color: rgba(27,58,92,0.15); } .ds-card-header { margin-bottom: 12px; } .ds-card-label { font-family: Inter, system-ui, sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(27,58,92,0.5); display: block; margin-bottom: 6px; } .ds-card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.25rem; font-weight: 400; color: #1B3A5C; margin: 0; line-height: 1.3; } .ds-card-body-text { font-family: Inter, system-ui, sans-serif; font-size: 0.9rem; font-weight: 300; line-height: 1.7; color: rgba(27,58,92,0.7); margin: 0; }"
+    },
+    {
+      "name": "Admin Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-admin",
+      "description": "Admin sidebar navigation item. White background, slate context.",
+      "html": "<nav class=\"ds-admin-nav\"><a class=\"ds-admin-nav-item ds-admin-nav-item--active\" href=\"#\"><svg class=\"ds-nav-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/></svg><span>Dashboard</span></a><a class=\"ds-admin-nav-item\" href=\"#\"><svg class=\"ds-nav-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg><span>Users</span></a></nav>",
+      "css": ".ds-admin-nav { display: flex; flex-direction: column; gap: 2px; padding: 8px; } .ds-admin-nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; font-family: Inter, system-ui, sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(27,58,92,0.65); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-admin-nav-item:hover { background-color: #f8fafc; color: #1B3A5C; } .ds-admin-nav-item--active { background-color: #1B3A5C; color: #FFFDF8; } .ds-admin-nav-item--active:hover { background-color: #2A4F7A; } .ds-nav-icon { flex-shrink: 0; opacity: 0.8; }"
+    },
+    {
+      "name": "Owner Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-owner",
+      "description": "Owner portal sidebar navigation. Dark navy, gold active accent.",
+      "html": "<nav class=\"ds-owner-nav\"><a class=\"ds-owner-nav-item ds-owner-nav-item--active\" href=\"#\"><svg class=\"ds-owner-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><polyline points=\"9,22 9,12 15,12 15,22\"/></svg><span>Properties</span></a><a class=\"ds-owner-nav-item\" href=\"#\"><svg class=\"ds-owner-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg><span>Bookings</span></a></nav>",
+      "css": ".ds-owner-nav { display: flex; flex-direction: column; gap: 2px; padding: 8px; } .ds-owner-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; font-family: Inter, system-ui, sans-serif; font-size: 0.85rem; font-weight: 400; color: rgba(251,249,244,0.7); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-owner-nav-item:hover { background-color: rgba(42,79,122,0.3); color: rgba(251,249,244,0.95); } .ds-owner-nav-item--active { background-color: rgba(42,79,122,0.4); color: #C9A96E; } .ds-owner-nav-item--active:hover { background-color: rgba(42,79,122,0.5); } .ds-owner-icon { flex-shrink: 0; }"
+    },
+    {
+      "name": "Gold Rule Divider",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Section pacing mark. Guest and public portals only. Never in admin or form contexts.",
+      "html": "<hr class=\"ds-gold-rule\" />",
+      "css": ".ds-gold-rule { border: none; width: 48px; height: 1px; background-color: rgba(201, 169, 110, 0.5); margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Salt Route Itself",
+    "overview": "The ancient salt trading routes of the Himalayas connected cultures through contrast — dark mountain passes opening into warm valleys, precision of the merchant's ledger alongside the richness of what was traded. This design system lives in that same tension. Deep navy and warm gold are not decoration; they are the two truths of the brand: reliable authority and generous warmth.\n\nThis is not a travel booking platform that looks like every other OTA. It is a consulting and hospitality product for people who have already decided they want something rare. The design system's job is to confirm that decision at every interaction. Tonal layering replaces shadows — depth is conveyed by surfaces sitting inside other surfaces, never by decoration floating above them.",
+    "keyCharacteristics": [
+      "Warmth and authority coexist — never one without the other",
+      "Tonal depth, not shadow depth — surfaces layer, not float",
+      "Playfair Display for presence; Inter for clarity",
+      "Gold is used at a ratio of less than 10% of any screen surface",
+      "Responsive at every breakpoint without losing the premium register"
+    ],
+    "rules": [
+      { "name": "The Gold Rule", "body": "Warm Trade Gold appears on fewer than 10% of any given screen. One active indicator, one divider, one button per view. Use it more and it becomes beige.", "section": "colors" },
+      { "name": "The No Pure White Rule", "body": "Every surface uses a tinted neutral. #FFFDF8, #FBF9F4, #F9F7F2. Never #ffffff. The warmth is the brand.", "section": "colors" },
+      { "name": "The One Serif Rule", "body": "Playfair Display appears in headings (Display and Headline roles) and nowhere else. All UI copy is Inter.", "section": "typography" },
+      { "name": "The Uppercase Ceiling", "body": "Uppercase letter-spacing (tracking-[0.4em]) is reserved for Label-role type only. Buttons and headings are sentence case.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Focus ring (gold, 3px) appears only on keyboard-focused interactive elements. No shadow appears in response to hover.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Playfair Display exclusively for Display and Headline roles. Inter for everything else.",
+      "Do tint every background surface toward gold. Never pure #ffffff.",
+      "Do use tonal layering to create depth. Lighter cream on slightly darker sand.",
+      "Do use Warm Trade Gold on fewer than 10% of any given screen.",
+      "Do cap body line length at 65-75ch with Inter Light (300) at line-height 1.8.",
+      "Do use Border Ghost (#1B3A5C at 8%) for structural borders. One weight, one opacity.",
+      "Do treat mobile as first-class. Sidebar collapses, tables become stacked cards.",
+      "Do write action button copy in sentence case. Reserve uppercase for Label role only."
+    ],
+    "donts": [
+      "Don't use Booking.com-style urgency: countdown timers, red scarcity badges, bright orange CTAs.",
+      "Don't build SAP/Salesforce enterprise density: modal stacks, 20-column tables, 15-icon toolbars.",
+      "Don't use gray-on-gray neutral palettes that could belong to any SaaS product.",
+      "Don't use glassmorphism or decorative backdrop-filter blur.",
+      "Don't use border-left or border-right wider than 1px as a colored accent stripe on cards or alerts.",
+      "Don't use background-clip: text with gradient fills for decorative text.",
+      "Don't nest a card inside a card.",
+      "Don't use pure #000000 or #ffffff anywhere.",
+      "Don't use box-shadows for ambient depth — tonal layering only.",
+      "Don't use Playfair Display below 1.5rem."
+    ]
+  }
+}

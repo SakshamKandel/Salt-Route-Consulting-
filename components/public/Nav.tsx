@@ -92,12 +92,24 @@ export function Nav() {
           </div>
 
           {/* Logo - Centered */}
-          <Link href={isOwnerSection ? "/for-owners" : "/"} className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center z-[80]">
-            <Image 
-              src="/logo.png" 
-              alt="SRG Logo" 
-              width={80} 
-              height={38} 
+          <Link
+            href={isOwnerSection ? "/for-owners" : "/"}
+            onClick={(e) => {
+              if (isOwnerSection && pathname === "/for-owners") {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              } else if (!isOwnerSection && pathname === "/") {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }
+            }}
+            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center z-[80]"
+          >
+            <Image
+              src="/logo.png"
+              alt="SRG Logo"
+              width={80}
+              height={38}
               priority
               className="object-contain transition-all duration-300"
             />

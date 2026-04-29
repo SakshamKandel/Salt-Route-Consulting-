@@ -324,7 +324,6 @@ export default function PropertiesClient({
           ) : (
             <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 xl:grid-cols-3">
               {properties.map((property, idx) => {
-                const formattedIdx = ((page - 1) * pageSize + idx + 1).toString().padStart(2, "0")
                 const previewFeatures = [...property.highlights, ...property.amenities].slice(0, 3)
 
                 return (
@@ -354,9 +353,7 @@ export default function PropertiesClient({
 
                       <div className="flex justify-between gap-4 items-start px-1">
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-4 mb-4">
-                            <span className="text-[10px] font-sans text-charcoal/40">No. {formattedIdx}</span>
-                            <span className="w-8 h-[1px] bg-charcoal/20" />
+                          <div className="mb-4">
                             <p className="truncate text-[9px] uppercase tracking-[0.2em] text-charcoal/50">
                               {property.location}
                             </p>

@@ -69,18 +69,18 @@ export default async function OwnerPropertyDetailPage({
 
       {/* ─── BREADCRUMB ─── */}
       <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.35em]">
-        <Link href="/owner/properties" className="text-sand/30 hover:text-gold transition-colors duration-500">
+        <Link href="/owner/properties" className="text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500">
               Properties
         </Link>
-        <span className="text-sand/20">·</span>
-        <span className="text-sand/50">{property.title}</span>
+        <span className="text-[#1B3A5C]/20">·</span>
+        <span className="text-[#1B3A5C]/50">{property.title}</span>
       </div>
 
       {/* ─── IMAGE GALLERY ─── */}
       {galleryImages.length > 0 ? (
         <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[420px] md:h-[520px]">
           {/* Hero image - spans 2 cols and 2 rows */}
-          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#163350]">
+          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#E8E4DC]">
             {heroImage && (
               <Image
                 src={heroImage}
@@ -95,8 +95,7 @@ export default async function OwnerPropertyDetailPage({
               <span
                 className="px-4 py-2 text-[8.5px] uppercase tracking-[0.3em] font-medium"
                 style={{
-                  background: "rgba(8,15,24,0.75)",
-                  backdropFilter: "blur(8px)",
+                  background: "#0C1F33",
                   border: "1px solid rgba(201,169,110,0.25)",
                   color: "#C9A96E",
                 }}
@@ -110,7 +109,7 @@ export default async function OwnerPropertyDetailPage({
           {galleryImages.slice(1, 5).map((img, i) => (
             <div
               key={img.id}
-              className={`hidden md:block relative overflow-hidden bg-[#163350] ${
+              className={`hidden md:block relative overflow-hidden bg-[#E8E4DC] ${
                 i >= 2 ? "row-start-2" : ""
               }`}
             >
@@ -128,7 +127,7 @@ export default async function OwnerPropertyDetailPage({
             (_, i) => (
               <div
                 key={`ph-${i}`}
-                className="hidden md:block bg-[#163350]"
+                className="hidden md:block bg-[#E8E4DC]"
                 style={{ border: "1px solid rgba(201,169,110,0.06)" }}
               />
             )
@@ -137,9 +136,9 @@ export default async function OwnerPropertyDetailPage({
       ) : (
         <div
           className="h-64 flex items-center justify-center"
-          style={{ border: "1px solid rgba(201,169,110,0.08)", background: "#163350" }}
+          style={{ border: "1px solid rgba(201,169,110,0.08)", background: "#F5F1E8" }}
         >
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">
             No images uploaded
           </p>
         </div>
@@ -154,14 +153,14 @@ export default async function OwnerPropertyDetailPage({
               {property.location}
             </p>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl text-sand/90 tracking-wide">
+          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
             {property.title}
           </h1>
-          <div className="flex items-center gap-6 text-[9.5px] uppercase tracking-[0.25em] text-sand/35">
+          <div className="flex items-center gap-6 text-[9.5px] uppercase tracking-[0.25em] text-[#1B3A5C]/40">
             <span>{property.bedrooms} Bedroom{property.bedrooms !== 1 ? "s" : ""}</span>
-            <span className="w-1 h-1 rounded-full bg-sand/20" />
+            <span className="w-1 h-1 rounded-full bg-[#1B3A5C]/20" />
             <span>{property.bathrooms} Bathroom{property.bathrooms !== 1 ? "s" : ""}</span>
-            <span className="w-1 h-1 rounded-full bg-sand/20" />
+            <span className="w-1 h-1 rounded-full bg-[#1B3A5C]/20" />
             <span>{property.maxGuests} Guests</span>
           </div>
         </div>
@@ -180,7 +179,7 @@ export default async function OwnerPropertyDetailPage({
       <div>
         <div className="flex items-center gap-4 mb-8">
           <span className="w-8 h-px bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
             Stay Results
           </h2>
         </div>
@@ -191,9 +190,9 @@ export default async function OwnerPropertyDetailPage({
           {performanceMetrics.map((m) => (
             <div
               key={m.label}
-              className="bg-[#102943] px-7 py-8 group hover:bg-[#0D1F30] transition-colors duration-700"
+              className="bg-[#FFFDF8] px-7 py-8 group hover:bg-[#F5F1E8] transition-colors duration-700"
             >
-              <p className="text-[8.5px] uppercase tracking-[0.4em] text-sand/30 mb-2 font-medium">
+              <p className="text-[8.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/30 mb-2 font-medium">
                 {m.label}
               </p>
               <p className="font-display text-2xl md:text-3xl text-gold/75 group-hover:text-gold transition-colors duration-700">
@@ -213,11 +212,11 @@ export default async function OwnerPropertyDetailPage({
           <div>
             <div className="flex items-center gap-4 mb-6">
               <span className="w-8 h-px bg-gold/30" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+              <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
                 Property Story
               </h2>
             </div>
-            <p className="text-[13px] text-sand/55 leading-[1.95] font-light">
+            <p className="text-[13px] text-[#1B3A5C]/50 leading-[1.95] font-light">
               {property.description}
             </p>
           </div>
@@ -227,7 +226,7 @@ export default async function OwnerPropertyDetailPage({
             <div>
               <div className="flex items-center gap-4 mb-6">
                 <span className="w-8 h-px bg-gold/30" />
-                <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+                <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
                   Additional Features
                 </h2>
               </div>
@@ -235,7 +234,7 @@ export default async function OwnerPropertyDetailPage({
                 {property.highlights.map((h, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="w-1 h-1 rounded-full bg-gold/50 mt-2 shrink-0" />
-                    <span className="text-[12.5px] text-sand/50 font-light leading-relaxed">
+                    <span className="text-[12.5px] text-[#1B3A5C]/50 font-light leading-relaxed">
                       {h}
                     </span>
                   </li>
@@ -249,7 +248,7 @@ export default async function OwnerPropertyDetailPage({
         <div className="space-y-6">
           <div className="flex items-center gap-4 mb-2">
             <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
               Amenities
             </h2>
           </div>
@@ -258,7 +257,7 @@ export default async function OwnerPropertyDetailPage({
               {property.amenities.map((a, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3 text-[11.5px] text-sand/50 font-light"
+                  className="flex items-center gap-3 text-[11.5px] text-[#1B3A5C]/50 font-light"
                 >
                   <span className="w-4 h-px bg-gold/30 shrink-0" />
                   {a}
@@ -266,7 +265,7 @@ export default async function OwnerPropertyDetailPage({
               ))}
             </ul>
           ) : (
-            <p className="text-[11px] text-sand/25 italic">No amenities listed.</p>
+            <p className="text-[11px] text-[#1B3A5C]/30 italic">No amenities listed.</p>
           )}
         </div>
       </div>
@@ -276,10 +275,10 @@ export default async function OwnerPropertyDetailPage({
         <div className="space-y-8">
           <div className="flex items-center gap-4">
             <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
               Guest Reviews
             </h2>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-sand/25 ml-2">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 ml-2">
               ({property._count.reviews} total)
             </span>
           </div>
@@ -291,7 +290,7 @@ export default async function OwnerPropertyDetailPage({
                 style={{ border: "1px solid rgba(201,169,110,0.07)", background: "rgba(201,169,110,0.02)" }}
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] text-sand/60 font-medium tracking-wide">
+                  <p className="text-[11px] text-[#1B3A5C]/60 font-medium tracking-wide">
                     {review.guest.name ?? "Anonymous Guest"}
                   </p>
                   <div className="flex items-center gap-1">
@@ -299,7 +298,7 @@ export default async function OwnerPropertyDetailPage({
                       <span
                         key={i}
                         className={`text-[10px] ${
-                          i < review.rating ? "text-gold/80" : "text-sand/15"
+                          i < review.rating ? "text-gold/80" : "text-[#1B3A5C]/15"
                         }`}
                       >
                         ★
@@ -307,10 +306,10 @@ export default async function OwnerPropertyDetailPage({
                     ))}
                   </div>
                 </div>
-                <p className="text-[12px] text-sand/40 leading-[1.8] font-light italic">
+                <p className="text-[12px] text-[#1B3A5C]/40 leading-[1.8] font-light italic">
                   &ldquo;{review.comment}&rdquo;
                 </p>
-                <p className="text-[9px] uppercase tracking-[0.3em] text-sand/25">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30">
                   {new Date(review.createdAt).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "long",
@@ -328,10 +327,10 @@ export default async function OwnerPropertyDetailPage({
         style={{ border: "1px solid rgba(201,169,110,0.1)", background: "rgba(201,169,110,0.025)" }}
       >
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium mb-1">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
             Need to update this property?
           </p>
-          <p className="text-[12px] text-sand/30 font-light">
+          <p className="text-[12px] text-[#1B3A5C]/30 font-light">
             Send property, calendar, feature, amenity, pricing, or photo updates to the Salt Route team.
           </p>
         </div>

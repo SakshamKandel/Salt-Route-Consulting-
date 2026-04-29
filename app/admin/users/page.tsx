@@ -1,90 +1,113 @@
 import { prisma } from "@/lib/db"
 import { UsersTable } from "./UsersTable"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Role } from "@prisma/client"
-import { Plus } from "lucide-react"
-import { getPagination, parsePage } from "@/lib/pagination"
-import { PaginationControls } from "@/components/shared/pagination-controls"
+import { Plus, Download } from "lucide-react"
+import { parseAdminQuery, buildPagination, buildDateFilter } from "@/lib/admin/query"
 import { auth } from "@/auth"
 
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const session = await auth()
-  const resolvedParams = await searchParams
-  const roleParam = typeof resolvedParams.role === "string" ? resolvedParams.role : "ALL"
+  const params = await searchParams
+  const query = parseAdminQuery(params)
+
+  const roleParam = typeof params.role === "string" ? params.role : "ALL"
   const roleFilter = Object.values(Role).includes(roleParam as Role) ? (roleParam as Role) : "ALL"
-  const requestedPage = parsePage(resolvedParams.page)
+
   const where = {
-    role: roleFilter !== "ALL" ? roleFilter : undefined
+    ...(roleFilter !== "ALL" ? { role: roleFilter } : {}),
+    ...(query.search
+      ? {
+          OR: [
+            { email: { contains: query.search, mode: "insensitive" as const } },
+            { name: { contains: query.search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...buildDateFilter(query.dateFrom, query.dateTo),
   }
 
   const total = await prisma.user.count({ where })
-  const pagination = getPagination(requestedPage, total)
+  const pagination = buildPagination(query, total)
 
   const users = await prisma.user.findMany({
     where,
-    orderBy: { createdAt: "desc" },
+    orderBy: { [query.sort === "createdAt" || query.sort === "name" || query.sort === "email" ? query.sort : "createdAt"]: query.order },
     skip: pagination.skip,
     take: pagination.take,
     select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      status: true,
-      image: true,
-      createdAt: true,
+      id: true, name: true, email: true, role: true,
+      status: true, image: true, createdAt: true,
     },
   })
 
   const tabs = [
-    { label: "All Users", value: "ALL" },
-    { label: "Guests", value: "GUEST" },
-    { label: "Owners", value: "OWNER" },
-    { label: "Admins", value: "ADMIN" },
+    { label: "All Users", value: "ALL"   },
+    { label: "Guests",    value: "GUEST" },
+    { label: "Owners",    value: "OWNER" },
+    { label: "Admins",    value: "ADMIN" },
   ]
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-start gap-4 flex-wrap">
+    <div className="space-y-6">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display text-navy">Users</h2>
-          <p className="text-slate-500">Manage all accounts registered on the platform.</p>
+          <h1 className="text-xl font-bold text-slate-800">Users</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage all accounts registered on the platform.</p>
         </div>
-        <Button asChild className="bg-navy text-cream">
-          <Link href={`/admin/users/new${roleFilter !== "ALL" ? `?role=${roleFilter}` : ""}`}>
-            <Plus className="w-4 h-4 mr-2" /> Add User
-          </Link>
-        </Button>
-      </div>
-
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.value}
-            asChild
-            variant={roleFilter === tab.value ? "default" : "outline"}
-            className={roleFilter === tab.value ? "bg-navy" : "text-navy"}
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href={`/api/admin/export/users?role=${roleFilter}&q=${query.search}`}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
           >
-            <Link href={`/admin/users?role=${tab.value}`}>{tab.label}</Link>
-          </Button>
-        ))}
+            <Download className="h-3.5 w-3.5 text-slate-400" /> Export
+          </Link>
+          <Link
+            href={`/admin/users/new${roleFilter !== "ALL" ? `?role=${roleFilter}` : ""}`}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add User
+          </Link>
+        </div>
       </div>
 
-      <UsersTable users={users} currentUser={session?.user} />
-      <PaginationControls
-        basePath="/admin/users"
+      {/* Tabs */}
+      <div className="border-b border-slate-200">
+        <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
+          {tabs.map((tab) => {
+            const active = roleFilter === tab.value
+            return (
+              <Link
+                key={tab.value}
+                href={`/admin/users?role=${tab.value}`}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                  active
+                    ? "border-[#1B3A5C] text-[#1B3A5C]"
+                    : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      <UsersTable
+        users={users}
+        currentUser={session?.user}
+        total={total}
         page={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={total}
-        startItem={pagination.startItem}
-        endItem={pagination.endItem}
-        params={{ role: roleFilter }}
-        label="users"
+        pageSize={pagination.pageSize}
+        sort={query.sort}
+        order={query.order}
+        searchValue={query.search}
       />
     </div>
   )

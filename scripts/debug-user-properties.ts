@@ -14,11 +14,18 @@ function createPrismaClient() {
 const prisma = createPrismaClient()
 
 async function main() {
+  const email = process.argv[2]
+
+  if (!email) {
+    console.error("Usage: bun scripts/debug-user-properties.ts <email>")
+    process.exit(1)
+  }
+
   const user = await prisma.user.findUnique({
-    where: { email: "sakshamkandelpersonal@gmail.com" },
+    where: { email },
     include: { properties: true }
   })
-  
+
   if (!user) {
     console.log("USER_NOT_FOUND")
     const allUsers = await prisma.user.findMany({ take: 5 })
@@ -29,7 +36,7 @@ async function main() {
   console.log("User Email:", user.email)
   console.log("User Role:", user.role)
   console.log("Property Count:", user.properties.length)
-  
+
   if (user.properties.length > 0) {
     console.log("Properties:", user.properties.map(p => p.title))
   }

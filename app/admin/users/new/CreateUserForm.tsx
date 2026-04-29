@@ -65,14 +65,14 @@ export function CreateUserForm({ defaultRole = "GUEST" }: { defaultRole?: "GUEST
           <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
               <FormLabel>Full Name</FormLabel>
-              <FormControl><Input {...field} placeholder="Jane Doe" /></FormControl>
+              <FormControl><Input {...field} placeholder="Anjali Rai" /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <FormControl><Input type="email" {...field} placeholder="user@example.com" /></FormControl>
+              <FormControl><Input type="email" {...field} placeholder="name@saltroutegroup.com" /></FormControl>
               <FormMessage />
             </FormItem>
           )} />

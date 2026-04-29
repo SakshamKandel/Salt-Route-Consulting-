@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { markAllCurrentUserNotificationsReadAction, markNotificationReadAction } from "@/app/notifications/actions"
@@ -32,7 +32,7 @@ export default async function OwnerNotificationsPage({
   return (
     <div className="space-y-14">
 
-      {/* â”€â”€â”€ PAGE HEADER â”€â”€â”€ */}
+      {/* ─── PAGE HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
         <div className="space-y-3">
           <div className="flex items-center gap-4">
@@ -41,11 +41,11 @@ export default async function OwnerNotificationsPage({
               Property Alerts
             </p>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl text-sand/85 tracking-wide">
+          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
             Portfolio Notifications
           </h1>
           {unreadCount > 0 && (
-            <p className="text-[11px] text-sand/35 font-light">
+            <p className="text-[11px] text-[#1B3A5C]/50 font-light">
               {unreadCount} unread alert{unreadCount !== 1 ? "s" : ""}
             </p>
           )}
@@ -60,7 +60,7 @@ export default async function OwnerNotificationsPage({
           >
             <button
               type="submit"
-              className="text-[9px] uppercase tracking-[0.35em] font-medium text-sand/40 hover:text-gold transition-colors duration-500 px-6 py-3"
+              className="text-[9px] uppercase tracking-[0.35em] font-medium text-[#1B3A5C]/50 hover:text-gold transition-colors duration-500 px-6 py-3"
               style={{ border: "1px solid rgba(201,169,110,0.12)" }}
             >
               Mark All Read
@@ -69,17 +69,17 @@ export default async function OwnerNotificationsPage({
         )}
       </div>
 
-      {/* â”€â”€â”€ NOTIFICATIONS â”€â”€â”€ */}
+      {/* ─── NOTIFICATIONS ─── */}
       {notifications.length === 0 ? (
         <div
           className="py-24 flex flex-col items-center justify-center text-center"
           style={{ border: "1px solid rgba(201,169,110,0.07)" }}
         >
           <div className="w-10 h-px bg-gold/20 mb-6" />
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25 font-medium">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30 font-medium">
             You&apos;re all caught up
           </p>
-            <p className="text-[11px] text-sand/18 font-light mt-2">
+            <p className="text-[11px] text-[#1B3A5C]/30 font-light mt-2">
             Booking, support, and property updates will appear here.
           </p>
         </div>
@@ -92,7 +92,7 @@ export default async function OwnerNotificationsPage({
             return (
               <div
                 key={notification.id}
-                className="flex items-start gap-5 px-8 py-7 transition-all duration-500 hover:bg-white/[0.015] group"
+                className="flex items-start gap-5 px-8 py-7 transition-all duration-500 hover:bg-[#FBF9F4] group"
                 style={{
                   background: isUnread ? "rgba(201,169,110,0.035)" : "transparent",
                   borderBottom: isLast ? "none" : "1px solid rgba(201,169,110,0.05)",
@@ -110,16 +110,16 @@ export default async function OwnerNotificationsPage({
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                     <p
                       className={`text-[13px] font-medium tracking-wide leading-snug ${
-                        isUnread ? "text-sand/80" : "text-sand/50"
+                        isUnread ? "text-[#1B3A5C]" : "text-[#1B3A5C]/70"
                       }`}
                     >
                       {notification.title}
                     </p>
-                    <p className="text-[9px] uppercase tracking-[0.25em] text-sand/25 shrink-0">
+                    <p className="text-[9px] uppercase tracking-[0.25em] text-[#1B3A5C]/30 shrink-0">
                       {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                     </p>
                   </div>
-                  <p className="text-[12px] text-sand/40 font-light leading-[1.85]">
+                  <p className="text-[12px] text-[#1B3A5C]/50 font-light leading-[1.85]">
                     {notification.body}
                   </p>
 
@@ -157,4 +157,3 @@ export default async function OwnerNotificationsPage({
     </div>
   )
 }
-

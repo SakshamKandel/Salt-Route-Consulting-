@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -62,28 +62,28 @@ export default async function OwnerReportsPage() {
             <span className="h-px w-8 bg-gold/40" />
             <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Owner Insights</p>
           </div>
-          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
+          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-[#1B3A5C] md:text-5xl">
             Stay value and guest interest for every property.
           </h1>
-          <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
+          <p className="max-w-2xl text-sm font-light leading-[1.85] text-[#1B3A5C]/50">
             A clear owner view of total value, completed stays, active properties, and how each place is growing.
           </p>
         </div>
 
         <Link
           href="/owner/properties"
-          className="group flex items-center justify-between border border-gold/12 bg-gold/[0.025] px-6 py-5 text-[9px] uppercase tracking-[0.3em] text-gold/58 transition-colors duration-500 hover:border-gold/25 hover:text-gold"
+          className="group flex items-center justify-between border border-[#1B3A5C]/10 bg-[#FFFDF8] px-6 py-5 text-[9px] uppercase tracking-[0.3em] text-gold/58 transition-colors duration-500 hover:border-gold/25 hover:text-gold"
         >
           Review properties
           <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
         </Link>
       </section>
 
-      <section className="grid grid-cols-2 gap-px bg-gold/8 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-px bg-[#1B3A5C]/5 lg:grid-cols-4">
         {summaryMetrics.map((m) => (
-          <div key={m.label} className="group bg-[#102943] px-5 py-7 transition-colors duration-700 hover:bg-[#163350] sm:px-8 sm:py-9">
+          <div key={m.label} className="group bg-[#FFFDF8] px-5 py-7 transition-colors duration-700 hover:bg-[#F5F1E8] sm:px-8 sm:py-9">
             <m.icon className="mb-6 h-4 w-4 text-gold/35 stroke-[1.3] transition-colors duration-700 group-hover:text-gold" />
-            <p className="mb-3 text-[8px] uppercase tracking-[0.34em] text-sand/30 sm:text-[8.5px]">
+            <p className="mb-3 text-[8px] uppercase tracking-[0.34em] text-[#1B3A5C]/40 sm:text-[8.5px]">
               {m.label}
             </p>
             <p className="break-words font-display text-2xl tracking-wide text-gold/75 transition-colors duration-700 group-hover:text-gold sm:text-3xl">
@@ -96,46 +96,46 @@ export default async function OwnerReportsPage() {
       <section className="space-y-8">
         <div className="flex items-center gap-4">
           <span className="h-px w-8 bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40">Property Notes</h2>
+          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/50">Property Notes</h2>
         </div>
 
         {properties.length > 0 ? (
-          <div className="grid grid-cols-1 gap-px bg-gold/8 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-px bg-[#1B3A5C]/5 lg:grid-cols-2">
             {properties.map((p) => {
               const width = Math.max(8, Math.round((p._count.bookings / maxBookings) * 100))
               return (
                 <Link
                   key={p.id}
                   href={`/owner/properties/${p.id}`}
-                  className="group bg-[#102943] p-6 transition-colors duration-500 hover:bg-[#163350] sm:p-7"
+                  className="group bg-[#FFFDF8] p-6 transition-colors duration-500 hover:bg-[#F5F1E8] sm:p-7"
                 >
                   <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-[9px] uppercase tracking-[0.28em] text-gold/45">{p.location}</p>
-                      <h3 className="mt-3 font-display text-2xl tracking-wide text-sand/82">{p.title}</h3>
+                      <h3 className="mt-3 font-display text-2xl tracking-wide text-[#1B3A5C]">{p.title}</h3>
                     </div>
-                    <span className="self-start border border-gold/12 px-4 py-2 text-[8px] uppercase tracking-[0.28em] text-sand/34">
+                    <span className="self-start border border-[#1B3A5C]/10 px-4 py-2 text-[8px] uppercase tracking-[0.28em] text-[#1B3A5C]/50">
                       {p.status}
                     </span>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-2 gap-px bg-gold/8">
-                    <div className="bg-[#102943] p-4">
-                      <p className="text-[8px] uppercase tracking-[0.25em] text-sand/25">Confirmed Stays</p>
+                  <div className="mt-8 grid grid-cols-2 gap-px bg-[#1B3A5C]/5">
+                    <div className="bg-[#FFFDF8] p-4">
+                      <p className="text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">Confirmed Stays</p>
                       <p className="mt-2 font-display text-3xl text-gold/75">{p._count.bookings}</p>
                     </div>
-                    <div className="bg-[#102943] p-4">
-                      <p className="text-[8px] uppercase tracking-[0.25em] text-sand/25">Reviews</p>
+                    <div className="bg-[#FFFDF8] p-4">
+                      <p className="text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">Reviews</p>
                       <p className="mt-2 font-display text-3xl text-gold/75">{p._count.reviews}</p>
                     </div>
                   </div>
 
                   <div className="mt-7">
-                    <div className="mb-3 flex items-center justify-between text-[8px] uppercase tracking-[0.25em] text-sand/24">
+                    <div className="mb-3 flex items-center justify-between text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">
                       <span>Guest interest</span>
                       <span>{width}%</span>
                     </div>
-                    <div className="h-1 bg-sand/8">
+                    <div className="h-1 bg-[#1B3A5C]/5">
                       <div className="h-full bg-gold/70 transition-all duration-700 group-hover:bg-gold" style={{ width: `${width}%` }} />
                     </div>
                   </div>
@@ -144,10 +144,10 @@ export default async function OwnerReportsPage() {
             })}
           </div>
         ) : (
-          <div className="border border-gold/8 py-20 text-center">
+          <div className="border border-[#1B3A5C]/8 py-20 text-center">
             <BarChart3 className="mx-auto mb-6 h-8 w-8 text-gold/24 stroke-[1.2]" />
-            <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">No stay results yet</p>
-            <p className="mt-3 text-[11px] font-light text-sand/20">Active properties and guest stays will appear here.</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">No stay results yet</p>
+            <p className="mt-3 text-[11px] font-light text-[#1B3A5C]/30">Active properties and guest stays will appear here.</p>
           </div>
         )}
       </section>
@@ -155,9 +155,9 @@ export default async function OwnerReportsPage() {
       <section className="space-y-8">
         <div className="flex items-center gap-4">
           <span className="h-px w-8 bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40">Monthly View</h2>
+          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/50">Monthly View</h2>
         </div>
-        <div className="border border-gold/8 bg-gold/[0.02] px-6 py-12 text-center sm:px-10">
+        <div className="border border-[#1B3A5C]/8 bg-[#FFFDF8] px-6 py-12 text-center sm:px-10">
           <div className="mx-auto mb-8 flex max-w-md items-end justify-center gap-2">
             {[40, 65, 50, 80, 55, 90, 70, 85, 60, 95, 75, 100].map((height, index) => (
               <div
@@ -167,8 +167,8 @@ export default async function OwnerReportsPage() {
               />
             ))}
           </div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/28">Monthly view ready as stays grow</p>
-          <p className="mx-auto mt-3 max-w-xl text-[12px] font-light leading-[1.8] text-sand/25">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40">Monthly view ready as stays grow</p>
+          <p className="mx-auto mt-3 max-w-xl text-[12px] font-light leading-[1.8] text-[#1B3A5C]/30">
             As more stays are completed, this space will show monthly patterns, guest interest, and property comparisons.
           </p>
         </div>
@@ -176,4 +176,3 @@ export default async function OwnerReportsPage() {
     </div>
   )
 }
-

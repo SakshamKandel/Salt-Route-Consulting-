@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -49,21 +49,21 @@ export default async function OwnerPropertiesPage({
             <span className="h-px w-8 bg-gold/40" />
             <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Owner Properties</p>
           </div>
-          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-sand/88 md:text-5xl">
+          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-[#1B3A5C] md:text-5xl">
             Every property, beautifully kept in one view.
           </h1>
-          <p className="max-w-2xl text-sm font-light leading-[1.85] text-sand/38">
+          <p className="max-w-2xl text-sm font-light leading-[1.85] text-[#1B3A5C]/50">
             Open any property to review its guest story, gallery, amenities, arrivals, reviews, stay value, and update requests.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-px bg-gold/8">
+        <div className="grid grid-cols-2 gap-px bg-[#1B3A5C]/5">
           {[
             ["Total", total],
             ["Shown", properties.length],
           ].map(([label, value]) => (
-            <div key={label} className="bg-[#102943] p-6">
-              <p className="text-[8px] uppercase tracking-[0.3em] text-sand/28">{label}</p>
+            <div key={label} className="bg-[#FFFDF8] p-6">
+              <p className="text-[8px] uppercase tracking-[0.3em] text-[#1B3A5C]/40">{label}</p>
               <p className="mt-3 font-display text-3xl text-gold/75">{value}</p>
             </div>
           ))}
@@ -71,17 +71,17 @@ export default async function OwnerPropertiesPage({
       </section>
 
       {properties.length === 0 ? (
-        <div className="border border-gold/8 py-24 text-center">
+        <div className="border border-[#1B3A5C]/8 py-24 text-center">
           <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
-          <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">
             No active properties listed yet
           </p>
-          <p className="mt-3 text-[11px] font-light text-sand/20">
+          <p className="mt-3 text-[11px] font-light text-[#1B3A5C]/30">
             Contact Salt Route to prepare your first property for guests.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-px bg-gold/8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-[#1B3A5C]/5 md:grid-cols-2 xl:grid-cols-3">
           {properties.map((p) => {
             const imageUrl = getPrimaryImageUrl(p.images) || "/placeholder-property.jpg"
             const readiness = [
@@ -95,7 +95,7 @@ export default async function OwnerPropertiesPage({
               <Link
                 key={p.id}
                 href={`/owner/properties/${p.id}`}
-                className="group flex min-h-[500px] flex-col bg-[#102943] transition-colors duration-700 hover:bg-[#163350]"
+                className="group flex min-h-[500px] flex-col bg-[#FFFDF8] transition-colors duration-700 hover:bg-[#F5F1E8]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-[#1B3A5C]">
                   <Image
@@ -106,11 +106,11 @@ export default async function OwnerPropertiesPage({
                     className="object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-[#0C1F33]/22 transition-colors duration-700 group-hover:bg-transparent" />
-                  <div className="absolute left-5 top-5 border border-gold/20 bg-[#0C1F33]/78 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-gold backdrop-blur">
+                  <div className="absolute left-5 top-5 border border-[#C9A96E]/20 bg-[#0C1F33] px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-[#C9A96E]">
                     {p.status}
                   </div>
                   {p.featured && (
-                    <div className="absolute bottom-5 left-5 border border-white/18 bg-white/10 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-white backdrop-blur">
+                    <div className="absolute bottom-5 left-5 border border-[#FFFDF8]/18 bg-[#0C1F33]/90 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-[#FFFDF8]/80">
                       Signature
                     </div>
                   )}
@@ -121,11 +121,11 @@ export default async function OwnerPropertiesPage({
                     <MapPin className="h-3.5 w-3.5 stroke-[1.3]" />
                     {p.location}
                   </p>
-                  <h3 className="mt-4 font-display text-2xl tracking-wide text-sand/86 transition-colors duration-500 group-hover:text-sand">
+                  <h3 className="mt-4 font-display text-2xl tracking-wide text-[#1B3A5C] transition-colors duration-500 group-hover:text-[#1B3A5C]">
                     {p.title}
                   </h3>
 
-                  <div className="mt-6 grid grid-cols-3 gap-3 text-[8px] uppercase tracking-[0.2em] text-sand/28">
+                  <div className="mt-6 grid grid-cols-3 gap-3 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/40">
                     <span className="inline-flex items-center gap-2">
                       <BedDouble className="h-3.5 w-3.5 stroke-[1.3]" />
                       {p.bedrooms}
@@ -140,23 +140,23 @@ export default async function OwnerPropertiesPage({
                     </span>
                   </div>
 
-                  <div className="mt-auto grid grid-cols-3 gap-3 border-t border-gold/8 pt-6">
+                  <div className="mt-auto grid grid-cols-3 gap-3 border-t border-[#1B3A5C]/8 pt-6">
                     <div>
                       <p className="font-display text-2xl text-gold/72">{p._count.bookings}</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Stays</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Stays</p>
                     </div>
                     <div>
                       <p className="font-display text-2xl text-gold/72">{p._count.reviews}</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Reviews</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Reviews</p>
                     </div>
                     <div>
                       <p className="font-display text-2xl text-gold/72">{readiness}/4</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Details</p>
+                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Details</p>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-gold/8 pt-5">
-                    <span className="inline-flex items-center gap-2 text-[8.5px] uppercase tracking-[0.25em] text-sand/30">
+                  <div className="mt-6 flex items-center justify-between border-t border-[#1B3A5C]/8 pt-5">
+                    <span className="inline-flex items-center gap-2 text-[8.5px] uppercase tracking-[0.25em] text-[#1B3A5C]/40">
                       <Camera className="h-3.5 w-3.5 stroke-[1.3]" />
                       {p.amenities.length} amenities
                     </span>
@@ -184,4 +184,3 @@ export default async function OwnerPropertiesPage({
     </div>
   )
 }
-

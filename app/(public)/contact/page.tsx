@@ -1,5 +1,6 @@
 ﻿"use client"
 
+import { siteConfig } from "@/lib/site.config"
 import { useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
@@ -59,10 +60,10 @@ export default function ContactPage() {
       <section className="relative h-[60svh] w-full flex items-center justify-center pt-20 bg-charcoal">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=2070&auto=format&fit=crop"
-            alt="Contact Salt Route"
+            src="/luxury_himalayan_retreat_exterior_1777124225845.png"
+            alt="Reach Salt Route Consulting"
             fill
-            className="object-cover opacity-40 grayscale-[0.5]"
+            className="object-cover opacity-50"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
@@ -76,7 +77,7 @@ export default function ContactPage() {
             </h1>
             <div className="flex items-center justify-center gap-6 text-white/40">
                 <span className="w-12 h-[1px] bg-white/20" />
-                <p className="text-[9px] uppercase tracking-[0.4em] font-sans">Reach Out to Salt Route</p>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-sans">Reach Out to {siteConfig.name}</p>
                 <span className="w-12 h-[1px] bg-white/20" />
             </div>
           </FadeUp>
@@ -121,8 +122,8 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Phone</p>
-                      <a href="tel:+97701XXXXXXX" className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
-                        +977-01-XXXXXXX
+                      <a href={siteConfig.contact.phoneHref} className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
+                        {siteConfig.contact.phone}
                       </a>
                     </div>
                   </div>
@@ -136,7 +137,7 @@ export default function ContactPage() {
                     <div className="space-y-2">
                       <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Location</p>
                       <p className="font-display text-2xl text-charcoal leading-snug">
-                        Salt Route Group HQ, Jhamsikhel,<br/>Lalitpur, Nepal
+                        {siteConfig.contact.addressFull}
                       </p>
                     </div>
                   </div>
@@ -165,7 +166,7 @@ export default function ContactPage() {
                     <div className="space-y-4">
                       <h3 className="font-display text-4xl text-charcoal tracking-wide">Message Received.</h3>
                       <p className="font-sans text-base text-charcoal/60 leading-relaxed font-light">
-                        Thank you for reaching out. The Salt Route team will contact you shortly.
+                        Thank you for reaching out. The {siteConfig.name} team will contact you shortly.
                       </p>
                     </div>
                     <LuxuryButton onClick={() => setSent(false)}>Send Another</LuxuryButton>

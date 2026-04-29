@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { Calendar, Users, MapPin, ShieldCheck, Globe, Star } from "lucide-react"
+import { Calendar, Users, MapPin } from "lucide-react"
 import { getPrimaryImageUrl, type PropertyMediaLike } from "@/lib/property-media"
 import { LuxuryButton } from "@/components/ui/luxury-button"
 import { LuxuryLinkWithArrow } from "@/components/ui/luxury-link-with-arrow"
@@ -21,6 +21,39 @@ function RevealImage({ src, alt, className }: { src: string, alt: string, classN
         className="w-full h-full relative"
       >
         <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
+      </motion.div>
+    </div>
+  )
+}
+
+function ParallaxCard({
+  src,
+  alt,
+  className = "",
+  intensity = 0.15,
+}: {
+  src: string
+  alt: string
+  className?: string
+  intensity?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  })
+  const y = useTransform(scrollYProgress, [0, 1], [`-${intensity * 100}%`, `${intensity * 100}%`])
+
+  return (
+    <div ref={ref} className={`relative overflow-hidden ${className}`}>
+      <motion.div style={{ y }} className="absolute inset-[-12%] will-change-transform">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 768px) 100vw, 60vw"
+          className="object-cover"
+        />
       </motion.div>
     </div>
   )
@@ -160,7 +193,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
                 }}
                 className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none w-[7.5rem]"
               />
-              <span className="text-charcoal/30 text-xs">â€”</span>
+              <span className="text-charcoal/30 text-xs">to</span>
               <input
                 type="date"
                 value={checkOut}
@@ -210,27 +243,41 @@ function ImmersiveSection() {
     target: ref,
     offset: ["start end", "end start"]
   })
-  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"])
+  const y = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"])
+  const textOpacity = useTransform(scrollYProgress, [0.15, 0.45, 0.75], [0, 1, 0.2])
+  const textY = useTransform(scrollYProgress, [0, 1], ["10%", "-10%"])
 
   return (
-    <section ref={ref} className="h-[40vh] md:h-[50vh] w-full relative overflow-hidden">
+    <section ref={ref} className="h-[70vh] md:h-[85vh] w-full relative overflow-hidden bg-charcoal">
+      <motion.div className="absolute inset-0 w-full h-full will-change-transform" style={{ y }}>
+        <Image
+          src="/luxury_himalayan_retreat_exterior_1777124225845.png"
+          alt="A retreat at altitude"
+          fill
+          sizes="100vw"
+          className="object-cover scale-[1.18]"
+        />
+      </motion.div>
+      <div className="absolute inset-0 bg-charcoal/45" />
+
       <motion.div
-        initial={{ clipPath: "inset(0% 5% 0% 5%)" }}
-        whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 w-full h-full"
+        style={{ opacity: textOpacity, y: textY }}
+        className="absolute inset-0 z-10 flex items-center justify-center px-6 will-change-transform"
       >
-        <motion.div className="absolute inset-0 w-full h-full" style={{ y }}>
-          <Image
-            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop"
-            alt="Immersive Nature"
-            fill
-            sizes="100vw"
-            className="object-cover scale-[1.3]"
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="text-center max-w-4xl">
+          <span className="block w-10 h-px bg-gold/50 mx-auto mb-10" aria-hidden />
+          <p className="text-[10px] md:text-[11px] uppercase tracking-[0.6em] text-white/55 font-light mb-10">
+            A Quiet Promise
+          </p>
+          <p
+            className="font-display text-white tracking-wide leading-[1.1] uppercase"
+            style={{ fontSize: "clamp(2rem, 5.5vw, 4.5rem)" }}
+          >
+            Stays where the place,
+            <br />
+            and the people, stay with you.
+          </p>
+        </div>
       </motion.div>
     </section>
   )
@@ -278,102 +325,101 @@ export default function HomeClient({
       </section>
 
       {/* â”€â”€â”€ THE VISION SECTION (SALT ROUTE) â”€â”€â”€ */}
-      <section className="py-12 md:py-20 bg-background">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            <FadeUp className="lg:col-span-5">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">Our Story</p>
-                <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-charcoal leading-[1.1] tracking-tight mb-8">
-                    Local Roots, <br/> Gracious Routes
+      <section className="py-24 md:py-32 bg-white overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24 items-center">
+            <FadeUp className="lg:col-span-5 order-2 lg:order-1 space-y-10">
+              <div className="space-y-6">
+                <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">Our Story</p>
+                <h2
+                  className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
+                  style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
+                >
+                  Local roots,
+                  <br />
+                  gracious routes.
                 </h2>
-                <div className="w-16 h-[1px] bg-gold mb-8" />
-                <p className="font-sans text-lg md:text-xl text-charcoal/80 leading-relaxed font-light mb-6">
-                    Salt Route Consulting is the hospitality and development arm of Salt Route Group, shaping thoughtful stays and property partnerships across Nepal.
-                </p>
-                <p className="font-sans text-base text-charcoal/60 leading-relaxed mb-10 font-light">
-                    From tea country retreats to mountain-view apartments, we help each property carry its own sense of place, warmth, and quiet refinement.
-                </p>
-                <div className="flex items-center gap-6 mt-4">
-                    <LuxuryLinkWithArrow href="/about">Our Story</LuxuryLinkWithArrow>
-                </div>
+              </div>
+              <p className="font-sans text-[16px] md:text-[17px] text-charcoal/60 leading-[1.85] font-light max-w-md">
+                Salt Route Consulting is the hospitality and development arm of Salt Route Group. We shape thoughtful stays and property partnerships across Nepal, helping each home carry its own sense of place, warmth, and quiet refinement, from tea country retreats to mountain-view apartments.
+              </p>
+              <div className="pt-2">
+                <LuxuryLinkWithArrow href="/about">More About Us</LuxuryLinkWithArrow>
+              </div>
             </FadeUp>
 
-            <FadeUp delay={0.2} className="lg:col-span-7 relative h-[450px] md:h-[500px] w-full">
-                <RevealImage
-                    src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2000&auto=format&fit=crop"
-                    alt="Salt Route Philosophy"
-                    className="w-full h-full shadow-2xl"
-                />
-                <div className="absolute -bottom-8 -left-8 bg-white border border-charcoal/10 p-8 hidden md:block z-10 shadow-xl">
-                    <p className="font-display text-4xl mb-2 text-charcoal">SRC</p>
-                    <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/50">Nepal&apos;s Finest Boutique Hospitality</p>
-                </div>
-            </FadeUp>
+            <div className="lg:col-span-7 order-1 lg:order-2">
+              <ParallaxCard
+                src="/luxury_himalayan_retreat_exterior_1777124225845.png"
+                alt="A Salt Route property at altitude"
+                className="aspect-[4/5] md:aspect-[5/6] w-full"
+                intensity={0.14}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* â”€â”€â”€ HORIZONTAL SCROLL / CAROUSEL FOR ESTATES â”€â”€â”€ */}
-      <section className="py-16 md:py-20 bg-[#FBF9F4] overflow-hidden">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 mb-10 flex flex-col md:flex-row justify-between items-end gap-8">
-          <FadeUp className="text-left max-w-2xl">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">The Collection</h2>
-            <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-none">Boutique Stays</h3>
-            <p className="mt-6 font-sans text-lg text-charcoal/60 font-light">From Sunshine Villa in Ilam to intimate city and nature-led stays, discover places chosen for comfort, character, and care.</p>
+      <section className="py-24 md:py-32 bg-[#FBF9F4] overflow-hidden">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row justify-between items-end gap-10">
+          <FadeUp className="space-y-5 max-w-2xl">
+            <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">The Collection</p>
+            <h2
+              className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
+              style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
+            >
+              Boutique stays.
+            </h2>
+            <p className="font-sans text-[15px] md:text-[16px] text-charcoal/55 leading-[1.85] font-light max-w-xl pt-2">
+              From Sunshine Villa in Ilam to intimate city and nature-led retreats, places chosen for comfort, character, and care.
+            </p>
           </FadeUp>
           <FadeUp delay={0.2}>
-            <div className="flex items-center gap-6 mt-4">
-              <LuxuryLinkWithArrow href="/properties">View All Stays</LuxuryLinkWithArrow>
-            </div>
+            <LuxuryLinkWithArrow href="/properties">View All Stays</LuxuryLinkWithArrow>
           </FadeUp>
         </div>
 
         <FadeUp delay={0.3} className="w-full">
           {estates.length === 0 ? (
-              <div className="py-32 px-8 text-center border border-charcoal/5 bg-white max-w-screen-xl mx-auto">
-                <p className="font-display text-2xl md:text-3xl tracking-wide text-charcoal/40 mb-6">
-                  Coming Soon
-                </p>
-                <p className="font-sans text-charcoal/50 font-light max-w-xl mx-auto mb-10">
-                  Our collection is being prepared. New stays will appear here as they are ready to welcome guests.
-                </p>
-                <Link
-                  href="/contact"
-                  className="inline-block bg-charcoal text-white px-12 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gold transition-all duration-700"
-                >
-                  Speak to Our Team
-                </Link>
+            <div className="py-28 md:py-32 px-8 text-center border border-charcoal/10 bg-white max-w-screen-xl mx-auto space-y-8">
+              <p className="font-display text-2xl md:text-3xl tracking-wide text-charcoal/40">
+                Coming Soon
+              </p>
+              <p className="font-sans text-charcoal/50 font-light max-w-xl mx-auto leading-[1.8]">
+                Our collection is being prepared. New stays will appear here as they are ready to welcome guests.
+              </p>
+              <div className="pt-4">
+                <LuxuryButton href="/contact">Speak to Our Team</LuxuryButton>
               </div>
+            </div>
           ) : (
-            <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-8 px-6 md:px-12 pb-12 w-full">
-              {estates.map((estate, idx) => {
-                const formattedIdx = (idx + 1).toString().padStart(2, '0');
+            <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 md:gap-10 px-6 md:px-12 pb-12 w-full">
+              {estates.map((estate) => {
                 return (
-                  <div key={estate.id} className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[40vw] flex flex-col group">
+                  <div key={estate.id} className="snap-center shrink-0 w-[85vw] md:w-[55vw] lg:w-[40vw] flex flex-col group">
                     <Link href={estate.href} className="cursor-pointer block">
-                      <div className="relative aspect-[4/3] overflow-hidden mb-6 bg-[#F5F1E8] shadow-lg">
+                      <div className="relative aspect-[4/5] overflow-hidden mb-6 bg-[#F5F1E8]">
                         {estate.image ? (
-                          <RevealImage src={estate.image} alt={estate.name} className="w-full h-full group-hover:scale-105 transition-transform duration-1000" />
+                          <Image
+                            src={estate.image}
+                            alt={estate.name}
+                            fill
+                            sizes="(max-width: 768px) 85vw, 40vw"
+                            className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30">No Image</p>
+                            <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30">No Image</p>
                           </div>
                         )}
-                        <div className="absolute top-6 right-6 bg-white px-4 py-2 shadow-sm">
-                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal font-bold">{estate.type}</p>
-                        </div>
+                        <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700 pointer-events-none" />
                       </div>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="flex items-center gap-4 mb-2">
-                              <span className="text-[10px] font-sans text-charcoal/40 font-bold">NÂ° {formattedIdx}</span>
-                              <span className="w-6 h-[1px] bg-charcoal/20" />
-                              <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">{estate.location}</p>
-                          </div>
-                          <h4 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide mb-3 group-hover:text-gold transition-colors duration-700">{estate.name}</h4>
-                          <div className="flex items-center gap-2">
-                              <Star className="w-3 h-3 text-gold" strokeWidth={1.5} />
-                              <span className="text-[9px] uppercase tracking-[0.1em] text-charcoal/50 font-sans font-bold">Signature Stay</span>
-                          </div>
-                        </div>
+                      <div className="space-y-3 px-1">
+                        <p className="text-[9px] uppercase tracking-[0.35em] text-charcoal/50 font-medium">{estate.location}</p>
+                        <h3 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide uppercase leading-[1.1] group-hover:text-gold transition-colors duration-700">
+                          {estate.name}
+                        </h3>
                       </div>
                     </Link>
                   </div>
@@ -384,218 +430,135 @@ export default function HomeClient({
         </FadeUp>
       </section>
 
-      {/* â”€â”€â”€ OUR APPROACH (EDITORIAL GRID) â”€â”€â”€ */}
-      <section className="py-20 md:py-24 bg-white border-t border-charcoal/5">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <FadeUp>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">Thoughtful Hospitality</p>
-              <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide mb-8">Our Approach</h3>
-              <p className="font-sans text-xl text-charcoal/60 leading-relaxed font-light">
-                We blend warm Nepali hosting, careful property care, and responsible growth so every stay feels effortless.
-              </p>
-            </FadeUp>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 bg-charcoal/5 border border-charcoal/10">
-            {[
-              { 
-                title: "Property Selection", 
-                image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop",
-                desc: "We choose homes with a clear sense of place, strong comfort, and a story guests can feel." 
-              },
-              { 
-                title: "Guest Experience", 
-                image: "https://images.unsplash.com/photo-1544161515-4af6b1d83181?q=80&w=2070&auto=format&fit=crop",
-                desc: "Every stay is shaped with attentive service, gentle detail, and the ease guests remember." 
-              },
-              { 
-                title: "Sustainable Stewardship", 
-                image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=2070&auto=format&fit=crop",
-                desc: "We balance refined comfort with respect for local communities, traditions, and the environment." 
-              },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.1} className="bg-white p-10 flex flex-col gap-8 group hover:bg-[#FBF9F4] transition-all duration-700 border-charcoal/5 border-r border-b">
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-charcoal/10 group-hover:bg-transparent transition-colors duration-700" />
-                </div>
-                <div className="space-y-4">
-                  <h3 className="font-display text-2xl text-charcoal uppercase tracking-wide group-hover:text-gold transition-colors duration-500">{item.title}</h3>
-                  <p className="text-[14px] text-charcoal/50 leading-relaxed font-light">{item.desc}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <FadeUp className="order-2 lg:order-1 relative h-[400px] md:h-[500px] w-full">
-                <RevealImage
-                    src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2000&auto=format&fit=crop"
-                    alt="Owner Services - Nepali Heritage Architecture"
-                    className="w-full h-full"
-                />
-            </FadeUp>
-
-            <FadeUp className="order-1 lg:order-2 lg:pl-12">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-6 font-bold">For Property Owners</p>
-                <h2 className="font-display text-4xl md:text-5xl text-charcoal tracking-tight leading-[1.1] mb-8">
-                    Care, Story <br/> & Growth
-                </h2>
-                <div className="w-16 h-[1px] bg-gold mb-8" />
-                <p className="font-sans text-lg text-charcoal/70 leading-relaxed font-light mb-10">
-                    We partner with property owners to prepare homes for memorable stays, stronger visibility, and steady long-term value.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                            <ShieldCheck className="w-4 h-4 text-gold" strokeWidth={1.5} />
-                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Property Care</h4>
-                        </div>
-                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Careful upkeep, guest-ready presentation, and respectful attention to your property.</p>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                            <Globe className="w-4 h-4 text-gold" strokeWidth={1.5} />
-                            <h4 className="text-[9px] uppercase tracking-[0.2em] font-bold text-charcoal">Guest Reach</h4>
-                        </div>
-                        <p className="text-sm text-charcoal/50 leading-relaxed font-light">Thoughtful visibility for domestic and international guests looking for meaningful stays.</p>
-                    </div>
-                </div>
-                <div className="mt-8">
-                  <LuxuryButton href="/for-owners" dark={false}>Partner With Us</LuxuryButton>
-                </div>
-            </FadeUp>
-        </div>
-      </section>
-
-
       <ImmersiveSection />
 
-      {/* â”€â”€â”€ SERVICES & EXPERIENCES â”€â”€â”€ */}
-      <section className="py-16 md:py-20 bg-[#FBF9F4]">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row justify-between gap-12 lg:gap-16">
-
-          <div className="lg:w-5/12">
-            <FadeUp>
-              <div className="flex items-center gap-6 mb-6">
-                <span className="w-10 h-[1px] bg-gold" />
-                <h2 className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 font-bold">Awaken The Senses</h2>
-              </div>
-              <h3 className="font-display text-4xl md:text-5xl text-charcoal mb-8 tracking-wide leading-tight">Tailored<br/>Journeys</h3>
-              <p className="font-sans text-xl text-charcoal/60 leading-relaxed font-light mb-10">
-                Travel through Nepal with care and authenticity, from curated stays to local encounters that honor people and place.
-              </p>
-              <div className="flex items-center gap-6 mt-6">
-                <LuxuryLinkWithArrow href="/services">Explore Experiences</LuxuryLinkWithArrow>
-              </div>
-            </FadeUp>
-          </div>
-          <div className="lg:w-7/12 flex flex-col pt-6 lg:pt-0 justify-center">
-            {[
-              { title: "Culinary Immersion", desc: "Private dining featuring heritage recipes and local organic produce." },
-              { title: "Guided Excursions", desc: "Walk nearby trails and cultural routes with trusted local insight." },
-              { title: "Quiet Wellness", desc: "Unhurried moments for rest, reflection, and gentle renewal." }
-            ].map((exp, i) => (
-              <FadeUp key={exp.title} delay={0.1 * i}>
-                <div className="border-b border-charcoal/10 py-8 group cursor-pointer hover:pl-6 transition-all duration-500 hover:bg-white px-4 rounded-xl -mx-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-display text-2xl md:text-3xl text-charcoal group-hover:text-gold transition-colors duration-500">{exp.title}</h4>
-                    <span className="text-[10px] font-sans tracking-[0.2em] text-charcoal/30 font-bold">0{i + 1}</span>
-                  </div>
-                  <p className="font-sans text-base text-charcoal/50 leading-relaxed font-light max-w-md">{exp.desc}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* â”€â”€â”€ THE SALT ROUTE STANDARD (AMENITIES) â”€â”€â”€ */}
-      <section className="py-16 md:py-20 bg-white border-t border-charcoal/5">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 text-center">
-          <FadeUp>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">Signature Amenities</p>
-            <h3 className="font-display text-4xl md:text-5xl text-charcoal mb-12 tracking-wide">The Salt Route Standard</h3>
-          </FadeUp>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 text-left">
-            {[
-              { icon: <ShieldCheck className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Personal Care", desc: "Warm assistance before and during your stay, shaped around what matters to you." },
-              { icon: <Users className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Gracious Hosting", desc: "Thoughtful housekeeping, meal support, and local guidance where available." },
-              { icon: <Star className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Heritage Design", desc: "Authentic local architecture fused with modern comforts." },
-              { icon: <Globe className="w-5 h-5 text-gold" strokeWidth={1.5} />, title: "Seamless Transfers", desc: "Chauffeur-driven arrivals ensuring peace of mind from the start." }
-            ].map((feature, i) => (
-              <FadeUp key={feature.title} delay={0.1 * i} className="group">
-                <div className="mb-6 w-12 h-12 flex items-center justify-center border border-charcoal/10 rounded-full group-hover:border-gold transition-colors duration-500">
-                  {feature.icon}
-                </div>
-                <h4 className="font-display text-xl text-charcoal mb-3 tracking-wide">{feature.title}</h4>
-                <p className="font-sans text-sm text-charcoal/60 leading-relaxed font-light">{feature.desc}</p>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€â”€ GUEST REFLECTIONS (TESTIMONIALS) â”€â”€â”€ */}
-      <section className="py-16 md:py-20 bg-[#FBF9F4] border-t border-charcoal/5">
+      {/* FOR PROPERTY OWNERS (DARK) */}
+      <section className="bg-charcoal py-24 md:py-32 text-white overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <FadeUp className="text-center mb-12">
-            <h3 className="font-display text-3xl md:text-4xl text-charcoal tracking-wide mb-6">Guest Reflections</h3>
-            <div className="w-12 h-[1px] bg-gold mx-auto" />
-          </FadeUp>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {[
-              { quote: "Quiet mornings, thoughtful care, and a deep sense of place made the stay feel personal from the first welcome.", author: "Salt Route Guest", location: "Nepal" },
-              { quote: "The property felt close to nature without losing comfort. Every detail made it easy to slow down.", author: "Salt Route Guest", location: "Ilam" },
-              { quote: "A warm and polished stay, shaped by local hospitality and the calm beauty of Nepal.", author: "Salt Route Guest", location: "Kathmandu" }
-            ].map((testimonial, i) => (
-              <FadeUp key={i} delay={0.2 * i} className="flex flex-col text-center items-center">
-                <p className="font-display text-lg md:text-xl text-charcoal/80 italic leading-relaxed mb-8">
-                  &quot;{testimonial.quote}&quot;
-                </p>
-                <div className="mt-auto">
-                  <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-charcoal mb-1">{testimonial.author}</p>
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40">{testimonial.location}</p>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24 items-center">
+            <div className="lg:col-span-7 order-2 lg:order-1">
+              <ParallaxCard
+                src="/luxury_nepalese_interior_details_1777124245155.png"
+                alt="Heritage interior detail"
+                className="aspect-[4/3] md:aspect-[5/4] w-full"
+                intensity={0.12}
+              />
+            </div>
+            <div className="lg:col-span-5 order-1 lg:order-2 space-y-10">
+              <FadeUp className="space-y-6">
+                <p className="text-[10px] uppercase tracking-[0.5em] text-white/35 font-medium">For Property Owners</p>
+                <h2
+                  className="font-display text-white tracking-wide uppercase leading-[1.05]"
+                  style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
+                >
+                  Care, story,
+                  <br />
+                  steady growth.
+                </h2>
               </FadeUp>
-            ))}
+              <FadeUp delay={0.15}>
+                <p className="font-sans text-[15px] md:text-[16px] text-white/55 leading-[1.85] font-light max-w-md">
+                  We partner with owners to prepare homes for memorable stays, build a story guests can feel before they arrive, and grow long-term value through gracious hosting and considered presentation.
+                </p>
+              </FadeUp>
+              <FadeUp delay={0.3} className="pt-2">
+                <LuxuryButton href="/for-owners" dark>Partner With Us</LuxuryButton>
+              </FadeUp>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€â”€ VISUAL JOURNAL (IMAGE CAROUSEL) â”€â”€â”€ */}
-      <section className="py-16 md:py-20 bg-white border-t border-charcoal/5 overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 mb-10 flex flex-col md:flex-row justify-between items-end gap-8">
-          <FadeUp className="text-left max-w-2xl">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-charcoal/50 mb-4 font-bold">Visual Journal</h2>
-            <h3 className="font-display text-4xl md:text-5xl text-charcoal tracking-wide leading-none">Moments in Time</h3>
+      {/* TAILORED JOURNEYS */}
+      <section className="py-24 md:py-32 bg-[#FBF9F4]">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24">
+            <div className="lg:col-span-5">
+              <FadeUp className="space-y-6 lg:sticky lg:top-28">
+                <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">Tailored Journeys</p>
+                <h2
+                  className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
+                  style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
+                >
+                  Awaken
+                  <br />
+                  the senses.
+                </h2>
+                <p className="font-sans text-[15px] md:text-[16px] text-charcoal/55 leading-[1.85] font-light max-w-sm pt-2">
+                  Travel through Nepal at your own pace. Curated stays, gentle encounters, and the kind of routes that honour both people and place.
+                </p>
+                <div className="pt-4">
+                  <LuxuryLinkWithArrow href="/services">Explore Experiences</LuxuryLinkWithArrow>
+                </div>
+              </FadeUp>
+            </div>
+
+            <ol className="lg:col-span-7 lg:pt-2">
+              {[
+                { num: "01", title: "Culinary Immersion", desc: "Private dining featuring heritage recipes and local organic produce." },
+                { num: "02", title: "Guided Excursions", desc: "Walk nearby trails and cultural routes with trusted local insight." },
+                { num: "03", title: "Quiet Wellness", desc: "Unhurried moments for rest, reflection, and gentle renewal." },
+              ].map((exp, i) => (
+                <FadeUp key={exp.num} delay={i * 0.08}>
+                  <li className="grid grid-cols-12 gap-5 md:gap-8 py-10 md:py-12 border-b border-charcoal/10 last:border-b-0 group">
+                    <span
+                      aria-hidden
+                      className="col-span-2 lg:col-span-1 font-display text-2xl md:text-3xl text-gold/55 leading-none tracking-wide"
+                    >
+                      {exp.num}
+                    </span>
+                    <div className="col-span-10 lg:col-span-11 space-y-3">
+                      <h3 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide uppercase leading-[1.15] group-hover:text-gold transition-colors duration-700">
+                        {exp.title}
+                      </h3>
+                      <p className="text-[14px] md:text-[15px] text-charcoal/55 leading-[1.85] font-light max-w-md">
+                        {exp.desc}
+                      </p>
+                    </div>
+                  </li>
+                </FadeUp>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* VISUAL JOURNAL */}
+      <section className="py-24 md:py-32 bg-white overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <FadeUp className="space-y-5 max-w-2xl">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Visual Journal</p>
+            <h2
+              className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
+              style={{ fontSize: "clamp(2.5rem, 5.5vw, 5rem)" }}
+            >
+              Moments in time.
+            </h2>
           </FadeUp>
         </div>
         <FadeUp delay={0.2} className="w-full">
-          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-8 px-6 md:px-12 pb-12 w-full">
+          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 md:gap-8 px-6 md:px-12 pb-12 w-full">
             {[
-              { src: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2000&auto=format&fit=crop", title: "Himalayan Morning", location: "Annapurna" },
-              { src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop", title: "Heritage Details", location: "Kathmandu" },
-              { src: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop", title: "Sanctuary Pools", location: "Pokhara" },
-              { src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop", title: "Curated Interiors", location: "Patan" },
-              { src: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop", title: "Morning Light", location: "Lalitpur" }
+              { src: "/luxury_himalayan_retreat_exterior_1777124225845.png", title: "Himalayan Light", location: "Ilam" },
+              { src: "/luxury_nepalese_interior_details_1777124245155.png", title: "Heritage Detail", location: "Kathmandu" },
+              { src: "/private_himalayan_dining_luxury_1777124309093.png", title: "Quiet Dining", location: "Lalitpur" },
+              { src: "/bespoke_travel_planning_flatlay_luxury_1777124261083.png", title: "Considered Plans", location: "Patan" },
+              { src: "/mastery_details.png", title: "Mastery in Detail", location: "Boudhanath" },
+              { src: "/luxury_boutique_office_team.png", title: "The Salt Route Team", location: "Lalitpur" },
             ].map((img, idx) => (
-              <div key={idx} className="snap-center shrink-0 w-[80vw] md:w-[45vw] lg:w-[30vw] flex flex-col group cursor-pointer">
-                <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-[#F5F1E8] shadow-lg">
-                  <RevealImage src={img.src} alt={img.title} className="w-full h-full group-hover:scale-105 transition-transform duration-1000" />
+              <div key={idx} className="snap-center shrink-0 w-[80vw] md:w-[45vw] lg:w-[32vw] flex flex-col group cursor-pointer">
+                <div className="relative aspect-[3/4] overflow-hidden mb-5 bg-[#F5F1E8]">
+                  <Image
+                    src={img.src}
+                    alt={img.title}
+                    fill
+                    sizes="(max-width: 768px) 80vw, 32vw"
+                    className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                  />
                 </div>
-                <div className="flex justify-between items-center px-2">
-                  <h4 className="font-display text-xl text-charcoal tracking-wide group-hover:text-gold transition-colors duration-500">{img.title}</h4>
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-bold">{img.location}</p>
+                <div className="flex justify-between items-baseline px-1">
+                  <h4 className="font-display text-lg md:text-xl text-charcoal tracking-wide group-hover:text-gold transition-colors duration-500">{img.title}</h4>
+                  <p className="text-[9px] uppercase tracking-[0.35em] text-charcoal/35 font-medium">{img.location}</p>
                 </div>
               </div>
             ))}
@@ -603,21 +566,29 @@ export default function HomeClient({
         </FadeUp>
       </section>
 
-      {/* â”€â”€â”€ FINAL CALL TO ACTION â”€â”€â”€ */}
-      <section className="py-16 md:py-24 bg-white text-center px-6 border-t border-charcoal/5">
-        <div className="max-w-3xl mx-auto relative z-20">
-          <FadeUp>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 mb-6 font-bold">Your Invitation</p>
-            <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-10 tracking-wide leading-[1.1]">
-              Find Your Place in Nepal.
+      {/* YOUR INVITATION (FINAL) */}
+      <section className="py-32 md:py-44 bg-charcoal text-center px-6 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/Sunshine Villa Main.png" alt="" fill className="object-cover blur-3xl" />
+        </div>
+        <div className="max-w-3xl mx-auto relative z-10">
+          <FadeUp className="space-y-12">
+            <span className="block w-12 h-px bg-gold/45 mx-auto" aria-hidden />
+            <p className="text-[10px] uppercase tracking-[0.6em] text-white/40 font-light">Your Invitation</p>
+            <h2
+              className="font-display text-white tracking-wide uppercase leading-[0.95]"
+              style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
+            >
+              Find your
+              <br />
+              place in Nepal.
             </h2>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-8">
-                <LuxuryButton href="/properties" dark={false}>
-                    View Stays
-                </LuxuryButton>
-                <LuxuryButton href="/contact" dark={false}>
-                    Contact Concierge
-                </LuxuryButton>
+            <p className="font-sans text-[15px] md:text-[16px] text-white/45 leading-[1.85] font-light max-w-md mx-auto">
+              A quiet stay, a curated journey, or a long-term partnership. We&rsquo;ll meet you wherever your story begins.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-8">
+              <LuxuryButton href="/properties" dark>View Stays</LuxuryButton>
+              <LuxuryLinkWithArrow href="/contact" color="white">Speak With Us</LuxuryLinkWithArrow>
             </div>
           </FadeUp>
         </div>

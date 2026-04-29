@@ -98,7 +98,7 @@ export default async function WishlistPage({
                     }}>
                       <button
                         type="submit"
-                        className="w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-charcoal/10 text-charcoal/40 hover:text-red-500 hover:border-red-200 transition-all duration-300"
+                        className="w-8 h-8 flex items-center justify-center bg-[#FFFDF8] border border-[#1B3A5C]/10 text-[#1B3A5C]/40 hover:text-[#B84040] hover:border-[#B84040]/20 transition-colors"
                       >
                         <X size={12} strokeWidth={1.5} />
                       </button>
@@ -107,7 +107,7 @@ export default async function WishlistPage({
 
                   {/* Saved Badge */}
                   <div className="absolute bottom-4 left-4">
-                    <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 text-[8px] uppercase tracking-[0.2em] text-charcoal/60 flex items-center gap-1.5">
+                    <span className="bg-[#FFFDF8] border border-[#1B3A5C]/8 px-3 py-1.5 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/55 flex items-center gap-1.5">
                       <Heart className="w-2.5 h-2.5 fill-current" />
                       Saved
                     </span>

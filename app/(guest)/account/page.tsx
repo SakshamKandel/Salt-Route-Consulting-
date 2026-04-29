@@ -2,284 +2,294 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import Link from "next/link"
 import Image from "next/image"
-import { Calendar, Heart, Star, ArrowRight, MapPin, Clock } from "lucide-react"
+import { Calendar, Heart, Star, ArrowRight, MapPin, ChevronRight, MessageSquare } from "lucide-react"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { format } from "date-fns"
+
+const STATUS_CHIP: Record<string, string> = {
+  CONFIRMED:  "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  PENDING:    "bg-amber-50 text-amber-600 border-amber-200/60",
+  CANCELLED:  "bg-red-50 text-red-500 border-red-200/60",
+  COMPLETED:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+}
+const STATUS_LABEL: Record<string, string> = {
+  CONFIRMED: "Confirmed",
+  PENDING: "Pending",
+  CANCELLED: "Cancelled",
+  COMPLETED: "Completed",
+}
 
 export default async function AccountDashboard() {
   const session = await auth()
   if (!session?.user?.id) return null
+
+  const now = new Date()
 
   const [bookingsCount, wishlistCount, reviewsCount, upcomingBooking, recentBookings, wishlistItems] = await Promise.all([
     prisma.booking.count({ where: { guestId: session.user.id } }),
     prisma.wishlist.count({ where: { userId: session.user.id } }),
     prisma.review.count({ where: { guestId: session.user.id } }),
     prisma.booking.findFirst({
-      where: { guestId: session.user.id, checkIn: { gte: new Date() }, status: "CONFIRMED" },
+      where: { guestId: session.user.id, checkIn: { gte: now }, status: "CONFIRMED" },
       orderBy: { checkIn: "asc" },
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } }
+      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
     }),
     prisma.booking.findMany({
       where: { guestId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } }
+      orderBy: { checkIn: "desc" },
+      take: 4,
+      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
     }),
     prisma.wishlist.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 4,
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } }
+      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
     }),
   ])
 
-  const stats = [
-    { label: "Reservations", value: bookingsCount, icon: Calendar, href: "/account/bookings" },
-    { label: "Collection", value: wishlistCount, icon: Heart, href: "/account/wishlist" },
-    { label: "Reviews", value: reviewsCount, icon: Star, href: "/account/reviews" },
-  ]
-
-  const greeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 12) return "Good Morning"
-    if (hour < 18) return "Good Afternoon"
-    return "Good Evening"
-  }
+  const hour = now.getHours()
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
+  const firstName = session.user.name?.split(" ")[0] ?? "Guest"
 
   return (
-    <div className="space-y-16">
-      
-      {/* ─── GREETING ─── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Your Salt Route Journey</p>
-          <h1 className="font-display text-4xl md:text-5xl text-charcoal tracking-tight">
-            {greeting()}, <span className="text-charcoal/60">{session.user.name?.split(' ')[0]}</span>
-          </h1>
-        </div>
-        <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium">
-          <Clock className="w-3 h-3" />
-          <span>{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-        </div>
+    <div className="space-y-10">
+
+      {/* ── GREETING ── */}
+      <div>
+        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">
+          {format(now, "EEEE, d MMMM yyyy")}
+        </p>
+        <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+          {greeting}, {firstName}
+        </h1>
       </div>
 
-      {/* ─── UPCOMING STAY HERO ─── */}
+      {/* ── STAT STRIP ── */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        {[
+          { label: "Reservations", value: bookingsCount, icon: Calendar, href: "/account/bookings" },
+          { label: "Collection",   value: wishlistCount, icon: Heart,    href: "/account/wishlist" },
+          { label: "Reviews",      value: reviewsCount,  icon: Star,     href: "/account/reviews"  },
+        ].map(({ label, value, icon: Icon, href }) => (
+          <Link
+            key={label}
+            href={href}
+            className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
+          >
+            <Icon className="h-4 w-4 text-[#1B3A5C]/25 mb-2.5 group-hover:text-[#C9A96E] transition-colors" />
+            <p className="text-2xl font-semibold text-[#1B3A5C] tabular-nums leading-tight">{value}</p>
+            <p className="text-[10px] text-[#1B3A5C]/40 mt-1 uppercase tracking-[0.2em] font-medium">{label}</p>
+          </Link>
+        ))}
+      </div>
+
+      {/* ── UPCOMING STAY ── */}
       {upcomingBooking ? (
-        <div className="relative group">
-          <div className="absolute -inset-[1px] bg-charcoal/5 rounded-none" />
-          <div className="relative overflow-hidden bg-white border border-charcoal/10 flex flex-col lg:flex-row min-h-[450px]">
-            {/* Image Section */}
-            <div className="relative w-full lg:w-3/5 min-h-[300px] lg:min-h-full overflow-hidden">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Your next stay</h2>
+            <Link href="/account/bookings" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+              All bookings <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <Link
+            href={`/account/bookings/${upcomingBooking.id}`}
+            className="flex flex-col sm:flex-row bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+          >
+            {/* Property image */}
+            <div className="relative w-full sm:w-48 h-40 sm:h-auto bg-[#1B3A5C]/5 shrink-0">
               {getPrimaryImageUrl(upcomingBooking.property.images) ? (
                 <Image
                   src={getPrimaryImageUrl(upcomingBooking.property.images)!}
                   alt={upcomingBooking.property.title}
                   fill
-                  className="object-cover transition-transform duration-[3s] group-hover:scale-105"
-                  priority
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               ) : (
-                <div className="absolute inset-0 bg-charcoal/5" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Calendar className="h-8 w-8 text-[#1B3A5C]/15" />
+                </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent lg:bg-gradient-to-r" />
-              
-              <div className="absolute bottom-8 left-8 lg:top-12 lg:left-12 lg:bottom-auto">
-                <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm px-5 py-3 shadow-sm border border-charcoal/5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold">Confirmed Journey</span>
-                </div>
+              {/* Confirmed badge */}
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-[#FFFDF8] border border-emerald-200/60 px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[9px] font-semibold text-emerald-600 uppercase tracking-[0.15em]">Confirmed</span>
               </div>
             </div>
 
-            {/* Content Section */}
-            <div className="flex-1 p-10 md:p-16 flex flex-col justify-center">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-charcoal/40 font-bold">
-                    <MapPin className="w-3 h-3" />
-                    <span>{upcomingBooking.property.location}</span>
-                  </div>
-                  <h2 className="font-display text-3xl md:text-5xl text-charcoal tracking-wide leading-tight">
-                    {upcomingBooking.property.title}
-                  </h2>
-                </div>
+            {/* Stay info */}
+            <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between gap-4">
+              <div>
+                <p className="text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1.5 flex items-center gap-1">
+                  <MapPin className="h-2.5 w-2.5" />
+                  {upcomingBooking.property.location}
+                </p>
+                <h3 className="font-display text-xl md:text-2xl text-[#1B3A5C] tracking-wide">{upcomingBooking.property.title}</h3>
+              </div>
 
-                <div className="grid grid-cols-2 gap-10 py-10 border-y border-charcoal/10">
-                  <div className="space-y-2">
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30 font-bold">Check In</p>
-                    <p className="font-display text-2xl text-charcoal">
-                      {new Date(upcomingBooking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30 font-bold">Check Out</p>
-                    <p className="font-display text-2xl text-charcoal">
-                      {new Date(upcomingBooking.checkOut).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </p>
-                  </div>
+              <div className="flex flex-wrap items-center gap-6">
+                <div>
+                  <p className="text-[9px] text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">Check in</p>
+                  <p className="text-[15px] font-semibold text-[#1B3A5C]">
+                    {format(new Date(upcomingBooking.checkIn), "EEE, d MMM yyyy")}
+                  </p>
                 </div>
+                <div className="w-6 h-px bg-[#1B3A5C]/15 hidden sm:block" />
+                <div>
+                  <p className="text-[9px] text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">Check out</p>
+                  <p className="text-[15px] font-semibold text-[#1B3A5C]">
+                    {format(new Date(upcomingBooking.checkOut), "EEE, d MMM yyyy")}
+                  </p>
+                </div>
+              </div>
 
-                <Link
-                  href={`/account/bookings/${upcomingBooking.id}`}
-                  className="inline-flex items-center gap-4 bg-charcoal text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-charcoal/90 transition-all group/btn"
-                >
-                  <span>View Stay Details</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" strokeWidth={2} />
-                </Link>
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#1B3A5C]/50">
+                  View stay details <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </span>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       ) : (
-        <div className="relative group">
-          <div className="relative overflow-hidden bg-charcoal/2 py-20 px-10 text-center border border-charcoal/10">
-             <div className="max-w-md mx-auto space-y-8">
-                <div className="w-16 h-16 rounded-full border border-charcoal/10 flex items-center justify-center mx-auto mb-10">
-                   <Calendar className="w-6 h-6 text-charcoal/20" strokeWidth={1} />
-                </div>
-                <h2 className="font-display text-3xl text-charcoal tracking-wide">No upcoming stays yet</h2>
-                <p className="text-charcoal/40 text-sm font-sans leading-relaxed">
-                  Nepal is waiting. Explore our handpicked stays and begin your next quiet escape.
-                </p>
-                <Link
-                  href="/properties"
-                  className="inline-flex items-center gap-4 border border-charcoal text-charcoal px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-charcoal hover:text-white transition-all"
-                >
-                  <span>Explore Stays</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-             </div>
-          </div>
+        <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center">
+          <Calendar className="h-8 w-8 text-[#1B3A5C]/15 mx-auto mb-4" />
+          <h3 className="font-display text-xl text-[#1B3A5C] mb-2">No upcoming stays</h3>
+          <p className="text-[13px] text-[#1B3A5C]/40 mb-6 max-w-sm mx-auto">
+            Nepal is waiting. Explore our handpicked retreats and plan your next quiet escape.
+          </p>
+          <Link
+            href="/properties"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFDF8] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors"
+          >
+            Explore stays <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       )}
 
-      {/* ─── QUICK METRICS ─── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {stats.map((stat) => {
-          const Icon = stat.icon
-          return (
-            <Link
-              key={stat.label}
-              href={stat.href}
-              className="group bg-white border border-charcoal/10 p-10 hover:border-charcoal/30 transition-all duration-500 shadow-sm hover:shadow-md"
-            >
-              <div className="flex items-start justify-between mb-12">
-                <div className="w-12 h-12 rounded-full bg-charcoal/[0.02] flex items-center justify-center border border-charcoal/5 group-hover:bg-charcoal group-hover:border-charcoal transition-all duration-500">
-                  <Icon className="w-5 h-5 text-charcoal/30 group-hover:text-white transition-colors" strokeWidth={1.5} />
-                </div>
-                <ArrowRight className="w-4 h-4 text-charcoal/10 group-hover:text-charcoal group-hover:translate-x-1 transition-all" strokeWidth={1.5} />
-              </div>
-              <div className="space-y-1">
-                <p className="font-display text-5xl text-charcoal group-hover:tracking-wider transition-all duration-500">
-                  {stat.value}
-                </p>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-bold">
-                  {stat.label}
-                </p>
-              </div>
-            </Link>
-          )
-        })}
-      </div>
+      {/* ── TWO-COLUMN: RECENT STAYS + SAVED ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-      {/* ─── TWO COLUMN SECTIONS ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        
-        {/* RECENT ACTIVITY */}
-        <section className="space-y-10">
-          <div className="flex items-center justify-between pb-4 border-b border-charcoal/10">
-            <h2 className="text-[11px] uppercase tracking-[0.4em] text-charcoal font-bold">Recent Stays</h2>
-            <Link href="/account/bookings" className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-charcoal transition-colors">View History</Link>
+        {/* Recent stays */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Recent stays</h2>
+            <Link href="/account/bookings" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+              View all <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
-          
-          <div className="space-y-6">
-            {recentBookings.length > 0 ? recentBookings.map((booking) => (
-              <Link
-                key={booking.id}
-                href={`/account/bookings/${booking.id}`}
-                className="group flex gap-6 items-center"
-              >
-                <div className="relative w-20 h-20 overflow-hidden bg-charcoal/5 flex-shrink-0">
-                  {getPrimaryImageUrl(booking.property.images) ? (
-                    <Image src={getPrimaryImageUrl(booking.property.images)!} alt={booking.property.title} fill className="object-cover transition-transform group-hover:scale-110 duration-700" />
-                  ) : (
-                    <div className="w-full h-full bg-charcoal/5" />
-                  )}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <h3 className="font-display text-lg text-charcoal group-hover:text-charcoal/60 transition-colors">{booking.property.title}</h3>
-                  <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.2em] text-charcoal/40">
-                    <span>{new Date(booking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                    <span className="w-1 h-1 rounded-full bg-charcoal/10" />
-                    <span>{booking.status}</span>
+
+          <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl divide-y divide-[#1B3A5C]/5 overflow-hidden">
+            {recentBookings.length === 0 ? (
+              <div className="py-10 text-center">
+                <p className="text-[13px] text-[#1B3A5C]/30">No bookings yet</p>
+              </div>
+            ) : recentBookings.map((booking) => {
+              const img = getPrimaryImageUrl(booking.property.images)
+              const chip = STATUS_CHIP[booking.status] ?? STATUS_CHIP.PENDING
+              return (
+                <Link
+                  key={booking.id}
+                  href={`/account/bookings/${booking.id}`}
+                  className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#FBF9F4] transition-colors group"
+                >
+                  <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-[#1B3A5C]/5 shrink-0">
+                    {img ? (
+                      <Image src={img} alt={booking.property.title} fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full" />
+                    )}
                   </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-charcoal/10 group-hover:text-charcoal transition-colors" />
-              </Link>
-            )) : (
-              <p className="text-sm text-charcoal/40 italic">No recent activity to show.</p>
-            )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-[#1B3A5C] truncate">{booking.property.title}</p>
+                    <p className="text-[11px] text-[#1B3A5C]/40 mt-0.5">
+                      {format(new Date(booking.checkIn), "d MMM")} – {format(new Date(booking.checkOut), "d MMM yyyy")}
+                    </p>
+                  </div>
+                  <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold border shrink-0 ${chip}`}>
+                    {STATUS_LABEL[booking.status] ?? booking.status}
+                  </span>
+                </Link>
+              )
+            })}
           </div>
-        </section>
+        </div>
 
-        {/* WISHLIST PREVIEW */}
-        <section className="space-y-10">
-          <div className="flex items-center justify-between pb-4 border-b border-charcoal/10">
-            <h2 className="text-[11px] uppercase tracking-[0.4em] text-charcoal font-bold">Saved Stays</h2>
-            <Link href="/account/wishlist" className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-charcoal transition-colors">View All</Link>
+        {/* Saved stays */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Saved stays</h2>
+            <Link href="/account/wishlist" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+              View all <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
-          
-          <div className="grid grid-cols-2 gap-6">
-            {wishlistItems.length > 0 ? wishlistItems.slice(0, 2).map((item) => (
-              <Link key={item.id} href={`/properties/${item.property.slug}`} className="group space-y-4">
-                <div className="relative aspect-[4/3] overflow-hidden bg-charcoal/5">
-                  {getPrimaryImageUrl(item.property.images) ? (
-                    <Image src={getPrimaryImageUrl(item.property.images)!} alt={item.property.title} fill className="object-cover transition-transform duration-[2s] group-hover:scale-105" />
-                  ) : (
-                    <div className="w-full h-full bg-charcoal/5" />
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-display text-sm text-charcoal group-hover:text-charcoal/60 transition-colors truncate">{item.property.title}</h3>
-                  <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/30">{item.property.location}</p>
-                </div>
+
+          {wishlistItems.length === 0 ? (
+            <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl py-10 text-center">
+              <Heart className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+              <p className="text-[13px] text-[#1B3A5C]/30">Your collection is empty</p>
+              <Link href="/properties" className="mt-3 inline-flex text-[11px] text-[#C9A96E] hover:underline">
+                Browse properties
               </Link>
-            )) : (
-              <p className="col-span-2 text-sm text-charcoal/40 italic">Your collection is empty.</p>
-            )}
-          </div>
-        </section>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {wishlistItems.slice(0, 4).map((item) => {
+                const img = getPrimaryImageUrl(item.property.images)
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/properties/${item.property.slug}`}
+                    className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+                  >
+                    <div className="relative h-24 bg-[#1B3A5C]/5">
+                      {img ? (
+                        <Image src={img} alt={item.property.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Heart className="h-5 w-5 text-[#1B3A5C]/15" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="text-[12px] font-medium text-[#1B3A5C] truncate">{item.property.title}</p>
+                      <p className="text-[10px] text-[#1B3A5C]/35 mt-0.5 flex items-center gap-1">
+                        <MapPin className="h-2.5 w-2.5 shrink-0" />{item.property.location}
+                      </p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
 
       </div>
 
-      {/* ─── SUPPORT ─── */}
-      <div className="pt-20 border-t border-charcoal/10">
-        <div className="bg-charcoal text-white p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative">
-          {/* Subtle Background Pattern */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[size:40px_40px]" />
-          </div>
-
-          <div className="relative space-y-4 text-center md:text-left">
-            <h3 className="font-display text-3xl tracking-wide">Personal Concierge</h3>
-            <p className="text-white/50 text-xs uppercase tracking-[0.2em] max-w-sm leading-relaxed">
-              Our specialists are here to curate every detail of your journey.
-            </p>
-          </div>
-          
-          <div className="relative flex gap-4">
-            <Link 
-              href="/account/messages"
-              className="bg-white text-charcoal px-8 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white/90 transition-all"
-            >
-              Contact Specialist
-            </Link>
-            <Link 
-              href="/account/profile"
-              className="border border-white/20 text-white px-8 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white/10 transition-all"
-            >
-              Personal Profile
-            </Link>
-          </div>
+      {/* ── CONCIERGE CTA ── */}
+      <div className="bg-[#1B3A5C] rounded-xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div>
+          <h3 className="font-display text-xl text-[#FFFDF8] tracking-wide">Personal concierge</h3>
+          <p className="text-[12px] text-[#FFFDF8]/45 mt-1.5 max-w-sm">
+            Our specialists can curate every detail of your journey — from itinerary to arrival.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <Link
+            href="/account/messages"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FFFDF8] text-[#1B3A5C] rounded-lg text-[12px] font-semibold hover:bg-[#F5F1E8] transition-colors"
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            Contact us
+          </Link>
+          <Link
+            href="/account/profile"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#FFFDF8]/15 text-[#FFFDF8]/70 rounded-lg text-[12px] font-medium hover:border-[#FFFDF8]/30 hover:text-[#FFFDF8] transition-colors"
+          >
+            My profile
+          </Link>
         </div>
       </div>
 

@@ -8,10 +8,12 @@ import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
 import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
 import { notifyAdmins, notifyUser, getAdminEmails } from "@/lib/notifications"
+import { publishAdminEvent } from "@/lib/realtime/publisher"
 import { render } from "@react-email/render"
 import { BookingReceived } from "@/emails/BookingReceived"
 import { NewBookingAdminAlert } from "@/emails/NewBookingAdminAlert"
 import { sendEmail, sendEmailToMany } from "@/lib/email/transporter"
+import { siteConfig, adminUrl } from "@/lib/site.config"
 
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
 
@@ -24,8 +26,7 @@ export async function POST(request: Request) {
 
   const userId = session.user.id
 
-  // 10.3 — Rate limit: 10 bookings / hr / user
-  const rl = await rateLimit({ identifier: `booking:${userId}`, limit: 10, window: 3600 })
+  const rl = await rateLimit({ identifier: `booking:${userId}`, limit: siteConfig.rateLimits.bookingsPerHour, window: 3600 })
   if (!rl.success) {
     return NextResponse.json({ error: "Rate limit exceeded. Please try again later." }, { status: 429 })
   }
@@ -142,6 +143,7 @@ export async function POST(request: Request) {
         href: `/admin/bookings/${result.id}`,
         metadata: { bookingId: result.id },
       }),
+      publishAdminEvent({ type: "booking.created", payload: { bookingId: result.id } }),
       notifyUser(result.property.ownerId, {
         type: "BOOKING",
         title: "New request for your property",
@@ -179,25 +181,25 @@ export async function POST(request: Request) {
           checkOut,
           guests: result.guests,
           totalPrice,
-          adminUrl: `${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/bookings/${result.id}`,
+          adminUrl: adminUrl(`/admin/bookings/${result.id}`),
         })),
       ])
 
       const adminEmails = await getAdminEmails()
       const allAdminRecipients = Array.from(new Set([
         ...adminEmails,
-        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+        siteConfig.contact.adminEmail,
       ]))
 
       await Promise.all([
         sendEmail({
           to: result.guest.email!,
-          subject: `Booking Request Received — ${result.bookingCode}`,
+          subject: siteConfig.emailSubjects.bookingReceived(result.bookingCode),
           html: guestHtml,
         }),
         sendEmailToMany({
           to: allAdminRecipients,
-          subject: `New Booking Request — ${result.bookingCode} | ${result.property.title}`,
+          subject: siteConfig.emailSubjects.newBookingAdmin(result.bookingCode, result.property.title),
           html: adminHtml,
         }),
       ])

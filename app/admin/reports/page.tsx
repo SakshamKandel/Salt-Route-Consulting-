@@ -1,187 +1,144 @@
 import { prisma } from "@/lib/db"
 import { StatCard } from "@/components/admin/stat-card"
-import { BarChart2, TrendingUp, Users, DollarSign, Calendar } from "lucide-react"
+import { DateRangePicker } from "@/components/admin/date-range-picker"
+import { RevenueLineChart } from "@/components/admin/charts/revenue-line"
+import { BookingsBarChart } from "@/components/admin/charts/bookings-bar"
+import { TopPropertiesChart } from "@/components/admin/charts/top-properties-bar"
+import {
+  bookingsByDay,
+  revenueByMonth,
+  topProperties,
+  kpiStats,
+} from "@/lib/admin/analytics"
+import { TrendingUp, Users, DollarSign, Calendar, Download } from "lucide-react"
 import { formatNpr } from "@/lib/currency"
+import Link from "next/link"
+import { subDays, startOfYear, parseISO } from "date-fns"
 
-async function getReportData() {
-  const now = new Date()
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
-
-  const [
-    totalBookings,
-    thisMonthBookings,
-    lastMonthBookings,
-    confirmedBookings,
-    cancelledBookings,
-    totalGuests,
-    totalProperties,
-    activeProperties,
-    totalReviews,
-    avgRatingRaw,
-    recentBookings,
-  ] = await Promise.all([
-    prisma.booking.count(),
-    prisma.booking.count({ where: { createdAt: { gte: startOfMonth } } }),
-    prisma.booking.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } }),
-    prisma.booking.count({ where: { status: "CONFIRMED" } }),
-    prisma.booking.count({ where: { status: "CANCELLED" } }),
-    prisma.user.count({ where: { role: "GUEST" } }),
-    prisma.property.count(),
-    prisma.property.count({ where: { status: "ACTIVE" } }),
-    prisma.review.count({ where: { status: "PUBLISHED" } }),
-    prisma.review.aggregate({ _avg: { rating: true } }),
-    prisma.booking.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" },
-      include: { property: { select: { title: true } }, guest: { select: { name: true } } },
-    }),
-  ])
-
-  const totalRevenue = await prisma.booking.aggregate({
-    _sum: { totalPrice: true },
-    where: { status: { in: ["CONFIRMED", "CHECKED_IN", "COMPLETED"] } },
-  })
-
-  const thisMonthRevenue = await prisma.booking.aggregate({
-    _sum: { totalPrice: true },
-    where: { status: { in: ["CONFIRMED", "CHECKED_IN", "COMPLETED"] }, createdAt: { gte: startOfMonth } },
-  })
-
-  return {
-    totalBookings,
-    thisMonthBookings,
-    lastMonthBookings,
-    confirmedBookings,
-    cancelledBookings,
-    totalGuests,
-    totalProperties,
-    activeProperties,
-    totalReviews,
-    avgRating: avgRatingRaw._avg.rating,
-    totalRevenue: Number(totalRevenue._sum.totalPrice ?? 0),
-    thisMonthRevenue: Number(thisMonthRevenue._sum.totalPrice ?? 0),
-    recentBookings,
-  }
+function parseDate(s: string | undefined, fallback: Date) {
+  if (!s) return fallback
+  try { return parseISO(s) } catch { return fallback }
 }
 
-export default async function AdminReportsPage() {
-  const data = await getReportData()
+export default async function AdminReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const params = await searchParams
+  const fromStr = typeof params.from === "string" ? params.from : undefined
+  const toStr = typeof params.to === "string" ? params.to : undefined
 
-  const bookingGrowth =
-    data.lastMonthBookings > 0
-      ? (((data.thisMonthBookings - data.lastMonthBookings) / data.lastMonthBookings) * 100).toFixed(1)
-      : null
+  const now = new Date()
+  const from = parseDate(fromStr, subDays(now, 30))
+  const to = parseDate(toStr, now)
+
+  const [kpi, dayData, monthData, topProps, totalGuests, totalProperties, activeProperties] =
+    await Promise.all([
+      kpiStats(from, to),
+      bookingsByDay(from, to),
+      revenueByMonth(startOfYear(now), now),
+      topProperties(8),
+      prisma.user.count({ where: { role: "GUEST" } }),
+      prisma.property.count(),
+      prisma.property.count({ where: { status: "ACTIVE" } }),
+    ])
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-display text-navy">Reports & Analytics</h2>
-        <p className="text-slate-500">Overview of bookings, revenue, and platform activity.</p>
+    <div className="space-y-6">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-slate-800">Reports</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Bookings, revenue, and platform activity.</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <DateRangePicker from={fromStr} to={toStr} />
+          <Link
+            href={`/api/admin/export/bookings?from=${fromStr ?? ""}&to=${toStr ?? ""}`}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-400" /> Export CSV
+          </Link>
+        </div>
       </div>
 
-      {/* Key metrics */}
+      {/* KPI strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Revenue"
-          value={formatNpr(data.totalRevenue)}
+          title="Revenue"
+          value={formatNpr(kpi.revenue)}
           icon={DollarSign}
+          accent="gold"
+          trend={kpi.revenueGrowth !== null ? (kpi.revenueGrowth >= 0 ? "up" : "down") : undefined}
+          trendValue={kpi.revenueGrowth !== null ? `${kpi.revenueGrowth.toFixed(1)}%` : undefined}
           description="Confirmed + completed"
         />
         <StatCard
-          title="This Month Revenue"
-          value={formatNpr(data.thisMonthRevenue)}
-          icon={TrendingUp}
-          description="Current calendar month"
-        />
-        <StatCard
-          title="Total Bookings"
-          value={data.totalBookings}
+          title="Bookings"
+          value={kpi.totalBookings}
           icon={Calendar}
-          description={`${data.thisMonthBookings} this month`}
+          accent="neutral"
+          description={`${kpi.confirmedBookings} confirmed · ${kpi.cancelledBookings} cancelled`}
         />
         <StatCard
-          title="Total Guests"
-          value={data.totalGuests}
+          title="Guests"
+          value={totalGuests}
           icon={Users}
+          accent="blue"
           description="Registered guest accounts"
         />
-      </div>
-
-      {/* Secondary metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="Confirmed Bookings" value={data.confirmedBookings} />
-        <MetricCard label="Cancelled Bookings" value={data.cancelledBookings} />
-        <MetricCard label="Active Properties" value={`${data.activeProperties} / ${data.totalProperties}`} />
-        <MetricCard
-          label="Average Rating"
-          value={data.avgRating ? `${Number(data.avgRating).toFixed(1)} / 5` : "—"}
+        <StatCard
+          title="Avg Rating"
+          value={kpi.avgRating ? `${Number(kpi.avgRating).toFixed(1)} / 5` : "—"}
+          icon={TrendingUp}
+          accent="amber"
+          description={`${activeProperties} / ${totalProperties} properties active`}
         />
       </div>
 
-      {/* Booking growth note */}
-      {bookingGrowth !== null && (
-        <div className="bg-white border rounded-xl p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-navy/10 flex items-center justify-center shrink-0">
-            <BarChart2 size={20} className="text-navy" />
-          </div>
-          <div>
-            <p className="font-medium text-navy">
-              Bookings {Number(bookingGrowth) >= 0 ? "up" : "down"} {Math.abs(Number(bookingGrowth))}% vs last month
-            </p>
-            <p className="text-sm text-slate-500">
-              {data.thisMonthBookings} this month vs {data.lastMonthBookings} last month
-            </p>
-          </div>
+      {/* Charts row 1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            Revenue by Month (YTD)
+          </p>
+          <RevenueLineChart data={monthData} />
         </div>
-      )}
-
-      {/* Recent bookings table */}
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b">
-          <h3 className="font-semibold text-navy">Recent Bookings</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
-              <tr>
-                <th className="px-6 py-3 text-left">Guest</th>
-                <th className="px-6 py-3 text-left">Property</th>
-                <th className="px-6 py-3 text-left">Check-In</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-left">Amount</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {data.recentBookings.map((b) => (
-                <tr key={b.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-3">{b.guest.name ?? "—"}</td>
-                  <td className="px-6 py-3">{b.property.title}</td>
-                  <td className="px-6 py-3">{new Date(b.checkIn).toLocaleDateString()}</td>
-                  <td className="px-6 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      b.status === "CONFIRMED" ? "bg-green-100 text-green-700"
-                      : b.status === "CANCELLED" ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                    }`}>{b.status}</span>
-                  </td>
-                  <td className="px-6 py-3">{formatNpr(b.totalPrice)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            Bookings per Day
+          </p>
+          <BookingsBarChart data={dayData} />
         </div>
       </div>
-    </div>
-  )
-}
 
-function MetricCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="bg-white border rounded-xl p-5">
-      <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">{label}</p>
-      <p className="text-2xl font-bold text-navy">{value}</p>
+      {/* Charts row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            Top Properties by Bookings
+          </p>
+          <TopPropertiesChart data={topProps} />
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Quick Stats</p>
+          <div className="divide-y divide-slate-100">
+            {[
+              { label: "Confirmed Bookings", value: kpi.confirmedBookings },
+              { label: "Cancelled Bookings", value: kpi.cancelledBookings },
+              { label: "Active Properties",  value: `${activeProperties} / ${totalProperties}` },
+              { label: "Avg Rating",         value: kpi.avgRating ? `${Number(kpi.avgRating).toFixed(1)} / 5` : "—" },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex items-center justify-between py-3.5 first:pt-0 last:pb-0">
+                <span className="text-sm text-slate-500">{label}</span>
+                <span className="text-sm font-semibold text-slate-800">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

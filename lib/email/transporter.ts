@@ -1,26 +1,37 @@
 import nodemailer from 'nodemailer'
 
-const {
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASSWORD,
-  SMTP_FROM,
-} = process.env
+function makeTransporter() {
+  const host = process.env.SMTP_HOST
+  const port = Number(process.env.SMTP_PORT) || 465
+  return nodemailer.createTransport(
+    host?.includes('gmail')
+      ? {
+          service: 'gmail',
+          auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+        }
+      : {
+          host,
+          port,
+          secure: port === 465,
+          auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+        }
+  )
+}
 
-export const transporter = nodemailer.createTransport({
-  service: SMTP_HOST?.includes('gmail') ? 'gmail' : undefined,
-  host: SMTP_HOST,
-  port: Number(SMTP_PORT) || 587,
-  secure: Number(SMTP_PORT) === 465,
-  auth: {
-    user: SMTP_USER,
-    pass: SMTP_PASSWORD,
+// Lazily created so the worker process can load this module after dotenv runs.
+let _transporter: ReturnType<typeof nodemailer.createTransport> | null = null
+export const transporter = new Proxy({} as ReturnType<typeof nodemailer.createTransport>, {
+  get(_target, prop) {
+    if (!_transporter) _transporter = makeTransporter()
+    const value = (_transporter as never)[prop as never]
+    return typeof value === 'function' ? (value as Function).bind(_transporter) : value
   },
 })
 
 export const mailOptions = {
-  from: SMTP_FROM || '"Salt Route Consulting" <noreply@saltroutegroup.com>',
+  get from() {
+    return process.env.SMTP_FROM || `"${process.env.SITE_NAME ?? "Salt Route Consulting"}" <noreply@saltroutegroup.com>`
+  },
 }
 
 /**

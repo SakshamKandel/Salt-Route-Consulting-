@@ -26,12 +26,18 @@ export default async function AdminNotificationsPage({
   })
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      
+      {/* ━━━ HEADER ━━━ */}
       <div>
-        <h2 className="text-3xl font-display text-navy">Notifications</h2>
-        <p className="text-slate-500">Unread work across bookings, inquiries, reviews, and owner requests.</p>
+        <h2 className="text-3xl font-display text-navy tracking-wide">Notifications</h2>
+        <p className="text-navy/40 text-xs uppercase tracking-wider font-medium mt-1">
+          Unread work across bookings, inquiries, reviews, and owner requests.
+        </p>
       </div>
+
       <NotificationList notifications={notifications} />
+
       <PaginationControls
         basePath="/admin/notifications"
         page={pagination.currentPage}

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db"
 import type { NotificationType, Prisma, Role } from "@prisma/client"
+import { publishAdminEvent } from "@/lib/realtime/publisher"
 
 type NotificationInput = {
   type: NotificationType
@@ -51,6 +52,11 @@ export async function notifyRole(role: Role, input: NotificationInput) {
 
 export async function notifyAdmins(input: NotificationInput) {
   await notifyRole("ADMIN", input)
+  // Broadcast to connected admin SSE clients
+  await publishAdminEvent({
+    type: "notification",
+    payload: { title: input.title, type: input.type },
+  })
 }
 
 export async function getAdminEmails() {

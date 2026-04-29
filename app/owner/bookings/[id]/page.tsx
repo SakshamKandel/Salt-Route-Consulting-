@@ -9,7 +9,7 @@ import { ArrowLeft } from "lucide-react"
 const statusColors: Record<string, string> = {
   CONFIRMED:  "rgba(96,165,250,0.85)",
   CHECKED_IN: "rgba(52,211,153,0.85)",
-  COMPLETED:  "rgba(247,245,240,0.55)",
+  COMPLETED:  "rgba(27,58,92,0.50)",
   CANCELLED:  "rgba(239,100,100,0.7)",
   NO_SHOW:    "rgba(251,191,36,0.7)",
   PENDING:    "rgba(251,191,36,0.85)",
@@ -17,7 +17,7 @@ const statusColors: Record<string, string> = {
 const statusBorders: Record<string, string> = {
   CONFIRMED:  "rgba(96,165,250,0.2)",
   CHECKED_IN: "rgba(52,211,153,0.2)",
-  COMPLETED:  "rgba(247,245,240,0.1)",
+  COMPLETED:  "rgba(27,58,92,0.12)",
   CANCELLED:  "rgba(239,100,100,0.2)",
   NO_SHOW:    "rgba(251,191,36,0.2)",
   PENDING:    "rgba(251,191,36,0.2)",
@@ -48,8 +48,8 @@ export default async function OwnerBookingDetailPage({
       (1000 * 60 * 60 * 24)
   )
 
-  const statusColor  = statusColors[booking.status]  ?? "rgba(247,245,240,0.4)"
-  const statusBorder = statusBorders[booking.status] ?? "rgba(247,245,240,0.1)"
+  const statusColor  = statusColors[booking.status]  ?? "rgba(27,58,92,0.40)"
+  const statusBorder = statusBorders[booking.status] ?? "rgba(27,58,92,0.12)"
 
   const stayDetails = [
     { label: "Property",   value: booking.property.title,     link: `/owner/properties/${booking.property.id}` },
@@ -73,7 +73,7 @@ export default async function OwnerBookingDetailPage({
       <div className="space-y-5">
         <Link
           href="/owner/bookings"
-          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-sand/30 hover:text-gold transition-colors duration-500"
+          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
           Guest Stays
@@ -87,7 +87,7 @@ export default async function OwnerBookingDetailPage({
                 Stay Detail
               </p>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl text-sand/85 tracking-wide font-mono">
+            <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide font-mono">
               {booking.bookingCode}
             </h1>
           </div>
@@ -110,7 +110,7 @@ export default async function OwnerBookingDetailPage({
         }}
       >
         <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
+          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
             Total Stay Value
           </p>
           <p className="font-display text-3xl text-gold tracking-wide">
@@ -119,19 +119,19 @@ export default async function OwnerBookingDetailPage({
         </div>
         <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
         <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
+          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
             Duration
           </p>
-          <p className="font-display text-2xl text-sand/70 tracking-wide">
+          <p className="font-display text-2xl text-[#1B3A5C]/70 tracking-wide">
             {nights} night{nights !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
         <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium mb-1">
+          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
             Booked
           </p>
-          <p className="text-[12.5px] text-sand/55 font-light">
+          <p className="text-[12.5px] text-[#1B3A5C]/50 font-light">
             {new Date(booking.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
           </p>
         </div>
@@ -150,7 +150,7 @@ export default async function OwnerBookingDetailPage({
             style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
           >
             <span className="w-5 h-px bg-gold/40" />
-            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
             Property Stay
             </h2>
           </div>
@@ -158,12 +158,12 @@ export default async function OwnerBookingDetailPage({
             {stayDetails.map((row, i) => (
               <div
                 key={row.label}
-                className="flex items-start px-8 py-4.5 gap-4 hover:bg-white/[0.015] transition-colors duration-500"
+                className="flex items-start px-8 py-4.5 gap-4 hover:bg-[#FBF9F4] transition-colors duration-500"
                 style={{
                   borderBottom: i < stayDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
                 }}
               >
-                <p className="text-[9px] uppercase tracking-[0.3em] text-sand/30 font-medium w-24 shrink-0 pt-0.5">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium w-24 shrink-0 pt-0.5">
                   {row.label}
                 </p>
                 {row.link ? (
@@ -174,7 +174,7 @@ export default async function OwnerBookingDetailPage({
                     {row.value}
                   </Link>
                 ) : (
-                  <p className="text-[12.5px] text-sand/60 font-light">{row.value}</p>
+                  <p className="text-[12.5px] text-[#1B3A5C]/60 font-light">{row.value}</p>
                 )}
               </div>
             ))}
@@ -191,7 +191,7 @@ export default async function OwnerBookingDetailPage({
             style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
           >
             <span className="w-5 h-px bg-gold/40" />
-            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
             Guest Contact
             </h2>
           </div>
@@ -199,12 +199,12 @@ export default async function OwnerBookingDetailPage({
             {guestDetails.map((row, i) => (
               <div
                 key={row.label}
-                className="flex items-start px-8 py-4.5 gap-4 hover:bg-white/[0.015] transition-colors duration-500"
+                className="flex items-start px-8 py-4.5 gap-4 hover:bg-[#FBF9F4] transition-colors duration-500"
                 style={{
                   borderBottom: i < guestDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
                 }}
               >
-                <p className="text-[9px] uppercase tracking-[0.3em] text-sand/30 font-medium w-24 shrink-0 pt-0.5">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium w-24 shrink-0 pt-0.5">
                   {row.label}
                 </p>
                 {row.href ? (
@@ -215,7 +215,7 @@ export default async function OwnerBookingDetailPage({
                     {row.value}
                   </a>
                 ) : (
-                  <p className="text-[12.5px] text-sand/60 font-light">{row.value}</p>
+                  <p className="text-[12.5px] text-[#1B3A5C]/60 font-light">{row.value}</p>
                 )}
               </div>
             ))}
@@ -228,7 +228,7 @@ export default async function OwnerBookingDetailPage({
         <div className="space-y-5">
           <div className="flex items-center gap-4">
             <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/40 font-medium">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
               Guest Requests
             </h2>
           </div>
@@ -236,7 +236,7 @@ export default async function OwnerBookingDetailPage({
             className="px-8 py-6"
             style={{ border: "1px solid rgba(201,169,110,0.08)", background: "rgba(201,169,110,0.02)" }}
           >
-            <p className="text-[13px] text-sand/50 font-light leading-[1.9] whitespace-pre-wrap italic">
+            <p className="text-[13px] text-[#1B3A5C]/50 font-light leading-[1.9] whitespace-pre-wrap italic">
               &ldquo;{booking.notes}&rdquo;
             </p>
           </div>
@@ -248,7 +248,7 @@ export default async function OwnerBookingDetailPage({
         className="flex flex-col sm:flex-row items-center justify-between gap-6 px-8 py-7"
         style={{ border: "1px solid rgba(201,169,110,0.08)" }}
       >
-        <p className="text-[11.5px] text-sand/30 font-light">
+        <p className="text-[11.5px] text-[#1B3A5C]/30 font-light">
           Questions about this stay or property preparation? Contact the Salt Route team.
         </p>
         <Link

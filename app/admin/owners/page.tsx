@@ -1,21 +1,34 @@
 import { prisma } from "@/lib/db"
 import { UsersTable } from "../users/UsersTable"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus, Mail } from "lucide-react"
-import { getPagination, parsePage } from "@/lib/pagination"
-import { PaginationControls } from "@/components/shared/pagination-controls"
+import { parseAdminQuery, buildPagination, buildDateFilter } from "@/lib/admin/query"
+import { auth } from "@/auth"
 
 export default async function AdminOwnersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
+  const session = await auth()
   const params = await searchParams
-  const requestedPage = parsePage(params.page)
-  const where = { role: "OWNER" as const }
+  const query = parseAdminQuery(params)
+
+  const where = {
+    role: "OWNER" as const,
+    ...(query.search
+      ? {
+          OR: [
+            { email: { contains: query.search, mode: "insensitive" as const } },
+            { name: { contains: query.search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...buildDateFilter(query.dateFrom, query.dateTo),
+  }
+
   const total = await prisma.user.count({ where })
-  const pagination = getPagination(requestedPage, total)
+  const pagination = buildPagination(query, total)
 
   const owners = await prisma.user.findMany({
     where,
@@ -23,52 +36,45 @@ export default async function AdminOwnersPage({
     skip: pagination.skip,
     take: pagination.take,
     select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      status: true,
-      image: true,
-      createdAt: true,
-      _count: { select: { properties: true } }
+      id: true, name: true, email: true, role: true,
+      status: true, image: true, createdAt: true,
     },
   })
 
-  const ownersWithCount = owners.map(owner => ({
-    ...owner,
-    propertiesCount: owner._count.properties
-  }))
-
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-start gap-4 flex-wrap">
+    <div className="space-y-6">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display text-navy">Owners</h2>
-          <p className="text-slate-500">Manage property owners and their assigned properties.</p>
+          <h1 className="text-xl font-bold text-slate-800">Owners</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage property owners and their accounts.</p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline" className="text-navy border-navy/20">
-            <Link href="/admin/invitations/new">
-              <Mail className="w-4 h-4 mr-2" /> Invite by Email
-            </Link>
-          </Button>
-          <Button asChild className="bg-navy text-cream">
-            <Link href="/admin/users/new?role=OWNER">
-              <Plus className="w-4 h-4 mr-2" /> Add Owner
-            </Link>
-          </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/admin/invitations/new"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            <Mail className="h-3.5 w-3.5 text-slate-400" /> Invite
+          </Link>
+          <Link
+            href="/admin/users/new?role=OWNER"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add Owner
+          </Link>
         </div>
       </div>
 
-      <UsersTable users={ownersWithCount} />
-      <PaginationControls
-        basePath="/admin/owners"
+      <UsersTable
+        users={owners}
+        currentUser={session?.user}
+        total={total}
         page={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={total}
-        startItem={pagination.startItem}
-        endItem={pagination.endItem}
-        label="owners"
+        pageSize={pagination.pageSize}
+        sort={query.sort}
+        order={query.order}
+        searchValue={query.search}
       />
     </div>
   )

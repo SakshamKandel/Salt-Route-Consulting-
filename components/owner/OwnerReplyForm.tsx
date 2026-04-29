@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -34,8 +34,8 @@ export function OwnerReplyForm({ inquiryId }: { inquiryId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-6" style={{ borderTop: "1px solid rgba(197,168,128,0.08)" }}>
-      <label className="text-[9px] uppercase tracking-[0.4em] text-sand/35 font-medium block">
+    <form onSubmit={handleSubmit} className="space-y-4 pt-5 border-t border-[#1B3A5C]/8">
+      <label className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block">
         Your Note
       </label>
       <textarea
@@ -43,22 +43,20 @@ export function OwnerReplyForm({ inquiryId }: { inquiryId: string }) {
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Write your note to the Salt Route team..."
         rows={3}
-        className="w-full bg-transparent text-sand/70 text-[12.5px] px-5 py-4 outline-none resize-none transition-all duration-500 placeholder:text-sand/20 font-light leading-[1.8]"
-        style={{ border: "1px solid rgba(197,168,128,0.15)" }}
+        className="w-full bg-[#F9F7F2] text-[#1B3A5C] text-[13px] px-4 py-3 border border-[#1B3A5C]/10 rounded-lg outline-none resize-none transition-colors placeholder:text-[#1B3A5C]/30 focus:border-[#C9A96E] focus:ring-3 focus:ring-[#C9A96E]/20 font-light leading-[1.8]"
       />
       {error && (
-        <p className="text-[10px] uppercase tracking-[0.3em] font-medium" style={{ color: "rgba(239,100,100,0.8)" }}>
+        <p className="text-[10px] text-[#B84040] uppercase tracking-[0.3em] font-medium">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={isPending || !message.trim()}
-        className="px-8 py-3.5 text-[9px] uppercase tracking-[0.35em] font-medium text-[#0C1F33] bg-gold hover:bg-gold/90 transition-all duration-500 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="px-6 py-2.5 text-[9px] uppercase tracking-[0.35em] font-medium text-[#FFFDF8] bg-[#1B3A5C] hover:bg-[#2A4F7A] rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isPending ? "Sending..." : "Send Reply"}
       </button>
     </form>
   )
 }
-

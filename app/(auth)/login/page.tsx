@@ -10,12 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { fetchSessionRole, getSafeCallback, getDestination } from "@/lib/auth-utils"
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
@@ -31,15 +30,14 @@ function LoginForm() {
     setIsPending(true)
     setError(null)
     const res = await loginAction(data)
-    
+
     if (res?.error) {
       setError(res.error)
       setIsPending(false)
     } else {
       const role = await fetchSessionRole()
       const callbackUrl = getSafeCallback(searchParams.get("callbackUrl"))
-      router.replace(getDestination(role, callbackUrl))
-      router.refresh()
+      window.location.assign(getDestination(role, callbackUrl))
     }
   }
 

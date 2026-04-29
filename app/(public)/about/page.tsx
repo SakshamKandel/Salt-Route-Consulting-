@@ -1,5 +1,6 @@
 ﻿"use client"
 
+import { siteConfig } from "@/lib/site.config"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -44,7 +45,7 @@ const values = [
   {
     icon: ShieldCheck,
     title: "Absolute Excellence",
-    desc: "A commitment to world-class service standards â€” from the properties we select to the guest experiences we create.",
+    desc: "A commitment to world-class service standards, from the properties we select to the guest experiences we create.",
   },
   {
     icon: Target,
@@ -61,8 +62,8 @@ export default function AboutPage() {
       <section className="relative h-[85svh] w-full flex items-center justify-center overflow-hidden bg-charcoal">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2000&auto=format&fit=crop"
-            alt="Salt Route Himalayan Heritage"
+            src="/luxury_himalayan_retreat_exterior_1777124225845.png"
+            alt="A Salt Route property at altitude"
             fill
             className="object-cover opacity-70 scale-105"
             priority
@@ -93,9 +94,9 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
             {/* Image side */}
             <div className="lg:col-span-5 order-2 lg:order-1">
-              <RevealImage 
-                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
-                alt="Heritage Interior Craftsmanship"
+              <RevealImage
+                src="/luxury_nepalese_interior_details_1777124245155.png"
+                alt="Heritage interior craftsmanship"
                 className="aspect-[4/5] border border-charcoal/10"
               />
             </div>
@@ -113,7 +114,7 @@ export default function AboutPage() {
 
               <FadeUp delay={0.2} className="space-y-8">
                 <p className="font-sans text-[17px] text-charcoal/60 leading-relaxed font-light first-letter:text-6xl first-letter:font-display first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:text-gold">
-                  Welcome to Salt Route Group, where purpose-driven business meets bold ambition. We are a Nepal-based collective building pathways from local innovation to global opportunityâ€”through transformative consulting, meaningful travel experiences, and sustainable development.
+                  Welcome to {siteConfig.brandName}, where purpose-driven business meets bold ambition. We are a {siteConfig.region}-based collective building pathways from local innovation to global opportunity, through transformative consulting, meaningful travel experiences, and sustainable development.
                 </p>
                 <p className="font-sans text-[16px] text-charcoal/60 leading-relaxed font-light">
                   At our core, we believe in doing business that uplifts people, protects the planet, and redefines what&apos;s possible from Nepal. We are committed to building ventures that reflect our values and deliver impact with integrity.
@@ -162,10 +163,10 @@ export default function AboutPage() {
               
               {/* Image break within the grid */}
               <FadeUp delay={0.2} className="pt-12">
-                 <RevealImage 
-                   src="https://images.unsplash.com/photo-1550642249-6e5605421172?q=80&w=2000&auto=format&fit=crop" 
-                   alt="Heritage Detail" 
-                   className="aspect-[16/9] border border-charcoal/5 grayscale-[0.4]"
+                 <RevealImage
+                   src="/mastery_details.png"
+                   alt="Mastery in detail"
+                   className="aspect-[16/9] border border-charcoal/5"
                  />
               </FadeUp>
             </div>
@@ -185,22 +186,37 @@ export default function AboutPage() {
                   </h3>
                   <div className="w-12 h-[1px] bg-charcoal/20" />
                   <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
-                    We believe diversity is strengthâ€”and we strive to create inclusive spaces that value every voice.
+                    We believe diversity is strength. We strive to create inclusive spaces that value every voice.
                   </p>
                 </div>
               </FadeUp>
 
-              {/* Module 03: Stewardship */}
+              {/* Module 03: Sustainability */}
               <FadeUp delay={0.3} className="relative">
-                
+
                 <div className="space-y-6 pt-12">
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The Impact</p>
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The Planet</p>
                   <h3 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-tight">
-                    Sustainability &<br/>Community.
+                    Sustainability.
                   </h3>
                   <div className="w-12 h-[1px] bg-charcoal/20" />
                   <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
-                    Environmental stewardship guides our strategies. We prioritize local employment, uplift communities, and reinvest in the ecosystems that support us.
+                    Environmental stewardship guides our strategies, decisions, and long-term goals.
+                  </p>
+                </div>
+              </FadeUp>
+
+              {/* Module 04: Community */}
+              <FadeUp delay={0.4} className="relative">
+
+                <div className="space-y-6 pt-12">
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">The Community</p>
+                  <h3 className="font-display text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-tight">
+                    Community<br/>Empowerment.
+                  </h3>
+                  <div className="w-12 h-[1px] bg-charcoal/20" />
+                  <p className="font-sans text-[15px] text-charcoal/60 leading-relaxed font-light max-w-sm">
+                    We prioritize local employment, uplift communities, and reinvest in the ecosystems that support us.
                   </p>
                 </div>
               </FadeUp>
@@ -223,7 +239,7 @@ export default function AboutPage() {
               </FadeUp>
               <FadeUp delay={0.2} className="space-y-8">
                 <p className="font-sans text-[16px] text-charcoal/60 leading-relaxed font-light">
-                  Salt Route brings together hospitality thinkers, travel makers, property partners, and local teams who believe that every stay should feel personal, responsible, and rooted in Nepal.
+                  {siteConfig.name} brings together hospitality thinkers, travel makers, property partners, and local teams who believe that every stay should feel personal, responsible, and rooted in {siteConfig.region}.
                 </p>
                 <div className="space-y-6">
                   <div className="flex items-center gap-6 pb-6 border-b border-charcoal/5">
@@ -242,10 +258,10 @@ export default function AboutPage() {
               </FadeUp>
             </div>
             <div className="relative">
-              <RevealImage 
-                src="https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=2000&auto=format&fit=crop"
-                alt="Cinematic Himalayan Landscape"
-                className="aspect-square border border-charcoal/10 grayscale-[0.2]"
+              <RevealImage
+                src="/luxury_boutique_office_team.png"
+                alt="The Salt Route Group team"
+                className="aspect-square border border-charcoal/10"
               />
               <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-gold/10 -z-10" />
             </div>

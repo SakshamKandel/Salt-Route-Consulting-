@@ -6,18 +6,19 @@ import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
 import { auth } from "@/auth"
 import { notifyAdmins, getAdminEmails } from "@/lib/notifications"
+import { publishAdminEvent } from "@/lib/realtime/publisher"
 import { sendEmail, sendEmailToMany } from "@/lib/email/transporter"
 import { InquiryReceivedAuto } from "@/emails/InquiryReceivedAuto"
 import { NewInquiryAdminAlert } from "@/emails/NewInquiryAdminAlert"
 import { render } from "@react-email/render"
+import { siteConfig, adminUrl } from "@/lib/site.config"
 
 // ─── POST  /api/inquiries ─────────────────────────────────
 export async function POST(request: Request) {
   const ip = getClientIp(request.headers)
   const session = await auth()
 
-  // 10.3 — Rate limit: 15 inquiries / hr / IP
-  const rl = await rateLimit({ identifier: `inquiry:${ip}`, limit: 15, window: 3600 })
+  const rl = await rateLimit({ identifier: `inquiry:${ip}`, limit: siteConfig.rateLimits.inquiriesPerHour, window: 3600 })
   if (!rl.success) {
     return NextResponse.json({ error: "Too many submissions. Please try again later." }, { status: 429 })
   }
@@ -65,13 +66,16 @@ export async function POST(request: Request) {
       ipAddress: ip,
     })
 
-    await notifyAdmins({
-      type: "INQUIRY",
-      title: source === "GUEST_MESSAGE" ? "New guest message" : "New inquiry",
-      body: `${validated.name}: ${validated.subject}`,
-      href: `/admin/inquiries/${inquiry.id}`,
-      metadata: { inquiryId: inquiry.id },
-    })
+    await Promise.all([
+      notifyAdmins({
+        type: "INQUIRY",
+        title: source === "GUEST_MESSAGE" ? "New guest message" : "New inquiry",
+        body: `${validated.name}: ${validated.subject}`,
+        href: `/admin/inquiries/${inquiry.id}`,
+        metadata: { inquiryId: inquiry.id },
+      }),
+      publishAdminEvent({ type: "inquiry.created", payload: { inquiryId: inquiry.id } }),
+    ])
 
     // Fire-and-forget emails
     try {
@@ -87,25 +91,25 @@ export async function POST(request: Request) {
           subject: validated.subject,
           message: validated.message,
           phone: validated.phone || undefined,
-          inquiryUrl: `${process.env.NEXTAUTH_URL || "https://saltroutegroup.com"}/admin/inquiries/${inquiry.id}`,
+          inquiryUrl: adminUrl(`/admin/inquiries/${inquiry.id}`),
         })),
       ])
 
       const adminEmails = await getAdminEmails()
       const allAdminRecipients = Array.from(new Set([
         ...adminEmails,
-        process.env.ADMIN_EMAIL || "admin@saltroute.com"
+        siteConfig.contact.adminEmail,
       ]))
 
       await Promise.all([
         sendEmail({
           to: validated.email,
-          subject: "We Received Your Enquiry — Salt Route",
+          subject: siteConfig.emailSubjects.inquiryReceived(),
           html: autoHtml,
         }),
         sendEmailToMany({
           to: allAdminRecipients,
-          subject: `New Enquiry: ${validated.subject}`,
+          subject: siteConfig.emailSubjects.newInquiryAdmin(validated.subject),
           html: adminHtml,
         }),
       ])

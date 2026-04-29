@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import Image from "next/image"
 import Link from "next/link"
@@ -6,20 +6,25 @@ import { redirect } from "next/navigation"
 import { formatNpr } from "@/lib/currency"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import {
-  ArrowRight,
-  BedDouble,
-  Calendar,
-  Camera,
-  Home,
-  MessageCircle,
-  Sparkles,
-  TrendingUp,
-  Users,
+  ArrowRight, BedDouble, Calendar, Edit3,
+  Home, MessageCircle, TrendingUp, Users,
+  ChevronRight, MapPin, AlertCircle,
 } from "lucide-react"
+import { format } from "date-fns"
+
+const STATUS_CHIP: Record<string, { label: string; cls: string }> = {
+  PENDING:    { label: "Awaiting review", cls: "bg-amber-50 text-amber-600 border-amber-200/60" },
+  CONFIRMED:  { label: "Confirmed",       cls: "bg-emerald-50 text-emerald-600 border-emerald-200/60" },
+  CHECKED_IN: { label: "Checked in",      cls: "bg-sky-50 text-sky-600 border-sky-200/60" },
+  COMPLETED:  { label: "Completed",       cls: "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10" },
+  CANCELLED:  { label: "Cancelled",       cls: "bg-red-50 text-red-500 border-red-200/60" },
+}
 
 export default async function OwnerDashboardPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
+
+  const now = new Date()
 
   const [
     propertiesCount,
@@ -29,6 +34,7 @@ export default async function OwnerDashboardPage() {
     recentBookings,
     unreadMessages,
     properties,
+    pendingBookings,
   ] = await Promise.all([
     prisma.property.count({ where: { ownerId: session.user.id, status: { not: "ARCHIVED" } } }),
     prisma.booking.count({
@@ -41,7 +47,7 @@ export default async function OwnerDashboardPage() {
       where: {
         property: { ownerId: session.user.id },
         status: "CONFIRMED",
-        checkIn: { gte: new Date() },
+        checkIn: { gte: now },
       },
     }),
     prisma.booking.aggregate({
@@ -54,14 +60,14 @@ export default async function OwnerDashboardPage() {
     prisma.booking.findMany({
       where: {
         property: { ownerId: session.user.id },
-        status: "CONFIRMED",
-        checkIn: { gte: new Date() },
+        status: { in: ["PENDING", "CONFIRMED", "CHECKED_IN"] },
+        checkIn: { gte: now },
       },
-      take: 6,
+      take: 5,
       orderBy: { checkIn: "asc" },
       include: {
         property: { select: { title: true, id: true, location: true } },
-        guest: { select: { name: true, email: true } },
+        guest: { select: { name: true, email: true, image: true } },
       },
     }),
     prisma.inquiry.count({
@@ -74,7 +80,7 @@ export default async function OwnerDashboardPage() {
     }),
     prisma.property.findMany({
       where: { ownerId: session.user.id, status: { not: "ARCHIVED" } },
-      take: 5,
+      take: 4,
       orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
       include: {
         images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 },
@@ -86,313 +92,236 @@ export default async function OwnerDashboardPage() {
         },
       },
     }),
+    prisma.booking.count({
+      where: {
+        property: { ownerId: session.user.id },
+        status: "PENDING",
+      },
+    }),
   ])
 
   const firstName = session.user.name?.split(" ")[0] ?? "Partner"
-  const heroProperty = properties[0]
-  const heroImage = heroProperty ? getPrimaryImageUrl(heroProperty.images) : null
-  const visiblePropertyCount = properties.length
+  const hour = now.getHours()
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
 
-  const metrics = [
-    {
-      icon: Home,
-      label: "Properties In Care",
-      value: String(propertiesCount),
-      href: "/owner/properties",
-    },
-    {
-      icon: Users,
-      label: "Confirmed Stays",
-      value: String(totalConfirmed),
-      href: "/owner/bookings",
-    },
-    {
-      icon: Calendar,
-      label: "Upcoming Arrivals",
-      value: String(upcomingArrivals),
-      href: "/owner/bookings",
-    },
-    {
-      icon: TrendingUp,
-      label: "Total Stay Value",
-      value: formatNpr(totalRevenue._sum.totalPrice),
-      href: "/owner/reports",
-    },
-  ]
-
-  const quickActions = [
-    { label: "Open Properties", href: "/owner/properties", desc: "Review each property story" },
-    { label: "Guest Stays", href: "/owner/bookings", desc: "See guests and stay dates" },
-    { label: "Earnings", href: "/owner/reports", desc: "Read revenue and stay notes" },
-    { label: "Request An Update", href: "/owner/request-edit", desc: "Refresh photos, pricing, or amenities" },
+  const stats = [
+    { icon: Home,        label: "Properties",    value: propertiesCount,                          href: "/owner/properties" },
+    { icon: Calendar,    label: "Upcoming",       value: upcomingArrivals,                         href: "/owner/bookings" },
+    { icon: Users,       label: "Total stays",    value: totalConfirmed,                           href: "/owner/bookings" },
+    { icon: TrendingUp,  label: "Total earnings", value: formatNpr(totalRevenue._sum.totalPrice),  href: "/owner/reports" },
   ]
 
   return (
-    <div className="space-y-14">
-      <section
-        className="relative overflow-hidden border border-gold/12 bg-[#0C1F33]"
-        style={{ minHeight: "360px" }}
-      >
-        {heroImage ? (
-          <Image
-            src={heroImage}
-            alt={heroProperty?.title ?? "Owner property"}
-            fill
-            priority
-            sizes="(min-width: 1024px) 900px, 100vw"
-            className="object-cover opacity-[0.45]"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-[#0C1F33]" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0C1F33] via-[#0C1F33]/82 to-[#0C1F33]/28" />
+    <div className="pb-12 space-y-8">
 
-        <div className="relative z-10 grid gap-8 px-6 py-10 sm:px-9 md:px-12 lg:grid-cols-[1fr_340px] lg:items-end">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-4">
-              <span className="h-px w-8 bg-gold/55" />
-              <p className="text-[9px] uppercase tracking-[0.42em] text-gold/70">Owner Care</p>
-            </div>
-            <h1 className="mt-6 font-display text-4xl leading-[1.08] tracking-wide text-sand/92 md:text-6xl">
-              Good day, {firstName}. Your properties are ready.
-            </h1>
-            <p className="mt-6 max-w-2xl text-sm font-light leading-[1.9] text-sand/48 md:text-base">
-              See your property stories, upcoming guests, stay value, and Salt Route support from one calm owner view.
-            </p>
-
-            {unreadMessages > 0 && (
-              <Link
-                href="/owner/messages"
-                className="mt-7 inline-flex items-center gap-3 border border-gold/25 bg-gold/8 px-5 py-3 text-[9px] font-medium uppercase tracking-[0.3em] text-gold transition-colors duration-500 hover:bg-gold hover:text-[#0C1F33]"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                {unreadMessages} new message{unreadMessages > 1 ? "s" : ""}
-              </Link>
-            )}
-          </div>
-
-          <div className="border border-gold/14 bg-[#0C1F33]/72 p-6 backdrop-blur">
-            <p className="text-[9px] uppercase tracking-[0.34em] text-sand/35">Featured Property</p>
-            <p className="mt-4 font-display text-2xl tracking-wide text-sand/85">
-              {heroProperty?.title ?? "Property welcome"}
-            </p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-gold/55">
-              {heroProperty?.location ?? "Salt Route will prepare your first property"}
-            </p>
-            <div className="mt-7 grid grid-cols-3 gap-3">
-              {[
-                ["Beds", heroProperty?.bedrooms ?? 0],
-                ["Baths", heroProperty?.bathrooms ?? 0],
-                ["Guests", heroProperty?.maxGuests ?? 0],
-              ].map(([label, value]) => (
-                <div key={label} className="border-t border-gold/16 pt-3">
-                  <p className="font-display text-2xl text-sand/85">{value}</p>
-                  <p className="mt-1 text-[8px] uppercase tracking-[0.25em] text-sand/28">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* ── GREETING ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">
+            {format(now, "EEEE, d MMMM yyyy")}
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            {greeting}, {firstName}
+          </h1>
         </div>
-      </section>
+        <Link
+          href="/owner/request-edit"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-[#1B3A5C]/15 rounded-lg text-[11px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors"
+        >
+          <Edit3 className="h-3.5 w-3.5" />
+          Request property update
+        </Link>
+      </div>
 
-      <section className="grid grid-cols-2 gap-px bg-gold/8 lg:grid-cols-4">
-        {metrics.map((m) => (
+      {/* ── ACTION ALERTS ── */}
+      {(pendingBookings > 0 || unreadMessages > 0) && (
+        <div className="flex flex-wrap gap-3">
+          {pendingBookings > 0 && (
+            <Link
+              href="/owner/bookings?status=PENDING"
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-50 border border-amber-200/60 rounded-lg text-amber-700 hover:bg-amber-100/60 transition-colors"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span className="text-[12px] font-medium">
+                {pendingBookings} booking{pendingBookings > 1 ? "s" : ""} awaiting your review
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+            </Link>
+          )}
+          {unreadMessages > 0 && (
+            <Link
+              href="/owner/messages"
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-sky-50 border border-sky-200/60 rounded-lg text-sky-700 hover:bg-sky-100/60 transition-colors"
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              <span className="text-[12px] font-medium">
+                {unreadMessages} unread message{unreadMessages > 1 ? "s" : ""}
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* ── STAT STRIP ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {stats.map(({ icon: Icon, label, value, href }) => (
           <Link
-            key={m.label}
-            href={m.href}
-            className="group bg-[#102943] px-5 py-7 transition-colors duration-700 hover:bg-[#163350] sm:px-8 sm:py-9"
+            key={label}
+            href={href}
+            className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
           >
-            <m.icon className="mb-6 h-4 w-4 text-gold/35 stroke-[1.3] transition-colors duration-700 group-hover:text-gold" />
-            <p className="mb-3 text-[8px] uppercase tracking-[0.34em] text-sand/30 sm:text-[8.5px]">
-              {m.label}
-            </p>
-            <p className="break-words font-display text-2xl tracking-wide text-sand/66 transition-colors duration-700 group-hover:text-gold sm:text-3xl">
-              {m.value}
-            </p>
+            <Icon className="h-4 w-4 text-[#1B3A5C]/25 mb-3 group-hover:text-[#C9A96E] transition-colors" />
+            <p className="text-xl sm:text-2xl font-semibold text-[#1B3A5C] leading-tight tabular-nums">{value}</p>
+            <p className="text-[10px] text-[#1B3A5C]/40 mt-1 uppercase tracking-[0.2em] font-medium">{label}</p>
           </Link>
         ))}
-      </section>
+      </div>
 
-      <section className="grid grid-cols-1 gap-10 xl:grid-cols-[1fr_360px] xl:gap-14">
-        <div className="space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-center gap-4">
-              <span className="h-px w-8 bg-gold/35" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Properties</h2>
+      {/* ── UPCOMING RESERVATIONS ── */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Upcoming reservations</h2>
+          <Link href="/owner/bookings" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+            View all <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden divide-y divide-[#1B3A5C]/5">
+          {recentBookings.length === 0 ? (
+            <div className="py-12 text-center">
+              <Calendar className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+              <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No upcoming reservations</p>
+              <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Confirmed bookings will appear here</p>
             </div>
-            {visiblePropertyCount > 0 && (
+          ) : recentBookings.map((b) => {
+            const chip = STATUS_CHIP[b.status] ?? STATUS_CHIP.PENDING
+            const nights = Math.ceil((new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) / 86400000)
+            return (
               <Link
-                href="/owner/properties"
-                className="group inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-gold/50 transition-colors duration-500 hover:text-gold"
+                key={b.id}
+                href={`/owner/bookings/${b.id}`}
+                className="flex items-center gap-4 px-5 py-4 hover:bg-[#FBF9F4] transition-colors group"
               >
-                Open all
-                <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
+                {/* Guest avatar */}
+                <div className="w-9 h-9 rounded-full bg-[#1B3A5C]/10 flex items-center justify-center shrink-0 overflow-hidden">
+                  {b.guest.image
+                    ? <img src={b.guest.image} alt="" className="w-full h-full object-cover" />
+                    : <span className="text-xs font-semibold text-[#1B3A5C]/50">{(b.guest.name || b.guest.email)[0].toUpperCase()}</span>
+                  }
+                </div>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold text-[#1B3A5C] truncate">
+                    {b.guest.name || b.guest.email}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <span className="text-[11px] text-[#1B3A5C]/40">{b.property.title}</span>
+                    <span className="text-[#1B3A5C]/15">·</span>
+                    <span className="text-[11px] text-[#1B3A5C]/40">
+                      {format(new Date(b.checkIn), "d MMM")} – {format(new Date(b.checkOut), "d MMM yyyy")}
+                    </span>
+                    <span className="text-[#1B3A5C]/15">·</span>
+                    <span className="text-[11px] text-[#1B3A5C]/40">{nights} night{nights !== 1 ? "s" : ""}</span>
+                  </div>
+                </div>
+                {/* Status chip */}
+                <span className={`hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] shrink-0 ${chip.cls}`}>
+                  {chip.label}
+                </span>
+                <ChevronRight className="h-4 w-4 text-[#1B3A5C]/20 group-hover:text-[#1B3A5C]/40 shrink-0" />
               </Link>
-            )}
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── PROPERTIES ── */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Your properties</h2>
+          <Link href="/owner/properties" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+            View all <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {properties.length === 0 ? (
+          <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl py-14 text-center">
+            <Home className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+            <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No properties yet</p>
+            <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Salt Route will add your property once preparations begin</p>
           </div>
-
-          {properties.length > 0 ? (
-            <div className="grid grid-cols-1 gap-px bg-gold/8 md:grid-cols-2">
-              {properties.map((property) => {
-                const image = getPrimaryImageUrl(property.images) || "/placeholder-property.jpg"
-                const readiness = [
-                  property.images.length > 0,
-                  property.amenities.length > 0,
-                  property.highlights.length > 0,
-                  property.description.length > 140,
-                ].filter(Boolean).length
-
-                return (
-                  <Link
-                    key={property.id}
-                    href={`/owner/properties/${property.id}`}
-                    className="group grid min-h-[260px] grid-cols-[130px_1fr] bg-[#102943] transition-colors duration-700 hover:bg-[#163350] sm:grid-cols-[170px_1fr]"
-                  >
-                    <div className="relative overflow-hidden bg-[#1B3A5C]">
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+            {properties.map((property) => {
+              const image = getPrimaryImageUrl(property.images)
+              return (
+                <Link
+                  key={property.id}
+                  href={`/owner/properties/${property.id}`}
+                  className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+                >
+                  {/* Property image */}
+                  <div className="relative h-36 bg-[#1B3A5C]/5">
+                    {image ? (
                       <Image
                         src={image}
                         alt={property.title}
                         fill
-                        sizes="170px"
-                        className="object-cover transition-transform duration-[1600ms] group-hover:scale-105"
+                        sizes="280px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
-                    </div>
-                    <div className="flex flex-col justify-between p-5 sm:p-6">
-                      <div>
-                        <p className="text-[8px] uppercase tracking-[0.28em] text-gold/50">{property.location}</p>
-                        <h3 className="mt-3 font-display text-2xl tracking-wide text-sand/84">{property.title}</h3>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Home className="h-8 w-8 text-[#1B3A5C]/15" />
                       </div>
-                      <div className="grid grid-cols-3 gap-3 border-t border-gold/8 pt-5">
-                        <div>
-                          <p className="font-display text-xl text-gold/75">{property._count.bookings}</p>
-                          <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Stays</p>
-                        </div>
-                        <div>
-                          <p className="font-display text-xl text-gold/75">{property._count.reviews}</p>
-                          <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Reviews</p>
-                        </div>
-                        <div>
-                          <p className="font-display text-xl text-gold/75">{readiness}/4</p>
-                          <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-sand/25">Details</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="border border-gold/8 py-20 text-center">
-              <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
-              <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">No properties listed yet</p>
-              <p className="mt-3 text-[12px] font-light text-sand/25">Salt Route will add your property once preparations begin.</p>
-            </div>
-          )}
-        </div>
-
-        <aside className="space-y-8">
-          <div className="space-y-5">
-            <div className="flex items-center gap-4">
-              <span className="h-px w-8 bg-gold/35" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Helpful Shortcuts</h2>
-            </div>
-            <div className="space-y-2">
-              {quickActions.map((action) => (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  className="group flex items-center justify-between border border-gold/8 px-5 py-4 transition-colors duration-500 hover:border-gold/18 hover:bg-white/[0.025]"
-                >
-                  <span>
-                    <span className="block text-[11px] font-medium text-sand/64 transition-colors duration-500 group-hover:text-sand/85">
-                      {action.label}
-                    </span>
-                    <span className="mt-1 block text-[9.5px] font-light text-sand/27">{action.desc}</span>
-                  </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-gold/35 stroke-[1.3] transition-all duration-500 group-hover:translate-x-1 group-hover:text-gold" />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="border border-gold/10 bg-gold/[0.025] p-6">
-            <Camera className="mb-5 h-5 w-5 text-gold/55 stroke-[1.3]" />
-            <p className="font-display text-xl tracking-wide text-sand/78">Property care note</p>
-            <p className="mt-4 text-[12px] font-light leading-[1.85] text-sand/35">
-              Keep photos, amenities, house notes, and seasonal pricing current so every property feels ready to welcome.
-            </p>
-            <Link
-              href="/owner/request-edit"
-              className="mt-5 inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-gold/55 transition-colors duration-500 hover:text-gold"
-            >
-              Request update
-              <ArrowRight className="h-3.5 w-3.5 stroke-[1.3]" />
-            </Link>
-          </div>
-        </aside>
-      </section>
-
-      <section className="space-y-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="h-px w-8 bg-gold/35" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-sand/45">Upcoming Guests</h2>
-          </div>
-          {recentBookings.length > 0 && (
-            <Link
-              href="/owner/bookings"
-              className="text-[9px] uppercase tracking-[0.3em] text-gold/50 transition-colors duration-500 hover:text-gold"
-            >
-              View stays
-            </Link>
-          )}
-        </div>
-
-        {recentBookings.length > 0 ? (
-          <div className="grid grid-cols-1 gap-px bg-gold/8 lg:grid-cols-2">
-            {recentBookings.map((booking) => (
-              <Link
-                key={booking.id}
-                href={`/owner/bookings/${booking.id}`}
-                className="group bg-[#102943] p-6 transition-colors duration-500 hover:bg-[#163350]"
-              >
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="font-mono text-[9px] text-sand/28 group-hover:text-sand/50">{booking.bookingCode}</p>
-                    <h3 className="mt-3 font-display text-2xl tracking-wide text-sand/80">{booking.property.title}</h3>
-                    <p className="mt-2 text-[10px] uppercase tracking-[0.25em] text-gold/45">{booking.property.location}</p>
+                    )}
                   </div>
-                  <div className="shrink-0 border border-gold/10 px-4 py-3 text-left sm:text-right">
-                    <p className="text-[8px] uppercase tracking-[0.25em] text-sand/28">Arrival</p>
-                    <p className="mt-2 font-display text-xl text-gold/75">
-                      {new Date(booking.checkIn).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                  {/* Property info */}
+                  <div className="p-4">
+                    <p className="text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1.5 flex items-center gap-1">
+                      <MapPin className="h-2.5 w-2.5" />{property.location}
                     </p>
+                    <h3 className="text-[13px] font-semibold text-[#1B3A5C] leading-snug mb-3 line-clamp-1">{property.title}</h3>
+                    <div className="flex items-center justify-between text-[11px] text-[#1B3A5C]/40">
+                      <span>{property._count.bookings} stay{property._count.bookings !== 1 ? "s" : ""}</span>
+                      <span>{property._count.reviews} review{property._count.reviews !== 1 ? "s" : ""}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-gold/8 pt-5 text-[10px] uppercase tracking-[0.22em] text-sand/32">
-                  <span className="inline-flex items-center gap-2">
-                    <Users className="h-3.5 w-3.5 stroke-[1.3]" />
-                    {booking.guest.name || booking.guest.email}
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <BedDouble className="h-3.5 w-3.5 stroke-[1.3]" />
-                    Confirmed stay
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="border border-gold/8 py-16 text-center">
-            <MessageCircle className="mx-auto mb-6 h-8 w-8 text-gold/24 stroke-[1.2]" />
-            <p className="text-[10px] uppercase tracking-[0.4em] text-sand/25">No upcoming arrivals</p>
-            <p className="mt-3 text-[12px] font-light text-sand/22">Confirmed future stays will appear here as soon as they are booked.</p>
+                </Link>
+              )
+            })}
           </div>
         )}
-      </section>
+      </div>
+
+      {/* ── QUICK ACTIONS ── */}
+      <div>
+        <h2 className="text-[15px] font-semibold text-[#1B3A5C] mb-4">Quick actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { icon: Calendar,        label: "View all stays",      desc: "See guests and booking dates",           href: "/owner/bookings" },
+            { icon: TrendingUp,      label: "Earnings report",     desc: "Revenue and stay analytics",             href: "/owner/reports" },
+            { icon: MessageCircle,   label: "Messages",            desc: "Support from Salt Route team",           href: "/owner/messages" },
+            { icon: Edit3,           label: "Request an update",   desc: "Update photos, pricing, or amenities",   href: "/owner/request-edit" },
+          ].map(({ icon: Icon, label, desc, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className="flex items-start gap-3 bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 hover:border-[#1B3A5C]/15 hover:bg-[#FBF9F4] transition-colors group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#1B3A5C]/5 flex items-center justify-center shrink-0 group-hover:bg-[#1B3A5C]/10 transition-colors">
+                <Icon className="h-4 w-4 text-[#1B3A5C]/40" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium text-[#1B3A5C] leading-snug">{label}</p>
+                <p className="text-[11px] text-[#1B3A5C]/35 mt-0.5 leading-snug">{desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
     </div>
   )
 }

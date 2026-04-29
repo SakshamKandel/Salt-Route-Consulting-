@@ -1,65 +1,113 @@
 import { prisma } from "@/lib/db"
 import { PropertiesTable } from "./PropertiesTable"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Plus } from "lucide-react"
-import { getPagination, parsePage } from "@/lib/pagination"
-import { PaginationControls } from "@/components/shared/pagination-controls"
+import { Plus, Download } from "lucide-react"
+import { PropertyStatus } from "@prisma/client"
+import { parseAdminQuery, buildPagination, buildDateFilter } from "@/lib/admin/query"
 
 export default async function AdminPropertiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const params = await searchParams
-  const requestedPage = parsePage(params.page)
-  const total = await prisma.property.count()
-  const pagination = getPagination(requestedPage, total)
+  const query = parseAdminQuery(params)
+
+  const statusParam = typeof params.status === "string" ? params.status : "ALL"
+  const validStatuses = Object.values(PropertyStatus) as string[]
+  const statusFilter = statusParam === "ALL" || !validStatuses.includes(statusParam) ? "ALL" : statusParam
+
+  const where = {
+    ...(statusFilter !== "ALL" ? { status: statusFilter as PropertyStatus } : {}),
+    ...(query.search
+      ? {
+          OR: [
+            { title: { contains: query.search, mode: "insensitive" as const } },
+            { location: { contains: query.search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...buildDateFilter(query.dateFrom, query.dateTo),
+  }
+
+  const total = await prisma.property.count({ where })
+  const pagination = buildPagination(query, total)
 
   const properties = await prisma.property.findMany({
-    orderBy: { createdAt: "desc" },
+    where,
+    orderBy: { [query.sort === "pricePerNight" || query.sort === "title" ? query.sort : "createdAt"]: query.order },
     skip: pagination.skip,
     take: pagination.take,
     select: {
-      id: true,
-      title: true,
-      location: true,
-      status: true,
-      pricePerNight: true,
+      id: true, title: true, location: true,
+      status: true, pricePerNight: true, createdAt: true,
     },
   })
 
-  const rows = properties.map((p) => ({
-    id: p.id,
-    title: p.title,
-    location: p.location,
-    status: p.status,
-    pricePerNight: Number(p.pricePerNight),
-  }))
+  const rows = properties.map((p) => ({ ...p, pricePerNight: Number(p.pricePerNight) }))
+
+  const tabs = [
+    { label: "All",      value: "ALL"      },
+    { label: "Active",   value: "ACTIVE"   },
+    { label: "Draft",    value: "DRAFT"    },
+    { label: "Archived", value: "ARCHIVED" },
+  ]
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display text-navy">Properties</h2>
-          <p className="text-slate-500">Manage all property listings, availability, and details.</p>
+          <h1 className="text-xl font-bold text-slate-800">Properties</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage listings, availability, and pricing.</p>
         </div>
-        <Button asChild className="bg-navy text-cream">
-          <Link href="/admin/properties/new">
-            <Plus className="w-4 h-4 mr-2" /> Add Property
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href={`/api/admin/export/properties?status=${statusFilter}`}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            <Download className="h-3.5 w-3.5 text-slate-400" /> Export
           </Link>
-        </Button>
+          <Link
+            href="/admin/properties/new"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add Property
+          </Link>
+        </div>
       </div>
 
-      <PropertiesTable properties={rows} />
-      <PaginationControls
-        basePath="/admin/properties"
+      {/* Tabs */}
+      <div className="border-b border-slate-200">
+        <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
+          {tabs.map((tab) => {
+            const active = statusFilter === tab.value
+            return (
+              <Link
+                key={tab.value}
+                href={`/admin/properties?status=${tab.value}`}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                  active
+                    ? "border-[#1B3A5C] text-[#1B3A5C]"
+                    : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      <PropertiesTable
+        properties={rows}
+        total={total}
         page={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={total}
-        startItem={pagination.startItem}
-        endItem={pagination.endItem}
-        label="properties"
+        pageSize={pagination.pageSize}
+        sort={query.sort}
+        order={query.order}
+        searchValue={query.search}
       />
     </div>
   )

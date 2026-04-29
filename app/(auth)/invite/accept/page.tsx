@@ -133,7 +133,7 @@ export default function AcceptInvitePage({
                 <FormItem>
                   <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60 font-bold">Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" className="bg-transparent border-charcoal/20 rounded-none text-charcoal focus-visible:ring-0 focus-visible:border-charcoal/60 placeholder:text-charcoal/30 font-sans text-sm pb-2" {...field} />
+                    <Input placeholder="Aarav Sharma" className="bg-transparent border-charcoal/20 rounded-none text-charcoal focus-visible:ring-0 focus-visible:border-charcoal/60 placeholder:text-charcoal/30 font-sans text-sm pb-2" {...field} />
                   </FormControl>
                   <FormMessage className="text-red-400 text-xs" />
                 </FormItem>

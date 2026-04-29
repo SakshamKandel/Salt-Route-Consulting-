@@ -7,31 +7,34 @@ datasource db {
 }
 
 model User {
-  id                      String           @id @default(cuid())
+  id                      String              @id @default(cuid())
   name                    String?
-  email                   String           @unique
+  email                   String              @unique
   emailVerified           DateTime?
   hashedPassword          String?
   phone                   String?
   image                   String?
-  role                    Role             @default(GUEST)
-  twoFactorEnabled        Boolean          @default(false)
+  role                    Role                @default(GUEST)
+  twoFactorEnabled        Boolean             @default(false)
   twoFactorSecret         String?
-  createdAt               DateTime         @default(now())
-  updatedAt               DateTime         @updatedAt
-  status                  UserStatus       @default(ACTIVE)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  status                  UserStatus          @default(ACTIVE)
   accounts                Account[]
   auditLogs               AuditLog[]
   bookings                Booking[]
-  ownerInquiries          Inquiry[]        @relation("OwnerInquiries")
-  authoredInquiryMessages InquiryMessage[] @relation("InquiryMessageAuthor")
-  invitations             Invitation[]     @relation("InvitedBy")
+  campaignsCreated        Campaign[]          @relation("CampaignsCreated")
+  campaignsReceived       CampaignRecipient[] @relation("CampaignsReceived")
+  ownerInquiries          Inquiry[]           @relation("OwnerInquiries")
+  authoredInquiryMessages InquiryMessage[]    @relation("InquiryMessageAuthor")
+  invitations             Invitation[]        @relation("InvitedBy")
   notifications           Notification[]
-  properties              Property[]       @relation("OwnerProperties")
+  properties              Property[]          @relation("OwnerProperties")
   reviews                 Review[]
   sessions                Session[]
   wishlists               Wishlist[]
 
+  @@index([role, status, createdAt])
   @@map("users")
 }
 
@@ -147,6 +150,7 @@ model Booking {
   @@index([guestId])
   @@index([propertyId])
   @@index([status])
+  @@index([status, createdAt])
   @@index([checkIn, checkOut])
   @@map("bookings")
 }
@@ -251,6 +255,7 @@ model Inquiry {
   messages        InquiryMessage[]
 
   @@index([status])
+  @@index([status, createdAt])
   @@index([source])
   @@index([ownerId])
   @@index([lastMessageAt])
@@ -377,6 +382,67 @@ enum ReviewStatus {
   HIDDEN
 }
 
+model Campaign {
+  id          String              @id @default(cuid())
+  name        String
+  subject     String
+  body        String
+  template    String?
+  status      CampaignStatus      @default(DRAFT)
+  segment     Json
+  totalCount  Int                 @default(0)
+  sentCount   Int                 @default(0)
+  failedCount Int                 @default(0)
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdById String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  createdBy   User                @relation("CampaignsCreated", fields: [createdById], references: [id])
+  recipients  CampaignRecipient[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("campaigns")
+}
+
+model CampaignRecipient {
+  id         String                  @id @default(cuid())
+  campaignId String
+  userId     String?
+  email      String
+  status     CampaignRecipientStatus @default(PENDING)
+  sentAt     DateTime?
+  failedAt   DateTime?
+  errorMsg   String?
+  openedAt   DateTime?
+  campaign   Campaign                @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user       User?                   @relation("CampaignsReceived", fields: [userId], references: [id])
+
+  @@unique([campaignId, email])
+  @@index([campaignId, status])
+  @@index([userId])
+  @@map("campaign_recipients")
+}
+
+enum CampaignStatus {
+  DRAFT
+  QUEUED
+  SENDING
+  PAUSED
+  COMPLETED
+  FAILED
+}
+
+enum CampaignRecipientStatus {
+  PENDING
+  SENT
+  FAILED
+  BOUNCED
+  OPENED
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -394,4 +460,9 @@ enum AuditAction {
   INVITATION_ACCEPT
   BOOKING_CHECK_IN
   BOOKING_CHECK_OUT
+  BULK_DELETE
+  BULK_UPDATE
+  BULK_EMAIL
+  CAMPAIGN_SEND
+  EXPORT
 }

@@ -1,5 +1,6 @@
 import { ArrowRight, Check } from "lucide-react"
 import Link from "next/link"
+import { siteConfig } from "@/lib/site.config"
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -20,8 +21,7 @@ export default async function BookingSuccessPage({
           {/* Header */}
           <div className="flex justify-between items-start mb-16 border-b border-charcoal pb-8">
             <div className="flex flex-col">
-              <span className="font-display text-2xl tracking-widest uppercase text-charcoal leading-none">Salt Route</span>
-              <span className="font-sans text-[8px] tracking-[0.5em] text-gold uppercase mt-2">Consulting</span>
+              <span className="font-display text-2xl tracking-widest uppercase text-charcoal leading-none">{siteConfig.name}</span>
             </div>
             <div className="text-right flex flex-col items-end">
               <span className="text-[9px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal">Status</span>
@@ -99,7 +99,7 @@ export default async function BookingSuccessPage({
         
         {/* Footer Bar */}
         <div className="bg-charcoal text-white p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-white/50">Salt Route Group © {new Date().getFullYear()}</span>
+          <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-white/50">{siteConfig.brandName} © {new Date().getFullYear()}</span>
           <Link href="/contact" className="group flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-white/70 hover:text-gold transition-all">
             <span>Contact Support</span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

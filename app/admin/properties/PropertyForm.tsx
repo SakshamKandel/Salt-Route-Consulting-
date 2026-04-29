@@ -246,7 +246,7 @@ export function PropertyForm({
         <FormField control={form.control} name="address" render={({ field }) => (
           <FormItem>
             <FormLabel>Full Address (street, building)</FormLabel>
-            <FormControl><Input {...field} placeholder="Optional — exact street address" /></FormControl>
+            <FormControl><Input {...field} placeholder="Optional. Exact street address" /></FormControl>
             <FormMessage />
           </FormItem>
         )} />

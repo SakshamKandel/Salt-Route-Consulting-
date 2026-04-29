@@ -14,29 +14,32 @@ function createPrismaClient() {
 const prisma = createPrismaClient()
 
 async function main() {
-  const targetEmail = "sakshamkandelpersonal@gmail.com"
-  const currentOwnerEmail = "officialsakshamkandel@gmail.com"
+  const [fromEmail, toEmail] = process.argv.slice(2)
+
+  if (!fromEmail || !toEmail) {
+    console.error("Usage: bun scripts/transfer-ownership.ts <from-email> <to-email>")
+    process.exit(1)
+  }
 
   const targetUser = await prisma.user.findUnique({
-    where: { email: targetEmail }
+    where: { email: toEmail }
   })
 
   if (!targetUser) {
-    console.log(`ERROR: Target user ${targetEmail} not found.`)
+    console.log(`ERROR: Target user ${toEmail} not found.`)
     return
   }
 
-  // Find properties currently assigned to the official email
   const properties = await prisma.property.findMany({
-    where: { owner: { email: currentOwnerEmail } }
+    where: { owner: { email: fromEmail } }
   })
 
   if (properties.length === 0) {
-    console.log(`No properties found for ${currentOwnerEmail}.`)
+    console.log(`No properties found for ${fromEmail}.`)
     return
   }
 
-  console.log(`Found ${properties.length} properties for ${currentOwnerEmail}. Transferring to ${targetEmail}...`)
+  console.log(`Found ${properties.length} properties for ${fromEmail}. Transferring to ${toEmail}...`)
 
   for (const p of properties) {
     await prisma.property.update({
