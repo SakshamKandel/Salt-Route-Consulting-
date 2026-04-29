@@ -6,6 +6,8 @@ import { BookingRequestForm } from "@/components/booking/booking-request-form"
 import { LuxuryLink } from "@/components/ui/luxury-link"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 
+export const dynamic = "force-dynamic"
+
 export default async function BookingRequestPage({
   searchParams,
 }: {

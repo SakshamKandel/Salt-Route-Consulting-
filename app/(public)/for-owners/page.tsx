@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import ForOwnersClient, { type ForOwnersPortfolioItem } from "./ForOwnersClient"
 
+export const dynamic = "force-dynamic"
+
 function firstSentence(text: string, max = 180) {
   const trimmed = text.trim()
   const sentenceEnd = trimmed.search(/(?<=[.!?])\s/)

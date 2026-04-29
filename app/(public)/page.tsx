@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db"
 import HomeClient from "@/components/public/HomeClient"
 
+export const dynamic = "force-dynamic"
+
 export default async function HomePage() {
   const [featured, allActive] = await Promise.all([
     prisma.property.findMany({

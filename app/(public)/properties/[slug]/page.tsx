@@ -3,6 +3,8 @@ import { auth } from "@/auth"
 import { notFound } from "next/navigation"
 import PropertyDetailClient from "@/components/public/PropertyDetailClient"
 
+export const dynamic = "force-dynamic"
+
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {

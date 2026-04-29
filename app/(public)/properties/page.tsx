@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db"
 import PropertiesClient from "@/components/public/PropertiesClient"
 import { Prisma } from "@prisma/client"
 
+export const dynamic = "force-dynamic"
+
 type SearchFilters = {
   location?: string
   checkIn?: Date
