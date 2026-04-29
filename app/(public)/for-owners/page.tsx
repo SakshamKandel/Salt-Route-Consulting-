@@ -12,12 +12,17 @@ function firstSentence(text: string, max = 180) {
 }
 
 export default async function ForOwnersPage() {
-  const properties = await prisma.property.findMany({
-    where: { status: "ACTIVE" },
-    include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    take: 12,
-  })
+  const properties = await prisma.property
+    .findMany({
+      where: { status: "ACTIVE" },
+      include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+      take: 12,
+    })
+    .catch((err) => {
+      console.error("[for-owners] property fetch failed:", err)
+      return []
+    })
 
   const portfolio: ForOwnersPortfolioItem[] = properties.map((p) => ({
     slug: p.slug,
