@@ -10,6 +10,8 @@ import { getPrimaryImageUrl, type PropertyMediaLike } from "@/lib/property-media
 import { LuxuryButton } from "@/components/ui/luxury-button"
 import { LuxuryLinkWithArrow } from "@/components/ui/luxury-link-with-arrow"
 import { LocationCombobox, type ComboboxProperty } from "@/components/public/LocationCombobox"
+import { VisualJourney } from "@/components/public/VisualJourney"
+import { FacebookAvatar } from "@/components/public/FacebookAvatar"
 
 function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
   return (
@@ -109,15 +111,15 @@ function HeroImage() {
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: textY }}
         >
-          <p className="text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/90 font-sans mb-8 font-light">
-            Boutique Stays Across Nepal
+          <p className="text-sm md:text-base uppercase tracking-[0.5em] text-white/90 font-sans mb-8 font-light">
+            Tailored Stays Across Nepal
           </p>
           <h1 className="font-display text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-[1.1] mb-10 font-normal shadow-sm">
             Stays with Soul
           </h1>
           <div className="flex items-center justify-center gap-6 text-white/70">
               <span className="w-8 h-[1px] bg-white/40" />
-              <p className="text-[9px] uppercase tracking-[0.3em] font-sans">Salt Route Consulting</p>
+              <p className="text-xs uppercase tracking-[0.3em] font-sans">Salt Route Consulting</p>
               <span className="w-8 h-[1px] bg-white/40" />
           </div>
         </motion.div>
@@ -229,7 +231,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
       {/* Search Button */}
       <button
         type="submit"
-        className="w-full md:w-auto self-stretch bg-charcoal text-white px-12 lg:px-16 py-6 md:py-0 text-[10px] md:text-[11px] uppercase tracking-[0.3em] font-sans hover:bg-gold transition-all duration-700 flex items-center justify-center min-h-[90px]"
+        className="w-full md:w-auto self-stretch bg-charcoal text-white px-12 lg:px-16 py-6 md:py-0 text-sm md:text-sm uppercase tracking-[0.3em] font-sans hover:bg-gold transition-all duration-700 flex items-center justify-center min-h-[90px]"
       >
         Discover
       </button>
@@ -266,7 +268,7 @@ function ImmersiveSection() {
       >
         <div className="text-center max-w-4xl">
           <span className="block w-10 h-px bg-gold/50 mx-auto mb-10" aria-hidden />
-          <p className="text-[10px] md:text-[11px] uppercase tracking-[0.6em] text-white/55 font-light mb-10">
+          <p className="text-sm md:text-sm uppercase tracking-[0.6em] text-white/55 font-light mb-10">
             A Quiet Promise
           </p>
           <p
@@ -300,7 +302,7 @@ export default function HomeClient({
         location: p.location,
         image: getPrimaryImageUrl(p.images),
         href: `/properties/${p.slug}`,
-        type: "Curated Residence",
+        type: "Tailored Residence",
       })),
     [featured]
   )
@@ -330,14 +332,14 @@ export default function HomeClient({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24 items-center">
             <FadeUp className="lg:col-span-5 order-2 lg:order-1 space-y-10">
               <div className="space-y-6">
-                <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">Our Story</p>
+                <p className="text-sm uppercase tracking-[0.5em] text-charcoal/40 font-medium">Our Story</p>
                 <h2
                   className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
                   style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
                 >
                   Local roots,
                   <br />
-                  gracious routes.
+                  global routes.
                 </h2>
               </div>
               <p className="font-sans text-[16px] md:text-[17px] text-charcoal/60 leading-[1.85] font-light max-w-md">
@@ -364,12 +366,12 @@ export default function HomeClient({
       <section className="py-24 md:py-32 bg-[#FBF9F4] overflow-hidden">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row justify-between items-end gap-10">
           <FadeUp className="space-y-5 max-w-2xl">
-            <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">The Collection</p>
+            <p className="text-sm uppercase tracking-[0.5em] text-charcoal/40 font-medium">The Collection</p>
             <h2
               className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
               style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
             >
-              Boutique stays.
+              Tailored stays.
             </h2>
             <p className="font-sans text-[15px] md:text-[16px] text-charcoal/55 leading-[1.85] font-light max-w-xl pt-2">
               From Sunshine Villa in Ilam to intimate city and nature-led retreats, places chosen for comfort, character, and care.
@@ -410,13 +412,13 @@ export default function HomeClient({
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30">No Image</p>
+                            <p className="text-xs uppercase tracking-[0.3em] text-charcoal/30">No Image</p>
                           </div>
                         )}
                         <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700 pointer-events-none" />
                       </div>
                       <div className="space-y-3 px-1">
-                        <p className="text-[9px] uppercase tracking-[0.35em] text-charcoal/50 font-medium">{estate.location}</p>
+                        <p className="text-xs uppercase tracking-[0.35em] text-charcoal/50 font-medium">{estate.location}</p>
                         <h3 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide uppercase leading-[1.1] group-hover:text-gold transition-colors duration-700">
                           {estate.name}
                         </h3>
@@ -446,7 +448,7 @@ export default function HomeClient({
             </div>
             <div className="lg:col-span-5 order-1 lg:order-2 space-y-10">
               <FadeUp className="space-y-6">
-                <p className="text-[10px] uppercase tracking-[0.5em] text-white/35 font-medium">For Property Owners</p>
+                <p className="text-sm uppercase tracking-[0.5em] text-white/35 font-medium">For Property Owners</p>
                 <h2
                   className="font-display text-white tracking-wide uppercase leading-[1.05]"
                   style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
@@ -475,7 +477,7 @@ export default function HomeClient({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24">
             <div className="lg:col-span-5">
               <FadeUp className="space-y-6 lg:sticky lg:top-28">
-                <p className="text-[10px] uppercase tracking-[0.5em] text-charcoal/40 font-medium">Tailored Journeys</p>
+                <p className="text-sm uppercase tracking-[0.5em] text-charcoal/40 font-medium">Tailored Journeys</p>
                 <h2
                   className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
                   style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
@@ -523,47 +525,102 @@ export default function HomeClient({
         </div>
       </section>
 
-      {/* VISUAL JOURNAL */}
-      <section className="py-24 md:py-32 bg-white overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <FadeUp className="space-y-5 max-w-2xl">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Visual Journal</p>
-            <h2
-              className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
-              style={{ fontSize: "clamp(2.5rem, 5.5vw, 5rem)" }}
-            >
-              Moments in time.
-            </h2>
-          </FadeUp>
-        </div>
-        <FadeUp delay={0.2} className="w-full">
-          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 md:gap-8 px-6 md:px-12 pb-12 w-full">
+      {/* VISUAL JOURNEY: TAPESTRY OF NEPAL */}
+      <VisualJourney />
+
+      {/* COUNSEL — short editorial cut on the homepage */}
+      {/*
+        Placeholder advisors. Replace photo URLs with real headshots,
+        and update names + bios + quotes when you have them.
+        Source: Unsplash (free to use). Confirm each ID resolves before launch.
+      */}
+      <section className="py-24 md:py-32 bg-[#FBF9F4] overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-16 md:mb-20">
+            <FadeUp className="lg:col-span-5 space-y-5">
+              <p className="text-sm uppercase tracking-[0.4em] text-charcoal/50 font-medium">Counsel</p>
+              <h2 className="font-display text-charcoal tracking-wide leading-[1.04] uppercase" style={{ fontSize: "clamp(2.25rem, 4.6vw, 4.25rem)" }}>
+                Four people<br />we lean on.
+              </h2>
+            </FadeUp>
+            <FadeUp delay={0.1} className="lg:col-span-6 lg:col-start-7 space-y-5 lg:pt-3">
+              <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
+                Salt Route is small on purpose. The decisions we don&rsquo;t want to make alone — a new property, a difficult brief, a sustainability call — go to four people first.
+              </p>
+              <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
+                None of them work for us. They are friends of the practice who have seen more than we have, and tell us when we are wrong.
+              </p>
+            </FadeUp>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-14 md:gap-x-12 md:gap-y-20">
             {[
-              { src: "/luxury_himalayan_retreat_exterior_1777124225845.png", title: "Himalayan Light", location: "Ilam" },
-              { src: "/luxury_nepalese_interior_details_1777124245155.png", title: "Heritage Detail", location: "Kathmandu" },
-              { src: "/private_himalayan_dining_luxury_1777124309093.png", title: "Quiet Dining", location: "Lalitpur" },
-              { src: "/bespoke_travel_planning_flatlay_luxury_1777124261083.png", title: "Considered Plans", location: "Patan" },
-              { src: "/mastery_details.png", title: "Mastery in Detail", location: "Boudhanath" },
-              { src: "/luxury_boutique_office_team.png", title: "The Salt Route Team", location: "Lalitpur" },
-            ].map((img, idx) => (
-              <div key={idx} className="snap-center shrink-0 w-[80vw] md:w-[45vw] lg:w-[32vw] flex flex-col group cursor-pointer">
-                <div className="relative aspect-[3/4] overflow-hidden mb-5 bg-[#F5F1E8]">
-                  <Image
-                    src={img.src}
-                    alt={img.title}
-                    fill
-                    sizes="(max-width: 768px) 80vw, 32vw"
-                    className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                  />
-                </div>
-                <div className="flex justify-between items-baseline px-1">
-                  <h4 className="font-display text-lg md:text-xl text-charcoal tracking-wide group-hover:text-gold transition-colors duration-500">{img.title}</h4>
-                  <p className="text-[9px] uppercase tracking-[0.35em] text-charcoal/35 font-medium">{img.location}</p>
-                </div>
-              </div>
+              {
+                name: "Ram Bahadur",
+                role: "Hospitality",
+                bio: "Founding GM at a heritage Kathmandu hotel from 1998 to 2006. Now consults for three Himalayan lodges and a Sri Lankan tea estate. Lives in Patan, walks every morning.",
+                quote: "A property only sells what it actually is. Our job is to make sure that’s enough.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Cultural Heritage",
+                bio: "Curator at the Kathmandu Triennale, 2017. Spends most months tracking the disappearing repoussé metalwork families of Patan. Writes a quiet column for Nepali Times.",
+                quote: "If a craft loses its context, you have kept the object and lost the meaning.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Sustainable Tourism",
+                bio: "Was the South Asia lead for a global responsible-travel collective from 2019 to 2023. Splits his time between Pokhara and Cornwall. Two children, one fishing boat.",
+                quote: "Sustainability is local first. The rest is marketing.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Property Investment",
+                bio: "Eight years at a real-estate desk in Singapore before moving home. Now runs a small fund for heritage retrofits in Nepal and Bhutan. Reads detective fiction in three languages.",
+                quote: "Buy slow buildings. They outlast every cycle.",
+              },
+            ].map((advisor, i) => (
+              <FadeUp key={i} delay={i * 0.06}>
+                <article className="grid grid-cols-12 gap-5 md:gap-7">
+                  <div className="col-span-5">
+                    <FacebookAvatar
+                      className="aspect-[4/5]"
+                      ariaLabel={`Profile photo placeholder for ${advisor.name}`}
+                    />
+                  </div>
+                  <div className="col-span-7 flex flex-col justify-center space-y-4">
+                    <div>
+                      <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide leading-tight">
+                        {advisor.name}
+                      </h3>
+                      <p className="text-xs uppercase tracking-[0.28em] text-charcoal/45 font-medium mt-1.5">
+                        {advisor.role}
+                      </p>
+                    </div>
+                    <p className="font-sans text-sm md:text-base text-charcoal/65 leading-[1.75] font-light">
+                      {advisor.bio}
+                    </p>
+                    <blockquote className="border-l border-gold/55 pl-4 mt-1">
+                      <p className="font-display italic text-base md:text-lg text-charcoal/85 leading-[1.5]">
+                        &ldquo;{advisor.quote}&rdquo;
+                      </p>
+                    </blockquote>
+                  </div>
+                </article>
+              </FadeUp>
             ))}
           </div>
-        </FadeUp>
+
+          <FadeUp delay={0.18} className="mt-16 md:mt-20">
+            <Link
+              href="/about#advisors"
+              className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors group"
+            >
+              Longer notes on each
+              <span className="block w-7 h-px bg-charcoal/40 group-hover:bg-charcoal group-hover:w-12 transition-all duration-500" />
+            </Link>
+          </FadeUp>
+        </div>
       </section>
 
       {/* YOUR INVITATION (FINAL) */}
@@ -574,7 +631,7 @@ export default function HomeClient({
         <div className="max-w-3xl mx-auto relative z-10">
           <FadeUp className="space-y-12">
             <span className="block w-12 h-px bg-gold/45 mx-auto" aria-hidden />
-            <p className="text-[10px] uppercase tracking-[0.6em] text-white/40 font-light">Your Invitation</p>
+            <p className="text-sm uppercase tracking-[0.6em] text-white/40 font-light">Your Invitation</p>
             <h2
               className="font-display text-white tracking-wide uppercase leading-[0.95]"
               style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}

@@ -1,6 +1,5 @@
 "use client"
 
-import { siteConfig } from "@/lib/site.config"
 import { useRef, useState, type FormEvent, type ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -27,28 +26,13 @@ export type ForOwnersPortfolioItem = {
   featured: boolean
 }
 
-const ownerPromises = [
-  {
-    num: "01",
-    title: "Property Presentation",
-    desc: "Photography, gallery flow, feature writing, and guest-ready pages that help each property feel considered before a guest arrives.",
-  },
-  {
-    num: "02",
-    title: "Stay Readiness",
-    desc: "Calendars, reservations, guest details, and owner updates arranged around the rhythm of each property.",
-  },
-  {
-    num: "03",
-    title: "Clear Results",
-    desc: "Revenue, arrivals, completed stays, and reviews presented simply, so owners can see what matters at a glance.",
-  },
-  {
-    num: "04",
-    title: "People-First Care",
-    desc: `A direct ${siteConfig.name} channel for housekeeping notes, guest needs, and the small day-to-day decisions that shape a stay.`,
-  },
-]
+export type ForOwnersContact = {
+  siteName: string
+  email: string
+  phone: string
+  phoneHref: string
+  address: string
+}
 
 function FadeUp({
   children,
@@ -109,7 +93,36 @@ function ParallaxFigure({
   )
 }
 
-export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPortfolioItem[] }) {
+export default function ForOwnersClient({
+  portfolio,
+  contact,
+}: {
+  portfolio: ForOwnersPortfolioItem[]
+  contact: ForOwnersContact
+}) {
+  const ownerPromises = [
+    {
+      num: "01",
+      title: "Share Your Property",
+      desc: "Send us a few details about your property, your story, and what you hope a partnership could look like. We read every enquiry and respond within one business day.",
+    },
+    {
+      num: "02",
+      title: "A Visit & A Conversation",
+      desc: "We visit your property, listen to your priorities, and walk through how we would hold the day-to-day, the guest experience, and the long-term position together.",
+    },
+    {
+      num: "03",
+      title: "Onboarding & Launch",
+      desc: "Photography, gallery flow, listing pages, calendars, and pricing prepared with you. When everything feels right, your property goes live on our platform.",
+    },
+    {
+      num: "04",
+      title: "Ongoing Hosting & Reporting",
+      desc: `${contact.siteName} manages reservations, guest care, housekeeping coordination, and monthly reporting, so you receive steady updates, clear results, and your share of revenue, on a calm rhythm.`,
+    },
+  ]
+
   const heroImage = portfolio.find((item) => item.image)?.image ?? "/Sunshine Villa Main.png"
   const [ownerEnquiryStatus, setOwnerEnquiryStatus] = useState<"idle" | "loading" | "sent" | "error">("idle")
 
@@ -238,13 +251,13 @@ export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPor
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
           <FadeUp className="mb-16 md:mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
             <div className="lg:col-span-7 space-y-5">
-              <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 font-medium">The Approach</p>
+              <p className="text-sm uppercase tracking-[0.5em] text-white/40 font-medium">Steps For Owners</p>
               <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-white tracking-wide uppercase leading-[1.05]">
-                Four practices,<br />steady through the seasons.
+                Four steps,<br />from first call to first guest.
               </h2>
             </div>
-            <p className="lg:col-span-5 font-sans text-[14px] md:text-[15px] text-white/40 leading-[1.85] font-light max-w-md">
-              Repeated for every property we partner with, never as a checklist, always as practice.
+            <p className="lg:col-span-5 font-sans text-base md:text-lg text-white/55 leading-[1.85] font-light max-w-md">
+              A simple, unhurried path into partnership, repeated for every property we welcome, always as a relationship, never as a checklist.
             </p>
           </FadeUp>
 
@@ -378,19 +391,19 @@ export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPor
                 <p className="text-[10px] uppercase tracking-[0.4em] text-gold/65 font-medium">Or Reach Us Directly</p>
                 <div className="space-y-3 pt-1">
                   <a
-                    href={`mailto:${siteConfig.contact.email}`}
+                    href={`mailto:${contact.email}`}
                     className="block text-[14px] md:text-[15px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
                   >
-                    {siteConfig.contact.email}
+                    {contact.email}
                   </a>
                   <a
-                    href={siteConfig.contact.phoneHref}
+                    href={contact.phoneHref}
                     className="block text-[14px] md:text-[15px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
                   >
-                    {siteConfig.contact.phone}
+                    {contact.phone}
                   </a>
                   <p className="text-[12px] text-white/30 font-light pt-1 leading-relaxed">
-                    {siteConfig.contact.address}
+                    {contact.address}
                   </p>
                 </div>
               </FadeUp>
@@ -402,7 +415,7 @@ export default function ForOwnersClient({ portfolio }: { portfolio: ForOwnersPor
                   <div className="text-center space-y-7 py-10">
                     <Sparkles className="w-12 h-12 text-gold mx-auto" strokeWidth={1} />
                     <h3 className="font-display text-3xl md:text-4xl text-white tracking-wide uppercase">Enquiry Sent.</h3>
-                    <p className="text-white/50 font-light leading-[1.8]">The {siteConfig.name} team will be in touch within one business day.</p>
+                    <p className="text-white/50 font-light leading-[1.8]">The {contact.siteName} team will be in touch within one business day.</p>
                     <LuxuryButton onClick={() => setOwnerEnquiryStatus("idle")} dark>Send Another</LuxuryButton>
                   </div>
                 ) : (

@@ -11,8 +11,6 @@ const guestLinks = [
   { href: "/properties", label: "Stays" },
   { href: "/about", label: "Our Story" },
   { href: "/services", label: "Experiences" },
-  { href: "/for-owners", label: "For Owners" },
-  { href: "/contact", label: "Contact" },
 ]
 
 const ownerLinks = [
@@ -79,12 +77,12 @@ export function Nav() {
           </div>
 
           <div className="hidden lg:flex items-center gap-10">
-            <p className={`text-[10px] uppercase tracking-[0.2em] font-sans font-medium transition-colors duration-300 ${scrolled ? 'text-charcoal/40' : 'text-charcoal/60 md:text-white/60'}`}>EN</p>
+            <p className={`text-sm uppercase tracking-[0.2em] font-sans font-medium transition-colors duration-300 ${scrolled ? 'text-charcoal/40' : 'text-charcoal/70 md:text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}>EN</p>
             {navLinks.slice(0, 3).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-[10px] uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal/90 md:text-white/80 hover:text-charcoal md:hover:text-white'}`}
+                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
               >
                 {link.label}
               </Link>
@@ -108,14 +106,11 @@ export function Nav() {
             <Image
               src="/logo.png"
               alt="SRG Logo"
-              width={80}
-              height={38}
+              width={96}
+              height={46}
               priority
               className="object-contain transition-all duration-300"
             />
-            <span className={`text-[7px] tracking-[0.4em] uppercase font-sans font-medium mt-2 transition-colors duration-300 ${mobileOpen || scrolled ? 'text-charcoal/50' : 'text-charcoal/70 md:text-white/70'}`}>
-              {isOwnerSection ? "Partner Portal" : "Consulting"}
-            </span>
           </Link>
 
           {/* Right Actions */}
@@ -125,24 +120,24 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-[10px] uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal/90 md:text-white/80 hover:text-charcoal md:hover:text-white'}`}
+                  className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
                 >
                   {link.label}
                 </Link>
               ))}
               <Link
                 href={isAuthenticated ? accountHref : "/login"}
-                className={`text-[10px] uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal/90 md:text-white/80 hover:text-charcoal md:hover:text-white'}`}
+                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
               >
                 {isAuthenticated ? "Account" : "Sign In"}
               </Link>
             </div>
-            
+
             <Link
               href={isOwnerSection ? "#owner-enquiry" : "/properties"}
-              className={`hidden sm:inline-flex px-5 md:px-8 py-3.5 text-[9px] uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/30 hover:bg-white/10 md:hover:border-white/60'}`}
+              className={`hidden sm:inline-flex px-6 md:px-9 py-4 text-sm uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/65 hover:bg-white/10 md:hover:border-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]'}`}
             >
-              {isOwnerSection ? "Partner With Us" : "Reserve Stays"}
+              {isOwnerSection ? "Partner With Us" : "Reserve Experiences"}
             </Link>
           </div>
         </div>
@@ -192,7 +187,7 @@ export function Nav() {
                 <Link
                   href={isAuthenticated ? accountHref : "/login"}
                   onClick={closeMobile}
-                  className="text-[11px] uppercase tracking-[0.2em] font-sans text-charcoal/60 hover:text-charcoal transition-colors"
+                  className="text-base uppercase tracking-[0.2em] font-sans text-charcoal/60 hover:text-charcoal transition-colors"
                 >
                   {isAuthenticated ? "Your Account" : "Sign In"}
                 </Link>

@@ -14,7 +14,7 @@ export const siteConfig = {
   brandName: process.env.SITE_BRAND_NAME ?? "Salt Route Group",
 
   /** One-line tagline */
-  tagline: process.env.SITE_TAGLINE ?? "Boutique Stays & Consulting · Nepal",
+  tagline: process.env.SITE_TAGLINE ?? "Tailored Stays & Consulting · Nepal",
 
   /** The country / region descriptor used in public copy */
   region: process.env.SITE_REGION ?? "Nepal",

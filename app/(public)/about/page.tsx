@@ -6,6 +6,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { LuxuryButton } from "@/components/ui/luxury-button"
 import { ShieldCheck, Target, Award, Users, Map, Compass } from "lucide-react"
+import { FacebookAvatar } from "@/components/public/FacebookAvatar"
 
 function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
   return (
@@ -123,7 +124,7 @@ export default function AboutPage() {
                 <div className="grid grid-cols-3 gap-12 pt-12 border-t border-charcoal/10">
                   <div className="space-y-1">
                     <p className="font-display text-4xl text-charcoal">03+</p>
-                    <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Boutique Properties</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-charcoal/50 font-bold">Tailored Properties</p>
                   </div>
                   <div className="space-y-1">
                     <p className="font-display text-4xl text-charcoal">80%</p>
@@ -252,7 +253,7 @@ export default function AboutPage() {
                   </div>
                   <div className="flex items-center gap-6 pb-6 border-b border-charcoal/5">
                     <Map className="w-5 h-5 text-gold/60" strokeWidth={1} />
-                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-charcoal/80">Growing Family of Boutique Stays</p>
+                    <p className="text-sm uppercase tracking-[0.2em] font-bold text-charcoal/80">Growing Family of Tailored Stays</p>
                   </div>
                 </div>
               </FadeUp>
@@ -265,6 +266,128 @@ export default function AboutPage() {
               />
               <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-gold/10 -z-10" />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COUNSEL — long-form, alternating editorial spreads */}
+      {/*
+        Placeholder advisors. Replace each `photo` with a real headshot before
+        going live (using stock photos for named advisors is misleading).
+        Bios + quotes are placeholders too; swap with what each person tells you
+        about themselves, in their words.
+      */}
+      <section id="advisors" className="py-24 md:py-32 bg-white border-t border-charcoal/8">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          {/* Section opener — short, no marketing chrome */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-20 md:mb-28">
+            <FadeUp className="lg:col-span-5 space-y-5">
+              <p className="text-sm uppercase tracking-[0.4em] text-charcoal/50 font-medium">Counsel</p>
+              <h2 className="font-display text-charcoal tracking-wide leading-[1.04] uppercase" style={{ fontSize: "clamp(2.25rem, 5vw, 4.75rem)" }}>
+                Four people<br />we lean on.
+              </h2>
+            </FadeUp>
+            <FadeUp delay={0.1} className="lg:col-span-6 lg:col-start-7 space-y-5 lg:pt-3">
+              <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
+                When we are unsure, these are the four phone calls we make. Some have spent their careers inside hotels; one has spent hers writing about the people who carve their door frames; one moves capital quietly into buildings that should not be lost.
+              </p>
+              <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
+                None of them are on payroll. They are friends of the practice — read what they have written, then decide whether they sound like the kind of people you would want behind a property of yours.
+              </p>
+            </FadeUp>
+          </div>
+
+          {/* Profile spreads */}
+          <div className="space-y-24 md:space-y-32">
+            {[
+              {
+                name: "Ram Bahadur",
+                role: "Hospitality",
+                location: "Patan, Lalitpur",
+                bio: [
+                  "Founding GM at a heritage Kathmandu hotel from 1998 to 2006, when the city was barely on the international map. Moved to Bangkok for a decade after that to run F&B for a regional group, then quietly came home in 2018.",
+                  "Doesn't take on more than four properties at once. We have been one of them since the first season. Answers calls before 7am and rarely after 9.",
+                ],
+                quote: "A property only sells what it actually is. Our job is to make sure that's enough.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Cultural Heritage",
+                location: "Bhaktapur",
+                bio: [
+                  "Curator at the Kathmandu Triennale in 2017; has spent the years since tracking the disappearing repoussé metalwork families of Patan — the ones who hammer copper into Buddhas one breath at a time.",
+                  "Writes a quiet column for Nepali Times and is the reason every Salt Route property has at least one piece of object-made-by-someone-they-know. Prefers to be paid in tea.",
+                ],
+                quote: "If a craft loses its context, you have kept the object and lost the meaning.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Sustainable Tourism",
+                location: "Pokhara · Cornwall",
+                bio: [
+                  "South Asia lead for a global responsible-travel collective from 2019 to 2023. Before that, eight years at a small boutique operator in the UK they left when it sold to a private-equity house they didn't trust.",
+                  "Splits time between Pokhara and a small cottage in Cornwall, two children, one fishing boat. Talks slowly, edits ruthlessly. Has no interest in growing anything for its own sake.",
+                ],
+                quote: "Sustainability is local first. The rest is marketing.",
+              },
+              {
+                name: "Ram Bahadur",
+                role: "Property Investment",
+                location: "Kathmandu",
+                bio: [
+                  "Eight years on a real-estate desk in Singapore before moving home in 2020 to do the opposite of what that job had trained for. Now runs a small fund focused on heritage retrofits in Nepal and Bhutan — the kind of buildings most spreadsheets would walk past.",
+                  "Reads detective fiction in three languages and has a strong opinion about lime mortar. We bring every property to them before we sign.",
+                ],
+                quote: "Buy slow buildings. They outlast every cycle.",
+              },
+            ].map((advisor, i) => {
+              const reverse = i % 2 === 1
+              return (
+                <FadeUp key={i} delay={0.04}>
+                  <article className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start ${reverse ? "lg:[direction:rtl]" : ""}`}>
+                    {/* Portrait placeholder */}
+                    <div className="lg:col-span-5 lg:[direction:ltr]">
+                      <FacebookAvatar
+                        className="aspect-[4/5] border border-charcoal/8"
+                        ariaLabel={`Profile photo placeholder for ${advisor.name}`}
+                      />
+                      <div className="mt-3 flex items-baseline justify-between">
+                        <p className="text-xs uppercase tracking-[0.25em] text-charcoal/40 font-medium">
+                          {advisor.location}
+                        </p>
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal/30 font-medium">
+                          0{i + 1}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Text */}
+                    <div className="lg:col-span-7 lg:[direction:ltr] space-y-7">
+                      <header className="space-y-2">
+                        <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-charcoal tracking-wide leading-[1.05]">
+                          {advisor.name}
+                        </h3>
+                        <p className="text-sm uppercase tracking-[0.3em] text-charcoal/50 font-medium">
+                          {advisor.role}
+                        </p>
+                      </header>
+
+                      {advisor.bio.map((para, pi) => (
+                        <p key={pi} className="font-sans text-base md:text-lg text-charcoal/70 leading-[1.85] font-light">
+                          {para}
+                        </p>
+                      ))}
+
+                      <blockquote className="border-l border-gold/55 pl-5 md:pl-7 py-1 mt-2 max-w-xl">
+                        <p className="font-display italic text-xl md:text-2xl text-charcoal/85 leading-[1.4]">
+                          &ldquo;{advisor.quote}&rdquo;
+                        </p>
+                      </blockquote>
+                    </div>
+                  </article>
+                </FadeUp>
+              )
+            })}
           </div>
         </div>
       </section>

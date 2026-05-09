@@ -38,7 +38,7 @@ export default function FaqPage() {
             />
             <FaqItem
               q="Can I cancel or modify a booking?"
-              a="Yes. We offer free cancellation within 48 hours of confirmation. For later adjustments, our boutique policies apply to ensure the integrity of our partner properties."
+              a="Yes. We offer free cancellation within 48 hours of confirmation. For later adjustments, our standard policies apply to ensure the integrity of our partner properties."
             />
             <FaqItem
               q="Do I need to create an account to book?"

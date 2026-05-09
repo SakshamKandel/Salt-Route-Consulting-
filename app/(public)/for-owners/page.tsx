@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { siteConfig } from "@/lib/site.config"
 import ForOwnersClient, { type ForOwnersPortfolioItem } from "./ForOwnersClient"
 
 export const dynamic = "force-dynamic"
@@ -36,5 +37,13 @@ export default async function ForOwnersPage() {
     featured: p.featured,
   }))
 
-  return <ForOwnersClient portfolio={portfolio} />
+  const contact = {
+    siteName: siteConfig.name,
+    email: siteConfig.contact.email,
+    phone: siteConfig.contact.phone,
+    phoneHref: siteConfig.contact.phoneHref,
+    address: siteConfig.contact.address,
+  }
+
+  return <ForOwnersClient portfolio={portfolio} contact={contact} />
 }
