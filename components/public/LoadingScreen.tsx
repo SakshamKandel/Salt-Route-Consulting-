@@ -98,9 +98,9 @@ export function LoadingScreen() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1], delay: 0.9 }}
-              className="text-[9px] uppercase tracking-[0.5em] text-white/30 font-light"
+              className="text-xs uppercase tracking-[0.5em] text-white/30 font-light"
             >
-              Boutique Stays · Property Care · Nepal
+              Tailored Stays · Property Care · Nepal
             </motion.p>
           </motion.div>
 

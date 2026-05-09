@@ -135,8 +135,8 @@ export default function PropertiesClient({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5 }}
           >
-            <p className="text-[10px] uppercase tracking-[0.5em] text-white/80 font-sans mb-6 font-light">
-              Boutique Stays Across Nepal
+            <p className="text-sm uppercase tracking-[0.5em] text-white/80 font-sans mb-6 font-light">
+              Tailored Stays Across Nepal
             </p>
             <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] text-white tracking-wide leading-[1.05] mb-10 font-normal">
               The Collection

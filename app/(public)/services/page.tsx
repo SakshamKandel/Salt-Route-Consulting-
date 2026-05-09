@@ -31,7 +31,7 @@ function FadeUp({
 const guestServices = [
   {
     num: "01",
-    title: "Curated Property Stays",
+    title: "Tailored Property Stays",
     body: "Each property chosen for its soul. Its setting, its story, and the warmth of its welcome.",
     cta: "Browse Collection",
     href: "/properties",

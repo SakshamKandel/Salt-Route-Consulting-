@@ -227,7 +227,7 @@ export default function PropertyDetailClient({
                   <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 font-bold">Stay Style</p>
                   <div className="flex items-center gap-3">
                     <Maximize2 className="w-4 h-4 text-gold/60" strokeWidth={1} />
-                    <span className="text-xl font-display uppercase">Boutique Stay</span>
+                    <span className="text-xl font-display uppercase">Tailored Stay</span>
                   </div>
               </div>
               <div className="hidden lg:block space-y-2">
