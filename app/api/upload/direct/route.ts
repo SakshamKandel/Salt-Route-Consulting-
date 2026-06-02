@@ -14,28 +14,21 @@ export async function POST(req: NextRequest) {
   }
 
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET ?? process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
   const apiKey = process.env.CLOUDINARY_API_KEY
   const apiSecret = process.env.CLOUDINARY_API_SECRET
 
-  // Two supported modes:
-  //  - unsigned: an upload preset is configured (used on hosts that set CLOUDINARY_UPLOAD_PRESET)
-  //  - signed:   API key + secret are configured (used locally / anywhere with matching creds)
-  // Preset is preferred when present so each environment uses whatever is internally consistent.
-  const canUnsigned = !!(cloudName && uploadPreset)
-  const canSigned = !!(cloudName && apiKey && apiSecret)
-
-  if (!canUnsigned && !canSigned) {
+  // Signed uploads only — api_key + secret are read from runtime env, so they
+  // always match (no build-time preset/key drift between environments).
+  if (!cloudName || !apiKey || !apiSecret) {
     console.error("[upload/direct] missing cloudinary config", {
       hasCloudName: !!cloudName,
-      hasUploadPreset: !!uploadPreset,
       hasApiKey: !!apiKey,
       hasApiSecret: !!apiSecret,
     })
     return NextResponse.json(
       {
         error:
-          "Cloudinary upload is not configured. Set a CLOUDINARY_UPLOAD_PRESET (unsigned), or CLOUDINARY_API_KEY + CLOUDINARY_API_SECRET, along with the cloud name.",
+          "Cloudinary upload is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.",
       },
       { status: 500 }
     )
@@ -71,28 +64,22 @@ export async function POST(req: NextRequest) {
   cldForm.append("file", file, file instanceof File ? file.name : "upload")
   if (folder) cldForm.append("folder", folder)
 
-  if (uploadPreset) {
-    // Unsigned upload via preset (no API secret required).
-    cldForm.append("upload_preset", uploadPreset)
-  } else {
-    // Signed upload: sign the request params with the API secret.
-    const timestamp = Math.floor(Date.now() / 1000)
-    const paramsToSign: Record<string, string> = { timestamp: String(timestamp) }
-    if (folder) paramsToSign.folder = folder
+  // Signed upload: sign the request params with the API secret.
+  const timestamp = Math.floor(Date.now() / 1000)
+  const paramsToSign: Record<string, string> = { timestamp: String(timestamp) }
+  if (folder) paramsToSign.folder = folder
 
-    const signatureBase = Object.keys(paramsToSign)
-      .sort()
-      .map((key) => `${key}=${paramsToSign[key]}`)
-      .join("&")
-    const signature = createHash("sha1").update(signatureBase + apiSecret).digest("hex")
+  const signatureBase = Object.keys(paramsToSign)
+    .sort()
+    .map((key) => `${key}=${paramsToSign[key]}`)
+    .join("&")
+  const signature = createHash("sha1").update(signatureBase + apiSecret).digest("hex")
 
-    cldForm.append("api_key", apiKey as string)
-    cldForm.append("timestamp", String(timestamp))
-    cldForm.append("signature", signature)
-  }
+  cldForm.append("api_key", apiKey)
+  cldForm.append("timestamp", String(timestamp))
+  cldForm.append("signature", signature)
 
-  console.log("[upload/direct] forwarding to cloudinary", {
-    mode: uploadPreset ? "unsigned-preset" : "signed",
+  console.log("[upload/direct] forwarding to cloudinary (signed)", {
     cloudName,
     size: file.size,
     type: file.type,
