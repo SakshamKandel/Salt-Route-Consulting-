@@ -49,9 +49,8 @@ export const VISUAL_JOURNEY_TILES: VisualJourneyTile[] = [
     ],
     cta: "Let us design an architectural and cultural walk that brings these ancient royal courts to life just for you.",
     // SNaSgKUE6VI · FTxTyNog7BY · 74Oi-lTP_Io · O7cGk7o6quQ
-    cover: up("1700558684915-4ee912328a07"),
+    cover: u("1706188370039-e0cf9bd6ea16"),
     gallery: [
-      up("1700558684915-4ee912328a07"),
       u("1706188370039-e0cf9bd6ea16"),
       u("1731227102390-15f6200d625e"),
       u("1670333667468-f5825eb39366"),
