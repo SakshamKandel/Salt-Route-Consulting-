@@ -91,13 +91,16 @@ function HeroImage() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-charcoal">
       <motion.div className="absolute inset-0" style={{ y }}>
-        <Image
-          src="/Sunshine Villa Main.png"
-          alt="The Pinnacle of Living"
-          fill
-          sizes="100vw"
-          className="object-cover scale-[1.1]"
-          priority
+        <video
+          src="https://res.cloudinary.com/diu4mp2f3/video/upload/f_auto,q_auto,c_limit,w_1920/v1780381657/salt-route/home-hero.mp4"
+          poster="https://res.cloudinary.com/diu4mp2f3/video/upload/f_auto,q_auto,so_0/v1780381657/salt-route/home-hero.jpg"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover scale-[1.1]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/60" />
       </motion.div>
