@@ -52,6 +52,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Cross-origin isolation for /admin so ffmpeg.wasm (SharedArrayBuffer)
+        // can run for in-browser video compression. `credentialless` lets
+        // cross-origin assets (Cloudinary images) still load without CORP headers.
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+        ],
+      },
     ];
   },
 };
