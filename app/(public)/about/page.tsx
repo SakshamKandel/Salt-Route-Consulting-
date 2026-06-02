@@ -272,12 +272,14 @@ export default function AboutPage() {
 
       {/* COUNSEL — long-form, alternating editorial spreads */}
       {/*
+        Hidden for now (kept in code, not removed) — re-enable by removing the
+        `hidden` class below.
         Placeholder advisors. Replace each `photo` with a real headshot before
         going live (using stock photos for named advisors is misleading).
         Bios + quotes are placeholders too; swap with what each person tells you
         about themselves, in their words.
       */}
-      <section id="advisors" className="py-24 md:py-32 bg-white border-t border-charcoal/8">
+      <section id="advisors" className="hidden py-24 md:py-32 bg-white border-t border-charcoal/8">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
           {/* Section opener — short, no marketing chrome */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-20 md:mb-28">
