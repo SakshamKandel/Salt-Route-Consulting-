@@ -39,8 +39,6 @@ const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024 // 2 GB
 const VIDEO_CHUNK_BYTES = 20 * 1024 * 1024 // 20 MB per chunk
 const VIDEO_COMPRESS_THRESHOLD = 40 * 1024 * 1024 // compress videos larger than 40 MB
 
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-const CLOUD_API_KEY = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
 const CLOUD_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
 type CloudinaryUploadResult = {
@@ -49,52 +47,60 @@ type CloudinaryUploadResult = {
   error?: { message: string }
 }
 
+type SignatureResponse = {
+  signature: string
+  timestamp: number
+  apiKey: string
+  cloudName: string
+  error?: string
+}
+
 // Upload a (large) video straight to Cloudinary in chunks. Uses the unsigned
 // preset when one is configured (NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET), otherwise
-// falls back to a server-signed request. Mirrors the image route's dual mode.
+// falls back to a server-signed request. The api_key, timestamp, and signature
+// are all returned together by the server so they can never drift out of sync
+// (the public api_key is NOT used — it gets baked at build time and goes stale).
 async function uploadVideoDirect(
   file: File,
   folder: string | undefined,
   onProgress?: (fraction: number) => void
 ): Promise<UploadedMedia> {
-  if (!CLOUD_NAME) {
-    throw new Error("Cloudinary is not configured (cloud name missing).")
-  }
-
   // Fields appended to every chunk's form (besides the file itself).
   const baseFields: Array<[string, string]> = []
+  let cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
   if (CLOUD_UPLOAD_PRESET) {
     // Unsigned mode — no API key / signature needed.
+    if (!cloudName) {
+      throw new Error("Cloudinary is not configured (cloud name missing).")
+    }
     baseFields.push(["upload_preset", CLOUD_UPLOAD_PRESET])
     if (folder) baseFields.push(["folder", folder])
   } else {
-    // Signed mode — needs the public API key + a server-generated signature.
-    if (!CLOUD_API_KEY) {
-      throw new Error("Cloudinary is not configured (API key / upload preset missing).")
-    }
-    const timestamp = Math.round(Date.now() / 1000)
-    const paramsToSign: Record<string, string | number> = { timestamp }
-    if (folder) paramsToSign.folder = folder
-
+    // Signed mode — server returns matching api_key + timestamp + signature.
     const sigRes = await fetch("/api/upload/signature", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paramsToSign }),
+      body: JSON.stringify({ folder }),
     })
     if (!sigRes.ok) {
       const data = await sigRes.json().catch(() => ({}))
       throw new Error(data.error || `Could not sign upload (${sigRes.status})`)
     }
-    const { signature } = (await sigRes.json()) as { signature: string }
+    const sig = (await sigRes.json()) as SignatureResponse
 
-    baseFields.push(["api_key", CLOUD_API_KEY])
-    baseFields.push(["timestamp", String(timestamp)])
-    baseFields.push(["signature", signature])
+    cloudName = sig.cloudName || cloudName
+    baseFields.push(["api_key", sig.apiKey])
+    baseFields.push(["timestamp", String(sig.timestamp)])
+    baseFields.push(["signature", sig.signature])
     if (folder) baseFields.push(["folder", folder])
   }
 
-  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
+  if (!cloudName) {
+    throw new Error("Cloudinary is not configured (cloud name missing).")
+  }
+
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`
   const uniqueUploadId = `srg-${Date.now()}-${Math.round((file.size % 100000))}-${file.name.length}`
   const total = file.size
 

@@ -2,8 +2,10 @@ import { auth } from "@/auth"
 import { NextRequest, NextResponse } from "next/server"
 import { v2 as cloudinary } from "cloudinary"
 
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME
+
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  cloud_name: CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
@@ -16,22 +18,23 @@ export async function POST(req: NextRequest) {
   }
 
   const apiSecret = process.env.CLOUDINARY_API_SECRET
-  if (!apiSecret) {
+  const apiKey = process.env.CLOUDINARY_API_KEY
+
+  if (!apiSecret || !apiKey || !CLOUD_NAME) {
     return NextResponse.json({ error: "Cloudinary is not configured" }, { status: 500 })
   }
 
-  // The Cloudinary upload widget POSTs the params it wants signed in `paramsToSign`.
-  // We must sign exactly those params (in the order/shape Cloudinary expects) so the
-  // resulting signature matches what the widget sends with the upload request.
-  const body = (await req.json().catch(() => ({}))) as {
-    paramsToSign?: Record<string, string | number>
-  }
+  const body = (await req.json().catch(() => ({}))) as { folder?: string }
+  const folder = typeof body.folder === "string" && body.folder ? body.folder : undefined
 
-  const paramsToSign = body.paramsToSign ?? {
-    timestamp: Math.round(new Date().getTime() / 1000),
-  }
+  // Generate the timestamp and sign server-side so the api_key, timestamp, and
+  // signature ALWAYS come from the same runtime env. This avoids the build-time
+  // NEXT_PUBLIC_* key drifting out of sync with the server's secret.
+  const timestamp = Math.round(Date.now() / 1000)
+  const paramsToSign: Record<string, string | number> = { timestamp }
+  if (folder) paramsToSign.folder = folder
 
   const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret)
 
-  return NextResponse.json({ signature })
+  return NextResponse.json({ signature, timestamp, apiKey, cloudName: CLOUD_NAME, folder })
 }
