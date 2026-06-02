@@ -30,6 +30,117 @@ const MAX_BYTES = 4 * 1024 * 1024
 const COMPRESS_TARGET_BYTES = 3.5 * 1024 * 1024
 const MAX_DIMENSION = 2400
 
+// Videos upload directly browser -> Cloudinary (not through our API route), so the
+// Vercel 4.5MB serverless body limit does not apply. Cloudinary requires chunked
+// uploads above 100MB; we always chunk. Cap is generous — actual ceiling is your
+// Cloudinary plan's max video size.
+const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024 // 2 GB
+const VIDEO_CHUNK_BYTES = 20 * 1024 * 1024 // 20 MB per chunk
+
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+const CLOUD_API_KEY = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
+const CLOUD_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+
+type CloudinaryUploadResult = {
+  secure_url?: string
+  public_id?: string
+  error?: { message: string }
+}
+
+// Upload a (large) video straight to Cloudinary in chunks. Uses the unsigned
+// preset when one is configured (NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET), otherwise
+// falls back to a server-signed request. Mirrors the image route's dual mode.
+async function uploadVideoDirect(
+  file: File,
+  folder: string | undefined,
+  onProgress?: (fraction: number) => void
+): Promise<UploadedMedia> {
+  if (!CLOUD_NAME) {
+    throw new Error("Cloudinary is not configured (cloud name missing).")
+  }
+
+  // Fields appended to every chunk's form (besides the file itself).
+  const baseFields: Array<[string, string]> = []
+
+  if (CLOUD_UPLOAD_PRESET) {
+    // Unsigned mode — no API key / signature needed.
+    baseFields.push(["upload_preset", CLOUD_UPLOAD_PRESET])
+    if (folder) baseFields.push(["folder", folder])
+  } else {
+    // Signed mode — needs the public API key + a server-generated signature.
+    if (!CLOUD_API_KEY) {
+      throw new Error("Cloudinary is not configured (API key / upload preset missing).")
+    }
+    const timestamp = Math.round(Date.now() / 1000)
+    const paramsToSign: Record<string, string | number> = { timestamp }
+    if (folder) paramsToSign.folder = folder
+
+    const sigRes = await fetch("/api/upload/signature", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paramsToSign }),
+    })
+    if (!sigRes.ok) {
+      const data = await sigRes.json().catch(() => ({}))
+      throw new Error(data.error || `Could not sign upload (${sigRes.status})`)
+    }
+    const { signature } = (await sigRes.json()) as { signature: string }
+
+    baseFields.push(["api_key", CLOUD_API_KEY])
+    baseFields.push(["timestamp", String(timestamp)])
+    baseFields.push(["signature", signature])
+    if (folder) baseFields.push(["folder", folder])
+  }
+
+  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
+  const uniqueUploadId = `srg-${Date.now()}-${Math.round((file.size % 100000))}-${file.name.length}`
+  const total = file.size
+
+  let lastResult: CloudinaryUploadResult | null = null
+
+  for (let start = 0; start < total; start += VIDEO_CHUNK_BYTES) {
+    const end = Math.min(start + VIDEO_CHUNK_BYTES, total)
+    const chunk = file.slice(start, end)
+
+    const form = new FormData()
+    form.append("file", chunk, file.name)
+    for (const [k, v] of baseFields) form.append(k, v)
+
+    lastResult = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open("POST", url, true)
+      xhr.setRequestHeader("X-Unique-Upload-Id", uniqueUploadId)
+      xhr.setRequestHeader("Content-Range", `bytes ${start}-${end - 1}/${total}`)
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress(Math.min(1, (start + e.loaded) / total))
+        }
+      }
+      xhr.onload = () => {
+        try {
+          resolve(JSON.parse(xhr.responseText) as CloudinaryUploadResult)
+        } catch {
+          reject(new Error(`Cloudinary returned ${xhr.status}`))
+        }
+      }
+      xhr.onerror = () => reject(new Error("Network error during upload"))
+      xhr.send(form)
+    })
+
+    if (lastResult?.error) throw new Error(lastResult.error.message)
+  }
+
+  if (!lastResult?.secure_url || !lastResult?.public_id) {
+    throw new Error("Upload did not complete.")
+  }
+  onProgress?.(1)
+  return {
+    url: lastResult.secure_url,
+    publicId: lastResult.public_id,
+    alt: file.name.replace(/\.[^.]+$/, ""),
+  }
+}
+
 async function compressImage(file: File): Promise<Blob> {
   const dataUrl: string = await new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -86,11 +197,32 @@ export function MediaUploader({
   const [pasteError, setPasteError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
+  const [videoProgress, setVideoProgress] = useState<{ name: string; pct: number } | null>(null)
 
   const buttonLabel = label ?? LABEL_BY_KIND[kind]
   const Icon = kind === "video" ? Film : kind === "image" ? ImageIcon : Upload
 
   async function uploadOne(file: File): Promise<UploadedMedia | null> {
+    // Videos go directly to Cloudinary (chunked), bypassing the 4.5MB serverless limit.
+    if (file.type.startsWith("video/")) {
+      if (file.size > MAX_VIDEO_BYTES) {
+        toast.error(`${file.name} is too large. Max ${Math.round(MAX_VIDEO_BYTES / 1024 / 1024 / 1024)}GB.`)
+        return null
+      }
+      try {
+        return await uploadVideoDirect(file, folder, (frac) =>
+          setVideoProgress({ name: file.name, pct: Math.round(frac * 100) })
+        )
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Upload failed"
+        console.error("[uploader] video upload failed", err)
+        toast.error(`${file.name}: ${message}`)
+        return null
+      } finally {
+        setVideoProgress(null)
+      }
+    }
+
     let payload: Blob = file
     let payloadName = file.name
 
@@ -205,7 +337,11 @@ export function MediaUploader({
           {uploading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {progress ? `Uploading ${progress.done} / ${progress.total}` : "Uploading..."}
+              {videoProgress
+                ? `Uploading video ${videoProgress.pct}%`
+                : progress
+                  ? `Uploading ${progress.done} / ${progress.total}`
+                  : "Uploading..."}
             </>
           ) : (
             <>
