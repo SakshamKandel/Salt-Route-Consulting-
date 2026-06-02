@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, Link as LinkIcon, Film, Image as ImageIcon, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { compressVideo, canCompressVideo } from "@/lib/video-compress"
 
 export type UploadedMedia = {
   url: string
@@ -36,6 +37,7 @@ const MAX_DIMENSION = 2400
 // Cloudinary plan's max video size.
 const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024 // 2 GB
 const VIDEO_CHUNK_BYTES = 20 * 1024 * 1024 // 20 MB per chunk
+const VIDEO_COMPRESS_THRESHOLD = 40 * 1024 * 1024 // compress videos larger than 40 MB
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 const CLOUD_API_KEY = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
@@ -197,7 +199,7 @@ export function MediaUploader({
   const [pasteError, setPasteError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
-  const [videoProgress, setVideoProgress] = useState<{ name: string; pct: number } | null>(null)
+  const [videoProgress, setVideoProgress] = useState<{ name: string; pct: number; phase: "compress" | "upload" } | null>(null)
 
   const buttonLabel = label ?? LABEL_BY_KIND[kind]
   const Icon = kind === "video" ? Film : kind === "image" ? ImageIcon : Upload
@@ -209,9 +211,30 @@ export function MediaUploader({
         toast.error(`${file.name} is too large. Max ${Math.round(MAX_VIDEO_BYTES / 1024 / 1024 / 1024)}GB.`)
         return null
       }
+
+      let toUpload = file
+
+      // Compress large videos in the browser (when supported) to shrink them
+      // before upload — helps fit Cloudinary plan limits and speeds delivery.
+      if (file.size > VIDEO_COMPRESS_THRESHOLD && canCompressVideo()) {
+        try {
+          const before = file.size
+          toUpload = await compressVideo(file, (frac) =>
+            setVideoProgress({ name: file.name, pct: Math.round(frac * 100), phase: "compress" })
+          )
+          if (toUpload !== file) {
+            const pct = Math.round((1 - toUpload.size / before) * 100)
+            toast.success(`Compressed ${file.name} by ${pct}% (${(toUpload.size / 1024 / 1024).toFixed(0)}MB).`)
+          }
+        } catch (err) {
+          // not-supported / failure → fall back to uploading the original.
+          console.warn("[uploader] video compression skipped:", err)
+        }
+      }
+
       try {
-        return await uploadVideoDirect(file, folder, (frac) =>
-          setVideoProgress({ name: file.name, pct: Math.round(frac * 100) })
+        return await uploadVideoDirect(toUpload, folder, (frac) =>
+          setVideoProgress({ name: file.name, pct: Math.round(frac * 100), phase: "upload" })
         )
       } catch (err) {
         const message = err instanceof Error ? err.message : "Upload failed"
@@ -338,7 +361,7 @@ export function MediaUploader({
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               {videoProgress
-                ? `Uploading video ${videoProgress.pct}%`
+                ? `${videoProgress.phase === "compress" ? "Compressing" : "Uploading"} video ${videoProgress.pct}%`
                 : progress
                   ? `Uploading ${progress.done} / ${progress.total}`
                   : "Uploading..."}
@@ -379,7 +402,7 @@ export function MediaUploader({
 
       {pasteError && <p className="text-xs text-red-600">{pasteError}</p>}
       <p className="text-[10px] text-charcoal/40">
-        Images compressed automatically. Max 4MB after compression for video. JPG, PNG, WebP, AVIF, MP4, WebM, MOV.
+        Images compressed automatically (max 4MB). Videos up to 2GB, uploaded in chunks and compressed by Cloudinary. JPG, PNG, WebP, AVIF, MP4, WebM, MOV.
       </p>
     </div>
   )

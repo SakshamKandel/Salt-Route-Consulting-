@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 import { WishlistButton } from "@/app/(public)/properties/[slug]/WishlistButton"
 import { PropertyGallery } from "@/components/public/PropertyGallery"
 import { formatNpr } from "@/lib/currency"
-import { getImageMedia, getBannerImageUrl, isVideoUrl, type PropertyMediaLike } from "@/lib/property-media"
+import { getImageMedia, getBannerImageUrl, isVideoUrl, getOptimizedVideoUrl, getVideoPosterUrl, type PropertyMediaLike } from "@/lib/property-media"
 import { 
   Bath, 
   BedDouble, 
@@ -143,7 +143,8 @@ export default function PropertyDetailClient({
   const heroImage = getBannerImageUrl(property.images) || FALLBACK_IMAGE
 
   const videoMedia = property.images.find(item => isVideoUrl(item.url))
-  const videoUrl = videoMedia?.url
+  const videoUrl = videoMedia ? getOptimizedVideoUrl(videoMedia.url) : undefined
+  const videoPoster = videoMedia ? getVideoPosterUrl(videoMedia.url) : null
 
   const galleryImages = imageMedia.map((img) => ({
     id: img.id,
@@ -294,6 +295,8 @@ export default function PropertyDetailClient({
               <FadeUp delay={0.1} className="w-full aspect-[21/9] bg-charcoal/5 overflow-hidden mb-12 relative border border-charcoal/10 group">
                   <video
                       src={videoUrl}
+                      poster={videoPoster ?? undefined}
+                      preload="metadata"
                       className="h-full w-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-1000"
                       autoPlay
                       loop
