@@ -3,7 +3,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { createAuditLog } from "@/lib/audit"
-import { emailQueue } from "@/lib/queue"
+import { getEmailQueue } from "@/lib/queue"
 import { segmentToWhere, type SegmentSpec } from "@/lib/admin/segments"
 import { CampaignStatus } from "@prisma/client"
 import { revalidatePath } from "next/cache"
@@ -92,7 +92,7 @@ export async function enqueueCampaignAction(campaignId: string) {
       )
     )
 
-    await emailQueue.addBulk(
+    await getEmailQueue().addBulk(
       recipientRows.map((r) => ({
         name: `campaign:${campaignId}:${r.id}`,
         data: {
@@ -133,7 +133,7 @@ export async function cancelCampaignAction(campaignId: string) {
   await requireAdmin()
 
   // Remove jobs that haven't been picked up by the worker yet
-  const jobs = await emailQueue.getJobs(["waiting", "delayed", "paused"])
+  const jobs = await getEmailQueue().getJobs(["waiting", "delayed", "paused"])
   const pending = jobs.filter((j) => j.data.campaignId === campaignId)
   await Promise.all(pending.map((j) => j.remove()))
 

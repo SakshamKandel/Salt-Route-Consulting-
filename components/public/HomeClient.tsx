@@ -11,7 +11,6 @@ import { LuxuryButton } from "@/components/ui/luxury-button"
 import { LuxuryLinkWithArrow } from "@/components/ui/luxury-link-with-arrow"
 import { LocationCombobox, type ComboboxProperty } from "@/components/public/LocationCombobox"
 import { VisualJourney } from "@/components/public/VisualJourney"
-import { FacebookAvatar } from "@/components/public/FacebookAvatar"
 
 function RevealImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
   return (
@@ -112,7 +111,7 @@ function HeroImage() {
           style={{ y: textY }}
         >
           <p className="text-sm md:text-base uppercase tracking-[0.5em] text-white/90 font-sans mb-8 font-light">
-            Tailored Stays Across Nepal
+            Nepal&rsquo;s Most Loved Luxury Stays
           </p>
           <h1 className="font-display text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-[1.1] mb-10 font-normal shadow-sm">
             Stays with Soul
@@ -528,98 +527,89 @@ export default function HomeClient({
       {/* VISUAL JOURNEY: TAPESTRY OF NEPAL */}
       <VisualJourney />
 
-      {/* COUNSEL — short editorial cut on the homepage */}
-      {/*
-        Placeholder advisors. Replace photo URLs with real headshots,
-        and update names + bios + quotes when you have them.
-        Source: Unsplash (free to use). Confirm each ID resolves before launch.
-      */}
+      {/* GUEST REVIEWS — verified Google & Tripadvisor reviews */}
       <section className="py-24 md:py-32 bg-[#FBF9F4] overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-16 md:mb-20">
             <FadeUp className="lg:col-span-5 space-y-5">
-              <p className="text-sm uppercase tracking-[0.4em] text-charcoal/50 font-medium">Counsel</p>
+              <p className="text-sm uppercase tracking-[0.4em] text-charcoal/50 font-medium">Guest Reviews</p>
               <h2 className="font-display text-charcoal tracking-wide leading-[1.04] uppercase" style={{ fontSize: "clamp(2.25rem, 4.6vw, 4.25rem)" }}>
-                Four people<br />we lean on.
+                Loved by<br />our guests.
               </h2>
             </FadeUp>
             <FadeUp delay={0.1} className="lg:col-span-6 lg:col-start-7 space-y-5 lg:pt-3">
+              <div className="flex items-center gap-4">
+                <span className="font-display text-5xl md:text-6xl text-charcoal leading-none">4.7</span>
+                <div className="space-y-1.5">
+                  <span className="block text-gold text-lg tracking-[0.15em] leading-none">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <p className="text-xs uppercase tracking-[0.25em] text-charcoal/50 font-medium">out of 5</p>
+                </div>
+              </div>
               <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
-                Salt Route is small on purpose. The decisions we don&rsquo;t want to make alone — a new property, a difficult brief, a sustainability call — go to four people first.
-              </p>
-              <p className="font-sans text-base md:text-lg text-charcoal/65 leading-[1.85] font-light">
-                None of them work for us. They are friends of the practice who have seen more than we have, and tell us when we are wrong.
+                Real words from guests who have stayed with us — verified reviews from Google and Tripadvisor. Beautiful nature, outstanding rooms, and the kindest staff in Nepal.
               </p>
             </FadeUp>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-14 md:gap-x-12 md:gap-y-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               {
-                name: "Ram Bahadur",
-                role: "Hospitality",
-                bio: "Founding GM at a heritage Kathmandu hotel from 1998 to 2006. Now consults for three Himalayan lodges and a Sri Lankan tea estate. Lives in Patan, walks every morning.",
-                quote: "A property only sells what it actually is. Our job is to make sure that’s enough.",
+                name: "Evangelos Athanasiadis",
+                source: "Google",
+                rating: 5,
+                text: "What an unforgettable stay! Sunshine Villa was definitely the highlight of our trip to Nepal. Beautifully located in the nature, with outstanding rooms and the kindest staff out there. A stay you cannot miss in Nepal.",
               },
               {
-                name: "Ram Bahadur",
-                role: "Cultural Heritage",
-                bio: "Curator at the Kathmandu Triennale, 2017. Spends most months tracking the disappearing repoussé metalwork families of Patan. Writes a quiet column for Nepali Times.",
-                quote: "If a craft loses its context, you have kept the object and lost the meaning.",
+                name: "Dr. Kanchan Ghimire",
+                source: "Google",
+                rating: 5,
+                text: "We had an absolutely wonderful stay at Sunshine Villa, Fikkal! From the moment we arrived, we were welcomed with warm hospitality that made us feel right at home. The villa itself is beautifully maintained, offering a peaceful and serene escape.",
               },
               {
-                name: "Ram Bahadur",
-                role: "Sustainable Tourism",
-                bio: "Was the South Asia lead for a global responsible-travel collective from 2019 to 2023. Splits his time between Pokhara and Cornwall. Two children, one fishing boat.",
-                quote: "Sustainability is local first. The rest is marketing.",
+                name: "adhishb2022",
+                source: "Tripadvisor",
+                rating: 5,
+                text: "Best food in Ilam hands down. Their Bhutanese cuisine was really good. The staff was really helpful from booking to check out, and was supportive throughout my stay. Overall I had an excellent experience. I highly recommend it to anyone visiting Ilam.",
               },
               {
-                name: "Ram Bahadur",
-                role: "Property Investment",
-                bio: "Eight years at a real-estate desk in Singapore before moving home. Now runs a small fund for heritage retrofits in Nepal and Bhutan. Reads detective fiction in three languages.",
-                quote: "Buy slow buildings. They outlast every cycle.",
+                name: "Digibrew India",
+                source: "Google",
+                rating: 5,
+                text: "Amazingly located far from the hustle of daily life. Extremely calm and serene property with a great view of the hills. The property is guarded by huge pine trees which adds to the overall feel of the place.",
               },
-            ].map((advisor, i) => (
-              <FadeUp key={i} delay={i * 0.06}>
-                <article className="grid grid-cols-12 gap-5 md:gap-7">
-                  <div className="col-span-5">
-                    <FacebookAvatar
-                      className="aspect-[4/5]"
-                      ariaLabel={`Profile photo placeholder for ${advisor.name}`}
-                    />
-                  </div>
-                  <div className="col-span-7 flex flex-col justify-center space-y-4">
-                    <div>
-                      <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide leading-tight">
-                        {advisor.name}
+              {
+                name: "Ankit",
+                source: "Google",
+                rating: 4,
+                text: "The location is too good to pass up. Whether you're looking to explore the local sights or just want a scenic backdrop for your morning coffee, everything feels like it's right at your doorstep. It's rare to find a spot that is both central and serene.",
+              },
+            ].map((review, i) => (
+              <FadeUp key={i} delay={(i % 3) * 0.06}>
+                <article className="h-full flex flex-col bg-white border border-charcoal/8 p-7 md:p-8">
+                  <div className="flex items-center gap-4 mb-5">
+                    <span className="flex items-center justify-center w-11 h-11 rounded-full bg-charcoal text-white font-display text-lg leading-none">
+                      {review.name.replace(/^(Dr\.|Mr\.|Ms\.)\s*/i, "").charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <h3 className="font-display text-lg text-charcoal tracking-wide leading-tight truncate">
+                        {review.name}
                       </h3>
-                      <p className="text-xs uppercase tracking-[0.28em] text-charcoal/45 font-medium mt-1.5">
-                        {advisor.role}
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 font-medium mt-1">
+                        via {review.source}
                       </p>
                     </div>
-                    <p className="font-sans text-sm md:text-base text-charcoal/65 leading-[1.75] font-light">
-                      {advisor.bio}
-                    </p>
-                    <blockquote className="border-l border-gold/55 pl-4 mt-1">
-                      <p className="font-display italic text-base md:text-lg text-charcoal/85 leading-[1.5]">
-                        &ldquo;{advisor.quote}&rdquo;
-                      </p>
-                    </blockquote>
                   </div>
+                  <div className="text-gold text-base tracking-[0.15em] leading-none mb-5" aria-label={`${review.rating} out of 5 stars`}>
+                    {"★".repeat(review.rating)}
+                    <span className="text-charcoal/15">{"★".repeat(5 - review.rating)}</span>
+                  </div>
+                  <p className="font-sans text-sm md:text-[15px] text-charcoal/70 leading-[1.8] font-light">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
                 </article>
               </FadeUp>
             ))}
           </div>
-
-          <FadeUp delay={0.18} className="mt-16 md:mt-20">
-            <Link
-              href="/about#advisors"
-              className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors group"
-            >
-              Longer notes on each
-              <span className="block w-7 h-px bg-charcoal/40 group-hover:bg-charcoal group-hover:w-12 transition-all duration-500" />
-            </Link>
-          </FadeUp>
         </div>
       </section>
 

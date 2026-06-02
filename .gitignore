@@ -51,3 +51,4 @@ next-env.d.ts
 .env.test.local
 .env.production.local
 /skills
+.gstack/

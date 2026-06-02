@@ -1,5 +1,6 @@
 import { auth } from "@/auth"
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "node:crypto"
 
 const MAX_BYTES = 4 * 1024 * 1024
 
@@ -12,18 +13,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET ?? process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.CLOUDINARY_API_KEY
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
 
-  if (!cloudName || !uploadPreset) {
+  if (!cloudName || !apiKey || !apiSecret) {
     console.error("[upload/direct] missing cloudinary config", {
       hasCloudName: !!cloudName,
-      hasUploadPreset: !!uploadPreset,
+      hasApiKey: !!apiKey,
+      hasApiSecret: !!apiSecret,
     })
     return NextResponse.json(
       {
         error:
-          "Cloudinary upload is not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET on Vercel. The preset must be created as 'unsigned' in your Cloudinary console.",
+          "Cloudinary upload is not configured. Set CLOUDINARY_CLOUD_NAME (or NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME), CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your environment (.env.local locally).",
       },
       { status: 500 }
     )
@@ -53,17 +56,28 @@ export async function POST(req: NextRequest) {
   const folder = typeof formData.get("folder") === "string" ? (formData.get("folder") as string) : "salt-route"
   const resourceType = file.type.startsWith("video/") ? "video" : "image"
 
-  // Forward to Cloudinary's unsigned upload endpoint
+  // Signed upload: sign the request params with the API secret (no preset needed).
+  const timestamp = Math.floor(Date.now() / 1000)
+  const paramsToSign: Record<string, string> = { timestamp: String(timestamp) }
+  if (folder) paramsToSign.folder = folder
+
+  const signatureBase = Object.keys(paramsToSign)
+    .sort()
+    .map((key) => `${key}=${paramsToSign[key]}`)
+    .join("&")
+  const signature = createHash("sha1").update(signatureBase + apiSecret).digest("hex")
+
   const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`
 
   const cldForm = new FormData()
   cldForm.append("file", file, file instanceof File ? file.name : "upload")
-  cldForm.append("upload_preset", uploadPreset)
+  cldForm.append("api_key", apiKey)
+  cldForm.append("timestamp", String(timestamp))
+  cldForm.append("signature", signature)
   if (folder) cldForm.append("folder", folder)
 
-  console.log("[upload/direct] forwarding to cloudinary", {
+  console.log("[upload/direct] forwarding to cloudinary (signed)", {
     cloudName,
-    preset: uploadPreset,
     size: file.size,
     type: file.type,
     folder,
