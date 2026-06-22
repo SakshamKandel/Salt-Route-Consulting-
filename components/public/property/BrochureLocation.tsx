@@ -40,13 +40,13 @@ export function BrochureLocation({
     : ""
 
   return (
-    <section id="location" className="py-20 md:py-28 bg-white">
+    <section id="location" className="py-16 md:py-28 bg-white">
       <SectionHeading eyebrow="Find Us" title="Location" />
 
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-16 items-start">
         {/* Left — map */}
         <FadeUp>
-          <div className="relative w-full h-[360px] md:h-[460px] overflow-hidden">
+          <div className="relative w-full h-[320px] sm:h-[360px] md:h-[460px] overflow-hidden">
             <PropertyDetailMap location={location} address={address} title={location} />
           </div>
         </FadeUp>

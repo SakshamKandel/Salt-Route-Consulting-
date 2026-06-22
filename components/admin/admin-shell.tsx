@@ -208,7 +208,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto bg-[#FBF9F4] p-4 sm:p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto min-w-0">
             {children}
           </div>
         </main>

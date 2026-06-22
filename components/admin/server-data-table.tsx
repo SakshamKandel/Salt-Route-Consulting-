@@ -136,8 +136,8 @@ export function ServerDataTable<T>({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative w-72">
+      <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
+        <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
           <Input
             placeholder={searchPlaceholder}
@@ -218,16 +218,16 @@ export function ServerDataTable<T>({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between text-sm text-slate-500 px-1">
+      <div className="flex flex-col gap-3 text-sm text-slate-500 px-1 sm:flex-row sm:items-center sm:justify-between">
         <span>
           {total === 0 ? "No results" : `${startItem}–${endItem} of ${total.toLocaleString()} results`}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => updateParam({ page: String(page - 1) })}
             disabled={page <= 1}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
           >
             <ChevronLeft className="h-3.5 w-3.5" /> Previous
           </button>
@@ -236,7 +236,7 @@ export function ServerDataTable<T>({
             type="button"
             onClick={() => updateParam({ page: String(page + 1) })}
             disabled={page >= totalPages}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
           >
             Next <ChevronRight className="h-3.5 w-3.5" />
           </button>

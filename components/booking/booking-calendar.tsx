@@ -62,7 +62,7 @@ export function BookingCalendar({ propertyId, date, setDate, roomTypeId, availab
   return (
     <div className="space-y-6">
       <div className={cn(
-        "bg-white p-4 border border-charcoal/10 shadow-sm relative",
+        "bg-white p-2 sm:p-4 border border-charcoal/10 shadow-sm relative overflow-x-auto",
         "w-full flex justify-center"
       )}>
         <Calendar
@@ -77,12 +77,12 @@ export function BookingCalendar({ propertyId, date, setDate, roomTypeId, availab
           className="w-full"
           classNames={{
             month_caption: "flex justify-center py-4 mb-4 border-b border-charcoal/5 relative items-center",
-            caption_label: "text-[12px] font-display font-bold uppercase tracking-[0.3em] text-charcoal",
+            caption_label: "text-[11px] sm:text-[12px] font-display font-bold uppercase tracking-[0.16em] sm:tracking-[0.3em] text-charcoal",
             nav: "flex items-center justify-between absolute inset-x-0 top-4 px-2 z-10",
             button_previous: "h-8 w-8 bg-charcoal/5 rounded-full p-0 flex items-center justify-center hover:bg-charcoal/10 transition-all",
             button_next: "h-8 w-8 bg-charcoal/5 rounded-full p-0 flex items-center justify-center hover:bg-charcoal/10 transition-all",
             weekday: "text-charcoal/40 font-sans font-medium text-[10px] uppercase tracking-[0.1em] text-center w-full",
-            day: "h-10 w-full p-0 font-sans text-[12px] flex items-center justify-center transition-all duration-300 relative text-charcoal/80 hover:bg-charcoal/5",
+            day: "h-9 sm:h-10 w-full p-0 font-sans text-[12px] flex items-center justify-center transition-all duration-300 relative text-charcoal/80 hover:bg-charcoal/5",
             range_start: "bg-charcoal text-white rounded-none !opacity-100",
             range_end: "bg-charcoal text-white rounded-none !opacity-100",
             range_middle: "bg-charcoal/5 text-charcoal rounded-none",
@@ -99,7 +99,7 @@ export function BookingCalendar({ propertyId, date, setDate, roomTypeId, availab
       </div>
 
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-2">
-        <div className="flex items-center gap-6 text-[9px] uppercase tracking-[0.2em] font-sans font-bold text-charcoal/30">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[9px] uppercase tracking-[0.12em] font-sans font-bold text-charcoal/30 sm:tracking-[0.2em]">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full border border-charcoal/20" />
             <span>Available</span>

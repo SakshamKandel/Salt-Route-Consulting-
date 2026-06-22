@@ -12,7 +12,7 @@ interface LuxuryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 
 export function LuxuryButton({ href, onClick, children, className, dark = false, type, disabled, ...props }: LuxuryButtonProps) {
   const baseClasses = cn(
-    "group relative inline-flex items-center justify-center overflow-hidden border px-10 py-4 text-[10px] uppercase tracking-[0.3em] font-bold transition-all duration-700",
+    "group relative inline-flex min-w-0 items-center justify-center overflow-hidden border px-6 py-4 text-center text-[10px] uppercase tracking-[0.18em] font-bold transition-all duration-700 sm:px-10 sm:tracking-[0.3em]",
     dark ? "border-white/30 text-white" : "border-charcoal/20 text-charcoal",
     className
   )
@@ -23,7 +23,7 @@ export function LuxuryButton({ href, onClick, children, className, dark = false,
   )
 
   const textClasses = cn(
-    "relative z-10 transition-colors duration-700",
+    "relative z-10 min-w-0 transition-colors duration-700",
     dark ? "group-hover:text-charcoal" : "group-hover:text-white"
   )
 

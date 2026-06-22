@@ -36,10 +36,10 @@ export function BrochureRooms({
     ) as string[]
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-16 md:py-28 bg-white">
       <SectionHeading eyebrow="Accommodation" title="Rooms & Suites" />
 
-      <div className="space-y-20 md:space-y-28">
+      <div className="space-y-16 md:space-y-28">
         {roomTypes.map((rt, index) => {
           const imgs = roomImagesOf(rt)
           const cover = imgs[0] || ""
@@ -57,7 +57,7 @@ export function BrochureRooms({
           return (
             <div
               key={rt.id}
-              className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+              className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center"
             >
               <FadeUp
                 className={`lg:col-span-7 ${imageEven ? "lg:order-1" : "lg:order-2"}`}
@@ -79,7 +79,7 @@ export function BrochureRooms({
                     className="object-cover"
                   />
                   {imgs.length > 1 && (
-                    <span className="absolute bottom-4 left-4 text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-white">
+                    <span className="absolute bottom-4 left-4 text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-sans font-bold text-white">
                       {imgs.length} Photos
                     </span>
                   )}
@@ -90,7 +90,7 @@ export function BrochureRooms({
                 className={`lg:col-span-5 ${imageEven ? "lg:order-2" : "lg:order-1"}`}
               >
                 <Eyebrow>{formatClassType(rt.classType)}</Eyebrow>
-                <h3 className="font-display text-2xl md:text-4xl uppercase tracking-wide text-charcoal mt-2">
+                <h3 className="font-display text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide text-charcoal mt-2">
                   {rt.name}
                 </h3>
 
@@ -99,7 +99,7 @@ export function BrochureRooms({
                   <span className="text-[10px] font-sans text-charcoal/40"> / night</span>
                 </p>
 
-                <p className="font-sans text-[12px] uppercase tracking-[0.15em] text-charcoal/50 mt-3">
+                <p className="font-sans text-[12px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-charcoal/50 mt-3">
                   {meta.join(" · ")}
                 </p>
 
@@ -113,7 +113,7 @@ export function BrochureRooms({
                   <button
                     type="button"
                     onClick={() => onReserve(rt.id)}
-                    className="group inline-flex items-center gap-2 mt-8 uppercase tracking-[0.3em] text-[11px] font-bold text-charcoal"
+                    className="group inline-flex items-center gap-2 mt-8 uppercase tracking-[0.18em] sm:tracking-[0.3em] text-[11px] font-bold text-charcoal"
                   >
                     Reserve
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

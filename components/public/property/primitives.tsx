@@ -110,7 +110,7 @@ export function Eyebrow({
 }) {
   return (
     <p
-      className={`text-[10px] uppercase tracking-[0.45em] font-sans font-bold ${
+      className={`text-[10px] uppercase tracking-[0.22em] sm:tracking-[0.45em] font-sans font-bold ${
         light ? "text-gold/80" : "text-gold"
       } ${className}`}
     >
@@ -140,7 +140,7 @@ export function SectionHeading({
     <FadeUp className={`space-y-4 mb-12 ${align === "center" ? "text-center" : "text-left"}`}>
       <Eyebrow light={light}>{eyebrow}</Eyebrow>
       <h2
-        className={`font-display text-3xl md:text-5xl tracking-wide uppercase leading-tight ${
+        className={`font-display text-3xl sm:text-4xl md:text-5xl tracking-wide uppercase leading-tight ${
           light ? "text-white" : "text-charcoal"
         }`}
       >

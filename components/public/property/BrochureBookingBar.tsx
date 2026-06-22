@@ -8,9 +8,9 @@ import { ArrowRight } from "lucide-react"
 import { GoldRule } from "@/components/public/property/primitives"
 
 const FIELD_LABEL =
-  "text-[9px] uppercase tracking-[0.25em] font-sans font-bold text-charcoal/40"
+  "text-[9px] uppercase tracking-[0.16em] sm:tracking-[0.25em] font-sans font-bold text-charcoal/40"
 const FIELD_CONTROL =
-  "bg-transparent border-0 border-b border-charcoal/20 focus:border-gold focus:outline-none px-0 py-1.5 text-[13px] text-charcoal w-full"
+  "bg-transparent border-0 border-b border-charcoal/20 focus:border-gold focus:outline-none px-0 py-1.5 text-[13px] text-charcoal w-full min-w-0"
 
 export function BrochureBookingBar({
   today,
@@ -37,8 +37,8 @@ export function BrochureBookingBar({
 
   return (
     <section className="w-full bg-white">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 py-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-4 md:gap-8 items-end">
           <label className="block space-y-2">
             <span className={FIELD_LABEL}>Check In</span>
             <input
@@ -80,7 +80,7 @@ export function BrochureBookingBar({
             <button
               type="button"
               onClick={onSearch}
-              className="group inline-flex items-center gap-3 uppercase tracking-[0.3em] text-[11px] font-bold text-charcoal py-1.5"
+              className="group inline-flex w-full items-center justify-between gap-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.18em] text-charcoal sm:w-auto sm:justify-start sm:tracking-[0.3em]"
             >
               Check Availability
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
