@@ -32,8 +32,8 @@ export function BookingRejected({ name, propertyName, reason, bookingCode }: Boo
 
       <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
         We warmly invite you to explore our other available properties, or to reach us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
-          info@saltroutegroup.com
+        <a href="mailto:connect@saltroutecorp.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
+          connect@saltroutecorp.com
         </a>{' '}
         to discuss alternative arrangements. It would be our pleasure to find the right experience for you.
       </Text>

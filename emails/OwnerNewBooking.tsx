@@ -40,7 +40,7 @@ export function OwnerNewBooking({ ownerName, propertyName, guestName, dates, boo
       </DetailsCard>
 
       <BodyText>
-        If you have any questions or concerns about this booking, please contact the Salt Route team at info@saltroutegroup.com.
+        If you have any questions or concerns about this booking, please contact the Salt Route team at connect@saltroutecorp.com.
       </BodyText>
 
       <ActionButton href={ownerUrl || 'https://saltroutegroup.com/owner/bookings'}>

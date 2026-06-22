@@ -22,8 +22,8 @@ export function InvitationEmail({ role, url, invitedBy }: { role: string; url: s
 
       <Text style={{ fontFamily: sans, fontSize: '10px', color: MUTED, lineHeight: '1.6', margin: '40px 0 0 0', textAlign: 'center' }}>
         If you were not expecting this invitation, you may safely ignore this email. For any concerns, contact us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none' }}>
-          info@saltroutegroup.com
+        <a href="mailto:connect@saltroutecorp.com" style={{ color: CHARCOAL, textDecoration: 'none' }}>
+          connect@saltroutecorp.com
         </a>.
       </Text>
     </EmailLayout>

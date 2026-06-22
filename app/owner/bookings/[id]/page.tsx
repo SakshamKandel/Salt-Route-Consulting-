@@ -38,6 +38,7 @@ export default async function OwnerBookingDetailPage({
     include: {
       guest: { select: { name: true, email: true, phone: true } },
       property: { select: { title: true, id: true, location: true } },
+      roomType: { select: { name: true, classType: true } },
     },
   })
 
@@ -53,6 +54,7 @@ export default async function OwnerBookingDetailPage({
 
   const stayDetails = [
     { label: "Property",   value: booking.property.title,     link: `/owner/properties/${booking.property.id}` },
+    ...(booking.roomType ? [{ label: "Room Class", value: booking.roomType.name }] : []),
     { label: "Location",   value: booking.property.location },
     { label: "Check-in",   value: new Date(booking.checkIn).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) },
     { label: "Check-out",  value: new Date(booking.checkOut).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) },

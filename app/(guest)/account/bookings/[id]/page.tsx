@@ -15,7 +15,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
 
   const booking = await prisma.booking.findUnique({
     where: { id },
-    include: { property: true }
+    include: { property: true, roomType: { select: { name: true, classType: true } } }
   })
 
   if (!booking || booking.guestId !== session.user.id) {
@@ -52,6 +52,9 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
           </Link>
           <div>
             <h1 className="font-display text-2xl text-charcoal uppercase tracking-widest">{booking.property.title}</h1>
+            {booking.roomType && (
+              <p className="text-[10px] uppercase tracking-[0.25em] text-gold mt-2 font-sans font-bold">{booking.roomType.name}</p>
+            )}
             <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30 mt-2 font-sans">{booking.property.location}</p>
           </div>
         </div>

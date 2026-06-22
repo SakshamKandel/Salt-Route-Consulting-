@@ -18,11 +18,11 @@ async function main() {
   // ─── 1. ADMIN USER ────────────────────────────────────
   const adminPassword = await hash('Admin@1234', 12)
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@saltroutegroup.com' },
+    where: { email: 'connect@saltroutecorp.com' },
     update: {},
     create: {
       name: 'Salt Route Admin',
-      email: 'admin@saltroutegroup.com',
+      email: 'connect@saltroutecorp.com',
       hashedPassword: adminPassword,
       emailVerified: new Date(),
       role: Role.ADMIN,
@@ -33,11 +33,11 @@ async function main() {
   // ─── 2. DEMO OWNER ───────────────────────────────────
   const ownerPassword = await hash('Owner@1234', 12)
   const owner = await prisma.user.upsert({
-    where: { email: 'owner@saltroutegroup.com' },
+    where: { email: 'connect@saltroutecorp.com' },
     update: {},
     create: {
       name: 'Demo Owner',
-      email: 'owner@saltroutegroup.com',
+      email: 'connect@saltroutecorp.com',
       hashedPassword: ownerPassword,
       emailVerified: new Date(),
       role: Role.OWNER,
@@ -162,9 +162,9 @@ async function main() {
       if (!existingBlock) {
         await prisma.blockedDate.create({
           data: {
-          propertyId: property.id,
-          date: blockedDate,
-          reason: 'Maintenance',
+            propertyId: property.id,
+            date: blockedDate,
+            reason: 'Maintenance',
           },
         })
       }
@@ -175,8 +175,8 @@ async function main() {
 
   console.log('\n🎉 Seeding complete!')
   console.log('\n📋 Demo accounts:')
-  console.log('  Admin:  admin@saltroutegroup.com / Admin@1234')
-  console.log('  Owner:  owner@saltroutegroup.com / Owner@1234')
+  console.log('  Admin:  connect@saltroutecorp.com / Admin@1234')
+  console.log('  Owner:  connect@saltroutecorp.com / Owner@1234')
   console.log('  Guest:  guest@example.com / Guest@1234')
 }
 

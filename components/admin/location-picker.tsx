@@ -15,7 +15,7 @@ async function geocodeLocation(query: string): Promise<[number, number] | null> 
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`
     const res = await fetch(url, {
-      headers: { "User-Agent": "SaltRouteConsulting/1.0 (contact@saltroutegroup.com)" },
+      headers: { "User-Agent": "SaltRouteConsulting/1.0 (connect@saltroutecorp.com)" },
     })
     if (!res.ok) return null
     const data = await res.json()

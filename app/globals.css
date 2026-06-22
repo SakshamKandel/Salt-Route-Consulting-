@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-script: var(--font-script);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-display);
   
@@ -84,6 +85,18 @@
 }
 
 @layer utilities {
+  .font-script {
+    font-family: var(--font-script), cursive;
+  }
+  .marquee-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marquee-scroll 38s linear infinite;
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .luxury-title {
     @apply font-display text-4xl md:text-6xl lg:text-[5.5rem] leading-[1.05] tracking-[-0.01em] text-navy;
   }
@@ -164,4 +177,56 @@
 }
 .leaflet-control-zoom a:hover {
   background: #1B3A5C !important;
+}
+
+/* Hide native number input spinners everywhere */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ── Google Translate: hide default banner / toolbar / tooltips ───────── */
+/* We drive translation through our own LanguageSwitcher dropdown, so the
+   built-in Google UI is fully suppressed and the page is never pushed down. */
+#google_translate_element {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+.goog-te-gadget {
+  height: 0 !important;
+  overflow: hidden;
+}
+/* Google forces a top offset on <body> to make room for its banner — undo it. */
+body {
+  top: 0 !important;
+  position: static !important;
+}
+.skiptranslate iframe {
+  visibility: hidden !important;
+  display: none !important;
+}
+/* Strip the highlight Google applies to translated <font> spans. */
+.goog-text-highlight,
+font[style*="background"] {
+  background: none !important;
+  box-shadow: none !important;
 }

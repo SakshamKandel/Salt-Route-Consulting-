@@ -218,14 +218,34 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 mb-1 font-bold">Guests</p>
-            <input
-              type="number"
-              min={1}
-              max={20}
-              value={guests}
-              onChange={(e) => setGuests(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
-              className="w-20 font-sans text-sm text-charcoal font-medium tracking-wide bg-transparent border-0 outline-none"
-            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setGuests(Math.max(1, guests - 1))}
+                disabled={guests <= 1}
+                className="w-6 h-6 flex items-center justify-center border border-charcoal/20 text-charcoal/50 hover:border-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
+                aria-label="Decrease guests"
+              >
+                <span className="text-xs leading-none">&minus;</span>
+              </button>
+              <input
+                type="number"
+                min={1}
+                max={20}
+                value={guests}
+                onChange={(e) => setGuests(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
+                className="w-10 font-sans text-sm text-charcoal font-medium tracking-wide bg-transparent border-0 outline-none text-center"
+              />
+              <button
+                type="button"
+                onClick={() => setGuests(Math.min(20, guests + 1))}
+                disabled={guests >= 20}
+                className="w-6 h-6 flex items-center justify-center border border-charcoal/20 text-charcoal/50 hover:border-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
+                aria-label="Increase guests"
+              >
+                <span className="text-xs leading-none">+</span>
+              </button>
+            </div>
           </div>
         </div>
       </label>
@@ -398,12 +418,12 @@ export default function HomeClient({
               </div>
             </div>
           ) : (
-            <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 md:gap-10 px-6 md:px-12 pb-12 w-full">
+            <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-5 md:gap-8 px-6 md:px-12 pb-10 w-full">
               {estates.map((estate) => {
                 return (
-                  <div key={estate.id} className="snap-center shrink-0 w-[85vw] md:w-[55vw] lg:w-[40vw] flex flex-col group">
+                  <div key={estate.id} className="snap-center shrink-0 w-[72vw] md:w-[42vw] lg:w-[30vw] flex flex-col group">
                     <Link href={estate.href} className="cursor-pointer block">
-                      <div className="relative aspect-[4/5] overflow-hidden mb-6 bg-[#F5F1E8]">
+                      <div className="relative aspect-[4/3] overflow-hidden mb-4 bg-[#F5F1E8]">
                         {estate.image ? (
                           <Image
                             src={estate.image}
@@ -419,9 +439,9 @@ export default function HomeClient({
                         )}
                         <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700 pointer-events-none" />
                       </div>
-                      <div className="space-y-3 px-1">
-                        <p className="text-xs uppercase tracking-[0.35em] text-charcoal/50 font-medium">{estate.location}</p>
-                        <h3 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide uppercase leading-[1.1] group-hover:text-gold transition-colors duration-700">
+                      <div className="space-y-1.5 px-1">
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">{estate.location}</p>
+                        <h3 className="font-display text-lg md:text-xl text-charcoal tracking-wide uppercase leading-[1.1] group-hover:text-gold transition-colors duration-700">
                           {estate.name}
                         </h3>
                       </div>
@@ -436,7 +456,7 @@ export default function HomeClient({
 
       <ImmersiveSection />
 
-      {/* FOR PROPERTY OWNERS (DARK) */}
+      {/* CONSCIOUS HOSPITALITY (DARK) */}
       <section className="bg-charcoal py-24 md:py-32 text-white overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24 items-center">
@@ -450,23 +470,21 @@ export default function HomeClient({
             </div>
             <div className="lg:col-span-5 order-1 lg:order-2 space-y-10">
               <FadeUp className="space-y-6">
-                <p className="text-sm uppercase tracking-[0.5em] text-white/35 font-medium">For Property Owners</p>
+                <p className="text-sm uppercase tracking-[0.5em] text-white/35 font-medium">Conscious Hospitality</p>
                 <h2
                   className="font-display text-white tracking-wide uppercase leading-[1.05]"
                   style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
                 >
-                  Care, story,
-                  <br />
-                  steady growth.
+                  Spaces with purpose.
                 </h2>
               </FadeUp>
               <FadeUp delay={0.15}>
                 <p className="font-sans text-[15px] md:text-[16px] text-white/55 leading-[1.85] font-light max-w-md">
-                  We partner with owners to prepare homes for memorable stays, build a story guests can feel before they arrive, and grow long-term value through gracious hosting and considered presentation.
+                  We believe hospitality should preserve, not disrupt. Salt Route Group is committed to sustainable operational practices, honoring regional architecture, and sourcing local materials. By integrating our stays seamlessly into their natural and cultural environments, we ensure our growth respects the heritage of Nepal.
                 </p>
               </FadeUp>
               <FadeUp delay={0.3} className="pt-2">
-                <LuxuryButton href="/for-owners" dark>Partner With Us</LuxuryButton>
+                <LuxuryButton href="/about" dark>Read Our Philosophy</LuxuryButton>
               </FadeUp>
             </div>
           </div>
@@ -499,9 +517,9 @@ export default function HomeClient({
 
             <ol className="lg:col-span-7 lg:pt-2">
               {[
-                { num: "01", title: "Culinary Immersion", desc: "Private dining featuring heritage recipes and local organic produce." },
-                { num: "02", title: "Guided Excursions", desc: "Walk nearby trails and cultural routes with trusted local insight." },
-                { num: "03", title: "Quiet Wellness", desc: "Unhurried moments for rest, reflection, and gentle renewal." },
+                { num: "01", title: "Arrive", desc: "Step into spaces consciously crafted to harmonize with the local landscape. Leave the transit behind and let the quiet, unhurried pace of the environment set your new rhythm." },
+                { num: "02", title: "Feel", desc: "Engage deeply with your surroundings. From the tactile warmth of natural architecture to the rich terroir of a morning pour-over, immerse yourself in the authentic sensory details of the region." },
+                { num: "03", title: "Remember", desc: "Depart with more than just a destination checked off. Carry forward a profound sense of renewal and a lasting, personal connection to the heritage and natural beauty of Nepal." },
               ].map((exp, i) => (
                 <FadeUp key={exp.num} delay={i * 0.08}>
                   <li className="grid grid-cols-12 gap-5 md:gap-8 py-10 md:py-12 border-b border-charcoal/10 last:border-b-0 group">

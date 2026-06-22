@@ -31,8 +31,8 @@ export function InquiryReceivedAuto({ name, subject, message }: InquiryReceivedA
 
       <BodyText>
         In the meantime, you are welcome to explore our curated collection of properties at{' '}
-        <a href="https://saltroutegroup.com/properties" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
-          saltroutegroup.com
+        <a href="https://saltroutecorp.com/properties" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
+          saltroutecorp.com
         </a>
         .
       </BodyText>

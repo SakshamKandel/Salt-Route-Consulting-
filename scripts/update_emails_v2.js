@@ -21,7 +21,7 @@ for (const file of files) {
 
   // Remove the old warning text block at the bottom
   content = content.replace(/<Text style={{ fontFamily: sans, fontSize: '12px', color: MUTED, lineHeight: '1.7', margin: 0, padding: '16px 20px', backgroundColor: VELLUM, borderTop: `1px solid \$\{GOLD\}` }}>[\s\S]*?<\/Text>/g, 
-    "<Text style={{ fontFamily: sans, fontSize: '10px', color: MUTED, lineHeight: '1.6', margin: '40px 0 0 0', textAlign: 'center' }}>If you did not request this, please disregard this email. For any concerns, contact us at{' '}<a href=\"mailto:info@saltroutegroup.com\" style={{ color: CHARCOAL, textDecoration: 'none' }}>info@saltroutegroup.com</a>.</Text>"
+    "<Text style={{ fontFamily: sans, fontSize: '10px', color: MUTED, lineHeight: '1.6', margin: '40px 0 0 0', textAlign: 'center' }}>If you did not request this, please disregard this email. For any concerns, contact us at{' '}<a href=\"mailto:connect@saltroutecorp.com\" style={{ color: CHARCOAL, textDecoration: 'none' }}>connect@saltroutecorp.com</a>.</Text>"
   );
 
   fs.writeFileSync(filePath, content, 'utf8');

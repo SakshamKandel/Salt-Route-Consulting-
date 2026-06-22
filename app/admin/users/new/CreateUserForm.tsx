@@ -72,7 +72,7 @@ export function CreateUserForm({ defaultRole = "GUEST" }: { defaultRole?: "GUEST
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <FormControl><Input type="email" {...field} placeholder="name@saltroutegroup.com" /></FormControl>
+              <FormControl><Input type="email" {...field} placeholder="connect@saltroutecorp.com" /></FormControl>
               <FormMessage />
             </FormItem>
           )} />

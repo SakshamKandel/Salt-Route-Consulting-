@@ -71,7 +71,7 @@ export function UsersTable({
   const router = useRouter()
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isPending, startTransition] = useTransition()
-  const isMasterAdmin = currentUser?.email === "admin@saltroutegroup.com"
+  const isMasterAdmin = currentUser?.email === "connect@saltroutecorp.com"
 
   const handleToggleStatus = async (userId: string, currentStatus: string) => {
     const isSuspend = currentStatus === "ACTIVE"
