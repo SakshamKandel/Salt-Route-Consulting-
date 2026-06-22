@@ -11,7 +11,7 @@ async function testEmail() {
   console.log("Sending test email to ADMIN_EMAIL...")
   try {
     await sendEmail({
-      to: process.env.ADMIN_EMAIL || "admin@saltroutegroup.com",
+      to: process.env.ADMIN_EMAIL || "connect@saltroutecorp.com",
       subject: "SMTP Connection Test",
       html: "<h1>SMTP Test</h1><p>If you see this, the email sending is working correctly.</p>",
     })

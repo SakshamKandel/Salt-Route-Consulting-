@@ -12,8 +12,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "plus.unsplash.com" },
       { protocol: "https", hostname: "images.pexels.com" },
-      { protocol: "https", hostname: "saltroutegroup.com" },
+      { protocol: "https", hostname: "saltroutecorp.com" },
     ],
+    // AVIF first (20-50% smaller than WebP for photos), WebP fallback; cache
+    // the optimized variants for 30 days.
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2592000,
+  },
+  // Rewrite big barrel imports to per-module imports → smaller client JS.
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "date-fns", "recharts"],
   },
   async headers() {
     return [

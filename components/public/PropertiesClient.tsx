@@ -202,14 +202,34 @@ export default function PropertiesClient({
               <Users className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
                 <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Guests</p>
-                <input
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={guestsInput}
-                  onChange={(event) => setGuestsInput(Math.max(1, Math.min(20, Number(event.target.value) || 1)))}
-                  className="w-full bg-transparent border-0 outline-none text-sm text-charcoal font-light"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setGuestsInput(Math.max(1, guestsInput - 1))}
+                    disabled={guestsInput <= 1}
+                    className="w-5 h-5 flex items-center justify-center border border-charcoal/20 text-charcoal/50 hover:border-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
+                    aria-label="Decrease guests"
+                  >
+                    <span className="text-xs leading-none">&minus;</span>
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={guestsInput}
+                    onChange={(event) => setGuestsInput(Math.max(1, Math.min(20, Number(event.target.value) || 1)))}
+                    className="w-8 bg-transparent border-0 outline-none text-sm text-charcoal font-light text-center"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setGuestsInput(Math.min(20, guestsInput + 1))}
+                    disabled={guestsInput >= 20}
+                    className="w-5 h-5 flex items-center justify-center border border-charcoal/20 text-charcoal/50 hover:border-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
+                    aria-label="Increase guests"
+                  >
+                    <span className="text-xs leading-none">+</span>
+                  </button>
+                </div>
               </div>
             </label>
           </div>
@@ -322,7 +342,7 @@ export default function PropertiesClient({
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
               {properties.map((property, idx) => {
                 const previewFeatures = [...property.highlights, ...property.amenities].slice(0, 3)
 
@@ -335,7 +355,7 @@ export default function PropertiesClient({
                     transition={{ duration: 0.7, delay: (idx % 3) * 0.04 }}
                   >
                     <Link href={`/properties/${property.slug}`} className="group block">
-                      <div className="relative aspect-[4/3] overflow-hidden mb-6 bg-charcoal/5">
+                      <div className="relative aspect-[16/10] overflow-hidden mb-4 bg-charcoal/5">
                         <Image
                           src={
                             getPrimaryImageUrl(property.images) ||
@@ -346,9 +366,6 @@ export default function PropertiesClient({
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                           className="object-cover transition-transform duration-1000 group-hover:scale-105"
                         />
-                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 text-[9px] uppercase tracking-[0.2em] font-medium text-charcoal shadow-sm">
-                          From {formatNpr(property.pricePerNight)}
-                        </div>
                       </div>
 
                       <div className="flex justify-between gap-4 items-start px-1">
@@ -358,33 +375,33 @@ export default function PropertiesClient({
                               {property.location}
                             </p>
                           </div>
-                          <h3 className="font-display text-3xl text-charcoal tracking-wide mb-6 group-hover:text-gold transition-colors duration-700 [overflow-wrap:anywhere]">
+                          <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide mb-3 group-hover:text-gold transition-colors duration-700 [overflow-wrap:anywhere]">
                             {property.title}
                           </h3>
 
-                          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-                            <div className="flex flex-col gap-1">
+                          <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+                            <div className="flex flex-col gap-0.5">
                               <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">
                                 Bedrooms
                               </span>
-                              <span className="text-[14px] text-charcoal font-light font-sans">{property.bedrooms}</span>
+                              <span className="text-[13px] text-charcoal font-light font-sans">{property.bedrooms}</span>
                             </div>
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-0.5">
                               <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">
-                                Max Guests
+                                Guests
                               </span>
-                              <span className="text-[14px] text-charcoal font-light font-sans">{property.maxGuests}</span>
+                              <span className="text-[13px] text-charcoal font-light font-sans">{property.maxGuests}</span>
                             </div>
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-0.5">
                               <span className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">
                                 Baths
                               </span>
-                              <span className="text-[14px] text-charcoal font-light font-sans">{property.bathrooms}</span>
+                              <span className="text-[13px] text-charcoal font-light font-sans">{property.bathrooms}</span>
                             </div>
                           </div>
 
                           {previewFeatures.length > 0 && (
-                            <div className="mt-6 flex flex-wrap gap-2">
+                            <div className="mt-3 flex flex-wrap gap-2">
                               {previewFeatures.map((feature, featureIndex) => (
                                 <span
                                   key={`${feature}-${featureIndex}`}

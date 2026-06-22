@@ -81,7 +81,7 @@ export default async function ProfilePage() {
               The Salt Route team is available to help with stay questions, profile updates, or guest care.
             </p>
             <a
-              href="mailto:support@saltroutegroup.com"
+              href="mailto:connect@saltroutecorp.com"
               className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 hover:text-charcoal transition-colors underline underline-offset-4 decoration-charcoal/15"
             >
               Contact Support

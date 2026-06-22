@@ -1,4 +1,4 @@
-﻿import { siteConfig } from "@/lib/site.config"
+import { siteConfig } from "@/lib/site.config"
 
 export const metadata = {
   title: "Refund Policy | Salt Route",
@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
           <div className="space-y-12 text-charcoal/60 text-base leading-relaxed font-light">
             <div className="bg-[#FBF9F4] border border-charcoal/10 p-6 text-charcoal/80 text-sm">
               <p className="font-semibold mb-2 uppercase tracking-[0.1em] text-[10px]">Summary</p>
-              <p>Free cancellation within 48 hours of confirmation. Partial refunds apply for cancellations 7 to 30 days before check-in. No refund within 7 days of check-in.</p>
+              <p>Free cancellation within 48 hours of confirmation. Cancellations 30 or more days before check-in receive a 90% refund; cancellations 7 to 29 days before check-in receive a 50% refund. No refund within 7 days of check-in.</p>
             </div>
 
             <Section title="Full Refund: 48-Hour Window">
@@ -56,8 +56,8 @@ export default function RefundPolicyPage() {
 
             <Section title="How to Cancel">
               To initiate a cancellation, please log in to your account and navigate to My Bookings, or contact us directly at{" "}
-              <a href="mailto:info@saltroutegroup.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
-                info@saltroutegroup.com
+              <a href="mailto:connect@saltroutecorp.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
+                connect@saltroutecorp.com
               </a>.
             </Section>
           </div>

@@ -57,7 +57,7 @@ export async function bulkRestoreUsersAction(ids: string[]) {
 
 export async function bulkDeleteUsersAction(ids: string[]) {
   const session = await requireAdmin()
-  if (session.user.email !== "admin@saltroutegroup.com") {
+  if (session.user.email !== "connect@saltroutecorp.com") {
     return { error: "Permission Denied: Only the master administrator can bulk-delete users." }
   }
   if (ids.includes(session.user.id)) {

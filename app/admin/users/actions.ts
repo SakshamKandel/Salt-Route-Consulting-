@@ -45,7 +45,7 @@ export async function deleteUserAction(userId: string) {
   }
 
   // CRITICAL: Only the master admin can delete users
-  if (session.user.email !== "admin@saltroutegroup.com") {
+  if (session.user.email !== "connect@saltroutecorp.com") {
     return { error: "Permission Denied: Only the master administrator can permanently delete user records." }
   }
 

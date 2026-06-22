@@ -12,8 +12,14 @@ export default async function EditPropertyPage({
 }) {
   const { id } = await params
 
-  const [property, owners, locationRows] = await Promise.all([
-    prisma.property.findUnique({ where: { id } }),
+  const [property, owners, locationRows, features] = await Promise.all([
+    prisma.property.findUnique({
+      where: { id },
+      include: {
+        roomTypes: { where: { active: true }, orderBy: { order: "asc" } },
+        sections: { orderBy: { order: "asc" } },
+      },
+    }),
     prisma.user.findMany({
       where: { role: "OWNER" },
       select: { id: true, name: true, email: true }
@@ -24,6 +30,10 @@ export default async function EditPropertyPage({
       distinct: ["location"],
       orderBy: { location: "asc" },
     }),
+    prisma.propertyFeature.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, iconKey: true },
+    }).catch(() => [] as { id: string; name: string; iconKey: string }[]),
   ])
 
   if (!property) return notFound()
@@ -32,10 +42,32 @@ export default async function EditPropertyPage({
   const initialData = {
     ...property,
     pricePerNight: Number(property.pricePerNight),
+    stayDetails: (property.stayDetails as unknown as { label: string; value: string }[] | null) ?? [],
+    gettingHere: (property.gettingHere as unknown as { time: string; from: string; distance?: string }[] | null) ?? [],
+    roomTypes: property.roomTypes.map((rt) => ({
+      id: rt.id,
+      classType: rt.classType,
+      name: rt.name,
+      totalUnits: rt.totalUnits,
+      pricePerNight: Number(rt.pricePerNight),
+      maxGuests: rt.maxGuests,
+      bedrooms: rt.bedrooms,
+      bathrooms: rt.bathrooms,
+      imageUrl: rt.imageUrl ?? "",
+      images: rt.images?.length ? rt.images : (rt.imageUrl ? [rt.imageUrl] : []),
+    })),
+    // Saved Story Sections so the live preview shows the brochure spine too.
+    sections: property.sections.map((s) => ({
+      id: s.id,
+      title: s.title,
+      subtitle: s.subtitle,
+      body: s.body,
+      imageUrl: s.imageUrl,
+    })),
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-[1500px] mx-auto">
       <div className="flex items-center gap-4">
         <Button asChild variant="ghost" size="icon">
           <Link href={`/admin/properties/${id}`}><ArrowLeft className="w-5 h-5" /></Link>
@@ -47,7 +79,12 @@ export default async function EditPropertyPage({
       </div>
 
       <div className="bg-white border rounded-lg p-6 shadow-sm">
-        <PropertyForm owners={owners} initialData={initialData} knownLocations={knownLocations} />
+        <PropertyForm
+          owners={owners}
+          initialData={initialData}
+          knownLocations={knownLocations}
+          availableFeatures={features}
+        />
       </div>
     </div>
   )

@@ -34,8 +34,8 @@ export function BookingCheckinReminder({ name, propertyName, checkIn, checkOut, 
 
       <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderLeft: `3px solid ${GOLD}`, backgroundColor: VELLUM }}>
         If you have any last-minute requests, special dietary needs, or require assistance arranging your arrival, please do not hesitate to contact us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
-          info@saltroutegroup.com
+        <a href="mailto:connect@saltroutecorp.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
+          connect@saltroutecorp.com
         </a>
         . We are here to ensure a seamless experience from the moment you set out.
       </Text>

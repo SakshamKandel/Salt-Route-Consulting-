@@ -30,7 +30,7 @@ export const transporter = new Proxy({} as ReturnType<typeof nodemailer.createTr
 
 export const mailOptions = {
   get from() {
-    return process.env.SMTP_FROM || `"${process.env.SITE_NAME ?? "Salt Route Consulting"}" <noreply@saltroutegroup.com>`
+    return process.env.SMTP_FROM || `"${process.env.SITE_NAME ?? "Salt Route Consulting"}" <connect@saltroutecorp.com>`
   },
 }
 

@@ -44,8 +44,8 @@ export function BookingConfirmed({ name, propertyName, dates, bookingCode, check
       {/* Arrival note */}
       <Text style={{ fontFamily: sans, fontSize: '13px', color: '#5A7A9A', lineHeight: '1.7', margin: '0 0 32px 0', padding: '20px 24px', borderTop: `1px solid ${GOLD}`, borderBottom: `1px solid ${GOLD}`, backgroundColor: VELLUM }}>
         Should you require any assistance arranging your arrival, local transportation, or special requests, please contact us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
-          info@saltroutegroup.com
+        <a href="mailto:connect@saltroutecorp.com" style={{ color: CHARCOAL, textDecoration: 'none', fontWeight: '600' }}>
+          connect@saltroutecorp.com
         </a>
         . We are here to make your journey seamless.
       </Text>

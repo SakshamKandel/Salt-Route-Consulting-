@@ -17,7 +17,7 @@ cloudinary.config({
 })
 
 async function main() {
-  const adminEmail = "admin@saltroutegroup.com"
+  const adminEmail = "connect@saltroutecorp.com"
   
   console.log(`Starting database cleanup. Keeping only: ${adminEmail}`)
 

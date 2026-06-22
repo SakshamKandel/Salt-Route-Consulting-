@@ -37,7 +37,7 @@ export function BookingReceived({ name, propertyName, dates, bookingCode, checkI
       </DetailsCard>
 
       <BodyText>
-        You will receive a confirmation email once your reservation has been reviewed. If you have any questions, please do not hesitate to reach us at info@saltroutegroup.com.
+        You will receive a confirmation email once your reservation has been reviewed. If you have any questions, please do not hesitate to reach us at connect@saltroutecorp.com.
       </BodyText>
 
       <ActionButton href="https://saltroutegroup.com/account/bookings">

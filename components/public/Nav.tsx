@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { LanguageSwitcher } from "./LanguageSwitcher"
 
 const guestLinks = [
   { href: "/properties", label: "Stays" },
@@ -16,8 +17,6 @@ const guestLinks = [
 const ownerLinks = [
   { href: "/", label: "Guest View" },
   { href: "#portfolio", label: "Portfolio" },
-  { href: "#services", label: "Services" },
-  { href: "#why-us", label: "Why Us" },
   { href: "#owner-enquiry", label: "Enquire" },
 ]
 
@@ -28,6 +27,7 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false)
 
   const isOwnerSection = pathname?.startsWith("/for-owners")
+  const isBookingPage = pathname?.startsWith("/booking-request")
   const isAuthenticated = status === "authenticated" && !!session?.user
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function Nav() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-700 border-b ${scrolled ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-700 border-b ${(scrolled || isBookingPage) ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 h-full flex items-center justify-between relative">
           
           {/* Left Actions (Mobile Toggle & Language) */}
@@ -71,18 +71,18 @@ export function Nav() {
               onClick={toggleMobile}
               className="flex flex-col justify-center items-center w-8 h-8 z-[10001]"
             >
-              <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[1px] bg-charcoal' : (scrolled ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} -translate-y-1`} />
-              <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[0px] bg-charcoal' : (scrolled ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} translate-y-1`} />
+              <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[1px] bg-charcoal' : ((scrolled || isBookingPage) ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} -translate-y-1`} />
+              <span className={`block w-6 h-[1px] transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[0px] bg-charcoal' : ((scrolled || isBookingPage) ? 'bg-charcoal' : 'bg-charcoal md:bg-white')} translate-y-1`} />
             </button>
           </div>
 
           <div className="hidden lg:flex items-center gap-10">
-            <p className={`text-sm uppercase tracking-[0.2em] font-sans font-medium transition-colors duration-300 ${scrolled ? 'text-charcoal/40' : 'text-charcoal/70 md:text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}>EN</p>
+            <LanguageSwitcher transparent={!(scrolled || isBookingPage)} />
             {navLinks.slice(0, 3).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
+                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${(scrolled || isBookingPage) ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
               >
                 {link.label}
               </Link>
@@ -105,7 +105,7 @@ export function Nav() {
           >
             <Image
               src="/logo.png"
-              alt="SRG Logo"
+              alt="Salt Route Group"
               width={96}
               height={46}
               priority
@@ -120,14 +120,14 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
+                  className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${(scrolled || isBookingPage) ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
                 >
                   {link.label}
                 </Link>
               ))}
               <Link
                 href={isAuthenticated ? accountHref : "/login"}
-                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
+                className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${(scrolled || isBookingPage) ? 'text-charcoal/70 hover:text-charcoal' : 'text-charcoal md:text-white hover:text-charcoal md:hover:text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]'}`}
               >
                 {isAuthenticated ? "Account" : "Sign In"}
               </Link>
@@ -135,7 +135,7 @@ export function Nav() {
 
             <Link
               href={isOwnerSection ? "#owner-enquiry" : "/properties"}
-              className={`hidden sm:inline-flex px-6 md:px-9 py-4 text-sm uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${scrolled ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/65 hover:bg-white/10 md:hover:border-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]'}`}
+              className={`hidden sm:inline-flex px-6 md:px-9 py-4 text-sm uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 border ${(scrolled || isBookingPage) ? 'bg-charcoal text-white border-charcoal hover:bg-charcoal/90' : 'bg-transparent text-charcoal md:text-white border-charcoal md:border-white/65 hover:bg-white/10 md:hover:border-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]'}`}
             >
               {isOwnerSection ? "Partner With Us" : "Reserve Experiences"}
             </Link>
@@ -191,6 +191,9 @@ export function Nav() {
                 >
                   {isAuthenticated ? "Your Account" : "Sign In"}
                 </Link>
+
+                <div className="w-16 h-[1px] bg-charcoal/10" />
+                <LanguageSwitcher variant="mobile" onSelect={closeMobile} />
               </motion.div>
             </div>
           </motion.div>

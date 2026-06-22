@@ -3,7 +3,8 @@ import { getPrimaryImageUrl } from "@/lib/property-media"
 import { siteConfig } from "@/lib/site.config"
 import ForOwnersClient, { type ForOwnersPortfolioItem } from "./ForOwnersClient"
 
-export const dynamic = "force-dynamic"
+// Marketing page with rarely-changing DB data — cache via ISR (refresh hourly).
+export const revalidate = 3600
 
 function firstSentence(text: string, max = 180) {
   const trimmed = text.trim()

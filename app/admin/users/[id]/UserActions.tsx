@@ -21,7 +21,7 @@ export function UserActions({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const isMasterAdmin = currentUser?.email === "admin@saltroutegroup.com"
+  const isMasterAdmin = currentUser?.email === "connect@saltroutecorp.com"
 
   const handleToggle = async () => {
     setIsPending(true)
