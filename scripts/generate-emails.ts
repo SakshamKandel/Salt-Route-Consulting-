@@ -20,7 +20,7 @@ export const EmailLayout = ({ children }: { children: React.ReactNode }) => (
         {children}
         <Section style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid #eaeaea', paddingTop: '16px' }}>
           <Text style={{ color: '#888888', fontSize: '12px' }}>
-            &copy; {new Date().getFullYear()} Salt Route Consulting. All rights reserved.
+            &copy; {new Date().getFullYear()} Salt Route Corp. All rights reserved.
           </Text>
         </Section>
       </Container>

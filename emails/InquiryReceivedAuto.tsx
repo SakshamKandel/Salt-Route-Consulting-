@@ -15,7 +15,7 @@ export function InquiryReceivedAuto({ name, subject, message }: InquiryReceivedA
       <HeadlineText>We Have Received Your Message.</HeadlineText>
       <GoldRule />
       <BodyText>
-        Dear {name}, thank you for reaching out to Salt Route Consulting. We have received your enquiry and a member of our team will be in touch with you within one business day.
+        Dear {name}, thank you for reaching out to Salt Route Corp. We have received your enquiry and a member of our team will be in touch with you within one business day.
       </BodyText>
 
       {(subject || message) && (

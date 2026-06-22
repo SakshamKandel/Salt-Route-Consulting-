@@ -119,7 +119,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
               <EmailLink href="https://saltroutegroup.com" style={{ color: MUTED, textDecoration: 'none' }}>Saltroutegroup.com</EmailLink>
             </Text>
             <Text style={{ fontFamily: sans, fontSize: '8px', color: 'rgba(27,58,92,0.3)', margin: '0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              © {new Date().getFullYear()} Salt Route Consulting. Nepal.
+              © {new Date().getFullYear()} Salt Route Corp. Nepal.
             </Text>
           </Section>
 

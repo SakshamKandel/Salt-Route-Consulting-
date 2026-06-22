@@ -23,7 +23,7 @@ const dancingScript = Dancing_Script({
 })
 
 export const metadata: Metadata = {
-  title: "Salt Route Consulting",
+  title: "Salt Route Corp",
   description: "Bespoke Consulting Services",
 };
 

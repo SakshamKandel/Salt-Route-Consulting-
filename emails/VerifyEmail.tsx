@@ -9,7 +9,7 @@ export function VerifyEmail({ name, url }: { name: string; url: string }) {
       <HeadlineText>Please Verify Your Email.</HeadlineText>
       <GoldRule />
       <BodyText>
-        Dear {name}, welcome to Salt Route Consulting. We are delighted to have you. To complete your registration and unlock the full experience, please verify your email address.
+        Dear {name}, welcome to Salt Route Corp. We are delighted to have you. To complete your registration and unlock the full experience, please verify your email address.
       </BodyText>
 
       <ActionButton href={url}>
