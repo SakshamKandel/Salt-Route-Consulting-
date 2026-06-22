@@ -121,7 +121,7 @@ function HeroImage() {
           </h1>
           <div className="flex max-w-full items-center justify-center gap-3 text-white/70 sm:gap-6">
               <span className="hidden w-8 h-[1px] bg-white/40 min-[380px]:block" />
-              <p className="text-[10px] uppercase tracking-[0.16em] font-sans sm:text-xs sm:tracking-[0.3em]">Salt Route Consulting</p>
+              <p className="text-[10px] uppercase tracking-[0.16em] font-sans sm:text-xs sm:tracking-[0.3em]">Salt Route Corp</p>
               <span className="hidden w-8 h-[1px] bg-white/40 min-[380px]:block" />
           </div>
         </motion.div>
@@ -365,7 +365,7 @@ export default function HomeClient({
                 </h2>
               </div>
               <p className="font-sans text-[16px] md:text-[17px] text-charcoal/60 leading-[1.85] font-light max-w-md">
-                Salt Route Consulting is the hospitality and development arm of Salt Route Group. We shape thoughtful stays and property partnerships across Nepal, helping each home carry its own sense of place, warmth, and quiet refinement, from tea country retreats to mountain-view apartments.
+                Salt Route Corp is the hospitality and development arm of Salt Route Group. We shape thoughtful stays and property partnerships across Nepal, helping each home carry its own sense of place, warmth, and quiet refinement, from tea country retreats to mountain-view apartments.
               </p>
               <div className="pt-2">
                 <LuxuryLinkWithArrow href="/about">More About Us</LuxuryLinkWithArrow>

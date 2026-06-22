@@ -65,7 +65,7 @@ export function SiteLoader() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
           role="status"
-          aria-label="Loading Salt Route Consulting"
+          aria-label="Loading Salt Route Corp"
         >
           <LottieAnimation
             animationData={srgAnimation}

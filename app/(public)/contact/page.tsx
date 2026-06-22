@@ -61,7 +61,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/luxury_himalayan_retreat_exterior_1777124225845.png"
-            alt="Reach Salt Route Consulting"
+            alt="Reach Salt Route Corp"
             fill
             className="object-cover opacity-50"
             priority

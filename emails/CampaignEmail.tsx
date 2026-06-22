@@ -29,7 +29,7 @@ export default function CampaignEmail({ subject, body }: CampaignEmailProps) {
         style={{ fontSize: "10px", opacity: 0.5, textAlign: "center" as const }}
         align="center"
       >
-        You are receiving this email as a registered member of Salt Route Consulting.
+        You are receiving this email as a registered member of Salt Route Corp.
       </BodyText>
     </EmailLayout>
   )
