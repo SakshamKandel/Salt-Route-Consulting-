@@ -117,7 +117,7 @@ export default function PropertiesClient({
 
   return (
     <div className="bg-background">
-      <section className="relative flex min-h-[420px] h-[58vh] flex-col justify-center pt-20 overflow-hidden">
+      <section className="relative flex min-h-[380px] h-[56svh] md:h-[58vh] flex-col justify-center pt-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop"
@@ -129,16 +129,16 @@ export default function PropertiesClient({
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center px-8 text-center mt-12">
+        <div className="relative z-10 flex flex-col items-center justify-center px-5 sm:px-8 text-center mt-10 md:mt-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5 }}
           >
-            <p className="text-sm uppercase tracking-[0.5em] text-white/80 font-sans mb-6 font-light">
+            <p className="text-[11px] sm:text-sm uppercase tracking-[0.24em] sm:tracking-[0.5em] text-white/80 font-sans mb-5 sm:mb-6 font-light">
               Tailored Stays Across Nepal
             </p>
-            <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] text-white tracking-wide leading-[1.05] mb-10 font-normal">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[7.5rem] text-white tracking-wide leading-[1.05] mb-8 md:mb-10 font-normal">
               The Collection
             </h1>
             <div className="w-16 h-[1px] bg-white/40 mx-auto" />
@@ -155,7 +155,7 @@ export default function PropertiesClient({
             <label className="flex items-center gap-4 border border-charcoal/10 px-5 py-4 bg-white/50 hover:bg-white transition-colors duration-300">
               <MapPin className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Location</p>
+                <p className="text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Location</p>
                 <LocationCombobox
                   value={locationInput}
                   onChange={setLocationInput}
@@ -168,7 +168,7 @@ export default function PropertiesClient({
             <label className="flex items-center gap-4 border border-charcoal/10 px-5 py-4 bg-white/50 hover:bg-white transition-colors duration-300">
               <Calendar className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Check In</p>
+                <p className="text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Check In</p>
                 <input
                   type="date"
                   value={checkInInput}
@@ -187,7 +187,7 @@ export default function PropertiesClient({
             <label className="flex items-center gap-4 border border-charcoal/10 px-5 py-4 bg-white/50 hover:bg-white transition-colors duration-300">
               <Calendar className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Check Out</p>
+                <p className="text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Check Out</p>
                 <input
                   type="date"
                   value={checkOutInput}
@@ -201,7 +201,7 @@ export default function PropertiesClient({
             <label className="flex items-center gap-4 border border-charcoal/10 px-5 py-4 bg-white/50 hover:bg-white transition-colors duration-300">
               <Users className="w-4 h-4 text-charcoal/40 shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Guests</p>
+                <p className="text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.2em] text-charcoal/40 font-semibold mb-1">Guests</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -237,7 +237,7 @@ export default function PropertiesClient({
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               type="submit"
-              className="bg-charcoal text-white px-8 py-5 text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal/90 transition-colors duration-500 inline-flex items-center justify-center gap-2"
+              className="bg-charcoal text-white px-8 py-5 text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.2em] hover:bg-charcoal/90 transition-colors duration-500 inline-flex w-full items-center justify-center gap-2 sm:w-auto"
             >
               <Search className="w-4 h-4" strokeWidth={1.5} /> Search
             </button>
@@ -263,8 +263,8 @@ export default function PropertiesClient({
         <section className="bg-[#0C1F33]">
           <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-[360px_1fr]">
             {/* Left panel */}
-            <div className="px-10 py-14 lg:py-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.05]">
-              <p className="text-[8px] uppercase tracking-[0.45em] text-gold/60 font-bold mb-5">
+            <div className="px-5 sm:px-10 py-12 lg:py-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.05]">
+              <p className="text-[8px] uppercase tracking-[0.24em] sm:tracking-[0.45em] text-gold/60 font-bold mb-5">
                 Our Locations
               </p>
               <h2 className="font-display text-3xl xl:text-4xl text-white leading-[1.15] tracking-tight mb-5">
@@ -312,11 +312,11 @@ export default function PropertiesClient({
       )}
 
       <section className="py-20 md:py-28 bg-[#FBF9F4]">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12">
+        <div className="max-w-screen-2xl mx-auto px-5 sm:px-6 md:px-12">
           {totalProperties > 0 && (
             <div className="mb-12 flex flex-col gap-3 border-b border-charcoal/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.25em] text-charcoal/40 font-semibold">
+              <p className="text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.25em] text-charcoal/40 font-semibold">
                   Available Stays
                 </p>
                 <p className="mt-2 text-sm text-charcoal/60">
@@ -336,7 +336,7 @@ export default function PropertiesClient({
               </p>
               <Link
                 href="/properties"
-                className="border border-charcoal text-charcoal px-12 py-4 text-[10px] uppercase tracking-[0.3em] font-sans hover:bg-charcoal hover:text-white transition-all duration-700"
+                className="inline-flex w-full max-w-xs justify-center border border-charcoal text-charcoal px-8 py-4 text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-sans hover:bg-charcoal hover:text-white transition-all duration-700 sm:w-auto sm:px-12"
               >
                 Reset Search
               </Link>
@@ -482,4 +482,3 @@ export default function PropertiesClient({
     </div>
   )
 }
-

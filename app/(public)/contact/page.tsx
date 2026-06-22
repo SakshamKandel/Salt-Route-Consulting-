@@ -69,16 +69,16 @@ export default function ContactPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
         </div>
 
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10 text-center px-5 sm:px-6">
           <FadeUp>
-            <p className="text-[10px] uppercase tracking-[0.6em] text-white/80 font-sans mb-8 font-medium">Thoughtful Enquiry</p>
-            <h1 className="font-display text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-none mb-10 font-normal">
+            <p className="text-[10px] uppercase tracking-[0.24em] sm:tracking-[0.6em] text-white/80 font-sans mb-6 md:mb-8 font-medium">Thoughtful Enquiry</p>
+            <h1 className="font-display text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-none mb-8 md:mb-10 font-normal">
               Conversation.
             </h1>
-            <div className="flex items-center justify-center gap-6 text-white/40">
-                <span className="w-12 h-[1px] bg-white/20" />
-                <p className="text-[9px] uppercase tracking-[0.4em] font-sans">Reach Out to {siteConfig.name}</p>
-                <span className="w-12 h-[1px] bg-white/20" />
+            <div className="flex max-w-full items-center justify-center gap-3 text-white/40 sm:gap-6">
+                <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
+                <p className="text-[9px] uppercase tracking-[0.16em] font-sans sm:tracking-[0.4em]">Reach Out to {siteConfig.name}</p>
+                <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
             </div>
           </FadeUp>
         </div>
@@ -86,15 +86,15 @@ export default function ContactPage() {
 
       {/* CONTACT GRID - COMPACT LUXURY */}
       <section className="py-12 md:py-16 bg-white border-b border-charcoal/5">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+        <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
             
             {/* Info Column */}
             <div className="lg:col-span-5 space-y-16">
               <FadeUp>
                 <div className="space-y-6">
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Direct Contact</p>
-                  <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-charcoal tracking-wide leading-[1.1]">
+                  <p className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.4em] text-charcoal/40 font-medium">Direct Contact</p>
+                  <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-charcoal tracking-wide leading-[1.1]">
                     We&apos;d Love to<br/>Hear From You.
                   </h2>
                 </div>
@@ -107,8 +107,8 @@ export default function ContactPage() {
                       <Mail className="w-4 h-4" strokeWidth={1.5} />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Email</p>
-                      <a href="mailto:connect@saltroutecorp.com" className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
+                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Email</p>
+                      <a href="mailto:connect@saltroutecorp.com" className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors block">
                         connect@saltroutecorp.com
                       </a>
                     </div>
@@ -121,8 +121,8 @@ export default function ContactPage() {
                       <Phone className="w-4 h-4" strokeWidth={1.5} />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Phone</p>
-                      <a href={siteConfig.contact.phoneHref} className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
+                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Phone</p>
+                      <a href={siteConfig.contact.phoneHref} className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors block">
                         {siteConfig.contact.phone}
                       </a>
                     </div>
@@ -135,8 +135,8 @@ export default function ContactPage() {
                       <MapPin className="w-4 h-4" strokeWidth={1.5} />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Location</p>
-                      <p className="font-display text-2xl text-charcoal leading-snug">
+                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Location</p>
+                      <p className="font-display text-xl sm:text-2xl text-charcoal leading-snug">
                         {siteConfig.contact.addressFull}
                       </p>
                     </div>
@@ -153,7 +153,7 @@ export default function ContactPage() {
 
             {/* Form Column */}
             <div className="lg:col-span-7">
-              <FadeUp className="bg-[#FBF9F4] border border-charcoal/10 p-8 md:p-16 h-full">
+              <FadeUp className="bg-[#FBF9F4] border border-charcoal/10 p-5 sm:p-8 md:p-16 h-full">
                 {sent ? (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -172,10 +172,10 @@ export default function ContactPage() {
                     <LuxuryButton onClick={() => setSent(false)}>Send Another</LuxuryButton>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  <form onSubmit={handleSubmit} className="space-y-9 md:space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-9 md:gap-12">
                       <div className="space-y-3 group">
-                        <label className="text-[9px] uppercase tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Your Name</label>
+                        <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Your Name</label>
                         <input
                           name="name"
                           required
@@ -184,7 +184,7 @@ export default function ContactPage() {
                         />
                       </div>
                       <div className="space-y-3 group">
-                        <label className="text-[9px] uppercase tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Email Address</label>
+                        <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Email Address</label>
                         <input
                           name="email"
                           type="email"
@@ -196,7 +196,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-3 group">
-                      <label className="text-[9px] uppercase tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Subject</label>
+                      <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Subject</label>
                       <input
                         name="subject"
                         className="w-full bg-transparent border-b border-charcoal/10 pb-4 font-sans text-lg text-charcoal placeholder:text-charcoal/20 focus:outline-none focus:border-charcoal transition-colors font-light"
@@ -205,7 +205,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-3 group">
-                      <label className="text-[9px] uppercase tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Message</label>
+                      <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Message</label>
                       <textarea
                         name="message"
                         required
@@ -231,4 +231,3 @@ export default function ContactPage() {
     </div>
   )
 }
-

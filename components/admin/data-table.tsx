@@ -55,7 +55,7 @@ export function DataTable<T>({
   return (
     <div className="space-y-4">
       {searchKey && (
-        <div className="flex items-center relative max-w-sm">
+        <div className="flex w-full items-center relative sm:max-w-sm">
           <Search className="absolute left-3 w-4 h-4 text-slate-400" />
           <Input
             placeholder={searchPlaceholder}
@@ -69,46 +69,48 @@ export function DataTable<T>({
         </div>
       )}
       <div className="border border-slate-200 rounded-md bg-white overflow-hidden">
-        <Table className="min-w-[760px]">
-          <TableHeader className="bg-slate-50">
-            <TableRow>
-              {columns.map((col, i) => (
-                <TableHead key={i} className="text-slate-600 font-semibold">{col.header}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.length === 0 ? (
+        <div className="overflow-x-auto">
+          <Table className="min-w-[720px]">
+            <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center h-24 text-slate-500">
-                  {emptyMessage}
-                </TableCell>
+                {columns.map((col, i) => (
+                  <TableHead key={i} className="text-slate-600 font-semibold">{col.header}</TableHead>
+                ))}
               </TableRow>
-            ) : (
-              paginatedData.map((row, i) => (
-                <TableRow key={i} className="hover:bg-slate-50 transition-colors">
-                  {columns.map((col, j) => (
-                    <TableCell key={j} className="py-3">
-                      {col.cell ? col.cell(row) : (col.accessorKey ? String(row[col.accessorKey] || "") : "")}
-                    </TableCell>
-                  ))}
+            </TableHeader>
+            <TableBody>
+              {filteredData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center h-24 text-slate-500">
+                    {emptyMessage}
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                paginatedData.map((row, i) => (
+                  <TableRow key={i} className="hover:bg-slate-50 transition-colors">
+                    {columns.map((col, j) => (
+                      <TableCell key={j} className="py-3">
+                        {col.cell ? col.cell(row) : (col.accessorKey ? String(row[col.accessorKey] || "") : "")}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       {filteredData.length > pageSize && (
         <div className="flex flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <span>
             Showing {resultStart}-{resultEnd} of {filteredData.length}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             <button
               type="button"
               onClick={() => setPage((value) => Math.max(1, value - 1))}
               disabled={currentPage <= 1}
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40"
+              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Previous
@@ -120,7 +122,7 @@ export function DataTable<T>({
               type="button"
               onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
               disabled={currentPage >= totalPages}
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40"
+              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
             >
               Next
               <ChevronRight className="h-3.5 w-3.5" />

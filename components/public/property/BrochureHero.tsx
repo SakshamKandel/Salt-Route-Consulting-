@@ -43,7 +43,7 @@ export function BrochureHero({
   return (
     <section
       className={`relative w-full bg-charcoal ${
-        previewMode ? "h-[600px] md:h-[520px]" : "h-[85vh] md:h-[80vh]"
+        previewMode ? "h-[560px] md:h-[520px]" : "h-[78svh] min-h-[540px] md:h-[80vh]"
       }`}
     >
       <SafeImage
@@ -59,14 +59,14 @@ export function BrochureHero({
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
       <div className="absolute inset-0 flex items-end">
-        <div className="w-full max-w-screen-xl mx-auto px-6 md:px-12 pb-14 md:pb-20 text-white">
+        <div className="w-full max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 pb-12 md:pb-20 text-white">
           {propertyType ? (
             <Eyebrow light className="mb-5">
               {propertyType}
             </Eyebrow>
           ) : null}
 
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-wide leading-[1.05]">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-wide leading-[1.05]">
             {title}
           </h1>
 
@@ -74,17 +74,17 @@ export function BrochureHero({
             <p className="mt-5 font-sans font-light text-white/80 text-lg">{tagline}</p>
           ) : null}
 
-          <div className="mt-6 flex items-center gap-3 text-white/70 uppercase tracking-[0.2em] text-[11px]">
+          <div className="mt-6 flex items-start gap-3 text-white/70 uppercase tracking-[0.12em] text-[11px] sm:items-center sm:tracking-[0.2em]">
             <MapPin className="w-4 h-4" strokeWidth={1.5} />
-            <span>{location}</span>
+            <span className="min-w-0">{location}</span>
           </div>
 
-          <div className="mt-8 flex items-center gap-8">
+          <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
             {hasVideo ? (
               <button
                 type="button"
                 onClick={onWatchVideo}
-                className="group flex items-center gap-3 uppercase tracking-[0.3em] text-[11px] font-bold text-white/90 transition-colors duration-500 hover:text-gold"
+                className="group flex items-center gap-3 uppercase tracking-[0.18em] text-[11px] font-bold text-white/90 transition-colors duration-500 hover:text-gold sm:tracking-[0.3em]"
               >
                 <Play className="w-4 h-4" strokeWidth={1.5} />
                 Watch Video

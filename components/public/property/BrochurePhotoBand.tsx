@@ -24,7 +24,7 @@ export function BrochurePhotoBand({
   const hasMore = images.length > shown.length
 
   return (
-    <section className="w-full py-20 md:py-28">
+    <section className="w-full py-16 md:py-28">
       <div className={`grid ${gridCols} gap-1`}>
         {shown.map((image) => (
           <div
@@ -47,7 +47,7 @@ export function BrochurePhotoBand({
           <button
             type="button"
             onClick={onViewAll}
-            className="inline-flex items-center gap-2 uppercase tracking-[0.3em] text-[11px] font-bold text-charcoal transition-colors hover:text-gold"
+            className="inline-flex items-center gap-2 uppercase tracking-[0.18em] sm:tracking-[0.3em] text-[11px] font-bold text-charcoal transition-colors hover:text-gold"
           >
             View All Photos
             <ArrowUpRight className="h-4 w-4" />

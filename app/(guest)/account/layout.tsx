@@ -33,7 +33,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
               </span>
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium mb-1">
+              <p className="text-[9px] uppercase tracking-[0.18em] text-[#1B3A5C]/30 font-medium mb-1 sm:tracking-[0.3em]">
                 Welcome back
               </p>
               <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
@@ -46,7 +46,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
       {/* ─── Page content ─── */}
       <main className="flex-1">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 py-10 md:py-16">
+        <div className="max-w-screen-2xl mx-auto min-w-0 px-4 sm:px-6 md:px-12 py-10 md:py-16">
           {children}
         </div>
       </main>

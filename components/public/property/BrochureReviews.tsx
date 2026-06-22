@@ -33,12 +33,12 @@ export function BrochureReviews({
   if (shown.length === 0 && isOwnerView) return null
 
   return (
-    <section className="py-20 md:py-28 bg-cream">
+    <section className="py-16 md:py-28 bg-cream">
       <SectionHeading eyebrow="Guest Voices" title="Reviews" />
 
       {reviewCount > 0 && (
         <FadeUp className="text-center -mt-6 mb-12">
-          <p className="font-sans text-[12px] uppercase tracking-[0.3em] font-bold text-charcoal/60">
+          <p className="font-sans text-[12px] uppercase tracking-[0.16em] sm:tracking-[0.3em] font-bold text-charcoal/60">
             {avgRating} <span className="text-gold">✦</span> {reviewCount} stays
           </p>
         </FadeUp>
@@ -51,7 +51,7 @@ export function BrochureReviews({
           </p>
         </FadeUp>
       ) : (
-        <div className="max-w-3xl mx-auto px-6 space-y-12">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 space-y-12">
           {shown.map((review, index) => (
             <FadeUp
               key={review.id}
@@ -68,7 +68,7 @@ export function BrochureReviews({
                 </div>
               ) : null}
 
-              <div className="mt-6 flex items-center justify-between">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                 <span className="font-display text-charcoal">
                   {review.guest.name ?? "Guest"}
                 </span>
@@ -84,7 +84,7 @@ export function BrochureReviews({
       )}
 
       {!isOwnerView && (
-        <FadeUp className="max-w-3xl mx-auto px-6 mt-12 pt-12 border-t border-charcoal/10">
+        <FadeUp className="max-w-3xl mx-auto px-5 sm:px-6 mt-12 pt-12 border-t border-charcoal/10">
           <GoldRule className="mb-8" />
           <PropertyReviewForm
             eligibleBookingId={eligibleBookingId}

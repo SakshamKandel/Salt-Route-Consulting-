@@ -23,11 +23,11 @@ export function BrochureFacilities({
   if (items.length === 0) return null
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-16 md:py-28 bg-white">
       <SectionHeading eyebrow="Comfort" title={amenitiesTitle || "Facilities & Services"} />
 
-      <FadeUp className="max-w-5xl mx-auto px-6">
-        <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12">
+      <FadeUp className="max-w-5xl mx-auto px-5 sm:px-6">
+        <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 sm:gap-x-8 gap-y-10 md:gap-y-12">
           {items.map((item) => {
             const Icon = resolveFeatureIcon(item, featureIcons)
             return (

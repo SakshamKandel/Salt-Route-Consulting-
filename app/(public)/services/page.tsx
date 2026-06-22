@@ -107,7 +107,7 @@ export default function ServicesPage() {
     <div className="bg-[#FFFDF8] text-charcoal">
 
       {/* ── HERO ── */}
-      <section className="relative h-[72vh] overflow-hidden bg-charcoal">
+      <section className="relative h-[68svh] min-h-[520px] md:h-[72vh] overflow-hidden bg-charcoal">
         <Image
           src="/luxury_himalayan_retreat_exterior_1777124225845.png"
           alt="Salt Route Services"
@@ -121,49 +121,49 @@ export default function ServicesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10"
+          className="absolute inset-0 flex flex-col items-center justify-center text-center px-5 sm:px-6 z-10"
         >
-          <p className="text-[8px] uppercase tracking-[0.7em] text-white/35 mb-6">
+          <p className="text-[8px] uppercase tracking-[0.28em] sm:tracking-[0.7em] text-white/35 mb-6">
             {siteConfig.brandName} · {siteConfig.region}
           </p>
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-wide uppercase">
+          <h1 className="font-display text-4xl min-[360px]:text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-wide uppercase">
             Consulting &<br />
             <em className="not-italic text-[#C9A96E]/85">Experiences</em>
           </h1>
-          <div className="flex items-center gap-6 mt-8">
-            <span className="w-10 h-px bg-white/15" />
-            <p className="text-[8px] uppercase tracking-[0.45em] text-white/30">
+          <div className="flex max-w-full items-center gap-3 sm:gap-6 mt-8">
+            <span className="hidden w-10 h-px bg-white/15 min-[380px]:block" />
+            <p className="text-[8px] uppercase tracking-[0.2em] sm:tracking-[0.45em] text-white/30">
               Responsible Stays · Property Care
             </p>
-            <span className="w-10 h-px bg-white/15" />
+            <span className="hidden w-10 h-px bg-white/15 min-[380px]:block" />
           </div>
         </motion.div>
       </section>
 
       {/* ── OPENING LINE ── */}
-      <section className="py-20 md:py-28 px-8 border-b border-charcoal/6">
+      <section className="py-16 md:py-28 px-5 sm:px-8 border-b border-charcoal/6">
         <FadeUp className="max-w-2xl mx-auto text-center space-y-5">
           <p className="font-display text-xl md:text-2xl lg:text-3xl text-charcoal/75 italic leading-[1.6]">
             &ldquo;Every journey we curate is a study in intention. Knowing a place deeply, and sharing it with rare generosity.&rdquo;
           </p>
           <div className="flex items-center justify-center gap-5 pt-2">
             <span className="w-6 h-px bg-[#C9A96E]/50" />
-            <p className="text-[8px] uppercase tracking-[0.5em] text-[#C9A96E]/70">{siteConfig.name}</p>
+            <p className="text-[8px] uppercase tracking-[0.24em] sm:tracking-[0.5em] text-[#C9A96E]/70">{siteConfig.name}</p>
             <span className="w-6 h-px bg-[#C9A96E]/50" />
           </div>
         </FadeUp>
       </section>
 
       {/* ── GUEST EXPERIENCES LABEL ── */}
-      <div className="max-w-screen-xl mx-auto px-8 md:px-14 pt-16 pb-10">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-8 md:px-14 pt-16 pb-10">
         <FadeUp className="flex items-center gap-6">
-          <p className="text-[8px] uppercase tracking-[0.5em] text-charcoal/30 whitespace-nowrap">Guest Experiences</p>
+          <p className="text-[8px] uppercase tracking-[0.24em] sm:tracking-[0.5em] text-charcoal/30 whitespace-nowrap">Guest Experiences</p>
           <div className="flex-1 h-px bg-charcoal/8" />
         </FadeUp>
       </div>
 
       {/* ── SERVICE GRID ── */}
-      <section className="max-w-screen-xl mx-auto px-8 md:px-14 pb-20">
+      <section className="max-w-screen-xl mx-auto px-5 sm:px-8 md:px-14 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-charcoal/8 border border-charcoal/8">
           {guestServices.map((s, i) => (
             <FadeUp key={s.num} delay={i * 0.07}>
@@ -191,7 +191,7 @@ export default function ServicesPage() {
                   <p className="text-[13px] text-charcoal/45 leading-relaxed font-light font-sans flex-1">
                     {s.body}
                   </p>
-                  <span className="inline-flex items-center gap-2 text-[8px] uppercase tracking-[0.35em] text-charcoal/35 group-hover:text-[#C9A96E] transition-colors duration-500">
+                  <span className="inline-flex items-center gap-2 text-[8px] uppercase tracking-[0.2em] sm:tracking-[0.35em] text-charcoal/35 group-hover:text-[#C9A96E] transition-colors duration-500">
                     {s.cta}
                     <ArrowUpRight className="h-3 w-3" />
                   </span>
@@ -212,25 +212,25 @@ export default function ServicesPage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/55" />
-        <FadeUp className="relative z-10 text-center max-w-xl px-8 space-y-5">
+        <FadeUp className="relative z-10 text-center max-w-xl px-5 sm:px-8 space-y-5">
           <span className="w-6 h-px bg-[#C9A96E]/60 block mx-auto" />
           <p className="font-display text-xl md:text-2xl lg:text-3xl text-white/90 italic leading-[1.6]">
             &ldquo;A private table in a courtyard. A guide who knows every name. A morning that asks nothing of you.&rdquo;
           </p>
-          <p className="text-[8px] uppercase tracking-[0.45em] text-[#C9A96E]/60">The Salt Route Standard</p>
+          <p className="text-[8px] uppercase tracking-[0.22em] sm:tracking-[0.45em] text-[#C9A96E]/60">The Salt Route Standard</p>
         </FadeUp>
       </section>
 
       {/* ── CONSULTING LABEL ── */}
-      <div className="max-w-screen-xl mx-auto px-8 md:px-14 pt-16 pb-10">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-8 md:px-14 pt-16 pb-10">
         <FadeUp className="flex items-center gap-6">
-          <p className="text-[8px] uppercase tracking-[0.5em] text-charcoal/30 whitespace-nowrap">Property Consulting</p>
+          <p className="text-[8px] uppercase tracking-[0.24em] sm:tracking-[0.5em] text-charcoal/30 whitespace-nowrap">Property Consulting</p>
           <div className="flex-1 h-px bg-charcoal/8" />
         </FadeUp>
       </div>
 
       {/* ── CONSULTING SECTION ── */}
-      <section className="max-w-screen-xl mx-auto px-8 md:px-14 pb-24">
+      <section className="max-w-screen-xl mx-auto px-5 sm:px-8 md:px-14 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-20 items-start">
 
           {/* Left: intro */}
@@ -245,7 +245,7 @@ export default function ServicesPage() {
             </p>
             <Link
               href="/for-owners"
-              className="inline-flex items-center gap-3 border border-charcoal/15 hover:border-[#C9A96E] text-[8px] uppercase tracking-[0.4em] text-charcoal/50 hover:text-[#C9A96E] px-7 py-3.5 transition-all duration-500 group"
+              className="inline-flex items-center gap-3 border border-charcoal/15 hover:border-[#C9A96E] text-[8px] uppercase tracking-[0.22em] sm:tracking-[0.4em] text-charcoal/50 hover:text-[#C9A96E] px-6 sm:px-7 py-3.5 transition-all duration-500 group"
             >
               Partner With SRC
               <ArrowUpRight className="h-3 w-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
@@ -280,9 +280,9 @@ export default function ServicesPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
 
-        <div className="relative z-10 px-10 md:px-20 pb-14 md:pb-20 space-y-7 max-w-lg">
+        <div className="relative z-10 px-5 sm:px-10 md:px-20 pb-12 md:pb-20 space-y-7 max-w-lg">
           <FadeUp>
-            <p className="text-[8px] uppercase tracking-[0.5em] text-white/25">Begin Your Journey</p>
+            <p className="text-[8px] uppercase tracking-[0.24em] sm:tracking-[0.5em] text-white/25">Begin Your Journey</p>
           </FadeUp>
           <FadeUp delay={0.1}>
             <h2 className="font-display text-4xl md:text-5xl text-white leading-[0.95] tracking-wide uppercase">
@@ -293,13 +293,13 @@ export default function ServicesPage() {
           <FadeUp delay={0.2} className="flex flex-wrap gap-3 pt-1">
             <Link
               href="/properties"
-              className="bg-[#C9A96E] hover:bg-[#DBCBAA] text-[#1B3A5C] text-[8px] uppercase tracking-[0.4em] font-medium px-8 py-3.5 transition-all duration-500"
+              className="inline-flex w-full justify-center bg-[#C9A96E] hover:bg-[#DBCBAA] text-[#1B3A5C] text-[8px] uppercase tracking-[0.22em] sm:tracking-[0.4em] font-medium px-7 sm:px-8 py-3.5 transition-all duration-500 sm:w-auto"
             >
               View Stays
             </Link>
             <Link
               href="/contact"
-              className="border border-white/25 hover:border-white text-white text-[8px] uppercase tracking-[0.4em] px-8 py-3.5 transition-all duration-500 hover:bg-white/5 inline-flex items-center gap-2"
+              className="inline-flex w-full items-center justify-center gap-2 border border-white/25 hover:border-white text-white text-[8px] uppercase tracking-[0.22em] sm:tracking-[0.4em] px-7 sm:px-8 py-3.5 transition-all duration-500 hover:bg-white/5 sm:w-auto"
             >
               Contact Concierge <ArrowUpRight className="h-3 w-3" />
             </Link>
