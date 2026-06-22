@@ -1,12 +1,11 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
-import { generateBookingCode } from "@/lib/booking-code"
 import { NextResponse } from "next/server"
 import { bookingSchema } from "@/lib/validations"
 import { rateLimit } from "@/lib/rate-limit"
 import { isHoneypotTriggered, safeErrorResponse } from "@/lib/security"
 import { createAuditLog, getClientIp } from "@/lib/audit"
-import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
+import { createBooking } from "@/lib/booking-service"
 import { notifyAdmins, notifyUser, getAdminEmails } from "@/lib/notifications"
 import { publishAdminEvent } from "@/lib/realtime/publisher"
 import { render } from "@react-email/render"
@@ -42,88 +41,33 @@ export async function POST(request: Request) {
     // 10.2 — Zod validation
     const validated = bookingSchema.parse(json)
 
-    const result = await prisma.$transaction(async (tx) => {
-      // 10.1 — Double-check availability inside transaction
-      const overlap = await tx.booking.findFirst({
-        where: {
-          propertyId: validated.propertyId,
-          status: { in: ACTIVE_BOOKING_STATUSES },
-          checkIn: { lt: validated.checkOut },
-          checkOut: { gt: validated.checkIn },
-        },
-      })
-
-      if (overlap) {
-        throw new Error("Property is no longer available for these dates")
-      }
-
-      const blockedDate = await tx.blockedDate.findFirst({
-        where: {
-          propertyId: validated.propertyId,
-          date: {
-            gte: validated.checkIn,
-            lt: validated.checkOut,
-          },
-        },
-      })
-
-      if (blockedDate) {
-        throw new Error("Property is blocked for one or more selected dates")
-      }
-
-      // Load authoritative price from DB (never trust client-supplied totalPrice)
-      const property = await tx.property.findUnique({
-        where: { id: validated.propertyId },
-        select: { pricePerNight: true, maxGuests: true, status: true, ownerId: true },
-      })
-      if (!property || property.status !== "ACTIVE") {
-        throw new Error("Property not found")
-      }
-      if (validated.guests > property.maxGuests) {
-        throw new Error(`This property allows up to ${property.maxGuests} guests`)
-      }
-
-      const nights = Math.ceil(
-        (validated.checkOut.getTime() - validated.checkIn.getTime()) / (1000 * 60 * 60 * 24)
-      )
-      const totalPrice = Number(property.pricePerNight) * nights
-
-      const guest = await tx.user.findUnique({
+    // Ensure the guest has a phone number before creating the booking.
+    const guest = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { phone: true },
+    })
+    const phone = validated.phone?.trim() || guest?.phone?.trim()
+    if (!phone) {
+      throw new Error("Phone number is required before booking")
+    }
+    if (phone !== guest?.phone) {
+      await prisma.user.update({
         where: { id: userId },
-        select: { phone: true },
+        data: { phone },
       })
-      const phone = validated.phone?.trim() || guest?.phone?.trim()
-      if (!phone) {
-        throw new Error("Phone number is required before booking")
-      }
-      if (phone !== guest?.phone) {
-        await tx.user.update({
-          where: { id: userId },
-          data: { phone },
-        })
-      }
+    }
 
-      const bookingCode = await generateBookingCode()
-
-      const booking = await tx.booking.create({
-        data: {
-          bookingCode,
-          checkIn: validated.checkIn,
-          checkOut: validated.checkOut,
-          guests: validated.guests,
-          notes: validated.notes,
-          totalPrice,
-          guestId: userId,
-          propertyId: validated.propertyId,
-          status: "PENDING",
-        },
-        include: {
-          property: { include: { owner: true } },
-          guest: true,
-        },
-      })
-
-      return booking
+    // Use the unified, lock-protected, serializable booking creation helper.
+    const { booking: result } = await createBooking({
+      guestId: userId,
+      propertyId: validated.propertyId,
+      roomTypeId: validated.roomTypeId,
+      checkIn: validated.checkIn,
+      checkOut: validated.checkOut,
+      guests: validated.guests,
+      units: validated.units,
+      notes: validated.notes,
+      status: "PENDING",
     })
 
     // 10.8 — Audit log

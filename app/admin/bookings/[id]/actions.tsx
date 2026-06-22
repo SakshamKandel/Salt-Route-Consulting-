@@ -12,6 +12,7 @@ import { BookingStatus } from "@prisma/client"
 import { createAuditLog } from "@/lib/audit"
 import { assertBookingTransition, getBookingStatusTimestampUpdate, BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
 import { notifyAdmins, notifyUser } from "@/lib/notifications"
+import { expireStalePendingBookings } from "@/lib/booking-hold-expiry"
 
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
 
@@ -20,6 +21,8 @@ export async function updateBookingStatusAction(id: string, status: BookingStatu
   if (!session?.user || !["ADMIN", "OWNER"].includes(session.user.role)) return { error: "Unauthorized" }
 
   try {
+    await expireStalePendingBookings()
+
     const current = await prisma.booking.findUnique({
       where: { id },
       include: {

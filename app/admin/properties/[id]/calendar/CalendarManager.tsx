@@ -1,38 +1,57 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
 import { addBlockedDatesAction, removeBlockedDateAction } from "./actions"
 import { Trash2, Plus, CalendarX } from "lucide-react"
 
-type BlockedDate = { id: string; date: Date }
+const WHOLE_PROPERTY = "__whole__"
+
+type BlockedDate = { id: string; date: Date; roomTypeId: string | null }
+type RoomTypeOption = { id: string; name: string }
 
 export function CalendarManager({
   propertyId,
   initial,
+  roomTypes = [],
 }: {
   propertyId: string
   initial: BlockedDate[]
+  roomTypes?: RoomTypeOption[]
 }) {
+  const router = useRouter()
   const [blocked, setBlocked] = useState(initial)
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
+  const [scope, setScope] = useState<string>(WHOLE_PROPERTY)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const [pending, setPending] = useState<string | null>(null)
 
   const today = new Date().toISOString().split("T")[0]
+  const roomTypeName = (id: string | null) =>
+    id ? roomTypes.find((rt) => rt.id === id)?.name ?? "Room class" : "Entire property"
+
+  const scopeItems = [
+    { value: WHOLE_PROPERTY, label: "Entire property" },
+    ...roomTypes.map((rt) => ({ value: rt.id, label: rt.name })),
+  ]
 
   const handleAdd = async () => {
     if (!from || !to) return
     setPending("add")
     setMessage(null)
-    const res = await addBlockedDatesAction(propertyId, from, to)
+    const roomTypeId = scope === WHOLE_PROPERTY ? null : scope
+    const res = await addBlockedDatesAction(propertyId, from, to, roomTypeId)
     if (res.success) {
       setMessage({ type: "success", text: res.success })
       setFrom("")
       setTo("")
+      router.refresh()
     } else {
       setMessage({ type: "error", text: res.error! })
     }
@@ -62,7 +81,7 @@ export function CalendarManager({
 
       <div className="bg-white border rounded-xl p-5 space-y-4">
         <h3 className="font-semibold text-navy">Block a Date Range</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className={`grid grid-cols-1 gap-4 ${roomTypes.length > 0 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           <div>
             <Label htmlFor="from">From</Label>
             <Input id="from" type="date" min={today} value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1" />
@@ -71,7 +90,26 @@ export function CalendarManager({
             <Label htmlFor="to">To</Label>
             <Input id="to" type="date" min={from || today} value={to} onChange={(e) => setTo(e.target.value)} className="mt-1" />
           </div>
+          {roomTypes.length > 0 && (
+            <div>
+              <Label>Applies To</Label>
+              <Select items={scopeItems} value={scope} onValueChange={(v) => setScope(v ?? WHOLE_PROPERTY)}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={WHOLE_PROPERTY}>Entire property</SelectItem>
+                  {roomTypes.map((rt) => (
+                    <SelectItem key={rt.id} value={rt.id}>{rt.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
+        {roomTypes.length > 0 && (
+          <p className="text-xs text-slate-400">
+            &ldquo;Entire property&rdquo; blocks every room class. Selecting a class blocks only that class&apos;s units.
+          </p>
+        )}
         <Button
           onClick={handleAdd}
           disabled={!from || !to || pending === "add"}
@@ -91,11 +129,16 @@ export function CalendarManager({
           <p className="p-8 text-center text-slate-400">No dates blocked. Add a range above.</p>
         ) : (
           <div className="divide-y max-h-96 overflow-y-auto">
-            {sorted.map(({ id, date }) => (
-              <div key={id} className="flex items-center justify-between px-5 py-3">
-                <span className="text-navy text-sm font-medium">
-                  {new Date(date).toLocaleDateString("en-US", { weekday: "short", year: "numeric", month: "short", day: "numeric" })}
-                </span>
+            {sorted.map(({ id, date, roomTypeId }) => (
+              <div key={id} className="flex items-center justify-between px-5 py-3 gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-navy text-sm font-medium whitespace-nowrap">
+                    {new Date(date).toLocaleDateString("en-US", { weekday: "short", year: "numeric", month: "short", day: "numeric" })}
+                  </span>
+                  <Badge variant={roomTypeId ? "secondary" : "outline"} className="truncate">
+                    {roomTypeName(roomTypeId)}
+                  </Badge>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"

@@ -7,6 +7,8 @@ import { createAuditLog, getClientIp } from "@/lib/audit"
 import { sendEmail } from "@/lib/email/transporter"
 import { BookingRejected } from "@/emails/BookingRejected"
 import { render } from "@react-email/render"
+import { assertBookingTransition, getBookingStatusTimestampUpdate } from "@/lib/booking-lifecycle"
+import { expireStalePendingBookings } from "@/lib/booking-hold-expiry"
 
 export async function POST(
   request: Request,
@@ -29,6 +31,8 @@ export async function POST(
     // 10.2 — Zod validation
     const validated = cancelBookingSchema.parse({ bookingId: id, reason: json.reason })
 
+    await expireStalePendingBookings()
+
     const booking = await prisma.booking.findUnique({
       where: { id },
       include: {
@@ -41,9 +45,13 @@ export async function POST(
       return NextResponse.json({ error: "Not found" }, { status: 404 })
     }
 
-    // Only PENDING bookings can be cancelled by non-admin users
-    if (session.user.role !== "ADMIN" && booking.status !== "PENDING") {
-      return NextResponse.json({ error: "Only pending bookings can be cancelled" }, { status: 400 })
+    // Enforce lifecycle transition — guests can only cancel PENDING, admins can cancel PENDING/CONFIRMED.
+    if (session.user.role !== "ADMIN") {
+      if (booking.status !== "PENDING") {
+        return NextResponse.json({ error: "Only pending bookings can be cancelled" }, { status: 400 })
+      }
+    } else {
+      assertBookingTransition(booking.status, "CANCELLED", session.user.role)
     }
 
     const updated = await prisma.booking.update({
@@ -51,6 +59,7 @@ export async function POST(
       data: {
         status: "CANCELLED",
         cancellationReason: validated.reason,
+        ...getBookingStatusTimestampUpdate("CANCELLED"),
       },
     })
 

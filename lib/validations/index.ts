@@ -61,6 +61,8 @@ export const inquirySchema = z.object({
 
 export const bookingSchema = z.object({
   propertyId: z.string().cuid('Invalid property'),
+  roomTypeId: z.string().cuid('Invalid room class').optional().nullable(),
+  units: z.number().int().min(1).max(100).optional(),
   checkIn: z.coerce.date().refine((d) => d >= new Date(new Date().setHours(0,0,0,0)), {
     message: 'Check-in date cannot be in the past',
   }),

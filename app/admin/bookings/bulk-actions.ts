@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db"
 import { createAuditLog } from "@/lib/audit"
 import { BookingStatus } from "@prisma/client"
 import { revalidatePath } from "next/cache"
+import { assertBookingTransition, getBookingStatusTimestampUpdate } from "@/lib/booking-lifecycle"
+import { expireStalePendingBookings } from "@/lib/booking-hold-expiry"
 
 async function requireAdmin() {
   const session = await auth()
@@ -19,32 +21,58 @@ export async function bulkUpdateBookingStatusAction(
 ) {
   const session = await requireAdmin()
   try {
-    const now = new Date()
-    const timestampField: Record<string, Date | undefined> = {}
-    if (status === "CONFIRMED") timestampField.confirmedAt = now
-    if (status === "CANCELLED") timestampField.cancelledAt = now
-    if (status === "CHECKED_IN") timestampField.checkedInAt = now
-    if (status === "COMPLETED") timestampField.checkedOutAt = now
-    if (status === "NO_SHOW") timestampField.noShowAt = now
+    const result = await prisma.$transaction(async (tx) => {
+      await expireStalePendingBookings(new Date(), tx)
 
-    await prisma.booking.updateMany({
-      where: { id: { in: ids } },
-      data: {
-        status,
-        ...(reason ? { cancellationReason: reason } : {}),
-        ...timestampField,
-      },
+      const bookings = await tx.booking.findMany({
+        where: { id: { in: ids } },
+        select: { id: true, status: true },
+      })
+
+      const skipped: { id: string; current: BookingStatus }[] = []
+      const updated: string[] = []
+
+      for (const booking of bookings) {
+        try {
+          assertBookingTransition(booking.status, status, "ADMIN")
+          const tsUpdate = getBookingStatusTimestampUpdate(status)
+          await tx.booking.update({
+            where: { id: booking.id },
+            data: {
+              status,
+              ...tsUpdate,
+              ...(reason ? { cancellationReason: reason } : {}),
+            },
+          })
+          updated.push(booking.id)
+        } catch {
+          skipped.push({ id: booking.id, current: booking.status })
+        }
+      }
+
+      return { updated, skipped }
     })
 
     await createAuditLog({
       action: "BULK_UPDATE",
       entity: "BOOKING",
       userId: session.user.id,
-      details: { action: "BULK_STATUS_UPDATE", status, ids, count: ids.length, reason },
+      details: {
+        action: "BULK_STATUS_UPDATE",
+        status,
+        updated: result.updated,
+        skipped: result.skipped,
+        count: result.updated.length,
+        reason,
+      },
     })
 
     revalidatePath("/admin/bookings")
-    return { success: true, count: ids.length }
+    return {
+      success: true,
+      count: result.updated.length,
+      skipped: result.skipped.length,
+    }
   } catch {
     return { error: "Failed to update booking statuses." }
   }
