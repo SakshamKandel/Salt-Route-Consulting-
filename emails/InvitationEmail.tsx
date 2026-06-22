@@ -10,7 +10,7 @@ export function InvitationEmail({ role, url, invitedBy }: { role: string; url: s
       <HeadlineText>You Have Been Invited.</HeadlineText>
       <GoldRule />
       <BodyText>
-        {invitedBy} has extended an invitation for you to join Salt Route Consulting as a {roleLabel}. We are pleased to welcome you to our platform.
+        {invitedBy} has extended an invitation for you to join Salt Route Corp as a {roleLabel}. We are pleased to welcome you to our platform.
       </BodyText>
       <BodyText>
         Click below to accept your invitation and set up your account. This link expires in 48 hours.

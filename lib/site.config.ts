@@ -8,7 +8,7 @@
 
 export const siteConfig = {
   /** Canonical name used in UI, emails, and meta tags */
-  name: process.env.SITE_NAME ?? "Salt Route Consulting",
+  name: process.env.SITE_NAME ?? "Salt Route Corp",
 
   /** Short group/brand name used in bylines and compact labels */
   brandName: process.env.SITE_BRAND_NAME ?? "Salt Route Group",
@@ -27,7 +27,7 @@ export const siteConfig = {
     email: process.env.INFO_EMAIL ?? process.env.ENQUIRIES_EMAIL ?? "connect@saltroutecorp.com",
     supportEmail: process.env.SUPPORT_EMAIL ?? "connect@saltroutecorp.com",
     /** The "From" address used in all outgoing emails */
-    fromEmail: process.env.SMTP_FROM ?? `"Salt Route Consulting" <connect@saltroutecorp.com>`,
+    fromEmail: process.env.SMTP_FROM ?? `"Salt Route Corp" <connect@saltroutecorp.com>`,
     /** Fallback admin notification recipient if no admin users in DB */
     adminEmail: process.env.ADMIN_EMAIL ?? "connect@saltroutecorp.com",
     phone: process.env.CONTACT_PHONE ?? "+977 980 130 0001",

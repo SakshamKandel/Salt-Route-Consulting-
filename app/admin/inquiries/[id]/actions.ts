@@ -87,10 +87,10 @@ export async function replyToInquiryAction(id: string, replyMessage: string) {
     // 2. Send Email (Fire and forget)
     sendEmail({
       to: inquiry.email,
-      subject: `Re: Your Inquiry to Salt Route Consulting`,
+      subject: `Re: Your Inquiry to Salt Route Corp`,
       html: `
         <div style="font-family: sans-serif; color: #1B3A5C; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #102943;">Response from Salt Route Consulting</h2>
+          <h2 style="color: #102943;">Response from Salt Route Corp</h2>
           <p>Hi ${inquiry.name},</p>
           <div style="background-color: #FBF9F4; border-left: 4px solid #C9A96E; padding: 16px; margin: 20px 0; white-space: pre-wrap;">
             ${replyMessage}
