@@ -62,11 +62,11 @@ export function Nav() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-700 border-b ${(scrolled || isBookingPage) ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-28'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-700 border-b ${(scrolled || isBookingPage) ? 'bg-white/80 backdrop-blur-xl border-charcoal/5 h-20' : 'bg-transparent border-transparent h-20 md:h-28'}`}>
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12 h-full flex items-center justify-between relative">
           
           {/* Left Actions (Mobile Toggle & Language) */}
-          <div className="flex items-center gap-4 lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={toggleMobile}
               className="flex flex-col justify-center items-center w-8 h-8 z-[10001]"
@@ -101,7 +101,7 @@ export function Nav() {
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }
             }}
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center z-[80]"
+            className="absolute left-1/2 -translate-x-1/2 flex max-w-[96px] flex-col items-center z-[80]"
           >
             <Image
               src="/logo.png"
@@ -114,7 +114,7 @@ export function Nav() {
           </Link>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex min-w-0 items-center gap-2 md:gap-8">
             <div className="hidden lg:flex items-center gap-10 mr-4">
               {navLinks.slice(3).map((link) => (
                 <Link
@@ -151,9 +151,9 @@ export function Nav() {
             animate={{ opacity: 1, y: "0%" }}
             exit={{ opacity: 0, y: "-100%" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[9999] bg-background flex flex-col justify-center items-center"
+            className="fixed inset-0 z-[9999] bg-background flex flex-col justify-center items-center overflow-y-auto py-24"
           >
-            <div className="flex flex-col items-center gap-8 w-full px-6">
+            <div className="flex w-full max-w-sm flex-col items-center gap-7 px-5">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
@@ -164,7 +164,7 @@ export function Nav() {
                   <Link
                     href={link.href}
                     onClick={closeMobile}
-                    className="block text-center font-display text-3xl sm:text-4xl uppercase tracking-[0.1em] text-charcoal hover:text-charcoal/70 transition-colors"
+                    className="block text-center font-display text-2xl min-[360px]:text-3xl sm:text-4xl uppercase tracking-[0.08em] text-charcoal hover:text-charcoal/70 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -187,7 +187,7 @@ export function Nav() {
                 <Link
                   href={isAuthenticated ? accountHref : "/login"}
                   onClick={closeMobile}
-                  className="text-base uppercase tracking-[0.2em] font-sans text-charcoal/60 hover:text-charcoal transition-colors"
+                  className="text-center text-sm uppercase tracking-[0.16em] font-sans text-charcoal/60 hover:text-charcoal transition-colors sm:text-base sm:tracking-[0.2em]"
                 >
                   {isAuthenticated ? "Your Account" : "Sign In"}
                 </Link>

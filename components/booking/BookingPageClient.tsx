@@ -101,17 +101,17 @@ export function BookingPageClient({
   }, [lightbox.open, closeLightbox, stepImage])
 
   return (
-    <div className="min-h-screen bg-[#FBF9F4] pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="mb-12">
+    <div className="min-h-screen bg-[#FBF9F4] pt-24 pb-16 md:pt-32 md:pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="mb-8 md:mb-12">
           <LuxuryLink href={`/properties/${property.slug}`} className="inline-flex">
             ← BACK TO PROPERTY
           </LuxuryLink>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-24 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-10 lg:gap-24 items-start">
           {/* Left Column */}
-          <div className="space-y-12">
+          <div className="min-w-0 space-y-10 md:space-y-12">
             {/* Image with zoom + gallery */}
             <div className="space-y-3">
               <div className="group relative">
@@ -128,7 +128,7 @@ export function BookingPageClient({
                     <button
                       type="button"
                       onClick={openLightbox}
-                      className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-charcoal font-bold flex items-center gap-2 hover:bg-white transition-colors"
+                      className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-charcoal font-bold flex items-center gap-2 hover:bg-white transition-colors sm:top-4 sm:right-4 sm:px-4 sm:tracking-[0.2em]"
                     >
                       <Expand className="w-3 h-3" /> Zoom
                     </button>
@@ -183,8 +183,8 @@ export function BookingPageClient({
 
             {/* Room indicator */}
             {selectedRoom && (
-              <div className="flex items-center gap-3">
-                <span className="text-[9px] uppercase tracking-[0.25em] text-gold/80 font-sans font-bold">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[9px] uppercase tracking-[0.16em] text-gold/80 font-sans font-bold sm:tracking-[0.25em]">
                   Selected Room
                 </span>
                 <span className="w-6 h-[1px] bg-gold/40" />
@@ -198,8 +198,8 @@ export function BookingPageClient({
             )}
 
             <div className="space-y-6">
-              <h1 className="font-display text-4xl md:text-5xl text-charcoal">{property.title}</h1>
-              <p className="text-[10px] tracking-[0.2em] uppercase font-sans text-charcoal/50">
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-charcoal">{property.title}</h1>
+              <p className="text-[10px] tracking-[0.14em] uppercase font-sans text-charcoal/50 sm:tracking-[0.2em]">
                 {property.location}
               </p>
 
@@ -209,24 +209,24 @@ export function BookingPageClient({
                 {property.description}
               </p>
 
-              <div className="flex flex-wrap gap-8 pt-6">
+              <div className="grid grid-cols-2 gap-6 pt-6 sm:flex sm:flex-wrap sm:gap-8">
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.3em] text-charcoal/40 mb-1">Bedrooms</span>
+                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Bedrooms</span>
                   <span className="font-display text-xl text-charcoal">{property.bedrooms}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.3em] text-charcoal/40 mb-1">Bathrooms</span>
+                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Bathrooms</span>
                   <span className="font-display text-xl text-charcoal">{property.bathrooms}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.3em] text-charcoal/40 mb-1">Capacity</span>
+                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Capacity</span>
                   <span className="font-display text-xl text-charcoal">Up to {property.maxGuests}</span>
                 </div>
               </div>
             </div>
 
-            <div className="border border-charcoal/10 p-8 space-y-4 bg-white/50">
-              <h3 className="text-[10px] uppercase tracking-[0.3em] font-sans font-semibold text-charcoal/60">
+            <div className="border border-charcoal/10 p-5 space-y-4 bg-white/50 sm:p-8">
+              <h3 className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-sans font-semibold text-charcoal/60">
                 Concierge Process
               </h3>
               <ul className="space-y-3 font-sans text-xs tracking-wide text-charcoal/60 leading-relaxed">
@@ -251,7 +251,7 @@ export function BookingPageClient({
           </div>
 
           {/* Right Column: Form */}
-          <div className="w-full lg:w-[480px] sticky top-32">
+          <div className="w-full min-w-0 lg:w-[480px] lg:sticky lg:top-32">
             <BookingRequestForm
               propertyId={property.id}
               pricePerNight={Number(property.pricePerNight)}
@@ -277,7 +277,7 @@ export function BookingPageClient({
         >
           {/* Toolbar */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-            <div className="text-white text-xs uppercase tracking-[0.3em] font-sans">
+            <div className="min-w-0 pr-4 text-white text-[10px] uppercase tracking-[0.12em] font-sans sm:text-xs sm:tracking-[0.3em]">
               {selectedRoom?.name || property.title}
             </div>
             <div className="flex items-center gap-2">
@@ -323,7 +323,7 @@ export function BookingPageClient({
           </div>
 
           <div
-            className="relative w-full h-full flex items-center justify-center p-8 md:p-16 overflow-auto"
+            className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 md:p-16 overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div

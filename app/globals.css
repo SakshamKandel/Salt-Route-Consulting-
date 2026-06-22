@@ -77,10 +77,38 @@
     @apply border-border outline-ring/50 shadow-none;
   }
   body {
-    @apply antialiased selection:bg-gold/20 selection:text-navy;
+    @apply antialiased overflow-x-hidden selection:bg-gold/20 selection:text-navy;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-wide font-normal;
+  }
+}
+
+@layer base {
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    min-width: 0;
+  }
+
+  a,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span {
+    overflow-wrap: anywhere;
   }
 }
 

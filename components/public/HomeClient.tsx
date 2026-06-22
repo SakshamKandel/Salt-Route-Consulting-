@@ -106,23 +106,23 @@ function HeroImage() {
       </motion.div>
       
       {/* Central Text Overlay */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-5 sm:px-6 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: textY }}
         >
-          <p className="text-sm md:text-base uppercase tracking-[0.5em] text-white/90 font-sans mb-8 font-light">
+          <p className="text-[11px] sm:text-sm md:text-base uppercase tracking-[0.22em] sm:tracking-[0.5em] text-white/90 font-sans mb-6 md:mb-8 font-light">
             Nepal&rsquo;s Most Loved Luxury Stays
           </p>
-          <h1 className="font-display text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-[1.1] mb-10 font-normal shadow-sm">
+          <h1 className="font-display text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-[1.1] mb-8 md:mb-10 font-normal shadow-sm">
             Stays with Soul
           </h1>
-          <div className="flex items-center justify-center gap-6 text-white/70">
-              <span className="w-8 h-[1px] bg-white/40" />
-              <p className="text-xs uppercase tracking-[0.3em] font-sans">Salt Route Consulting</p>
-              <span className="w-8 h-[1px] bg-white/40" />
+          <div className="flex max-w-full items-center justify-center gap-3 text-white/70 sm:gap-6">
+              <span className="hidden w-8 h-[1px] bg-white/40 min-[380px]:block" />
+              <p className="text-[10px] uppercase tracking-[0.16em] font-sans sm:text-xs sm:tracking-[0.3em]">Salt Route Consulting</p>
+              <span className="hidden w-8 h-[1px] bg-white/40 min-[380px]:block" />
           </div>
         </motion.div>
       </div>
@@ -184,7 +184,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/40 mb-1 font-bold">Stay Period</p>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <input
                 type="date"
                 value={checkIn}
@@ -195,7 +195,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
                     setCheckOut("")
                   }
                 }}
-                className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none w-[7.5rem]"
+                className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none min-w-0 flex-1 basis-[7.5rem]"
               />
               <span className="text-charcoal/30 text-xs">to</span>
               <input
@@ -203,7 +203,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
                 value={checkOut}
                 min={checkIn || fmt(tomorrow)}
                 onChange={(e) => setCheckOut(e.target.value)}
-                className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none w-[7.5rem]"
+                className="font-sans text-xs text-charcoal font-medium bg-transparent border-0 outline-none min-w-0 flex-1 basis-[7.5rem]"
               />
             </div>
           </div>
@@ -253,7 +253,7 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
       {/* Search Button */}
       <button
         type="submit"
-        className="w-full md:w-auto self-stretch bg-charcoal text-white px-12 lg:px-16 py-6 md:py-0 text-sm md:text-sm uppercase tracking-[0.3em] font-sans hover:bg-gold transition-all duration-700 flex items-center justify-center min-h-[90px]"
+        className="w-full md:w-auto self-stretch bg-charcoal text-white px-8 lg:px-16 py-6 md:py-0 text-sm md:text-sm uppercase tracking-[0.18em] sm:tracking-[0.3em] font-sans hover:bg-gold transition-all duration-700 flex items-center justify-center min-h-[72px] md:min-h-[90px]"
       >
         Discover
       </button>
@@ -674,4 +674,3 @@ export default function HomeClient({
     </div>
   )
 }
-

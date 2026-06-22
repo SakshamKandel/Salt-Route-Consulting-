@@ -25,20 +25,20 @@ export function BrochureFeatureStrip({
   if (expect.length === 0 && hi.length === 0) return null
 
   return (
-    <section className="py-20 md:py-28 bg-cream">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+    <section className="py-16 md:py-28 bg-cream">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
         <SectionHeading eyebrow="The Experience" title={highlightsTitle || "Why Choose Us"} />
 
         {expect.length > 0 && (
           <div
-            className={`flex flex-wrap justify-center gap-x-12 gap-y-8 ${hi.length > 0 ? "mb-16" : ""}`}
+            className={`flex flex-wrap justify-center gap-x-6 sm:gap-x-12 gap-y-8 ${hi.length > 0 ? "mb-16" : ""}`}
           >
             {expect.map((text) => {
               const Icon = resolveFeatureIcon(text, featureIcons)
               return (
                 <div key={text} className="flex flex-col items-center gap-3 text-center">
                   <Icon className="w-6 h-6 text-gold stroke-[1.25]" />
-                  <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-charcoal/60">
+                  <span className="font-sans text-[11px] uppercase tracking-[0.12em] sm:tracking-[0.2em] text-charcoal/60">
                     {text}
                   </span>
                 </div>
@@ -48,7 +48,7 @@ export function BrochureFeatureStrip({
         )}
 
         {hi.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-10 md:gap-y-12">
             {hi.map((text, i) => {
               const Icon = resolveFeatureIcon(text, featureIcons)
               return (

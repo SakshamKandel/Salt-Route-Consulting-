@@ -276,20 +276,20 @@ export function BookingRequestForm({
   const unitNoun = selectedRoomType ? selectedRoomType.name : "Unit"
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#FBF9F4] p-8 md:p-12 border border-charcoal/10">
-      <div className="mb-10 text-center">
-        <h2 className="text-3xl font-display text-charcoal mb-4">RESERVE YOUR STAY</h2>
-        <p className="text-charcoal/60 font-sans text-sm tracking-widest uppercase">
+    <div className="w-full max-w-lg mx-auto bg-[#FBF9F4] p-5 sm:p-8 md:p-12 border border-charcoal/10">
+      <div className="mb-8 text-center md:mb-10">
+        <h2 className="text-2xl sm:text-3xl font-display text-charcoal mb-4">RESERVE YOUR STAY</h2>
+        <p className="text-charcoal/60 font-sans text-sm tracking-[0.12em] uppercase sm:tracking-widest">
           {formatNpr(effectivePrice)} <span className="lowercase text-[10px] tracking-normal">/ night</span>
         </p>
         {selectedRoomType && (
-          <p className="mt-2 text-[9px] uppercase tracking-[0.3em] text-gold/80 font-sans font-bold">
+          <p className="mt-2 text-[9px] uppercase tracking-[0.16em] text-gold/80 font-sans font-bold sm:tracking-[0.3em]">
             {selectedRoomType.name}
           </p>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-12">
+      <form onSubmit={handleSubmit} className="space-y-9 md:space-y-12">
         {/* Honeypot */}
         <input
           type="text"
@@ -305,7 +305,7 @@ export function BookingRequestForm({
         {/* Room class selection */}
         {hasRoomTypes && (
           <div className="flex flex-col gap-4">
-            <Label className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
               01. Select Your Stay
             </Label>
             <div className="space-y-3">
@@ -323,10 +323,10 @@ export function BookingRequestForm({
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1 min-w-0">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-gold/80 font-sans font-bold">
+                          <p className="text-[9px] uppercase tracking-[0.14em] text-gold/80 font-sans font-bold sm:tracking-[0.25em]">
                             {formatClassLabel(rt.classType)}
                           </p>
-                          <p className="font-display text-base text-charcoal uppercase tracking-wide truncate">{rt.name}</p>
+                          <p className="font-display text-base text-charcoal uppercase tracking-wide">{rt.name}</p>
                           <div className="flex items-center gap-4 pt-1 text-[10px] text-charcoal/50 font-sans flex-wrap">
                             <span className="flex items-center gap-1.5"><Users className="w-3 h-3" strokeWidth={1.5} /> {rt.maxGuests} guests</span>
                             <span className="flex items-center gap-1.5"><BedDouble className="w-3 h-3" strokeWidth={1.5} /> {rt.totalUnits} {rt.totalUnits === 1 ? "unit" : "units"}</span>
@@ -336,7 +336,7 @@ export function BookingRequestForm({
                             <p className="text-[10px] text-charcoal/40 font-sans pt-0.5">{rt.bedType}</p>
                           )}
                         </div>
-                        <div className="text-right shrink-0 space-y-2">
+                        <div className="text-right shrink-0 space-y-2 max-w-[42%]">
                           <p className="font-display text-base text-charcoal whitespace-nowrap">{formatNpr(rt.pricePerNight)}</p>
                           <div className={`ml-auto h-5 w-5 border flex items-center justify-center transition-colors ${
                             selected ? "bg-charcoal border-charcoal" : "border-charcoal/20"
@@ -355,10 +355,10 @@ export function BookingRequestForm({
 
         {/* Dates */}
         <div className="flex flex-col gap-4">
-          <Label className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+          <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
             {String(stepOffset + 1).padStart(2, "0")}. Dates
           </Label>
-          <div className="border border-charcoal/10 bg-white p-4">
+          <div className="border border-charcoal/10 bg-white p-2 sm:p-4">
             <BookingCalendar propertyId={propertyId} date={date} setDate={setDate} roomTypeId={roomTypeId} availability={availability} />
           </div>
         </div>
@@ -372,7 +372,7 @@ export function BookingRequestForm({
         {/* Units / how many of this room type */}
         {showUnits && (
           <div className="flex flex-col gap-1">
-            <Label htmlFor="units" className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="units" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
               {String(stepOffset + 2).padStart(2, "0")}. How many {unitNoun}{units === 1 ? "" : "s"}?
             </Label>
             <NumberInput
@@ -395,7 +395,7 @@ export function BookingRequestForm({
 
         {/* Guests */}
         <div className="flex flex-col gap-1">
-          <Label htmlFor="guests" className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="guests" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
             {String(stepOffset + 2 + u).padStart(2, "0")}. Guests (Max {effectiveMaxGuests})
           </Label>
           <NumberInput
@@ -411,7 +411,7 @@ export function BookingRequestForm({
 
         {/* Phone */}
         <div className="flex flex-col gap-1">
-          <Label htmlFor="phone" className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="phone" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
             {String(stepOffset + 3 + u).padStart(2, "0")}. Contact Number
           </Label>
           <Input
@@ -427,7 +427,7 @@ export function BookingRequestForm({
 
         {/* Notes */}
         <div className="flex flex-col gap-1">
-          <Label htmlFor="notes" className="text-[10px] uppercase tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="notes" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
             {String(stepOffset + 4 + u).padStart(2, "0")}. Special Requests
           </Label>
           <Textarea
@@ -443,16 +443,16 @@ export function BookingRequestForm({
         {numberOfNights > 0 && (
           <div className="pt-8 border-t border-charcoal/10 space-y-4">
             {selectedRoomType && (
-              <div className="flex justify-between text-charcoal/60 font-sans text-xs uppercase tracking-widest">
+              <div className="flex flex-col gap-1 text-charcoal/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
                 <span>Stay</span>
                 <span>{units > 1 ? `${units} × ` : ""}{selectedRoomType.name}</span>
               </div>
             )}
-            <div className="flex justify-between text-charcoal/60 font-sans text-xs uppercase tracking-widest">
+            <div className="flex flex-col gap-1 text-charcoal/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
               <span>{formatNpr(effectivePrice)} × {numberOfNights} {numberOfNights === 1 ? "night" : "nights"}{units > 1 ? ` × ${units} units` : ""}</span>
               <span>{formatNpr(totalPrice)}</span>
             </div>
-            <div className="flex justify-between font-display text-xl text-charcoal pt-4 border-t border-charcoal/10">
+            <div className="flex flex-col gap-1 font-display text-xl text-charcoal pt-4 border-t border-charcoal/10 min-[420px]:flex-row min-[420px]:justify-between">
               <span>Estimated Total</span>
               <span>{formatNpr(totalPrice)}</span>
             </div>
