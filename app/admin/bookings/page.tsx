@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db"
 import { BookingsTable } from "./BookingsTable"
+import { BookingGanttChart } from "./BookingGanttChart"
 import Link from "next/link"
 import { Plus, Download } from "lucide-react"
 import { BookingStatus } from "@prisma/client"
@@ -35,16 +36,28 @@ export default async function AdminBookingsPage({
 
   const pagination = buildPagination(query, total)
 
-  const bookings = await prisma.booking.findMany({
-    where,
-    orderBy: { [query.sort === "createdAt" || query.sort === "checkIn" || query.sort === "totalPrice" ? query.sort : "createdAt"]: query.order },
-    skip: pagination.skip,
-    take: pagination.take,
-    include: {
-      guest: { select: { name: true, email: true } },
-      property: { select: { title: true } },
-    },
-  })
+  const [bookings, ganttBookings] = await Promise.all([
+    prisma.booking.findMany({
+      where,
+      orderBy: { [query.sort === "createdAt" || query.sort === "checkIn" || query.sort === "totalPrice" ? query.sort : "createdAt"]: query.order },
+      skip: pagination.skip,
+      take: pagination.take,
+      include: {
+        guest: { select: { name: true, email: true } },
+        property: { select: { title: true } },
+      },
+    }),
+    prisma.booking.findMany({
+      where,
+      orderBy: [{ checkIn: "asc" }, { createdAt: "desc" }],
+      take: 80,
+      include: {
+        guest: { select: { name: true } },
+        property: { select: { title: true } },
+        roomType: { select: { name: true, classType: true } },
+      },
+    }),
+  ])
 
   const countMap = Object.fromEntries(counts.map((c) => [c.status, c._count._all]))
   const totalAll = Object.values(countMap).reduce((a, b) => a + b, 0)
@@ -113,6 +126,8 @@ export default async function AdminBookingsPage({
           })}
         </div>
       </div>
+
+      <BookingGanttChart bookings={serializeForClient(ganttBookings)} />
 
       <BookingsTable
         bookings={serializeForClient(bookings)}
