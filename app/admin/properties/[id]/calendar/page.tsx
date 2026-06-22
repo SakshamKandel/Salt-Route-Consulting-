@@ -12,11 +12,16 @@ export default async function PropertyCalendarPage({
 }) {
   const { id } = await params
 
-  const [property, blockedDates] = await Promise.all([
+  const [property, blockedDates, roomTypes] = await Promise.all([
     prisma.property.findUnique({ where: { id }, select: { id: true, title: true } }),
     prisma.blockedDate.findMany({
       where: { propertyId: id },
       orderBy: { date: "asc" },
+    }),
+    prisma.roomType.findMany({
+      where: { propertyId: id },
+      select: { id: true, name: true },
+      orderBy: { order: "asc" },
     }),
   ])
 
@@ -36,7 +41,7 @@ export default async function PropertyCalendarPage({
         </div>
       </div>
 
-      <CalendarManager propertyId={id} initial={blockedDates} />
+      <CalendarManager propertyId={id} initial={blockedDates} roomTypes={roomTypes} />
     </div>
   )
 }

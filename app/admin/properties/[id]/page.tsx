@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, Image as ImageIcon, Calendar as CalendarIcon, CheckCircle } from "lucide-react"
+import { ArrowLeft, Edit, Image as ImageIcon, Calendar as CalendarIcon, CheckCircle, DoorOpen, LayoutList } from "lucide-react"
 import { StatCard } from "@/components/admin/stat-card"
 import { DashboardBookingsTable } from "@/components/admin/dashboard-tables"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,7 @@ export default async function PropertyOverviewPage({
     where: { id },
     include: {
       owner: true,
-      _count: { select: { bookings: true, reviews: true, images: true } },
+      _count: { select: { bookings: true, reviews: true, images: true, roomTypes: true, sections: true } },
       bookings: {
         take: 5,
         orderBy: { createdAt: "desc" },
@@ -70,6 +70,16 @@ export default async function PropertyOverviewPage({
           <Button asChild variant="outline" className="text-navy border-navy/20">
             <Link href={`/admin/properties/${id}/calendar`}>
               <CalendarIcon className="w-4 h-4 mr-2" /> Calendar
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="text-navy border-navy/20">
+            <Link href={`/admin/properties/${id}/rooms`}>
+              <DoorOpen className="w-4 h-4 mr-2" /> Room Classes{property._count.roomTypes > 0 ? ` (${property._count.roomTypes})` : ""}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="text-navy border-navy/20">
+            <Link href={`/admin/properties/${id}/sections`}>
+              <LayoutList className="w-4 h-4 mr-2" /> Story Sections{property._count.sections > 0 ? ` (${property._count.sections})` : ""}
             </Link>
           </Button>
         </div>

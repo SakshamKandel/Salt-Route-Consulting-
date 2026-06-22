@@ -155,20 +155,19 @@ async function main() {
     const today = new Date()
     for (let i = 1; i <= 3; i++) {
       const blockedDate = addDays(today, i + Math.floor(Math.random() * 10))
-      await prisma.blockedDate.upsert({
-        where: {
-          propertyId_date: {
-            propertyId: property.id,
-            date: blockedDate,
-          },
-        },
-        update: {},
-        create: {
+      const existingBlock = await prisma.blockedDate.findFirst({
+        where: { propertyId: property.id, roomTypeId: null, date: blockedDate },
+        select: { id: true },
+      })
+      if (!existingBlock) {
+        await prisma.blockedDate.create({
+          data: {
           propertyId: property.id,
           date: blockedDate,
           reason: 'Maintenance',
-        },
-      })
+          },
+        })
+      }
     }
 
     console.log(`  ✅ Property: ${property.title}`)

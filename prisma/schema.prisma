@@ -77,29 +77,46 @@ model VerificationToken {
 }
 
 model Property {
-  id            String          @id @default(cuid())
+  id            String            @id @default(cuid())
   title         String
-  slug          String          @unique
+  slug          String            @unique
+  propertyType  String            @default("Hotel")
   description   String
   highlights    String[]
   location      String
   address       String?
-  pricePerNight Decimal         @db.Decimal(10, 2)
-  maxGuests     Int             @default(2)
-  bedrooms      Int             @default(1)
-  bathrooms     Int             @default(1)
+  pricePerNight Decimal           @db.Decimal(10, 2)
+  maxGuests     Int               @default(2)
+  bedrooms      Int               @default(1)
+  bathrooms     Int               @default(1)
   amenities     String[]
   rules         String[]
-  status        PropertyStatus  @default(DRAFT)
-  featured      Boolean         @default(false)
+  services      String[]
+  whatToExpect  String[]
+  tagline       String?
+  story         String?
+  neighborhood  String?
+  hostNote      String?
+  highlightsTitle String?
+  amenitiesTitle  String?
+  stayDetails   Json?
+  gettingHere   Json?
+  featureIcons  Json?
+  totalUnits    Int               @default(1)
+  checkInTime   String?
+  checkOutTime  String?
+  status        PropertyStatus    @default(DRAFT)
+  featured      Boolean           @default(false)
   ownerId       String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   blockedDates  BlockedDate[]
   bookings      Booking[]
-  owner         User            @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner         User              @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
   images        PropertyImage[]
   reviews       Review[]
+  roomTypes     RoomType[]
+  sections      PropertySection[]
   wishlists     Wishlist[]
 
   @@index([status])
@@ -107,6 +124,51 @@ model Property {
   @@index([slug])
   @@map("properties")
 }
+
+model RoomType {
+  id            String        @id @default(cuid())
+  name          String
+  classType     String        @default("Room")
+  description   String?
+  totalUnits    Int           @default(1)
+  pricePerNight Decimal       @db.Decimal(10, 2)
+  maxGuests     Int           @default(2)
+  bedrooms      Int           @default(1)
+  bathrooms     Int           @default(1)
+  sizeSqm       Int?
+  bedType       String?
+  amenities     String[]
+  imageUrl      String?
+  images        String[]      @default([])
+  order         Int           @default(0)
+  active        Boolean       @default(true)
+  propertyId    String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  property      Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+  blockedDates  BlockedDate[]
+
+  @@index([propertyId])
+  @@map("room_types")
+}
+
+model PropertySection {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String?
+  body       String
+  imageUrl   String?
+  order      Int      @default(0)
+  propertyId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_sections")
+}
+
 
 model PropertyImage {
   id         String   @id @default(cuid())
@@ -129,6 +191,7 @@ model Booking {
   checkIn            DateTime
   checkOut           DateTime
   guests             Int
+  units              Int           @default(1)
   totalPrice         Decimal       @db.Decimal(10, 2)
   status             BookingStatus @default(PENDING)
   notes              String?
@@ -143,12 +206,16 @@ model Booking {
   checkedOutAt       DateTime?
   confirmedAt        DateTime?
   noShowAt           DateTime?
+  roomTypeId         String?
+  holdExpiresAt      DateTime?
   guest              User          @relation(fields: [guestId], references: [id], onDelete: Cascade)
   property           Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomType           RoomType?     @relation(fields: [roomTypeId], references: [id])
   review             Review?
 
   @@index([guestId])
   @@index([propertyId])
+  @@index([roomTypeId])
   @@index([status])
   @@index([status, createdAt])
   @@index([checkIn, checkOut])
@@ -156,14 +223,17 @@ model Booking {
 }
 
 model BlockedDate {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   date       DateTime
   reason     String?
   propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomTypeId String?
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomType   RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
 
-  @@unique([propertyId, date])
+  @@unique([propertyId, roomTypeId, date])
   @@index([propertyId])
+  @@index([roomTypeId])
   @@map("blocked_dates")
 }
 
@@ -424,6 +494,17 @@ model CampaignRecipient {
   @@index([campaignId, status])
   @@index([userId])
   @@map("campaign_recipients")
+}
+
+model PropertyFeature {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  iconKey   String   @default("check")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("property_features")
 }
 
 enum CampaignStatus {

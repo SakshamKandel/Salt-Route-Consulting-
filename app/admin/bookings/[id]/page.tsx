@@ -27,7 +27,8 @@ export default async function AdminBookingDetailPage({
     where: { id },
     include: {
       guest: true,
-      property: true
+      property: true,
+      roomType: { select: { name: true, classType: true } },
     }
   })
 
@@ -97,6 +98,11 @@ export default async function AdminBookingDetailPage({
               <Link href={`/admin/properties/${booking.propertyId}`} className="font-medium text-blue-600 hover:underline">
                 {booking.property.title}
               </Link>
+              {booking.roomType && (
+                <p className="text-xs text-slate-500 mt-1">
+                  {booking.roomType.name} ({booking.roomType.classType})
+                </p>
+              )}
             </div>
             <div>
               <p className="text-slate-500 mb-1">Guests</p>
