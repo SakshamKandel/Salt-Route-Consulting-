@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import PropertiesClient from "@/components/public/PropertiesClient"
 import { Prisma } from "@prisma/client"
+import { getUnavailablePropertyIds } from "@/lib/room-availability"
 
 export const dynamic = "force-dynamic"
 
@@ -23,7 +24,7 @@ async function geocodeForMap(location: string): Promise<[number, number]> {
     const query = /nepal/i.test(location) ? location : `${location}, Nepal`
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=np`
     const res = await fetch(url, {
-      headers: { "User-Agent": "SaltRouteConsulting/1.0 (contact@saltroutegroup.com)" },
+      headers: { "User-Agent": "SaltRouteConsulting/1.0 (connect@saltroutecorp.com)" },
       next: { revalidate: 604800 },
     })
     if (!res.ok) return NEPAL_CENTER
@@ -45,22 +46,12 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
     where.maxGuests = { gte: guests }
   }
   if (checkIn && checkOut) {
-    where.AND = [
-      {
-        bookings: {
-          none: {
-            status: { in: ["PENDING", "CONFIRMED"] },
-            checkIn: { lt: checkOut },
-            checkOut: { gt: checkIn },
-          },
-        },
-      },
-      {
-        blockedDates: {
-          none: { date: { gte: checkIn, lt: checkOut } },
-        },
-      },
-    ]
+    // Unit-aware availability: a property with multiple rooms/villas stays
+    // listed until every unit of every class is taken for some day in range.
+    const unavailableIds = await getUnavailablePropertyIds(checkIn, checkOut)
+    if (unavailableIds.length > 0) {
+      where.id = { notIn: unavailableIds }
+    }
   }
 
   const [totalProperties, locationRows, propertyList, mapProperties] = await Promise.all([

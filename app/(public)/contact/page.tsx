@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { siteConfig } from "@/lib/site.config"
 import { useState } from "react"
@@ -108,8 +108,8 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/40">Email</p>
-                      <a href="mailto:info@saltroutegroup.com" className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
-                        info@saltroutegroup.com
+                      <a href="mailto:connect@saltroutecorp.com" className="font-display text-2xl text-charcoal hover:text-gold transition-colors block">
+                        connect@saltroutecorp.com
                       </a>
                     </div>
                   </div>

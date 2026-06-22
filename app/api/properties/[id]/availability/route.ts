@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { safeErrorResponse } from "@/lib/security"
 import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
+import { expireStalePendingBookings } from "@/lib/booking-hold-expiry"
 
 // 10.2 — Zod on query params
 const availabilityQuerySchema = z.object({
@@ -23,30 +24,47 @@ export async function GET(
       to: searchParams.get("to"),
     })
 
-    const fromDate = new Date(validated.from)
-    const toDate = new Date(validated.to)
+    // Widen the window by a day on each side so legacy timestamps that sit
+    // just across a UTC-midnight boundary are not missed.
+    const fromDate = new Date(new Date(validated.from).getTime() - 24 * 3600_000)
+    const toDate = new Date(new Date(validated.to).getTime() + 24 * 3600_000)
 
-    const [bookings, blockedDates] = await Promise.all([
+    await expireStalePendingBookings()
+
+    const [bookings, blockedDates, roomTypes, property] = await Promise.all([
       prisma.booking.findMany({
         where: {
           propertyId: id,
           status: { in: ACTIVE_BOOKING_STATUSES },
-          OR: [
-            { checkIn: { lte: toDate }, checkOut: { gte: fromDate } },
-          ],
+          checkIn: { lte: toDate },
+          checkOut: { gte: fromDate },
         },
-        select: { checkIn: true, checkOut: true },
+        select: { checkIn: true, checkOut: true, roomTypeId: true, units: true },
       }),
       prisma.blockedDate.findMany({
         where: {
           propertyId: id,
           date: { gte: fromDate, lte: toDate },
         },
-        select: { date: true, reason: true },
+        select: { date: true, reason: true, roomTypeId: true },
+      }),
+      prisma.roomType.findMany({
+        where: { propertyId: id, active: true },
+        select: { id: true, name: true, totalUnits: true },
+        orderBy: { order: "asc" },
+      }),
+      prisma.property.findUnique({
+        where: { id },
+        select: { totalUnits: true },
       }),
     ])
 
-    return NextResponse.json({ bookings, blockedDates })
+    return NextResponse.json({
+      bookings,
+      blockedDates,
+      roomTypes,
+      propertyUnits: Math.max(1, property?.totalUnits ?? 1),
+    })
   } catch (error: unknown) {
     return safeErrorResponse(error, "GET /api/properties/[id]/availability")
   }

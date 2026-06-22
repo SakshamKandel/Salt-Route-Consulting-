@@ -3,8 +3,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { createAuditLog } from "@/lib/audit"
-import { generateBookingCode } from "@/lib/booking-code"
-import { ACTIVE_BOOKING_STATUSES } from "@/lib/booking-lifecycle"
+import { createBooking } from "@/lib/booking-service"
 import { notifyUser } from "@/lib/notifications"
 import { sendEmail } from "@/lib/email/transporter"
 import { BookingConfirmed } from "@/emails/BookingConfirmed"
@@ -17,9 +16,11 @@ import { redirect } from "next/navigation"
 const manualBookingSchema = z.object({
   guestId: z.string().min(1, "Select a guest"),
   propertyId: z.string().min(1, "Select a property"),
+  roomTypeId: z.string().optional().nullable(),
+  units: z.number().int().min(1).max(100).optional(),
   checkIn: z.string().date(),
   checkOut: z.string().date(),
-  guests: z.number().min(1).max(50),
+  guests: z.number().min(1).max(200),
   notes: z.string().optional(),
 })
 
@@ -34,50 +35,29 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
     const checkOut = new Date(validated.checkOut)
     if (checkIn >= checkOut) return { error: "Check-out must be after check-in." }
 
-    const property = await prisma.property.findUnique({
-      where: { id: validated.propertyId },
-      select: {
-        pricePerNight: true,
-        title: true,
-        ownerId: true,
-        owner: { select: { name: true, email: true } },
-      },
-    })
-    if (!property) return { error: "Property not found." }
-
-    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
-    const totalPrice = Number(property.pricePerNight) * nights
-
-    const overlap = await prisma.booking.findFirst({
-      where: {
-        propertyId: validated.propertyId,
-        status: { in: ACTIVE_BOOKING_STATUSES },
-        checkIn: { lt: checkOut },
-        checkOut: { gt: checkIn },
-      },
-    })
-    if (overlap) return { error: "These dates overlap with an existing booking." }
-
     const guest = await prisma.user.findUnique({
       where: { id: validated.guestId },
       select: { name: true, email: true },
     })
     if (!guest) return { error: "Guest not found." }
 
-    const booking = await prisma.booking.create({
-      data: {
-        bookingCode: await generateBookingCode(),
-        guestId: validated.guestId,
-        propertyId: validated.propertyId,
-        checkIn,
-        checkOut,
-        guests: validated.guests,
-        totalPrice,
-        status: "CONFIRMED",
-        confirmedAt: new Date(),
-        notes: validated.notes,
-      },
+    // Use the unified, lock-protected, serializable booking creation helper.
+    // This ensures the manual path gets the same advisory-lock + availability
+    // check + Decimal pricing as the public path.
+    const { booking } = await createBooking({
+      guestId: validated.guestId,
+      propertyId: validated.propertyId,
+      roomTypeId: validated.roomTypeId,
+      checkIn,
+      checkOut,
+      guests: validated.guests,
+      units: validated.units,
+      notes: validated.notes,
+      status: "CONFIRMED",
     })
+
+    const property = booking.property
+    const dates = `${booking.checkIn.toLocaleDateString()} to ${booking.checkOut.toLocaleDateString()}`
 
     await createAuditLog({
       action: "BOOKING_CREATE",
@@ -86,8 +66,6 @@ export async function createManualBookingAction(data: z.infer<typeof manualBooki
       userId: session.user.id,
       details: { manual: true, guestId: validated.guestId, propertyId: validated.propertyId },
     })
-
-    const dates = `${checkIn.toLocaleDateString()} to ${checkOut.toLocaleDateString()}`
 
     if (guest.email) {
       sendEmail({

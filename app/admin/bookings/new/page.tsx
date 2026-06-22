@@ -8,7 +8,16 @@ export default async function ManualBookingPage() {
   const [properties, guests] = await Promise.all([
     prisma.property.findMany({
       where: { status: "ACTIVE" },
-      select: { id: true, title: true, pricePerNight: true },
+      select: {
+        id: true,
+        title: true,
+        pricePerNight: true,
+        roomTypes: {
+          where: { active: true },
+          select: { id: true, name: true, classType: true, pricePerNight: true, totalUnits: true },
+          orderBy: { order: "asc" },
+        },
+      },
       orderBy: { title: "asc" },
     }),
     prisma.user.findMany({
@@ -34,7 +43,14 @@ export default async function ManualBookingPage() {
 
       <div className="bg-white border rounded-xl p-6 shadow-sm">
         <ManualBookingForm
-          properties={properties.map((p) => ({ ...p, pricePerNight: p.pricePerNight.toString() }))}
+          properties={properties.map((p) => ({
+            ...p,
+            pricePerNight: p.pricePerNight.toString(),
+            roomTypes: p.roomTypes.map((rt) => ({
+              ...rt,
+              pricePerNight: rt.pricePerNight.toString(),
+            })),
+          }))}
           guests={guests}
         />
       </div>

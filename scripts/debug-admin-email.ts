@@ -12,7 +12,7 @@ async function testAdminEmail() {
       NewBookingAdminAlert({
         propertyName: "Sunshine Villa (Debug)",
         guestName: "Admin Test",
-        guestEmail: "admin@saltroutegroup.com",
+        guestEmail: "connect@saltroutecorp.com",
         dates: "20 May 2026 to 25 May 2026",
         bookingCode: "DEB-1234-5678",
         checkIn: "20 May 2026",
@@ -26,7 +26,7 @@ async function testAdminEmail() {
     console.log("Sending email to ADMIN_EMAIL:", process.env.ADMIN_EMAIL)
 
     const info = await sendEmail({
-      to: process.env.ADMIN_EMAIL || "admin@saltroutegroup.com",
+      to: process.env.ADMIN_EMAIL || "connect@saltroutecorp.com",
       subject: "DEBUG: New Booking Request Alert",
       html: adminHtml,
     })

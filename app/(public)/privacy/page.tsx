@@ -37,8 +37,8 @@ export default function PrivacyPage() {
             </Section>
             <Section title="7. Your Rights">
               You have the right to access, correct, or delete your personal information. You may also request a copy of data we hold about you. Contact us at{" "}
-              <a href="mailto:info@saltroutegroup.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
-                info@saltroutegroup.com
+              <a href="mailto:connect@saltroutecorp.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
+                connect@saltroutecorp.com
               </a>{" "}
               to exercise these rights.
             </Section>
@@ -50,8 +50,8 @@ export default function PrivacyPage() {
             </Section>
             <Section title="10. Contact">
               For privacy-related queries, contact our team at{" "}
-              <a href="mailto:info@saltroutegroup.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
-                info@saltroutegroup.com
+              <a href="mailto:connect@saltroutecorp.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
+                connect@saltroutecorp.com
               </a>.
             </Section>
           </div>

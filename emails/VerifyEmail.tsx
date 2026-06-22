@@ -18,8 +18,8 @@ export function VerifyEmail({ name, url }: { name: string; url: string }) {
 
       <Text style={{ fontFamily: sans, fontSize: '10px', color: MUTED, lineHeight: '1.6', margin: '40px 0 0 0', textAlign: 'center' }}>
         If you did not create an account with Salt Route, please disregard this email. If you have any questions, contact us at{' '}
-        <a href="mailto:info@saltroutegroup.com" style={{ color: CHARCOAL, textDecoration: 'none' }}>
-          info@saltroutegroup.com
+        <a href="mailto:connect@saltroutecorp.com" style={{ color: CHARCOAL, textDecoration: 'none' }}>
+          connect@saltroutecorp.com
         </a>.
       </Text>
     </EmailLayout>

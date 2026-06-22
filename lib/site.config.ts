@@ -20,16 +20,16 @@ export const siteConfig = {
   region: process.env.SITE_REGION ?? "Nepal",
 
   /** Production base URL — NEXTAUTH_URL is the canonical env var */
-  url: process.env.NEXTAUTH_URL ?? process.env.SITE_URL ?? "https://saltroutegroup.com",
+  url: process.env.NEXTAUTH_URL ?? process.env.SITE_URL ?? "https://saltroutecorp.com",
 
   /** Contact details — override via .env */
   contact: {
-    email: process.env.INFO_EMAIL ?? process.env.ENQUIRIES_EMAIL ?? "info@saltroutegroup.com",
-    supportEmail: process.env.SUPPORT_EMAIL ?? "support@saltroutegroup.com",
+    email: process.env.INFO_EMAIL ?? process.env.ENQUIRIES_EMAIL ?? "connect@saltroutecorp.com",
+    supportEmail: process.env.SUPPORT_EMAIL ?? "connect@saltroutecorp.com",
     /** The "From" address used in all outgoing emails */
-    fromEmail: process.env.SMTP_FROM ?? `"Salt Route Consulting" <noreply@saltroutegroup.com>`,
+    fromEmail: process.env.SMTP_FROM ?? `"Salt Route Consulting" <connect@saltroutecorp.com>`,
     /** Fallback admin notification recipient if no admin users in DB */
-    adminEmail: process.env.ADMIN_EMAIL ?? "admin@saltroutegroup.com",
+    adminEmail: process.env.ADMIN_EMAIL ?? "connect@saltroutecorp.com",
     phone: process.env.CONTACT_PHONE ?? "+977 980 130 0001",
     phoneHref: process.env.CONTACT_PHONE_HREF ?? "tel:+9779801300001",
     address: process.env.CONTACT_ADDRESS ?? "P8FW+78R, Kathmandu 44600, Nepal",

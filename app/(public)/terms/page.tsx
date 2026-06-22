@@ -24,7 +24,7 @@ export default function TermsPage() {
               All bookings are subject to availability and confirmation by our team. A booking is only confirmed once you receive written confirmation from {siteConfig.name}. We reserve the right to decline any booking request at our discretion.
             </Section>
             <Section title="3. Payment">
-              Full payment is required at the time of booking confirmation unless otherwise agreed in writing. Prices are displayed in USD and are subject to change without notice prior to confirmation. Confirmed bookings are charged at the agreed rate.
+              Full payment is required at the time of booking confirmation unless otherwise agreed in writing. Prices are displayed in NPR (Nepalese Rupees) and are subject to change without notice prior to confirmation. Confirmed bookings are charged at the agreed rate.
             </Section>
             <Section title="4. Cancellation and Refunds">
               Cancellations are subject to our Refund Policy. Please review the Refund Policy page for full details on cancellation windows and applicable charges.
@@ -46,8 +46,8 @@ export default function TermsPage() {
             </Section>
             <Section title="10. Contact">
               For any questions regarding these Terms, please contact us at{" "}
-              <a href="mailto:info@saltroutegroup.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
-                info@saltroutegroup.com
+              <a href="mailto:connect@saltroutecorp.com" className="text-gold hover:text-charcoal transition-colors border-b border-gold/30 hover:border-charcoal">
+                connect@saltroutecorp.com
               </a>.
             </Section>
           </div>

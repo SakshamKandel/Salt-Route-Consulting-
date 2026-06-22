@@ -3,22 +3,31 @@ import * as React from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
+import { computeDisabledDays, type AvailabilityPayload } from "@/lib/availability-client"
 
 interface BookingCalendarProps {
   propertyId: string;
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
+  /** Selected room class. Null/undefined = entire property. */
+  roomTypeId?: string | null;
+  /** Optional pre-fetched availability (shared with the parent form). */
+  availability?: AvailabilityPayload | null;
 }
 
-type AvailabilityResponse = {
-  blockedDates: Array<{ date: string | Date }>
-  bookings: Array<{ checkIn: string | Date; checkOut: string | Date }>
-}
+export function BookingCalendar({ propertyId, date, setDate, roomTypeId, availability: availabilityProp }: BookingCalendarProps) {
+  const [availabilityState, setAvailability] = React.useState<AvailabilityPayload | null>(null)
+  const availability = availabilityProp ?? availabilityState
+  const [month, setMonth] = React.useState<Date>(date?.from || new Date())
 
-export function BookingCalendar({ propertyId, date, setDate }: BookingCalendarProps) {
-  const [disabledDates, setDisabledDates] = React.useState<Date[]>([])
+  // Follow the selection (e.g. dates prefilled from the property page).
+  React.useEffect(() => {
+    if (date?.from) setMonth(date.from)
+  }, [date?.from])
 
   React.useEffect(() => {
+    // Only self-fetch when the parent didn't supply availability.
+    if (availabilityProp) return
     async function fetchAvailability() {
       const today = new Date()
       const to = new Date()
@@ -27,29 +36,18 @@ export function BookingCalendar({ propertyId, date, setDate }: BookingCalendarPr
       try {
         const res = await fetch(`/api/properties/${propertyId}/availability?from=${today.toISOString()}&to=${to.toISOString()}`)
         if (!res.ok) return
-        const data = (await res.json()) as AvailabilityResponse
-        const datesToDisable: Date[] = []
-
-        data.blockedDates.forEach((bd) => {
-          datesToDisable.push(new Date(bd.date))
-        })
-
-        data.bookings.forEach((b) => {
-          const curr = new Date(b.checkIn)
-          const end = new Date(b.checkOut)
-          while (curr < end) {
-            datesToDisable.push(new Date(curr))
-            curr.setDate(curr.getDate() + 1)
-          }
-        })
-
-        setDisabledDates(datesToDisable)
+        setAvailability((await res.json()) as AvailabilityPayload)
       } catch (err) {
         console.error("Failed to fetch availability", err)
       }
     }
     fetchAvailability()
-  }, [propertyId])
+  }, [propertyId, availabilityProp])
+
+  const disabledDates = React.useMemo(
+    () => (availability ? computeDisabledDays(availability, roomTypeId) : []),
+    [availability, roomTypeId]
+  )
 
   const isPastDate = (date: Date) => {
     const today = new Date()
@@ -69,7 +67,8 @@ export function BookingCalendar({ propertyId, date, setDate }: BookingCalendarPr
       )}>
         <Calendar
           mode="range"
-          defaultMonth={date?.from || new Date()}
+          month={month}
+          onMonthChange={setMonth}
           selected={date}
           onSelect={setDate}
           numberOfMonths={1}
@@ -98,7 +97,7 @@ export function BookingCalendar({ propertyId, date, setDate }: BookingCalendarPr
           ]}
         />
       </div>
-      
+
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-2">
         <div className="flex items-center gap-6 text-[9px] uppercase tracking-[0.2em] font-sans font-bold text-charcoal/30">
           <div className="flex items-center gap-2">
