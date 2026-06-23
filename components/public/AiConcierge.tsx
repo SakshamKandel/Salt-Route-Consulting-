@@ -9,13 +9,13 @@ import srgAnimation from "@/lib/animations/srg.json"
 type Message = { role: "user" | "assistant"; content: string }
 
 const GREETING =
-  "Namaste! I'm the Salt Route concierge. Ask me anything about our stays, locations, or planning your trip — and whenever you're ready to book, I'll connect you with our team."
+  "Namaste! I'm the Salt Route Corp concierge. Ask me anything about our stays, locations, or planning your trip - and whenever you're ready to book, I'll connect you with our team."
 
 const WHATSAPP_HREF =
-  "https://wa.me/9779765978384?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20know%20more"
+  "https://wa.me/9779765978384?text=Hi%20Salt%20Route%20Corp%2C%20I%27d%20like%20to%20know%20more"
 
 const ERROR_REPLY =
-  "Apologies — I had a little trouble just now. Our team would love to help directly on WhatsApp at +977 976-5978384."
+  "Apologies - I had a little trouble just now. Our team would love to help directly on WhatsApp at +977 976-5978384."
 
 const PLACEHOLDERS = [
   "How else can I help?",
@@ -114,7 +114,9 @@ export function AiConcierge() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
+          messages: nextMessages
+            .filter((m) => m.role === "user")
+            .map((m) => ({ role: m.role, content: m.content })),
         }),
       })
       if (!res.ok) throw new Error(`Request failed (${res.status})`)
@@ -143,7 +145,7 @@ export function AiConcierge() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close concierge chat" : "Open Salt Route concierge chat"}
+        aria-label={open ? "Close concierge chat" : "Open Salt Route Corp concierge chat"}
         className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[60] flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#1B3A5C] to-[#0F2033] text-white shadow-2xl transition-all duration-300 hover:scale-105"
       >
         <MessageCircle className="h-6 w-6" />
@@ -166,7 +168,7 @@ export function AiConcierge() {
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 bg-white shrink-0 border-b border-slate-50">
-              <h2 className="font-sans text-base font-semibold text-slate-800">Ask Salt Route AI</h2>
+              <h2 className="font-sans text-base font-semibold text-slate-800">Ask Salt Route Corp AI</h2>
               <div className="flex items-center gap-2">
                 <a
                   href={WHATSAPP_HREF}
@@ -279,6 +281,7 @@ export function AiConcierge() {
                       onKeyDown={onKeyDown}
                       onFocus={handleActivate}
                       disabled={loading}
+                      maxLength={1000}
                       className="w-full border-0 outline-0 bg-transparent pl-4 pr-2 font-sans text-sm text-slate-800 focus:outline-none disabled:opacity-60 relative z-10"
                     />
                     <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center px-4">
