@@ -21,13 +21,14 @@ export default async function Admin2FAPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/admin/profile"
-          className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-500"
+          className="w-8 h-8 rounded-lg border border-[#1B3A5C]/15 flex items-center justify-center hover:border-[#1B3A5C]/30 transition-colors text-[#1B3A5C]/50 hover:text-[#1B3A5C]"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Two-Factor Authentication</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Secure your account with an authenticator app.</p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Security</p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Two-Factor Authentication</h1>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-1">Secure your account with an authenticator app.</p>
         </div>
       </div>
 

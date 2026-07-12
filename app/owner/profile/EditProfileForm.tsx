@@ -24,26 +24,24 @@ export function EditProfileForm({ initialName, initialPhone }: Props) {
   }
 
   const inputClass =
-    "w-full bg-transparent text-[#1B3A5C]/70 text-[12.5px] px-5 py-4 outline-none transition-all duration-500 placeholder:text-[#1B3A5C]/30 font-light"
-  const inputStyle = { border: "1px solid rgba(201,169,110,0.15)" }
+    "w-full bg-[#FBF9F4] text-[#1B3A5C] text-[13px] px-4 py-2.5 border border-[#1B3A5C]/10 rounded-lg outline-none transition-colors placeholder:text-[#1B3A5C]/30 focus:border-[#C9A96E] focus:ring-3 focus:ring-[#C9A96E]/20"
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {status && (
         <div
-          className="px-6 py-4 text-[11px] font-light leading-[1.8]"
-          style={{
-            border: `1px solid ${status.type === "success" ? "rgba(52,211,153,0.25)" : "rgba(239,100,100,0.25)"}`,
-            background: status.type === "success" ? "rgba(52,211,153,0.06)" : "rgba(239,100,100,0.06)",
-            color: status.type === "success" ? "rgba(52,211,153,0.9)" : "rgba(239,100,100,0.9)",
-          }}
+          className={`px-4 py-3 text-[12px] rounded-lg border ${
+            status.type === "success"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+              : "bg-rose-50 text-rose-600 border-rose-200/60"
+          }`}
         >
           {status.text}
         </div>
       )}
 
-      <div className="space-y-2.5">
-        <label className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block">
+      <div className="space-y-1.5">
+        <label className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/40 font-medium block">
           Full Name
         </label>
         <input
@@ -53,13 +51,12 @@ export function EditProfileForm({ initialName, initialPhone }: Props) {
           required
           minLength={2}
           className={inputClass}
-          style={inputStyle}
           placeholder="Your name"
         />
       </div>
 
-      <div className="space-y-2.5">
-        <label className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block">
+      <div className="space-y-1.5">
+        <label className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/40 font-medium block">
           Phone Number
         </label>
         <input
@@ -67,7 +64,6 @@ export function EditProfileForm({ initialName, initialPhone }: Props) {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className={inputClass}
-          style={inputStyle}
           placeholder="+977 98..."
         />
       </div>
@@ -76,9 +72,9 @@ export function EditProfileForm({ initialName, initialPhone }: Props) {
         <button
           type="submit"
           disabled={saving}
-          className="px-7 py-3.5 text-[9px] uppercase tracking-[0.35em] font-medium text-[#0C1F33] bg-gold hover:bg-gold/90 transition-all duration-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? "Saving..." : "Save changes"}
         </button>
       </div>
     </form>

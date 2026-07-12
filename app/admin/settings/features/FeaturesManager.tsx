@@ -65,13 +65,13 @@ export function FeaturesManager({
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`rounded-lg p-3 text-sm ${message.type === "success" ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-800"}`}>
+        <div className={`rounded-lg p-3 text-[12px] ${message.type === "success" ? "bg-emerald-50 border border-emerald-200/60 text-emerald-700" : "bg-rose-50 border border-rose-200/60 text-[#B84040]"}`}>
           {message.text}
         </div>
       )}
 
-      <div className="bg-white border rounded-xl p-5 space-y-4">
-        <h3 className="font-semibold text-navy">Add New Feature</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-5 space-y-4">
+        <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60">Add New Feature</h3>
         <div className="flex flex-col sm:flex-row gap-3">
           <Input
             value={newName}
@@ -84,48 +84,48 @@ export function FeaturesManager({
             <select
               value={newIcon}
               onChange={(e) => setNewIcon(e.target.value)}
-              className="text-sm bg-white border rounded-lg px-3 py-2 outline-none focus:border-[#C9A96E] min-w-[140px]"
+              className="text-sm text-[#1B3A5C] bg-white/60 border border-[#1B3A5C]/10 rounded-lg px-3 py-2 outline-none focus:border-[#1B3A5C]/30 min-w-[140px]"
             >
               {iconKeys.map((key) => (
                 <option key={key} value={key}>{key}</option>
               ))}
             </select>
-            <div className="w-10 h-10 border rounded-lg flex items-center justify-center bg-slate-50 shrink-0">
-              <PreviewIcon className="w-5 h-5 text-charcoal/70" strokeWidth={1} />
+            <div className="w-10 h-10 border border-[#1B3A5C]/10 rounded-lg flex items-center justify-center bg-[#FBF9F4] shrink-0">
+              <PreviewIcon className="w-5 h-5 text-[#1B3A5C]/70" strokeWidth={1} />
             </div>
             <Button
               onClick={handleAdd}
               disabled={!newName.trim() || pending === "add"}
-              className="bg-navy text-cream shrink-0"
+              className="bg-[#1B3A5C] text-[#FFFAF3] hover:bg-[#2A4F7A] rounded-lg text-[12px] font-medium shrink-0"
             >
               <Plus className="w-4 h-4 mr-1" />
               {pending === "add" ? "Adding..." : "Add"}
             </Button>
           </div>
         </div>
-        <p className="text-xs text-slate-500">These features appear in the &ldquo;What to Expect&rdquo; icon strip on every property page.</p>
+        <p className="text-[11px] text-[#1B3A5C]/45">These features appear in the &ldquo;What to Expect&rdquo; icon strip on every property page.</p>
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b">
-          <h3 className="font-semibold text-navy">{features.length} Features</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#1B3A5C]/8">
+          <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60"><span className="tabular-nums">{features.length}</span> Features</h3>
         </div>
         {features.length === 0 ? (
-          <p className="p-8 text-center text-slate-400">No features found. Add one above.</p>
+          <p className="p-8 text-center text-[13px] text-[#1B3A5C]/40">No features found. Add one above.</p>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y divide-[#1B3A5C]/5">
             {features.map((feature) => {
               const Icon = ICON_REGISTRY[feature.iconKey] || ICON_REGISTRY.check
               return (
-                <div key={feature.id} className="flex items-center justify-between px-5 py-3">
+                <div key={feature.id} className="flex items-center justify-between px-5 py-3 hover:bg-[#FBF9F4] transition-colors">
                   <div className="flex items-center gap-3">
-                    <GripVertical className="w-4 h-4 text-slate-300 shrink-0" />
-                    <div className="w-8 h-8 border rounded-lg flex items-center justify-center bg-slate-50 shrink-0">
-                      <Icon className="w-4 h-4 text-charcoal/70" strokeWidth={1} />
+                    <GripVertical className="w-4 h-4 text-[#1B3A5C]/20 shrink-0" />
+                    <div className="w-8 h-8 border border-[#1B3A5C]/10 rounded-lg flex items-center justify-center bg-[#FBF9F4] shrink-0">
+                      <Icon className="w-4 h-4 text-[#1B3A5C]/70" strokeWidth={1} />
                     </div>
                     <div>
-                      <p className="font-medium text-navy">{feature.name}</p>
-                      <p className="text-xs text-slate-400">icon: {feature.iconKey}</p>
+                      <p className="text-[13px] font-medium text-[#1B3A5C]">{feature.name}</p>
+                      <p className="text-[11px] text-[#1B3A5C]/40 font-mono">icon: {feature.iconKey}</p>
                     </div>
                   </div>
                   <Button
@@ -133,7 +133,7 @@ export function FeaturesManager({
                     size="icon"
                     onClick={() => handleRemove(feature.id, feature.name)}
                     disabled={pending === feature.id}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="text-[#B84040]/70 hover:text-[#B84040] hover:bg-rose-50 rounded-lg"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

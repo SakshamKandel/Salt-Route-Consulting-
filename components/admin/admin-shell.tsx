@@ -49,7 +49,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
 
       {/* ─── Mobile drawer ─── */}
       <div
-        className="fixed inset-y-0 left-0 z-40 flex flex-col w-72 bg-[#FFFDF8] border-r border-[#1B3A5C10] md:hidden"
+        className="fixed inset-y-0 left-0 z-40 flex flex-col w-72 bg-[#FFFAF3] border-r border-[#1B3A5C10] md:hidden"
         style={{ transform: isDrawerOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)" }}
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#1B3A5C08] shrink-0">
@@ -91,7 +91,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
 
       {/* ─── Desktop sidebar ─── */}
       <aside
-        className="hidden md:flex flex-col shrink-0 bg-[#FFFDF8] border-r border-[#1B3A5C10] overflow-hidden relative z-10"
+        className="hidden md:flex flex-col shrink-0 bg-[#FFFAF3] border-r border-[#1B3A5C10] overflow-hidden relative z-10"
         style={{
           width: mounted ? (isCollapsed ? "3.5rem" : "14rem") : "14rem",
           transition: "width 300ms cubic-bezier(0.25, 1, 0.5, 1)",
@@ -158,7 +158,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Topbar */}
-        <header className="h-14 bg-[#FFFDF8] border-b border-[#1B3A5C10] flex items-center justify-between px-4 sm:px-6 shrink-0">
+        <header className="h-14 bg-[#FFFAF3] border-b border-[#1B3A5C10] flex items-center justify-between px-4 sm:px-6 shrink-0">
           {/* Mobile hamburger */}
           <button
             className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-[#F5F1E8] transition-colors"
@@ -180,7 +180,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
             >
               <Bell className="h-4 w-4" />
               {unreadNotifications > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 min-w-[16px] h-4 rounded-full bg-[#B84040] text-[#FFFDF8] text-[9px] font-bold flex items-center justify-center px-1 leading-none">
+                <span className="absolute -right-0.5 -top-0.5 min-w-[16px] h-4 rounded-full bg-[#B84040] text-[#FFFAF3] text-[9px] font-bold flex items-center justify-center px-1 leading-none">
                   {unreadNotifications > 9 ? "9+" : unreadNotifications}
                 </span>
               )}

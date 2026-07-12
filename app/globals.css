@@ -31,13 +31,27 @@
   /* Neutral: Cream & Warm Beige */
   --color-sand: #FBF9F4;
   --color-sand-dark: #F0EBE0;
-  --color-cream: #FFFDF8;
+  --color-cream: #FFFAF3;
   --color-bone: #F9F7F2;
   --color-beige: #F5F1E8;
 
   --text-hero: 4rem;
   --text-hero--line-height: 1;
-  --text-hero--letter-spacing: 0.02em;
+  --text-hero--letter-spacing: -0.02em; /* inverse-tracking law: big type tightens */
+
+  /* ── Public body font (scoped in app/(public)/layout.tsx) ───────────── */
+  --font-niramit: var(--font-niramit);
+
+  /* ── Luxury motion easing tokens (generate ease-* utilities) ────────── */
+  /* Use: ease-out-luxe (default reveals), ease-out-soft (hero/large media),
+     ease-in-out-luxe (clip-path curtains / page transitions),
+     ease-standard (hovers / small UI ≤350ms),
+     ease-out-quart (underlines/arrows). Avoid springs/overshoot. */
+  --ease-out-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-luxe: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -47,14 +61,14 @@
 }
 
 :root {
-  --background: #FFFDF8;
+  --background: #FFFAF3;
   --foreground: #1B3A5C;
-  --card: #FFFDF8;
+  --card: #FFFAF3;
   --card-foreground: #1B3A5C;
-  --popover: #FFFDF8;
+  --popover: #FFFAF3;
   --popover-foreground: #1B3A5C;
   --primary: #1B3A5C;
-  --primary-foreground: #FFFDF8;
+  --primary-foreground: #FFFAF3;
   --secondary: #F5F1E8;
   --secondary-foreground: #1B3A5C;
   --muted: #F5F1E8;
@@ -62,7 +76,7 @@
   --accent: #F5F1E8;
   --accent-foreground: #1B3A5C;
   --destructive: #B84040;
-  --destructive-foreground: #FFFDF8;
+  --destructive-foreground: #FFFAF3;
   --border: #1B3A5C15;
   --input: #1B3A5C10;
   --ring: #C9A96E;
@@ -71,7 +85,9 @@
 
 @layer base {
   html {
-    @apply scroll-smooth overflow-x-hidden bg-background text-foreground;
+    /* No scroll-smooth here: CSS smooth scrolling fights Lenis on the public
+       site. The reduced-motion backstop below keeps scroll-behavior: auto. */
+    @apply overflow-x-hidden bg-background text-foreground;
   }
   * {
     @apply border-border outline-ring/50 shadow-none;
@@ -125,11 +141,15 @@
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
+  @keyframes kenburns {
+    from { transform: scale(1); }
+    to { transform: scale(var(--kb-scale, 1.06)); }
+  }
   .luxury-title {
     @apply font-display text-4xl md:text-6xl lg:text-[5.5rem] leading-[1.05] tracking-[-0.01em] text-navy;
   }
   .luxury-subtitle {
-    @apply font-sans text-xs md:text-sm uppercase tracking-[0.4em] font-medium text-navy/60;
+    @apply font-sans text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-navy/60;
   }
   .luxury-body {
     @apply font-sans text-base md:text-lg leading-[1.8] text-navy/70 font-light;
@@ -148,6 +168,141 @@
   }
   .btn-luxury-solid {
     @apply bg-navy text-cream border border-navy text-[10px] uppercase tracking-[0.3em] px-8 py-4 hover:bg-cream hover:text-navy transition-all duration-700 ease-out inline-flex items-center justify-center;
+  }
+
+  /* ── Type ladder (the missing middle) ───────────────────────────────
+     One display moment per page; section heads sparingly. Inverse-tracking
+     law: big type tightens, small type loosens (≤0.3em cap). */
+  .type-display {
+    @apply font-display font-normal text-navy leading-[1.02] tracking-[-0.02em];
+    font-size: clamp(3.5rem, 8vw, 8rem);
+  }
+  .type-h1 {
+    @apply font-display font-normal text-navy leading-[1.05] tracking-[-0.02em];
+    font-size: clamp(2.75rem, 6vw, 5rem);
+  }
+  .type-h2 {
+    @apply font-display font-normal text-navy leading-[1.1] tracking-[-0.01em];
+    font-size: clamp(2rem, 4vw, 3.25rem);
+  }
+  .type-h3 {
+    @apply font-display font-normal text-navy leading-[1.2] tracking-[-0.01em] text-[1.375rem] md:text-[1.625rem];
+  }
+  .type-lead {
+    @apply font-sans font-light text-navy/80 leading-[1.6] text-lg md:text-2xl;
+  }
+  .type-body {
+    @apply font-sans font-light text-navy/70 leading-[1.75] text-base md:text-lg;
+  }
+  .type-eyebrow {
+    @apply font-sans font-medium uppercase text-navy/50 text-[11px] md:text-[12px] tracking-[0.24em];
+  }
+  .type-caption {
+    @apply font-sans uppercase text-navy/45 text-[10px] tracking-[0.15em];
+  }
+
+  /* High-weight primary CTA — the one anchoring action per page.
+     §5.3 fill-wipe: cream sweeps in from the left over 350ms while the text
+     crossfades to navy. No scale transforms. Canonical component is
+     <LuxuryButton variant="primary"> — this utility mirrors the same recipe
+     for plain-markup call sites. */
+  .btn-primary {
+    @apply relative isolate overflow-hidden bg-navy text-cream border border-navy text-[11px] md:text-xs uppercase tracking-[0.2em] px-10 py-5 inline-flex items-center justify-center;
+    transition: color 350ms var(--ease-standard);
+  }
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-cream);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 350ms var(--ease-standard);
+  }
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    color: var(--color-navy);
+  }
+  .btn-primary:hover::before,
+  .btn-primary:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  /* Tracked-uppercase text-link underline (§5.3) — 1px currentColor that
+     grows from the left. Apply to the link itself, or to an inner span when
+     the trigger is a surrounding `group`. */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.15em;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 400ms var(--ease-out-quart);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after,
+  .group:hover .link-underline::after {
+    transform: scaleX(1);
+  }
+
+  /* Full-bleed breakout from a centered container. */
+  .full-bleed {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
+  }
+
+  /* Skip rendering off-screen sections until the user scrolls near them.
+     Huge win on long pages (home, properties) — the browser can skip
+     layout/paint for sections the visitor hasn't reached yet. The
+     contain-intrinsic-size hint prevents layout shift when the section
+     is scrolled into view. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+}
+
+/* ── Lenis smooth scroll structural rules (public pages only) ──────────
+   Inert until SmoothScrollProvider mounts (it puts .lenis classes on <html>).
+   `data-lenis-prevent` opts modals / scrollable sub-regions back into native
+   scrolling — Lenis reads the attribute natively. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Reduced-motion backstop (accessibility + perf) ────────────────────
+   Renders every animated element at its final state instantly. Motion
+   components additionally read useReducedMotion() in JS. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -170,7 +325,7 @@
   margin-top: -1px;
 }
 .src-popup .leaflet-popup-tip {
-  background: #FFFDF8;
+  background: #FFFAF3;
   box-shadow: none;
 }
 .src-popup .leaflet-popup-close-button {

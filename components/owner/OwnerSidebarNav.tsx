@@ -47,13 +47,13 @@ export function OwnerSidebarNav({ notificationBadge, onNavigate }: Props) {
               onClick={onNavigate}
               className={`flex items-center gap-3 px-2 py-2.5 rounded-lg transition-colors duration-150 group ${
                 isActive
-                  ? "bg-[#1B3A5C] text-[#FFFDF8]"
+                  ? "bg-[#1B3A5C] text-[#FFFAF3]"
                   : "text-[#1B3A5C]/55 hover:bg-[#F5F1E8] hover:text-[#1B3A5C]"
               }`}
             >
               <item.icon
                 className={`h-4 w-4 flex-shrink-0 ${
-                  isActive ? "text-[#FFFDF8]" : "text-[#1B3A5C]/35 group-hover:text-[#1B3A5C]/70"
+                  isActive ? "text-[#FFFAF3]" : "text-[#1B3A5C]/35 group-hover:text-[#1B3A5C]/70"
                 }`}
               />
               <span className={`text-[13px] flex-1 ${isActive ? "font-semibold" : "font-medium"}`}>

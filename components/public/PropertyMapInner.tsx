@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { formatNpr } from "@/lib/currency"
@@ -11,8 +11,10 @@ export type MapProperty = {
   slug: string
   location: string
   pricePerNight?: number
-  latitude: number
-  longitude: number
+  // Coordinates are optional — the page renders without them and
+  // PropertyMapInner fetches them from /api/properties/map-coords after mount.
+  latitude?: number
+  longitude?: number
   imageUrl?: string
 }
 
@@ -44,7 +46,7 @@ function buildPopupHtml(p: MapProperty) {
        </div>`
     : ""
   return `
-    <div style="min-width:220px;font-family:system-ui,sans-serif;background:#FFFDF8;">
+    <div style="min-width:220px;font-family:system-ui,sans-serif;background:#FFFAF3;">
       ${img}
       <div style="padding:${img ? "0" : "2px 0"} 0 4px;">
         <p style="font-size:8px;text-transform:uppercase;letter-spacing:0.3em;color:#C9A96E;margin:0 0 5px;font-weight:700;">${p.location}</p>
@@ -61,7 +63,10 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markersRef = useRef<L.Marker[]>([])
+  // Coordinates fetched from /api/properties/map-coords after mount.
+  const [coordsMap, setCoordsMap] = useState<Map<string, { lat: number; lng: number }>>(new Map())
 
+  // 1. Initialize the Leaflet map immediately (tiles load right away).
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
@@ -98,6 +103,31 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
     }
   }, [])
 
+  // 2. Fetch coordinates from the API AFTER the map is mounted.
+  //    This decouples Nominatim geocoding latency from page load —
+  //    the page renders instantly and markers appear when ready.
+  useEffect(() => {
+    if (properties.length === 0) return
+    let cancelled = false
+
+    fetch("/api/properties/map-coords")
+      .then((res) => res.json())
+      .then((data: { id: string; latitude: number; longitude: number }[]) => {
+        if (cancelled) return
+        const map = new Map<string, { lat: number; lng: number }>()
+        for (const item of data) {
+          map.set(item.id, { lat: item.latitude, lng: item.longitude })
+        }
+        setCoordsMap(map)
+      })
+      .catch(() => {
+        // Non-fatal — map just won't have markers, tiles still show.
+      })
+
+    return () => { cancelled = true }
+  }, [properties])
+
+  // 3. Place markers once coordinates arrive.
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
@@ -105,11 +135,19 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
     markersRef.current.forEach((m) => m.remove())
     markersRef.current = []
 
-    if (properties.length === 0) return
+    // Only place markers for properties that have coordinates.
+    const geocoded = properties.filter(
+      (p) => coordsMap.has(p.id) || (p.latitude != null && p.longitude != null),
+    )
+    if (geocoded.length === 0) return
 
     const newMarkers: L.Marker[] = []
 
-    properties.forEach((p, i) => {
+    geocoded.forEach((p, i) => {
+      const coords = coordsMap.get(p.id)
+      const lat = coords?.lat ?? p.latitude!
+      const lng = coords?.lng ?? p.longitude!
+
       const defaultIcon = L.divIcon({
         className: "",
         html: buildMarkerHtml(i, false),
@@ -125,7 +163,7 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
         popupAnchor: [0, -24],
       })
 
-      const marker = L.marker([p.latitude, p.longitude], { icon: defaultIcon })
+      const marker = L.marker([lat, lng], { icon: defaultIcon })
         .addTo(map)
         .bindPopup(buildPopupHtml(p), { maxWidth: 260, className: "src-popup" })
 
@@ -137,13 +175,16 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
 
     markersRef.current = newMarkers
 
-    if (properties.length === 1) {
-      map.setView([properties[0].latitude, properties[0].longitude], 14)
+    if (geocoded.length === 1) {
+      const coords = coordsMap.get(geocoded[0].id)
+      const lat = coords?.lat ?? geocoded[0].latitude!
+      const lng = coords?.lng ?? geocoded[0].longitude!
+      map.setView([lat, lng], 14)
     } else {
       const group = L.featureGroup(newMarkers)
       map.fitBounds(group.getBounds().pad(0.4))
     }
-  }, [properties])
+  }, [properties, coordsMap])
 
   return <div ref={containerRef} className="w-full h-full" />
 }

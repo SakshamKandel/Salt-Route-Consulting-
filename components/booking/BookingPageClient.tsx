@@ -101,29 +101,29 @@ export function BookingPageClient({
   }, [lightbox.open, closeLightbox, stepImage])
 
   return (
-    <div className="min-h-screen bg-[#FBF9F4] pt-24 pb-16 md:pt-32 md:pb-24">
+    <div className="min-h-screen bg-sand pt-24 pb-10 md:pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="mb-8 md:mb-12">
+        <div className="mb-6 md:mb-8">
           <LuxuryLink href={`/properties/${property.slug}`} className="inline-flex">
             ← BACK TO PROPERTY
           </LuxuryLink>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-10 lg:gap-24 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-8 lg:gap-24 items-start">
           {/* Left Column */}
-          <div className="min-w-0 space-y-10 md:space-y-12">
+          <div className="min-w-0 space-y-6 md:space-y-8">
             {/* Image with zoom + gallery */}
             <div className="space-y-3">
               <div className="group relative">
                 {displayImage && (
-                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-charcoal/10">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden">
                     <Image
                       src={displayImage}
                       alt={displayLabel}
                       fill
                       sizes="(min-width: 1024px) 50vw, 100vw"
                       unoptimized={displayImage.includes("placehold.co")}
-                      className="object-cover transition-transform duration-[2s] group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-out-luxe group-hover:scale-[1.04]"
                     />
                     <button
                       type="button"
@@ -137,7 +137,7 @@ export function BookingPageClient({
                         <button
                           type="button"
                           onClick={() => stepImage(-1)}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 hover:bg-white text-charcoal flex items-center justify-center shadow"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-charcoal flex items-center justify-center transition-colors"
                           aria-label="Previous photo"
                         >
                           <ChevronLeft className="w-4 h-4" />
@@ -145,7 +145,7 @@ export function BookingPageClient({
                         <button
                           type="button"
                           onClick={() => stepImage(1)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 hover:bg-white text-charcoal flex items-center justify-center shadow"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-charcoal flex items-center justify-center transition-colors"
                           aria-label="Next photo"
                         >
                           <ChevronRight className="w-4 h-4" />
@@ -158,7 +158,7 @@ export function BookingPageClient({
                   </div>
                 )}
                 {!displayImage && (
-                  <div className="aspect-[4/3] w-full bg-charcoal/5 border border-charcoal/10 flex items-center justify-center">
+                  <div className="aspect-[4/3] w-full bg-charcoal/5 flex items-center justify-center">
                     <p className="text-xs uppercase tracking-[0.3em] text-charcoal/30">No Image</p>
                   </div>
                 )}
@@ -172,7 +172,7 @@ export function BookingPageClient({
                       key={url + i}
                       type="button"
                       onClick={() => setActiveImage(i)}
-                      className={`relative h-16 w-24 shrink-0 overflow-hidden border-2 transition-colors ${i === activeImage ? "border-charcoal" : "border-transparent opacity-60 hover:opacity-100"}`}
+                      className={`relative h-16 w-24 shrink-0 overflow-hidden transition-opacity ${i === activeImage ? "ring-1 ring-charcoal" : "opacity-60 hover:opacity-100"}`}
                     >
                       <Image src={url} alt="" fill sizes="96px" className="object-cover" unoptimized={url.includes("placehold.co")} />
                     </button>
@@ -184,7 +184,7 @@ export function BookingPageClient({
             {/* Room indicator */}
             {selectedRoom && (
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[9px] uppercase tracking-[0.16em] text-gold/80 font-sans font-bold sm:tracking-[0.25em]">
+                <span className="text-[10px] uppercase tracking-[0.16em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
                   Selected Room
                 </span>
                 <span className="w-6 h-[1px] bg-gold/40" />
@@ -211,22 +211,22 @@ export function BookingPageClient({
 
               <div className="grid grid-cols-2 gap-6 pt-6 sm:flex sm:flex-wrap sm:gap-8">
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Bedrooms</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Bedrooms</span>
                   <span className="font-display text-xl text-charcoal">{property.bedrooms}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Bathrooms</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Bathrooms</span>
                   <span className="font-display text-xl text-charcoal">{property.bathrooms}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase tracking-[0.18em] text-charcoal/40 mb-1 sm:tracking-[0.3em]">Capacity</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Capacity</span>
                   <span className="font-display text-xl text-charcoal">Up to {property.maxGuests}</span>
                 </div>
               </div>
             </div>
 
-            <div className="border border-charcoal/10 p-5 space-y-4 bg-white/50 sm:p-8">
-              <h3 className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-sans font-semibold text-charcoal/60">
+            <div className="border-t border-charcoal/10 pt-6 space-y-4 sm:pt-8">
+              <h3 className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.24em] font-sans font-semibold text-charcoal/60">
                 Concierge Process
               </h3>
               <ul className="space-y-3 font-sans text-xs tracking-wide text-charcoal/60 leading-relaxed">

@@ -12,7 +12,7 @@ export async function approveReviewAction(id: string) {
   try {
     await prisma.review.update({
       where: { id },
-      data: { isApproved: true, status: "PUBLISHED" },
+      data: { status: "PUBLISHED" },
     })
 
     await createAuditLog({
@@ -40,7 +40,7 @@ export async function hideReviewAction(id: string) {
   try {
     await prisma.review.update({
       where: { id },
-      data: { isApproved: false, status: "HIDDEN" },
+      data: { status: "HIDDEN" },
     })
 
     await createAuditLog({

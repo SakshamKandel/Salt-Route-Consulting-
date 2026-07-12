@@ -1,11 +1,14 @@
 "use client"
 
 // ── Brochure: Guest reviews ─────────────────────────────────────────────────
-// Editorial, image-forward review list with a quiet underline review form.
-// Renders null when there is nothing to show and no form to collect.
+// Compact editorial reviews: a heading row (eyebrow + serif title left, rating
+// meta right) over a hairline, then reviews in a two-column hairline grid of
+// quiet py-6 rows. The empty state is one anchored serif line; the underline
+// review form sits beneath. All props and conditionals are unchanged: renders
+// null when there is nothing to show and no form to collect.
 
 import { Star, Quote } from "lucide-react"
-import { SectionHeading, GoldRule, FadeUp } from "@/components/public/property/primitives"
+import { Eyebrow, FadeUp } from "@/components/public/property/primitives"
 import type { ReviewData } from "@/components/public/property/types"
 import { PropertyReviewForm } from "@/components/public/PropertyReviewForm"
 import { ReviewImageGallery } from "@/components/public/ReviewImageGallery"
@@ -33,66 +36,79 @@ export function BrochureReviews({
   if (shown.length === 0 && isOwnerView) return null
 
   return (
-    <section className="py-16 md:py-28 bg-cream">
-      <SectionHeading eyebrow="Guest Voices" title="Reviews" />
-
-      {reviewCount > 0 && (
-        <FadeUp className="text-center -mt-6 mb-12">
-          <p className="font-sans text-[12px] uppercase tracking-[0.16em] sm:tracking-[0.3em] font-bold text-charcoal/60">
-            {avgRating} <span className="text-gold">✦</span> {reviewCount} stays
-          </p>
+    <section className="py-10 md:py-16 bg-cream">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
+        {/* Heading row — title left, rating meta right, over a hairline. */}
+        <FadeUp className="flex flex-wrap items-end justify-between gap-4 border-b border-charcoal/10 pb-5">
+          <div>
+            <Eyebrow>Guest Voices</Eyebrow>
+            <h2 className="mt-3 font-display font-normal text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] tracking-[-0.01em] text-charcoal">
+              Reviews
+            </h2>
+          </div>
+          {reviewCount > 0 && (
+            <p className="pb-1 font-sans text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.24em] font-bold text-charcoal/60">
+              {avgRating} <span className="text-gold">✦</span> {reviewCount} stays
+            </p>
+          )}
         </FadeUp>
-      )}
 
-      {shown.length === 0 ? (
-        <FadeUp className="text-center">
-          <p className="font-sans text-[15px] text-charcoal/50 italic">
-            No reviews yet — be the first to share your stay.
-          </p>
-        </FadeUp>
-      ) : (
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 space-y-12">
-          {shown.map((review, index) => (
-            <FadeUp
-              key={review.id}
-              className={index === 0 ? "" : "border-t border-charcoal/10 pt-12"}
-            >
-              <Quote className="w-6 h-6 text-gold/40" />
-              <p className="mt-5 font-sans text-[16px] leading-loose text-charcoal/75 italic whitespace-pre-line">
-                {review.comment}
-              </p>
-
-              {review.images?.length ? (
-                <div className="mt-6">
-                  <ReviewImageGallery images={review.images} />
+        {shown.length === 0 ? (
+          <FadeUp className="mt-8">
+            <p className="font-display font-light text-[clamp(1.375rem,2.5vw,1.875rem)] leading-[1.35] tracking-[-0.01em] text-charcoal">
+              No reviews yet — be the first to share your stay.
+            </p>
+          </FadeUp>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-12">
+            {shown.map((review, index) => (
+              <FadeUp
+                key={review.id}
+                delay={(index % 2) * 0.05}
+                className="border-b border-charcoal/10 py-6"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <Quote className="w-4 h-4 text-gold/50" />
+                  <span className="flex items-center gap-0.5">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star key={i} className="w-3 h-3 text-gold fill-gold" />
+                    ))}
+                  </span>
                 </div>
-              ) : null}
+                <p className="mt-3 font-sans text-[14px] leading-relaxed text-charcoal/75 italic whitespace-pre-line">
+                  {review.comment}
+                </p>
 
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-                <span className="font-display text-charcoal">
+                {review.images?.length ? (
+                  <div className="mt-4">
+                    <ReviewImageGallery images={review.images} />
+                  </div>
+                ) : null}
+
+                <p className="mt-4 font-display text-[15px] text-charcoal">
                   {review.guest.name ?? "Guest"}
-                </span>
-                <span className="flex items-center gap-0.5">
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 text-gold fill-gold" />
-                  ))}
-                </span>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
-      )}
+                </p>
+              </FadeUp>
+            ))}
+          </div>
+        )}
 
-      {!isOwnerView && (
-        <FadeUp className="max-w-3xl mx-auto px-5 sm:px-6 mt-12 pt-12 border-t border-charcoal/10">
-          <GoldRule className="mb-8" />
-          <PropertyReviewForm
-            eligibleBookingId={eligibleBookingId}
-            isAuthenticated={isAuthenticated}
-            propertySlug={slug}
-          />
-        </FadeUp>
-      )}
+        {!isOwnerView && (
+          /* Review rows already close with a hairline; only the empty state
+             needs its own rule above the form. */
+          <FadeUp
+            className={`mt-8 max-w-2xl ${
+              shown.length === 0 ? "border-t border-charcoal/10 pt-8" : ""
+            }`}
+          >
+            <PropertyReviewForm
+              eligibleBookingId={eligibleBookingId}
+              isAuthenticated={isAuthenticated}
+              propertySlug={slug}
+            />
+          </FadeUp>
+        )}
+      </div>
     </section>
   )
 }

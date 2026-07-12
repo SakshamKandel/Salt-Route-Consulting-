@@ -45,37 +45,37 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
     setIsPending(false)
   }
 
-  const inputClass = "rounded-none border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 text-sm font-sans text-charcoal focus-visible:border-charcoal focus-visible:ring-0 placeholder:text-charcoal/25"
+  const inputClass = "rounded-lg border border-[#1B3A5C]/10 bg-[#FBF9F4] px-4 py-3 text-[15px] text-[#1B3A5C] focus-visible:border-[#1B3A5C]/30 focus-visible:ring-0 placeholder:text-[#1B3A5C]/40 transition-colors"
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {error && (
-        <div className="flex items-center gap-3 p-4 border border-red-200 bg-red-50 text-red-600 text-xs">
+        <div className="flex items-center gap-3 p-4 rounded-lg border border-rose-200/60 bg-rose-50 text-rose-600 text-[13px]">
           <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-3 p-4 border border-charcoal/10 bg-charcoal/[0.02] text-charcoal/70 text-xs">
+        <div className="flex items-center gap-3 p-4 rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-600 text-[13px]">
           <Check className="w-4 h-4 shrink-0" strokeWidth={1.5} />
           {success}
         </div>
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Avatar Upload */}
-          <div className="flex items-center gap-8">
-            <div className="relative w-20 h-20 rounded-full overflow-hidden bg-charcoal/[0.03] border border-charcoal/5 shrink-0">
+          <div className="flex items-center gap-6">
+            <div className="relative w-20 h-20 rounded-full overflow-hidden bg-[#1B3A5C]/[0.04] border border-[#1B3A5C]/8 shrink-0">
               {imageUrl ? (
                 <Image src={imageUrl} alt="Avatar" fill className="object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-charcoal/20 font-display text-2xl">
+                <div className="w-full h-full flex items-center justify-center text-[#1B3A5C]/55 font-display text-2xl">
                   {initialData.name?.charAt(0)?.toUpperCase() || "?"}
                 </div>
               )}
             </div>
-            
+
             <CldUploadWidget 
               signatureEndpoint="/api/upload/signature"
               onSuccess={(result: CloudinaryUploadWidgetResults) => {
@@ -91,7 +91,7 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
                 <button
                   type="button"
                   onClick={() => open()}
-                  className="flex items-center gap-2 px-5 py-2.5 border border-charcoal/10 text-[9px] uppercase tracking-[0.2em] text-charcoal/50 hover:border-charcoal/20 hover:text-charcoal transition-all"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#1B3A5C]/10 text-[13px] uppercase tracking-[0.16em] font-medium text-[#1B3A5C]/60 hover:border-[#1B3A5C]/25 hover:text-[#1B3A5C] transition-colors"
                 >
                   <Camera className="w-3 h-3" strokeWidth={1.5} />
                   <span>Upload Photo</span>
@@ -106,9 +106,9 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">Full Name</FormLabel>
+                <FormLabel className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium">Full Name</FormLabel>
                 <FormControl><Input placeholder="Your Name" className={inputClass} {...field} value={field.value || ""} /></FormControl>
-                <FormMessage className="text-red-400 text-xs" />
+                <FormMessage className="text-rose-600 text-[13px]" />
               </FormItem>
             )}
           />
@@ -118,18 +118,18 @@ export default function ProfileForm({ initialData }: { initialData: z.infer<type
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">Phone Number</FormLabel>
+                <FormLabel className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium">Phone Number</FormLabel>
                 <FormControl><Input placeholder="+977 98XXXXXXXX" className={inputClass} {...field} value={field.value || ""} /></FormControl>
-                <FormMessage className="text-red-400 text-xs" />
+                <FormMessage className="text-rose-600 text-[13px]" />
               </FormItem>
             )}
           />
 
-          <div className="pt-6">
+          <div className="pt-4">
             <button
               type="submit"
               disabled={isPending}
-              className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isPending ? "Saving..." : "Save Changes"}
             </button>

@@ -45,7 +45,6 @@ export async function createReviewAction(data: z.infer<typeof createReviewSchema
         propertyId: booking.propertyId,
         bookingId: booking.id,
         status: "PENDING",
-        isApproved: false,
         ...(validated.images?.length
           ? {
               images: {

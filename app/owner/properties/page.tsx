@@ -6,7 +6,13 @@ import Image from "next/image"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
-import { ArrowRight, Bath, BedDouble, Camera, MapPin, Sparkles, Users } from "lucide-react"
+import { Bath, BedDouble, ChevronRight, Home, MapPin, Star, Users } from "lucide-react"
+
+const PROPERTY_STATUS_CHIP: Record<string, string> = {
+  ACTIVE:    "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  DRAFT:     "bg-amber-50 text-amber-600 border-amber-200/60",
+  INACTIVE:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+}
 
 export default async function OwnerPropertiesPage({
   searchParams,
@@ -29,140 +35,134 @@ export default async function OwnerPropertiesPage({
     where,
     skip: pagination.skip,
     take: pagination.take,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      location: true,
+      status: true,
+      featured: true,
+      bedrooms: true,
+      bathrooms: true,
+      maxGuests: true,
+      amenities: true,
       _count: {
         select: {
           bookings: { where: { status: { in: ["CONFIRMED", "COMPLETED", "CHECKED_IN"] } } },
           reviews: true,
         },
       },
-      images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] },
+      images: {
+        take: 1,
+        orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
+        select: { url: true, isPrimary: true },
+      },
     },
     orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
   })
 
   return (
-    <div className="space-y-14">
-      <section className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-end">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <span className="h-px w-8 bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Owner Properties</p>
-          </div>
-          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-[#1B3A5C] md:text-5xl">
-            Every property, beautifully kept in one view.
+    <div className="pb-12 space-y-8">
+
+      {/* ── PAGE HEADER ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+            Portfolio
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            Your properties
           </h1>
-          <p className="max-w-2xl text-sm font-light leading-[1.85] text-[#1B3A5C]/50">
-            Open any property to review its guest story, gallery, amenities, arrivals, reviews, stay value, and update requests.
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-1.5 max-w-xl">
+            Open any property to review its gallery, amenities, reviews, stay value, and update requests.
           </p>
         </div>
-
-        <div className="grid grid-cols-2 gap-px bg-[#1B3A5C]/5">
-          {[
-            ["Total", total],
-            ["Shown", properties.length],
-          ].map(([label, value]) => (
-            <div key={label} className="bg-[#FFFDF8] p-6">
-              <p className="text-[8px] uppercase tracking-[0.3em] text-[#1B3A5C]/40">{label}</p>
-              <p className="mt-3 font-display text-3xl text-gold/75">{value}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+        <p className="text-[11px] text-[#1B3A5C]/40 tabular-nums shrink-0">
+          {total} propert{total === 1 ? "y" : "ies"}
+        </p>
+      </div>
 
       {properties.length === 0 ? (
-        <div className="border border-[#1B3A5C]/8 py-24 text-center">
-          <Sparkles className="mx-auto mb-6 h-8 w-8 text-gold/25 stroke-[1.2]" />
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">
-            No active properties listed yet
-          </p>
-          <p className="mt-3 text-[11px] font-light text-[#1B3A5C]/30">
-            Contact Salt Route to prepare your first property for guests.
-          </p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-16 text-center">
+          <Home className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No active properties yet</p>
+          <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Contact Salt Route to prepare your first property for guests</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-px bg-[#1B3A5C]/5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {properties.map((p) => {
             const imageUrl = getPrimaryImageUrl(p.images) || "/placeholder-property.jpg"
-            const readiness = [
-              p.images.length > 0,
-              p.amenities.length > 0,
-              p.highlights.length > 0,
-              p.description.length > 140,
-            ].filter(Boolean).length
+            const chip = PROPERTY_STATUS_CHIP[p.status] ?? PROPERTY_STATUS_CHIP.INACTIVE
 
             return (
               <Link
                 key={p.id}
                 href={`/owner/properties/${p.id}`}
-                className="group flex min-h-[500px] flex-col bg-[#FFFDF8] transition-colors duration-700 hover:bg-[#F5F1E8]"
+                className="group flex flex-col bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors"
               >
-                <div className="relative aspect-[16/10] overflow-hidden bg-[#1B3A5C]">
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#1B3A5C]/5">
                   <Image
                     src={imageUrl}
                     alt={p.title}
                     fill
                     sizes="(min-width: 1280px) 31vw, (min-width: 768px) 48vw, 100vw"
-                    className="object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-[#0C1F33]/22 transition-colors duration-700 group-hover:bg-transparent" />
-                  <div className="absolute left-5 top-5 border border-[#C9A96E]/20 bg-[#0C1F33] px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-[#C9A96E]">
-                    {p.status}
+                  <div className="absolute left-3 top-3 flex items-center gap-2">
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] ${chip}`}>
+                      {p.status}
+                    </span>
+                    {p.featured && (
+                      <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] bg-[#FFFAF3]/90 text-[#A8863F] border-[#C9A96E]/40">
+                        <Star className="h-2.5 w-2.5" />
+                        Featured
+                      </span>
+                    )}
                   </div>
-                  {p.featured && (
-                    <div className="absolute bottom-5 left-5 border border-[#FFFDF8]/18 bg-[#0C1F33]/90 px-3 py-2 text-[8px] uppercase tracking-[0.28em] text-[#FFFDF8]/80">
-                      Signature
-                    </div>
-                  )}
                 </div>
 
-                <div className="flex flex-1 flex-col p-6 sm:p-7">
-                  <p className="flex items-center gap-2 text-[8.5px] uppercase tracking-[0.28em] text-gold/50">
-                    <MapPin className="h-3.5 w-3.5 stroke-[1.3]" />
+                <div className="flex flex-1 flex-col p-4 sm:p-5">
+                  <p className="flex items-center gap-1 text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1.5">
+                    <MapPin className="h-2.5 w-2.5" />
                     {p.location}
                   </p>
-                  <h3 className="mt-4 font-display text-2xl tracking-wide text-[#1B3A5C] transition-colors duration-500 group-hover:text-[#1B3A5C]">
+                  <h3 className="text-[14px] font-semibold text-[#1B3A5C] leading-snug line-clamp-1">
                     {p.title}
                   </h3>
 
-                  <div className="mt-6 grid grid-cols-3 gap-3 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/40">
-                    <span className="inline-flex items-center gap-2">
-                      <BedDouble className="h-3.5 w-3.5 stroke-[1.3]" />
+                  <div className="mt-3 flex items-center gap-4 text-[11px] text-[#1B3A5C]/45">
+                    <span className="inline-flex items-center gap-1.5">
+                      <BedDouble className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
                       {p.bedrooms}
                     </span>
-                    <span className="inline-flex items-center gap-2">
-                      <Bath className="h-3.5 w-3.5 stroke-[1.3]" />
+                    <span className="inline-flex items-center gap-1.5">
+                      <Bath className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
                       {p.bathrooms}
                     </span>
-                    <span className="inline-flex items-center gap-2">
-                      <Users className="h-3.5 w-3.5 stroke-[1.3]" />
+                    <span className="inline-flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
                       {p.maxGuests}
                     </span>
                   </div>
 
-                  <div className="mt-auto grid grid-cols-3 gap-3 border-t border-[#1B3A5C]/8 pt-6">
+                  <div className="mt-auto grid grid-cols-3 gap-3 border-t border-[#1B3A5C]/5 pt-4 mt-4">
                     <div>
-                      <p className="font-display text-2xl text-gold/72">{p._count.bookings}</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Stays</p>
+                      <p className="text-[15px] font-semibold text-[#1B3A5C] tabular-nums">{p._count.bookings}</p>
+                      <p className="mt-0.5 text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">Stays</p>
                     </div>
                     <div>
-                      <p className="font-display text-2xl text-gold/72">{p._count.reviews}</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Reviews</p>
+                      <p className="text-[15px] font-semibold text-[#1B3A5C] tabular-nums">{p._count.reviews}</p>
+                      <p className="mt-0.5 text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">Reviews</p>
                     </div>
                     <div>
-                      <p className="font-display text-2xl text-gold/72">{readiness}/4</p>
-                      <p className="mt-1 text-[8px] uppercase tracking-[0.2em] text-[#1B3A5C]/30">Details</p>
+                      <p className="text-[15px] font-semibold text-[#1B3A5C] tabular-nums">{p.amenities.length}</p>
+                      <p className="mt-0.5 text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">Amenities</p>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-[#1B3A5C]/8 pt-5">
-                    <span className="inline-flex items-center gap-2 text-[8.5px] uppercase tracking-[0.25em] text-[#1B3A5C]/40">
-                      <Camera className="h-3.5 w-3.5 stroke-[1.3]" />
-                      {p.amenities.length} amenities
-                    </span>
-                    <span className="inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-gold/55 transition-colors duration-500 group-hover:text-gold">
+                  <div className="mt-4 flex items-center justify-end border-t border-[#1B3A5C]/5 pt-3">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#1B3A5C]/40 group-hover:text-[#1B3A5C] transition-colors">
                       Open property
-                      <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
+                      <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
                     </span>
                   </div>
                 </div>

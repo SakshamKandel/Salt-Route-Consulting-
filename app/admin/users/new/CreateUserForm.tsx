@@ -59,7 +59,7 @@ export function CreateUserForm({ defaultRole = "GUEST" }: { defaultRole?: "GUEST
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {error && <div className="text-red-600 bg-red-50 border border-red-200 p-3 rounded-md text-sm">{error}</div>}
+        {error && <div className="text-[#B84040] bg-rose-50 border border-rose-200/60 p-3 rounded-lg text-[12px]">{error}</div>}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField control={form.control} name="name" render={({ field }) => (
@@ -106,12 +106,12 @@ export function CreateUserForm({ defaultRole = "GUEST" }: { defaultRole?: "GUEST
           <FormItem>
             <FormLabel>Initial Password</FormLabel>
             <FormControl><Input type="password" {...field} placeholder="At least 8 chars, 1 upper, 1 lower, 1 number" /></FormControl>
-            <p className="text-xs text-slate-500 mt-1">The user can change this after their first login.</p>
+            <p className="text-[11px] text-[#1B3A5C]/45 mt-1">The user can change this after their first login.</p>
             <FormMessage />
           </FormItem>
         )} />
 
-        <Button type="submit" className="bg-navy text-cream w-full" disabled={isPending}>
+        <Button type="submit" className="bg-[#1B3A5C] text-[#FFFAF3] hover:bg-[#2A4F7A] rounded-lg text-[12px] font-medium w-full" disabled={isPending}>
           {isPending ? "Creating..." : "Create User"}
         </Button>
       </form>

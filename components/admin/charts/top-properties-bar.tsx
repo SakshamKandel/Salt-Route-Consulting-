@@ -25,7 +25,7 @@ export function TopPropertiesChart({ data }: { data: PropertyOccupancy[] }) {
       >
         <XAxis
           type="number"
-          tick={{ fontSize: 11, fill: "#94a3b8" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.4)" }}
           axisLine={false}
           tickLine={false}
         />
@@ -33,7 +33,7 @@ export function TopPropertiesChart({ data }: { data: PropertyOccupancy[] }) {
           type="category"
           dataKey="title"
           tickFormatter={(t) => truncate(t)}
-          tick={{ fontSize: 11, fill: "#64748b" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.6)" }}
           axisLine={false}
           tickLine={false}
           width={110}
@@ -46,7 +46,7 @@ export function TopPropertiesChart({ data }: { data: PropertyOccupancy[] }) {
               name === "bookings" ? "Bookings" : "Revenue",
             ]
           }}
-          contentStyle={{ border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px" }}
+          contentStyle={{ border: "1px solid rgba(27,58,92,0.12)", borderRadius: "10px", fontSize: "12px", background: "#FFFAF3", color: "#1B3A5C" }}
         />
         <Bar dataKey="bookings" radius={[0, 4, 4, 0]}>
           {data.map((_, i) => (

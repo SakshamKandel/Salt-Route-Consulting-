@@ -15,7 +15,6 @@ type ReviewTableRow = {
   id: string
   comment: string
   rating: number
-  isApproved: boolean
   status: ReviewStatus
   createdAt: Date | string
   property: { title: string }
@@ -23,9 +22,9 @@ type ReviewTableRow = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  PUBLISHED: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
-  HIDDEN: "bg-red-50 text-red-500 border-red-200/50",
-  PENDING: "bg-amber-50 text-amber-600 border-amber-200/50",
+  PUBLISHED: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  HIDDEN: "bg-rose-50 text-rose-600 border-rose-200/60",
+  PENDING: "bg-amber-50 text-amber-600 border-amber-200/60",
 }
 
 interface ReviewsTableProps {
@@ -82,7 +81,7 @@ export function ReviewsTable({
       id: "createdAt",
       header: "Date",
       cell: ({ row }) => (
-        <span className="text-[10px] text-navy/40">
+        <span className="text-[10px] text-[#1B3A5C]/40 tabular-nums">
           {new Date(row.original.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -91,7 +90,7 @@ export function ReviewsTable({
       id: "propertyTitle",
       header: "Property",
       enableSorting: false,
-      cell: ({ row }) => <span className="font-medium text-navy text-xs">{row.original.property.title}</span>,
+      cell: ({ row }) => <span className="font-medium text-[#1B3A5C] text-xs">{row.original.property.title}</span>,
     },
     {
       id: "guestName",
@@ -101,16 +100,16 @@ export function ReviewsTable({
         const g = row.original.guest
         return (
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-navy/[0.05] flex items-center justify-center overflow-hidden border border-navy/10 shrink-0">
+            <div className="h-6 w-6 rounded-full bg-[#1B3A5C]/5 flex items-center justify-center overflow-hidden border border-[#1B3A5C]/10 shrink-0">
               {g?.image ? (
                 <img src={g.image} alt={g.name || ""} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-gold text-[8px] font-bold uppercase">
+                <span className="text-[#C9A96E] text-[8px] font-bold uppercase">
                   {g?.name?.charAt(0) || "G"}
                 </span>
               )}
             </div>
-            <span className="truncate max-w-[120px] text-navy text-xs font-light">{g?.name || g?.email}</span>
+            <span className="truncate max-w-[120px] text-[#1B3A5C]/70 text-xs">{g?.name || g?.email}</span>
           </div>
         )
       },
@@ -119,9 +118,9 @@ export function ReviewsTable({
       id: "rating",
       header: "Rating",
       cell: ({ row }) => (
-        <div className="flex items-center gap-1 text-navy text-xs font-semibold">
+        <div className="flex items-center gap-1 text-[#1B3A5C] text-xs font-semibold tabular-nums">
           <span>{row.original.rating}</span>
-          <Star className="w-3.5 h-3.5 fill-gold text-gold" />
+          <Star className="w-3.5 h-3.5 fill-[#C9A96E] text-[#C9A96E]" />
         </div>
       ),
     },
@@ -137,8 +136,8 @@ export function ReviewsTable({
             : "Pending"
         return (
           <span
-            className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-              STATUS_STYLES[row.original.status] || "bg-slate-50 text-slate-500 border-slate-200"
+            className={`inline-flex rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${
+              STATUS_STYLES[row.original.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10"
             }`}
           >
             {text}
@@ -151,7 +150,7 @@ export function ReviewsTable({
       header: "",
       enableSorting: false,
       cell: ({ row }) => (
-        <Button asChild variant="ghost" className="hover:bg-gold/10 hover:text-gold rounded-lg h-8 px-2 transition-colors">
+        <Button asChild variant="ghost" className="text-[#1B3A5C]/40 hover:bg-[#C9A96E]/10 hover:text-[#C9A96E] rounded-lg h-8 px-2 transition-colors">
           <Link href={`/admin/reviews/${row.original.id}`}>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>

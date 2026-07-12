@@ -25,17 +25,18 @@ export default async function NewPropertyPage() {
 
   return (
     <div className="space-y-6 max-w-[1500px] mx-auto">
-      <div className="flex flex-wrap items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
-          <Link href="/admin/properties"><ArrowLeft className="w-5 h-5" /></Link>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button asChild variant="ghost" size="icon" className="rounded-lg text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
+          <Link href="/admin/properties"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
         <div className="min-w-0">
-          <h2 className="text-2xl md:text-3xl font-display text-navy">Add New Property</h2>
-          <p className="text-slate-500">Create a new property listing.</p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Portfolio</p>
+          <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Add New Property</h2>
+          <p className="text-[13px] text-[#1B3A5C]/45 mt-1">Create a new property listing.</p>
         </div>
       </div>
 
-      <div className="bg-white border rounded-lg p-4 sm:p-6 shadow-sm">
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-4 sm:p-6">
         <PropertyForm owners={owners} knownLocations={knownLocations} availableFeatures={features} />
       </div>
     </div>

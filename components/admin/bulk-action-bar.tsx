@@ -19,7 +19,7 @@ export function BulkActionBar({ selectedCount, actions, onClearSelection }: Bulk
   if (selectedCount === 0) return null
 
   return (
-    <div className="flex items-center gap-2.5 bg-[#1B3A5C] text-white rounded-lg px-3.5 py-2 text-sm">
+    <div className="flex items-center gap-2.5 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg px-3.5 py-2 text-sm">
       <button
         type="button"
         onClick={onClearSelection}
@@ -38,7 +38,7 @@ export function BulkActionBar({ selectedCount, actions, onClearSelection }: Bulk
             onClick={action.onClick}
             className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
               action.variant === "danger"
-                ? "bg-red-500 hover:bg-red-400 text-white"
+                ? "bg-[#B84040] hover:bg-[#B84040]/85 text-white"
                 : "bg-white/10 hover:bg-white/20 text-white"
             }`}
           >

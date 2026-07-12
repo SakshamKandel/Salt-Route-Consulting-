@@ -16,8 +16,9 @@ export default async function AmenitiesSettingsPage() {
   return (
     <div className="space-y-8 max-w-3xl">
       <div>
-        <h2 className="text-3xl font-display text-navy">Amenities</h2>
-        <p className="text-slate-500">
+        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Settings</p>
+        <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Amenities</h2>
+        <p className="text-[12px] text-[#1B3A5C]/45 mt-1">
           View and manage amenities used across all properties. Adding an amenity here adds it to every property; removing deletes it from all.
         </p>
       </div>

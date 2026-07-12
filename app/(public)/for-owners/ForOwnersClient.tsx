@@ -1,18 +1,18 @@
 "use client"
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react"
+import { useState, type FormEvent } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion"
-import {
-  ArrowRight,
-  BedDouble,
-  MapPin,
-  Sparkles,
-  Users,
-} from "lucide-react"
+import { Sparkles } from "lucide-react"
 import { LuxuryButton } from "@/components/ui/luxury-button"
 import { LuxuryLinkWithArrow } from "@/components/ui/luxury-link-with-arrow"
+import { KenBurns, ParallaxImage, Reveal, RevealText } from "@/components/public/motion"
+
+// Owned /public artwork — static imports give free blur placeholders.
+import imgVillaMain from "@/public/Sunshine Villa Main.png"
+import imgRetreatExterior from "@/public/luxury_himalayan_retreat_exterior_1777124225845.png"
+import imgTeam from "@/public/luxury_boutique_office_team.png"
+import imgPrivateDining from "@/public/private_himalayan_dining_luxury_1777124309093.png"
 
 export type ForOwnersPortfolioItem = {
   slug: string
@@ -34,64 +34,122 @@ export type ForOwnersContact = {
   address: string
 }
 
-function FadeUp({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode
-  delay?: number
-  className?: string
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
-}
+// ── Partnership at a glance (facts ledger under the hero) ───────────────────
+const resultsLedger = [
+  { value: "30%", label: "Occupancy Lift", note: "first year of partnership" },
+  { value: "2.4×", label: "Direct Revenue", note: "vs. unmanaged listings" },
+  { value: "48h", label: "Statement Cadence", note: "monthly, on time" },
+  { value: "100%", label: "Transparent Payouts", note: "no hidden margins" },
+]
 
-function useParallaxY(ref: React.RefObject<HTMLElement | null>, intensity = 0.15): MotionValue<string> {
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-  return useTransform(scrollYProgress, [0, 1], [`-${intensity * 100}%`, `${intensity * 100}%`])
-}
+// ── The scope of partnership ─────────────────────────────────────────────────
+const services = [
+  {
+    num: "01",
+    title: "Positioning & Brand Story",
+    desc: "We study the property's setting, history, and character, then shape a narrative that places it in the market with clarity and quiet confidence.",
+    points: ["Market positioning", "Editorial photography", "Story & voice"],
+  },
+  {
+    num: "02",
+    title: "Listing & Distribution",
+    desc: "A considered presence on our platform — gallery flow, calendar, pricing strategy, and policies prepared with you.",
+    points: ["Listing build", "Pricing strategy", "Calendar & policies"],
+  },
+  {
+    num: "03",
+    title: "Guest Experience & Care",
+    desc: "From first enquiry to departure, our team holds the entire stay — concierge, housekeeping coordination, and on-the-ground support.",
+    points: ["24/7 concierge", "Housekeeping standards", "On-ground support"],
+  },
+  {
+    num: "04",
+    title: "Revenue & Reporting",
+    desc: "Transparent monthly statements, clear performance reporting, and honest conversations about pricing, occupancy, and opportunity.",
+    points: ["Monthly statements", "Performance reviews", "Owner payouts"],
+  },
+  {
+    num: "05",
+    title: "Maintenance & Stewardship",
+    desc: "Preventive maintenance, seasonal checks, vendor coordination, and a quiet eye on the building so it ages gracefully.",
+    points: ["Preventive care", "Vendor management", "Emergency response"],
+  },
+  {
+    num: "06",
+    title: "Community & Sustainability",
+    desc: "Local employment, fair wages, environmental responsibility, and reinvestment in the communities that host our guests.",
+    points: ["Local hiring", "Energy efficiency", "Community reinvestment"],
+  },
+]
 
-function ParallaxFigure({
-  src,
-  alt,
-  className = "",
-  intensity = 0.18,
-}: {
-  src: string
-  alt: string
-  className?: string
-  intensity?: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const y = useParallaxY(ref, intensity)
+// ── Four steps into partnership ──────────────────────────────────────────────
+const steps = [
+  {
+    num: "01",
+    title: "Share Your Property",
+    desc: "Send us a few details about your property and your story. We read every enquiry personally and respond within one business day.",
+  },
+  {
+    num: "02",
+    title: "A Visit & A Conversation",
+    desc: "We walk the grounds, listen to your priorities, and discuss how we would hold the day-to-day and the long-term position together.",
+  },
+  {
+    num: "03",
+    title: "Onboarding & Launch",
+    desc: "Photography, editorial copy, calendars, pricing, and policies — prepared with you, reviewed by you. Then your property goes live.",
+  },
+  {
+    num: "04",
+    title: "Hosting & Reporting",
+    desc: "We manage reservations, guest care, and maintenance. You receive steady updates and your share of revenue on a calm rhythm.",
+  },
+]
 
-  return (
-    <div ref={ref} className={`relative overflow-hidden ${className}`}>
-      <motion.div style={{ y }} className="absolute inset-[-12%] will-change-transform">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
-        />
-      </motion.div>
-    </div>
-  )
-}
+// ── Principles — the conditions of partnership ───────────────────────────────
+const principles = [
+  {
+    num: "01",
+    title: "One Property, One Story",
+    desc: "We never apply a template. Each property receives its own positioning, its own voice, its own standard of care.",
+  },
+  {
+    num: "02",
+    title: "Local Roots, Global Standards",
+    desc: "Our teams live in the regions we operate in. We hire locally, train carefully, and hold ourselves to the standards of the world's finest houses.",
+  },
+  {
+    num: "03",
+    title: "Transparency as Default",
+    desc: "Every booking and every guest interaction is visible to you. Monthly statements, open reporting — no black boxes, no surprises.",
+  },
+  {
+    num: "04",
+    title: "Stewardship, Not Extraction",
+    desc: "We manage for seasons and decades, not for a single quarter's occupancy. The buildings we care for should age well and welcome well.",
+  },
+]
+
+const testimonials = [
+  {
+    quote:
+      "They understood the property before they understood the paperwork. That is rare. The first season was the best we have had in nine years of operating.",
+    author: "Owner",
+    property: "Heritage Villa, Bhaktapur",
+  },
+  {
+    quote:
+      "What I value most is the calm. I hear from them when it matters, I see the statements on time, and I never have to wonder whether the house is being looked after.",
+    author: "Owner",
+    property: "Mountain Lodge, Bandipur",
+  },
+  {
+    quote:
+      "The standard of guest care is something I could never have built alone. The team treats the property as if their name were on the door.",
+    author: "Owner",
+    property: "Riverside Retreat, Pokhara",
+  },
+]
 
 export default function ForOwnersClient({
   portfolio,
@@ -100,46 +158,15 @@ export default function ForOwnersClient({
   portfolio: ForOwnersPortfolioItem[]
   contact: ForOwnersContact
 }) {
-  const ownerPromises = [
-    {
-      num: "01",
-      title: "Share Your Property",
-      desc: "Send us a few details about your property, your story, and what you hope a partnership could look like. We read every enquiry and respond within one business day.",
-    },
-    {
-      num: "02",
-      title: "A Visit & A Conversation",
-      desc: "We visit your property, listen to your priorities, and walk through how we would hold the day-to-day, the guest experience, and the long-term position together.",
-    },
-    {
-      num: "03",
-      title: "Onboarding & Launch",
-      desc: "Photography, gallery flow, listing pages, calendars, and pricing prepared with you. When everything feels right, your property goes live on our platform.",
-    },
-    {
-      num: "04",
-      title: "Ongoing Hosting & Reporting",
-      desc: `${contact.siteName} manages reservations, guest care, housekeeping coordination, and monthly reporting, so you receive steady updates, clear results, and your share of revenue, on a calm rhythm.`,
-    },
-  ]
-
-  const heroImage = portfolio.find((item) => item.image)?.image ?? "/Sunshine Villa Main.png"
+  const heroImage = portfolio.find((item) => item.image)?.image ?? imgVillaMain
   const [ownerEnquiryStatus, setOwnerEnquiryStatus] = useState<"idle" | "loading" | "sent" | "error">("idle")
-
-  const heroRef = useRef<HTMLElement>(null)
-  const { scrollYProgress: heroProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  })
-  const heroParallax = useTransform(heroProgress, [0, 1], ["0%", "30%"])
-  const heroContentParallax = useTransform(heroProgress, [0, 1], ["0%", "-15%"])
-  const heroContentOpacity = useTransform(heroProgress, [0, 0.7], [1, 0])
 
   async function handleOwnerEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setOwnerEnquiryStatus("loading")
     const form = event.currentTarget
     const formData = new FormData(form)
+    const phone = String(formData.get("phone") ?? "").trim()
 
     try {
       const response = await fetch("/api/inquiries", {
@@ -148,9 +175,11 @@ export default function ForOwnersClient({
         body: JSON.stringify({
           name: formData.get("name"),
           email: formData.get("email"),
-          phone: formData.get("phone"),
+          // Only include phone when provided — the API schema rejects null.
+          ...(phone ? { phone } : {}),
+          website: formData.get("website") ?? "",
           subject: "Owner Partnership Enquiry",
-          message: `Property: ${formData.get("propertyName")} at ${formData.get("propertyLocation")}\n\n${formData.get("message")}`,
+          message: `Property: ${formData.get("propertyName") || "—"} at ${formData.get("propertyLocation") || "—"}\n\n${formData.get("message")}`,
         }),
       })
       if (!response.ok) throw new Error("Failed")
@@ -164,295 +193,527 @@ export default function ForOwnersClient({
   return (
     <div className="bg-background text-charcoal min-h-screen">
 
-      {/* HERO */}
-      <section ref={heroRef} className="relative h-[100svh] w-full flex flex-col items-center justify-center pt-20 bg-charcoal overflow-hidden">
-        <motion.div
-          style={{ y: heroParallax, scale: 1.15 }}
-          className="absolute inset-0 z-0 will-change-transform"
-        >
-          <Image
-            src={heroImage}
-            alt="Property Partnership"
-            fill
-            className="object-cover opacity-50"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
-        </motion.div>
+      {/* ─── 1 · HERO — compact, bottom-left anchored ─── */}
+      <section className="relative h-[64svh] min-h-[520px] md:h-[74vh] w-full flex items-end bg-charcoal overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <KenBurns className="h-full w-full">
+            <Image
+              src={heroImage}
+              alt="A Salt Route managed property"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          </KenBurns>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/30" />
+        </div>
 
-        <motion.div
-          style={{ y: heroContentParallax, opacity: heroContentOpacity }}
-          className="relative z-10 text-center px-6 max-w-6xl w-full will-change-transform"
-        >
-          <FadeUp>
-            <p className="text-[9px] md:text-[10px] uppercase tracking-[0.6em] text-white/55 font-sans mb-10 font-light">
-              Property Partnership
+        <div className="relative z-10 w-full max-w-screen-xl mx-auto px-6 md:px-12 pb-24 md:pb-28">
+          <Reveal delay={0.15} y={16}>
+            <p className="text-[11px] md:text-[12px] uppercase tracking-[0.28em] text-white/65 font-medium mb-5">
+              For Property Owners
             </p>
-            <span className="block w-10 h-px bg-gold/50 mx-auto mb-10" aria-hidden />
-            <h1
-              className="font-display text-white tracking-wide leading-[0.95] font-normal uppercase"
-              style={{ fontSize: "clamp(3.5rem, 12vw, 10rem)" }}
-            >
-              For Property<br />Owners.
-            </h1>
-            <p className="mt-12 max-w-md mx-auto text-[14px] md:text-[15px] text-white/45 font-light leading-relaxed">
-              A long-term partnership for distinctive properties across the Himalayan range and beyond.
-            </p>
-            <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-8">
-              <LuxuryButton href="#owner-enquiry" dark>List Your Property</LuxuryButton>
-              <LuxuryLinkWithArrow href="#portfolio" color="white">View Portfolio</LuxuryLinkWithArrow>
+          </Reveal>
+          <RevealText
+            as="h1"
+            lines={["Your property,", "held to a standard."]}
+            delay={0.3}
+            className="font-display font-normal text-white leading-[1.08] tracking-[-0.02em] text-[clamp(2.5rem,5.5vw,4.5rem)]"
+          />
+          <Reveal delay={0.55} y={16}>
+            <div className="mt-7 md:mt-9 border-t border-white/20 pt-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <p className="max-w-md text-[14px] md:text-[15px] text-white/70 font-light leading-[1.8]">
+                A long-term partnership for distinctive properties across the
+                Himalayan range — built on the standards of the world&rsquo;s finest
+                houses, delivered with the warmth of a host community.
+              </p>
+              <div className="flex items-center gap-8 shrink-0">
+                <LuxuryButton href="#owner-enquiry" variant="primary" dark>
+                  List Your Property
+                </LuxuryButton>
+                <LuxuryLinkWithArrow href="#portfolio" color="white">
+                  View Portfolio
+                </LuxuryLinkWithArrow>
+              </div>
             </div>
-          </FadeUp>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4 pointer-events-none">
-          <span className="text-[8px] uppercase tracking-[0.5em] text-white/25 font-light">Scroll</span>
-          <motion.span
-            aria-hidden
-            animate={{ y: [0, 10, 0], opacity: [0.4, 0.1, 0.4] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className="block w-px h-14 bg-gradient-to-b from-white/30 to-transparent"
-          />
+          </Reveal>
         </div>
       </section>
 
-      {/* WELCOME / PROMISE */}
-      <section className="py-24 md:py-32 bg-white overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-center">
-            <div className="lg:col-span-5 order-2 lg:order-1">
-              <ParallaxFigure
-                src="/luxury_himalayan_retreat_exterior_1777124225845.png"
-                alt="A managed Salt Route property at altitude"
-                className="aspect-[4/5] border border-charcoal/10"
-                intensity={0.14}
-              />
-            </div>
-            <div className="lg:col-span-7 order-1 lg:order-2 space-y-10">
-              <FadeUp className="space-y-6">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Why Salt Route</p>
-                <h2 className="font-display text-4xl md:text-5xl lg:text-7xl text-charcoal tracking-wide leading-[1.05] uppercase">
-                  Hospitality value,<br />not paperwork.
-                </h2>
-              </FadeUp>
-              <FadeUp delay={0.15}>
-                <p className="font-sans text-[16px] md:text-[17px] text-charcoal/60 leading-[1.85] font-light max-w-xl">
-                  We take time to understand what makes each property unrepeatable, the setting, the light, the kind of guest it deserves, and build a long-term position around it. Not a template, not a pipeline. A relationship measured in seasons.
+      {/* ─── 2 · RESULTS LEDGER — cream panel docked over the hero edge,
+             mirroring the stay page's booking bar ─── */}
+      <section className="relative z-20 -mt-14 md:-mt-16 px-4 sm:px-6 md:px-12">
+        <div className="max-w-screen-xl mx-auto bg-cream border border-navy/10 px-6 md:px-10 py-6 md:py-7">
+          <Reveal stagger={0.06} className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 lg:divide-x divide-navy/10">
+            {resultsLedger.map((stat, i) => (
+              <Reveal.Item key={stat.label} className={`lg:px-10 ${i === 0 ? "lg:pl-0" : ""}`}>
+                <p className="font-display font-normal text-navy leading-none tracking-[-0.02em] text-3xl md:text-[2.75rem]">
+                  {stat.value}
                 </p>
-              </FadeUp>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-navy/55 font-medium mt-2.5">
+                  {stat.label}
+                </p>
+                <p className="text-[12px] text-charcoal/45 font-light mt-1">{stat.note}</p>
+              </Reveal.Item>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ─── 3 · WHY SALT ROUTE — editorial split, drop-cap ─── */}
+      <section className="py-10 md:py-16 bg-white overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-16 items-center">
+            <div className="lg:col-span-6 space-y-6">
+              <Reveal className="space-y-5">
+                <p className="type-eyebrow">Why Salt Route</p>
+                <h2 className="type-h2">
+                  Hospitality value,
+                  <br />
+                  not paperwork.
+                </h2>
+              </Reveal>
+              <Reveal delay={0.12} className="space-y-5">
+                <p className="type-body max-w-xl first-letter:font-display first-letter:text-5xl first-letter:float-left first-letter:leading-[0.85] first-letter:mr-3 first-letter:text-navy">
+                  We take time to understand what makes each property unrepeatable —
+                  the setting, the light, the way the morning arrives, the kind of
+                  guest it deserves — and build a long-term position around it. Not
+                  a template. Not a pipeline. A relationship measured in seasons.
+                </p>
+                <p className="type-body max-w-xl">
+                  The difference between a listing and a legacy is care. We bring the
+                  care, the systems, and the people — you bring the property and the
+                  trust. Everything else, we hold.
+                </p>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <LuxuryLinkWithArrow href="#approach" color="charcoal">
+                  Our Approach
+                </LuxuryLinkWithArrow>
+              </Reveal>
+            </div>
+            <div className="lg:col-span-5 lg:col-start-8">
+              <ParallaxImage className="aspect-[4/3] lg:aspect-[3/4]" speed={0.08}>
+                <Image
+                  src={imgRetreatExterior}
+                  alt="A managed Salt Route property at altitude"
+                  fill
+                  placeholder="blur"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+              </ParallaxImage>
             </div>
           </div>
         </div>
       </section>
 
-      {/* THE APPROACH: sticky image + numbered practices */}
-      <section className="bg-charcoal py-24 md:py-32 overflow-hidden">
+      {/* ─── 4 · THE PATH — four steps on one hairline rail ─── */}
+      <section id="approach" className="bg-sand py-10 md:py-16 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <FadeUp className="mb-16 md:mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
-            <div className="lg:col-span-7 space-y-5">
-              <p className="text-sm uppercase tracking-[0.5em] text-white/40 font-medium">Steps For Owners</p>
-              <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-white tracking-wide uppercase leading-[1.05]">
-                Four steps,<br />from first call to first guest.
+          <Reveal className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div className="space-y-4 max-w-xl">
+              <p className="type-eyebrow">Steps for Owners</p>
+              <h2 className="type-h2">
+                Four steps, from first call
+                <br />
+                to first guest.
               </h2>
             </div>
-            <p className="lg:col-span-5 font-sans text-base md:text-lg text-white/55 leading-[1.85] font-light max-w-md">
-              A simple, unhurried path into partnership, repeated for every property we welcome, always as a relationship, never as a checklist.
+            <p className="type-body text-[14px] max-w-sm">
+              A simple, unhurried path into partnership — always a relationship,
+              never a checklist.
             </p>
-          </FadeUp>
+          </Reveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-            <div className="lg:col-span-5">
-              <div className="lg:sticky lg:top-24">
-                <ParallaxFigure
-                  src="/luxury_nepalese_interior_details_1777124245155.png"
-                  alt="A considered interior detail"
-                  className="aspect-[4/5]"
-                  intensity={0.12}
-                />
+          <Reveal stagger={0.08} className="grid sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step) => (
+              <Reveal.Item
+                key={step.num}
+                className="relative border-t border-navy/15 pt-8 pb-6 lg:pb-0 lg:pr-8"
+              >
+                <span
+                  className="absolute -top-4 left-0 bg-sand pr-4 font-display text-2xl md:text-3xl text-gold/60 leading-none"
+                  aria-hidden
+                >
+                  {step.num}
+                </span>
+                <h3 className="type-h3">{step.title}</h3>
+                <p className="type-body text-[13px] md:text-[14px] mt-3 max-w-xs">
+                  {step.desc}
+                </p>
+              </Reveal.Item>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ─── 5 · THE SCOPE — six services as dense hairline rows ─── */}
+      <section className="py-10 md:py-16 bg-white overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <Reveal className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4 max-w-2xl">
+              <p className="type-eyebrow">The Scope of Partnership</p>
+              <h2 className="type-h2">
+                Everything we hold,
+                <br />
+                so you don&rsquo;t have to.
+              </h2>
+            </div>
+            <p className="type-body text-[14px] max-w-sm">
+              From the first conversation to the last guest of the season, every
+              detail is held by a team that treats the property as their own.
+            </p>
+          </Reveal>
+
+          <Reveal stagger={0.06} className="grid lg:grid-cols-2 gap-x-16 border-t border-charcoal/10">
+            {services.map((s) => (
+              <Reveal.Item key={s.num}>
+                <div className="grid grid-cols-[3rem_1fr] gap-4 py-6 md:py-7 border-b border-charcoal/10">
+                  <span className="font-display text-xl md:text-2xl text-gold/60 leading-none pt-1">
+                    {s.num}
+                  </span>
+                  <div>
+                    <h3 className="type-h3">{s.title}</h3>
+                    <p className="text-[13px] md:text-[14px] text-charcoal/55 leading-[1.75] font-light mt-2 max-w-xl">
+                      {s.desc}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-charcoal/40 font-medium mt-3">
+                      {s.points.join("  ·  ")}
+                    </p>
+                  </div>
+                </div>
+              </Reveal.Item>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ─── 5b · PHOTO BREATH — text-free full-bleed band ─── */}
+      <section className="relative h-[36vh] md:h-[48vh] w-full overflow-hidden bg-navy">
+        <ParallaxImage speed={0.1} className="absolute inset-0">
+          <Image
+            src={imgPrivateDining}
+            alt="A private dining moment at a managed property"
+            fill
+            placeholder="blur"
+            sizes="100vw"
+            className="object-cover"
+          />
+        </ParallaxImage>
+      </section>
+
+      {/* ─── 6 · PRINCIPLES — the one dark editorial moment ─── */}
+      <section className="bg-navy py-14 md:py-20 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-x-16">
+            <div className="lg:col-span-4">
+              <div className="lg:sticky lg:top-28 space-y-6">
+                <Reveal className="space-y-5">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-gold/80 font-medium">
+                    Our Philosophy
+                  </p>
+                  <h2 className="font-display font-normal text-white leading-[1.1] tracking-[-0.01em] text-[clamp(1.85rem,3.2vw,2.9rem)]">
+                    Four principles,
+                    <br />
+                    held without exception.
+                  </h2>
+                  <p className="text-[14px] text-white/50 leading-[1.8] font-light max-w-sm">
+                    These are not aspirations — they are the conditions of
+                    partnership.
+                  </p>
+                </Reveal>
+                <Reveal delay={0.15} className="hidden lg:block">
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      src={imgTeam}
+                      alt="The Salt Route team"
+                      fill
+                      placeholder="blur"
+                      sizes="30vw"
+                      className="object-cover"
+                    />
+                  </div>
+                </Reveal>
               </div>
             </div>
 
-            <ol className="lg:col-span-7 space-y-12">
-              {ownerPromises.map((item, index) => (
-                <FadeUp key={item.num} delay={index * 0.08}>
-                  <li className="grid grid-cols-12 gap-5 md:gap-8 pb-12 border-b border-white/10 last:border-b-0 last:pb-0">
-                    <span
-                      aria-hidden
-                      className="col-span-2 lg:col-span-2 font-display text-3xl md:text-4xl text-gold/40 leading-none tracking-wide"
-                    >
-                      {item.num}
+            <Reveal stagger={0.08} className="lg:col-span-8 border-t border-white/15">
+              {principles.map((p) => (
+                <Reveal.Item key={p.num}>
+                  <div className="grid grid-cols-[3rem_1fr] gap-4 py-6 md:py-7 border-b border-white/15">
+                    <span className="font-display text-xl md:text-2xl text-gold/50 leading-none pt-1">
+                      {p.num}
                     </span>
-                    <div className="col-span-10 lg:col-span-10 space-y-4">
-                      <h3 className="font-display text-2xl md:text-3xl text-white tracking-wide uppercase leading-[1.15]">
-                        {item.title}
+                    <div>
+                      <h3 className="font-display text-xl md:text-2xl text-white leading-[1.2] tracking-[-0.01em]">
+                        {p.title}
                       </h3>
-                      <p className="text-[14px] md:text-[15px] text-white/45 leading-[1.85] font-light max-w-md">
-                        {item.desc}
+                      <p className="text-[13px] md:text-[14px] text-white/50 leading-[1.8] font-light mt-2 max-w-xl">
+                        {p.desc}
                       </p>
                     </div>
-                  </li>
-                </FadeUp>
+                  </div>
+                </Reveal.Item>
               ))}
-            </ol>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* PORTFOLIO */}
-      <section id="portfolio" className="py-24 md:py-32 bg-white">
+      {/* ─── 7 · PORTFOLIO — compact grid with property facts ─── */}
+      <section id="portfolio" className="py-10 md:py-16 bg-white scroll-mt-24">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <FadeUp className="mb-16 md:mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-medium">Managed Properties</p>
-              <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-charcoal tracking-wide uppercase leading-[1.05]">
-                Signature managed stays.
-              </h2>
+          <Reveal className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4 max-w-xl">
+              <p className="type-eyebrow">Managed Properties</p>
+              <h2 className="type-h2">Signature managed stays.</h2>
             </div>
-            <LuxuryLinkWithArrow href="/properties" className="text-[10px]">View Full Collection</LuxuryLinkWithArrow>
-          </FadeUp>
+            <LuxuryLinkWithArrow href="/properties" className="shrink-0">
+              View Full Collection
+            </LuxuryLinkWithArrow>
+          </Reveal>
 
           {portfolio.length === 0 ? (
-            <div className="border border-charcoal/10 bg-white py-28 md:py-32 px-8 text-center space-y-6">
+            <div className="border-y border-charcoal/10 py-16 md:py-20 px-8 text-center space-y-5">
               <p className="font-display text-2xl md:text-3xl tracking-wide text-charcoal/40">
                 Portfolio coming soon
               </p>
               <p className="font-sans text-[14px] text-charcoal/50 font-light max-w-xl mx-auto leading-[1.8]">
-                New managed properties will appear here as they are ready to welcome guests.
+                New managed properties will appear here as they are ready to
+                welcome guests. We onboard carefully, never in volume.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-charcoal/10 border border-charcoal/10">
-              {portfolio.map((property, index) => (
-                <FadeUp key={property.slug} delay={index * 0.1} className="bg-white group overflow-hidden">
+            <Reveal stagger={0.08} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+              {portfolio.slice(0, 6).map((property) => (
+                <Reveal.Item key={property.slug} className="group">
                   <Link href={`/properties/${property.slug}`} className="block h-full">
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-sand">
                       <Image
-                        src={property.image || "/Sunshine Villa Main.png"}
+                        src={property.image || imgVillaMain}
                         alt={property.name}
                         fill
-                        className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-[var(--ease-out-luxe)] group-hover:scale-[1.04]"
                       />
-                      <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-700" />
                     </div>
-                    <div className="p-10 space-y-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-charcoal/35 flex items-center gap-2">
-                          <MapPin className="w-3 h-3" strokeWidth={1.2} /> {property.location}
-                        </p>
-                        <ArrowRight className="w-5 h-5 text-gold opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-700" strokeWidth={1} />
-                      </div>
-                      <h3 className="font-display text-3xl text-charcoal tracking-wide uppercase leading-[1.1]">
+                    <div className="pt-5 space-y-2">
+                      <p className="type-caption">{property.location}</p>
+                      <h3 className="font-display text-xl md:text-2xl text-charcoal leading-[1.15] tracking-[-0.01em] group-hover:text-gold transition-colors duration-500">
                         {property.name}
                       </h3>
-                      <p className="text-[14px] text-charcoal/55 leading-[1.8] font-light line-clamp-2">
-                        {property.desc}
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-charcoal/45 font-medium">
+                        {property.maxGuests} guests · {property.bedrooms}{" "}
+                        {property.bedrooms === 1 ? "bedroom" : "bedrooms"} ·{" "}
+                        {property.bathrooms} {property.bathrooms === 1 ? "bath" : "baths"}
                       </p>
-                      <div className="pt-5 flex items-center gap-7 border-t border-charcoal/8">
-                        <div className="flex items-center gap-2">
-                          <BedDouble className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
-                          <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.bedrooms} Beds</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.2} />
-                          <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-charcoal/45">{property.maxGuests} Guests</span>
-                        </div>
-                      </div>
                     </div>
                   </Link>
-                </FadeUp>
+                </Reveal.Item>
               ))}
-            </div>
+            </Reveal>
           )}
         </div>
       </section>
 
-      {/* ENQUIRY */}
-      <section id="owner-enquiry" className="py-24 md:py-32 bg-charcoal text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <Image src="/Sunshine Villa Main.png" alt="" fill className="object-cover blur-2xl" />
-        </div>
-
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-24">
-
-            <div className="lg:col-span-5 space-y-12">
-              <FadeUp className="space-y-7">
-                <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 font-medium">Partner With SRC</p>
-                <h2 className="font-display text-4xl md:text-5xl lg:text-7xl text-white tracking-wide leading-[1.05] uppercase">
-                  Tell us about<br />your property.
-                </h2>
-                <p className="font-sans text-[15px] md:text-[16px] text-white/45 leading-[1.85] font-light max-w-md">
-                  Share what you have, what you&rsquo;ve imagined for it, and what you&rsquo;re unsure about. We read every enquiry and reply within one business day.
+      {/* ─── 8 · OWNER VOICES — lead quote + two side quotes ─── */}
+      <section className="py-10 md:py-16 bg-sand overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-x-16">
+            <div className="lg:col-span-6 space-y-8">
+              <Reveal className="space-y-4">
+                <p className="type-eyebrow">Owner Voices</p>
+                <h2 className="type-h2">What our partners say.</h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <blockquote className="font-display font-light text-xl md:text-[1.65rem] text-charcoal leading-[1.4] tracking-[-0.01em] max-w-xl">
+                  &ldquo;{testimonials[0].quote}&rdquo;
+                </blockquote>
+                <p className="mt-5 text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">
+                  {testimonials[0].author} · {testimonials[0].property}
                 </p>
-              </FadeUp>
+              </Reveal>
+            </div>
+            <Reveal stagger={0.1} className="lg:col-span-5 lg:col-start-8 lg:pt-2">
+              {testimonials.slice(1).map((t) => (
+                <Reveal.Item key={t.property}>
+                  <div className="border-t border-charcoal/15 py-6 md:py-7">
+                    <p className="type-body text-[14px]">&ldquo;{t.quote}&rdquo;</p>
+                    <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">
+                      {t.author} · {t.property}
+                    </p>
+                  </div>
+                </Reveal.Item>
+              ))}
+            </Reveal>
+          </div>
+        </div>
+      </section>
 
-              <FadeUp delay={0.15} className="pt-10 border-t border-white/10 space-y-6">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-gold/65 font-medium">Or Reach Us Directly</p>
-                <div className="space-y-3 pt-1">
+      {/* ─── 9 · ENQUIRY — the page's close, one primary CTA ─── */}
+      <section id="owner-enquiry" className="py-14 md:py-20 bg-charcoal text-white scroll-mt-24">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-x-20">
+
+            <div className="lg:col-span-5 space-y-8">
+              <Reveal className="space-y-5">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-white/40 font-medium">
+                  Partner With {contact.siteName}
+                </p>
+                <h2 className="font-display font-normal text-white leading-[1.1] tracking-[-0.01em] text-[clamp(2rem,4vw,3.25rem)]">
+                  Tell us about
+                  <br />
+                  your property.
+                </h2>
+                <p className="font-sans text-[14px] md:text-[15px] text-white/50 leading-[1.85] font-light max-w-md">
+                  Share what you have, what you&rsquo;ve imagined for it, and what
+                  you&rsquo;re unsure about. We read every enquiry personally and
+                  reply within one business day — with a real response, not a
+                  template.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.15} className="pt-8 border-t border-white/10 space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-gold/70 font-medium">
+                  Or Reach Us Directly
+                </p>
+                <div className="space-y-2.5">
                   <a
                     href={`mailto:${contact.email}`}
-                    className="block text-[14px] md:text-[15px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
+                    className="block text-[14px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
                   >
                     {contact.email}
                   </a>
                   <a
                     href={contact.phoneHref}
-                    className="block text-[14px] md:text-[15px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
+                    className="block text-[14px] text-white/70 hover:text-gold transition-colors duration-500 font-light tracking-wide"
                   >
                     {contact.phone}
                   </a>
-                  <p className="text-[12px] text-white/30 font-light pt-1 leading-relaxed">
+                  <p className="text-[12px] text-white/35 font-light leading-relaxed">
                     {contact.address}
                   </p>
                 </div>
-              </FadeUp>
+              </Reveal>
             </div>
 
             <div className="lg:col-span-7">
-              <FadeUp className="bg-white/[0.04] backdrop-blur-md border border-white/10 p-10 md:p-14">
+              <Reveal className="border border-white/10 bg-navy-dark/40 p-7 md:p-10">
                 {ownerEnquiryStatus === "sent" ? (
-                  <div className="text-center space-y-7 py-10">
-                    <Sparkles className="w-12 h-12 text-gold mx-auto" strokeWidth={1} />
-                    <h3 className="font-display text-3xl md:text-4xl text-white tracking-wide uppercase">Enquiry Sent.</h3>
-                    <p className="text-white/50 font-light leading-[1.8]">The {contact.siteName} team will be in touch within one business day.</p>
-                    <LuxuryButton onClick={() => setOwnerEnquiryStatus("idle")} dark>Send Another</LuxuryButton>
+                  <div className="text-center space-y-6 py-8">
+                    <Sparkles className="w-10 h-10 text-gold mx-auto" strokeWidth={1} />
+                    <h3 className="font-display text-3xl text-white tracking-[-0.01em]">
+                      Enquiry Sent.
+                    </h3>
+                    <p className="text-white/50 font-light leading-[1.8]">
+                      The {contact.siteName} team will be in touch within one
+                      business day.
+                    </p>
+                    <LuxuryButton onClick={() => setOwnerEnquiryStatus("idle")} dark>
+                      Send Another
+                    </LuxuryButton>
                   </div>
                 ) : (
-                  <form onSubmit={handleOwnerEnquiry} className="space-y-9">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.35em] font-medium text-white/40">Name</label>
-                        <input name="name" required className="w-full bg-transparent border-b border-white/15 pb-4 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light" placeholder="Full name" />
+                  <form onSubmit={handleOwnerEnquiry} className="space-y-7">
+                    {/* Honeypot — hidden from humans, catches bots. */}
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="hidden"
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                          Name
+                        </label>
+                        <input
+                          name="name"
+                          required
+                          className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light"
+                          placeholder="Full name"
+                        />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.35em] font-medium text-white/40">Email</label>
-                        <input name="email" type="email" required className="w-full bg-transparent border-b border-white/15 pb-4 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light" placeholder="your@email.com" />
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                          Email
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          required
+                          className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light"
+                          placeholder="your@email.com"
+                        />
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.35em] font-medium text-white/40">Property Name</label>
-                        <input name="propertyName" className="w-full bg-transparent border-b border-white/15 pb-4 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light" placeholder="Villa, Retreat, Estate" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                          Phone <span className="text-white/25 normal-case tracking-normal">(optional)</span>
+                        </label>
+                        <input
+                          name="phone"
+                          type="tel"
+                          className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light"
+                          placeholder="+977 ..."
+                        />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.35em] font-medium text-white/40">Location</label>
-                        <input name="propertyLocation" className="w-full bg-transparent border-b border-white/15 pb-4 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light" placeholder="City, Region" />
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                          Property Name
+                        </label>
+                        <input
+                          name="propertyName"
+                          className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light"
+                          placeholder="Villa, Retreat, Estate"
+                        />
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[9px] uppercase tracking-[0.35em] font-medium text-white/40">Tell us about the property</label>
-                      <textarea name="message" required rows={4} className="w-full bg-transparent border-b border-white/15 pb-4 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors resize-none font-light leading-[1.8]" placeholder="Setting, hosting style, what makes it distinctive..." />
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                        Location
+                      </label>
+                      <input
+                        name="propertyLocation"
+                        className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors font-light"
+                        placeholder="City, Region"
+                      />
+                    </div>
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-white/45">
+                        Tell us about the property
+                      </label>
+                      <textarea
+                        name="message"
+                        required
+                        rows={4}
+                        className="w-full bg-transparent border-b border-white/15 pb-3 text-white placeholder:text-white/15 focus:outline-none focus:border-gold transition-colors resize-none font-light leading-[1.8]"
+                        placeholder="Setting, hosting style, what makes it distinctive, what you hope a partnership could look like..."
+                      />
                     </div>
                     {ownerEnquiryStatus === "error" && (
-                      <p className="text-[12px] text-red-300/80 font-light">Something didn&rsquo;t send. Please try once more, or write to us directly.</p>
+                      <p className="text-[12px] text-red-300/80 font-light">
+                        Something didn&rsquo;t send. Please try once more, or write
+                        to us directly.
+                      </p>
                     )}
-                    <LuxuryButton type="submit" disabled={ownerEnquiryStatus === "loading"} className="w-full" dark>
+                    <LuxuryButton
+                      type="submit"
+                      variant="primary"
+                      dark
+                      disabled={ownerEnquiryStatus === "loading"}
+                      className="w-full"
+                    >
                       {ownerEnquiryStatus === "loading" ? "Sending..." : "Send Partnership Enquiry"}
                     </LuxuryButton>
                   </form>
                 )}
-              </FadeUp>
+              </Reveal>
             </div>
 
           </div>

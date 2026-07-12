@@ -22,7 +22,8 @@ export function LuxuryLink({ href, children, className, color = "charcoal" }: Lu
       className={cn("group relative inline-block text-[10px] uppercase tracking-[0.3em] font-bold pb-2", colorMap[color].split(' ')[0], className)}
     >
       <span className="relative z-10">{children}</span>
-      <span className={cn("absolute bottom-0 left-0 w-full h-[1px] origin-center scale-x-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100", colorMap[color].split(' ')[1])} />
+      {/* §5.3 underline: 1px, grows from the LEFT, 400ms ease-out-quart. */}
+      <span className={cn("absolute bottom-0 left-0 w-full h-[1px] origin-left scale-x-0 transition-transform duration-[400ms] ease-out-quart group-hover:scale-x-100", colorMap[color].split(' ')[1])} />
     </Link>
   )
 }

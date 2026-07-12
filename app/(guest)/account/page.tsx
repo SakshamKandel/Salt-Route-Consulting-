@@ -7,14 +7,16 @@ import { getPrimaryImageUrl } from "@/lib/property-media"
 import { format } from "date-fns"
 
 const STATUS_CHIP: Record<string, string> = {
-  CONFIRMED:  "bg-emerald-50 text-emerald-600 border-emerald-200/60",
-  PENDING:    "bg-amber-50 text-amber-600 border-amber-200/60",
-  CANCELLED:  "bg-red-50 text-red-500 border-red-200/60",
-  COMPLETED:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+  CONFIRMED:  "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  PENDING:    "bg-amber-50 text-amber-700 border-amber-200/60",
+  CHECKED_IN: "bg-sky-50 text-sky-700 border-sky-200/60",
+  CANCELLED:  "bg-rose-50 text-rose-600 border-rose-200/60",
+  COMPLETED:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/70 border-[#1B3A5C]/10",
 }
 const STATUS_LABEL: Record<string, string> = {
   CONFIRMED: "Confirmed",
   PENDING: "Pending",
+  CHECKED_IN: "Checked in",
   CANCELLED: "Cancelled",
   COMPLETED: "Completed",
 }
@@ -32,19 +34,51 @@ export default async function AccountDashboard() {
     prisma.booking.findFirst({
       where: { guestId: session.user.id, checkIn: { gte: now }, status: "CONFIRMED" },
       orderBy: { checkIn: "asc" },
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
+      select: {
+        id: true,
+        checkIn: true,
+        checkOut: true,
+        property: {
+          select: {
+            title: true,
+            location: true,
+            images: { take: 1, orderBy: { order: "asc" }, select: { url: true, isPrimary: true } },
+          },
+        },
+      },
     }),
     prisma.booking.findMany({
       where: { guestId: session.user.id },
       orderBy: { checkIn: "desc" },
       take: 4,
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
+      select: {
+        id: true,
+        status: true,
+        checkIn: true,
+        checkOut: true,
+        property: {
+          select: {
+            title: true,
+            images: { take: 1, orderBy: { order: "asc" }, select: { url: true, isPrimary: true } },
+          },
+        },
+      },
     }),
     prisma.wishlist.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 4,
-      include: { property: { include: { images: { take: 1, orderBy: { order: "asc" } } } } },
+      select: {
+        id: true,
+        property: {
+          select: {
+            slug: true,
+            title: true,
+            location: true,
+            images: { take: 1, orderBy: { order: "asc" }, select: { url: true, isPrimary: true } },
+          },
+        },
+      },
     }),
   ])
 
@@ -57,10 +91,10 @@ export default async function AccountDashboard() {
 
       {/* ── GREETING ── */}
       <div>
-        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">
+        <p className="text-[11px] font-medium text-[#1B3A5C]/55 uppercase tracking-[0.16em] mb-1">
           {format(now, "EEEE, d MMMM yyyy")}
         </p>
-        <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
           {greeting}, {firstName}
         </h1>
       </div>
@@ -75,11 +109,11 @@ export default async function AccountDashboard() {
           <Link
             key={label}
             href={href}
-            className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
+            className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
           >
             <Icon className="h-4 w-4 text-[#1B3A5C]/25 mb-2.5 group-hover:text-[#C9A96E] transition-colors" />
             <p className="text-2xl font-semibold text-[#1B3A5C] tabular-nums leading-tight">{value}</p>
-            <p className="text-[10px] text-[#1B3A5C]/40 mt-1 uppercase tracking-[0.2em] font-medium">{label}</p>
+            <p className="text-[11px] text-[#1B3A5C]/60 mt-1 uppercase tracking-[0.16em] font-medium">{label}</p>
           </Link>
         ))}
       </div>
@@ -88,15 +122,15 @@ export default async function AccountDashboard() {
       {upcomingBooking ? (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Your next stay</h2>
-            <Link href="/account/bookings" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+            <h2 className="text-lg font-semibold text-[#1B3A5C]">Your next stay</h2>
+            <Link href="/account/bookings" className="text-[13px] text-[#1B3A5C]/60 hover:text-[#1B3A5C] flex items-center gap-1 py-2 transition-colors">
               All bookings <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           <Link
             href={`/account/bookings/${upcomingBooking.id}`}
-            className="flex flex-col sm:flex-row bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+            className="flex flex-col sm:flex-row bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
           >
             {/* Property image */}
             <div className="relative w-full sm:w-48 h-40 sm:h-auto bg-[#1B3A5C]/5 shrink-0">
@@ -113,16 +147,16 @@ export default async function AccountDashboard() {
                 </div>
               )}
               {/* Confirmed badge */}
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-[#FFFDF8] border border-emerald-200/60 px-2.5 py-1 rounded-full">
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-[#FFFAF3] border border-emerald-200/60 px-2.5 py-1 rounded-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[9px] font-semibold text-emerald-600 uppercase tracking-[0.15em]">Confirmed</span>
+                <span className="text-[11px] font-semibold text-emerald-700 uppercase tracking-[0.15em]">Confirmed</span>
               </div>
             </div>
 
             {/* Stay info */}
             <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between gap-4">
               <div>
-                <p className="text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1.5 flex items-center gap-1">
+                <p className="text-[11px] text-[#C9A96E] uppercase tracking-[0.16em] font-medium mb-1.5 flex items-center gap-1">
                   <MapPin className="h-2.5 w-2.5" />
                   {upcomingBooking.property.location}
                 </p>
@@ -131,22 +165,22 @@ export default async function AccountDashboard() {
 
               <div className="flex flex-wrap items-center gap-6">
                 <div>
-                  <p className="text-[9px] text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">Check in</p>
-                  <p className="text-[15px] font-semibold text-[#1B3A5C]">
+                  <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.16em] font-medium mb-1">Check in</p>
+                  <p className="text-base font-semibold text-[#1B3A5C]">
                     {format(new Date(upcomingBooking.checkIn), "EEE, d MMM yyyy")}
                   </p>
                 </div>
                 <div className="w-6 h-px bg-[#1B3A5C]/15 hidden sm:block" />
                 <div>
-                  <p className="text-[9px] text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">Check out</p>
-                  <p className="text-[15px] font-semibold text-[#1B3A5C]">
+                  <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.16em] font-medium mb-1">Check out</p>
+                  <p className="text-base font-semibold text-[#1B3A5C]">
                     {format(new Date(upcomingBooking.checkOut), "EEE, d MMM yyyy")}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#1B3A5C]/50">
+                <span className="inline-flex items-center gap-1 text-[13px] font-medium text-[#1B3A5C]/60">
                   View stay details <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </div>
@@ -154,15 +188,15 @@ export default async function AccountDashboard() {
           </Link>
         </div>
       ) : (
-        <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center">
           <Calendar className="h-8 w-8 text-[#1B3A5C]/15 mx-auto mb-4" />
           <h3 className="font-display text-xl text-[#1B3A5C] mb-2">No upcoming stays</h3>
-          <p className="text-[13px] text-[#1B3A5C]/40 mb-6 max-w-sm mx-auto">
+          <p className="text-[15px] leading-relaxed text-[#1B3A5C]/70 mb-6 max-w-sm mx-auto">
             Nepal is waiting. Explore our handpicked retreats and plan your next quiet escape.
           </p>
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFDF8] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors"
           >
             Explore stays <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -175,16 +209,16 @@ export default async function AccountDashboard() {
         {/* Recent stays */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Recent stays</h2>
-            <Link href="/account/bookings" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+            <h2 className="text-lg font-semibold text-[#1B3A5C]">Recent stays</h2>
+            <Link href="/account/bookings" className="text-[13px] text-[#1B3A5C]/60 hover:text-[#1B3A5C] flex items-center gap-1 py-2 transition-colors">
               View all <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl divide-y divide-[#1B3A5C]/5 overflow-hidden">
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl divide-y divide-[#1B3A5C]/5 overflow-hidden">
             {recentBookings.length === 0 ? (
               <div className="py-10 text-center">
-                <p className="text-[13px] text-[#1B3A5C]/30">No bookings yet</p>
+                <p className="text-[13px] text-[#1B3A5C]/60">No bookings yet</p>
               </div>
             ) : recentBookings.map((booking) => {
               const img = getPrimaryImageUrl(booking.property.images)
@@ -203,12 +237,12 @@ export default async function AccountDashboard() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-[#1B3A5C] truncate">{booking.property.title}</p>
-                    <p className="text-[11px] text-[#1B3A5C]/40 mt-0.5">
+                    <p className="text-[15px] font-medium text-[#1B3A5C] truncate">{booking.property.title}</p>
+                    <p className="text-[13px] text-[#1B3A5C]/60 mt-0.5">
                       {format(new Date(booking.checkIn), "d MMM")} – {format(new Date(booking.checkOut), "d MMM yyyy")}
                     </p>
                   </div>
-                  <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold border shrink-0 ${chip}`}>
+                  <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 ${chip}`}>
                     {STATUS_LABEL[booking.status] ?? booking.status}
                   </span>
                 </Link>
@@ -220,17 +254,17 @@ export default async function AccountDashboard() {
         {/* Saved stays */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Saved stays</h2>
-            <Link href="/account/wishlist" className="text-[11px] text-[#1B3A5C]/40 hover:text-[#1B3A5C] flex items-center gap-1 transition-colors">
+            <h2 className="text-lg font-semibold text-[#1B3A5C]">Saved stays</h2>
+            <Link href="/account/wishlist" className="text-[13px] text-[#1B3A5C]/60 hover:text-[#1B3A5C] flex items-center gap-1 py-2 transition-colors">
               View all <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           {wishlistItems.length === 0 ? (
-            <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl py-10 text-center">
+            <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-10 text-center">
               <Heart className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
-              <p className="text-[13px] text-[#1B3A5C]/30">Your collection is empty</p>
-              <Link href="/properties" className="mt-3 inline-flex text-[11px] text-[#C9A96E] hover:underline">
+              <p className="text-[13px] text-[#1B3A5C]/60">Your collection is empty</p>
+              <Link href="/properties" className="mt-3 inline-flex py-2 text-[13px] text-[#C9A96E] hover:underline">
                 Browse properties
               </Link>
             </div>
@@ -242,7 +276,7 @@ export default async function AccountDashboard() {
                   <Link
                     key={item.id}
                     href={`/properties/${item.property.slug}`}
-                    className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+                    className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
                   >
                     <div className="relative h-24 bg-[#1B3A5C]/5">
                       {img ? (
@@ -254,8 +288,8 @@ export default async function AccountDashboard() {
                       )}
                     </div>
                     <div className="p-3">
-                      <p className="text-[12px] font-medium text-[#1B3A5C] truncate">{item.property.title}</p>
-                      <p className="text-[10px] text-[#1B3A5C]/35 mt-0.5 flex items-center gap-1">
+                      <p className="text-[14px] font-medium text-[#1B3A5C] truncate">{item.property.title}</p>
+                      <p className="text-[12px] text-[#1B3A5C]/60 mt-0.5 flex items-center gap-1">
                         <MapPin className="h-2.5 w-2.5 shrink-0" />{item.property.location}
                       </p>
                     </div>
@@ -271,22 +305,22 @@ export default async function AccountDashboard() {
       {/* ── CONCIERGE CTA ── */}
       <div className="bg-[#1B3A5C] rounded-xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
-          <h3 className="font-display text-xl text-[#FFFDF8] tracking-wide">Personal concierge</h3>
-          <p className="text-[12px] text-[#FFFDF8]/45 mt-1.5 max-w-sm">
+          <h3 className="font-display text-xl text-[#FFFAF3] tracking-wide">Personal concierge</h3>
+          <p className="text-[14px] leading-relaxed text-[#FFFAF3]/70 mt-1.5 max-w-sm">
             Our specialists can curate every detail of your journey — from itinerary to arrival.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <Link
             href="/account/messages"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FFFDF8] text-[#1B3A5C] rounded-lg text-[12px] font-semibold hover:bg-[#F5F1E8] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FFFAF3] text-[#1B3A5C] rounded-lg text-[13px] font-semibold hover:bg-[#F5F1E8] transition-colors"
           >
             <MessageSquare className="h-3.5 w-3.5" />
             Contact us
           </Link>
           <Link
             href="/account/profile"
-            className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#FFFDF8]/15 text-[#FFFDF8]/70 rounded-lg text-[12px] font-medium hover:border-[#FFFDF8]/30 hover:text-[#FFFDF8] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#FFFAF3]/15 text-[#FFFAF3]/80 rounded-lg text-[13px] font-medium hover:border-[#FFFAF3]/30 hover:text-[#FFFAF3] transition-colors"
           >
             My profile
           </Link>

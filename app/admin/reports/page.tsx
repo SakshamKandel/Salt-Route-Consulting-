@@ -48,18 +48,19 @@ export default async function AdminReportsPage({
     <div className="space-y-6">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Reports</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Bookings, revenue, and platform activity.</p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Analytics</p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Reports</h1>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-1">Bookings, revenue, and platform activity.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <DateRangePicker from={fromStr} to={toStr} />
           <Link
             href={`/api/admin/export/bookings?from=${fromStr ?? ""}&to=${toStr ?? ""}`}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-[#1B3A5C]/15 text-[12px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors"
           >
-            <Download className="w-3.5 h-3.5 text-slate-400" /> Export CSV
+            <Download className="w-3.5 h-3.5 opacity-60" /> Export CSV
           </Link>
         </div>
       </div>
@@ -100,14 +101,14 @@ export default async function AdminReportsPage({
 
       {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6">
+          <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-4">
             Revenue by Month (YTD)
           </p>
           <RevenueLineChart data={monthData} />
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6">
+          <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-4">
             Bookings per Day
           </p>
           <BookingsBarChart data={dayData} />
@@ -116,15 +117,15 @@ export default async function AdminReportsPage({
 
       {/* Charts row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6">
+          <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-4">
             Top Properties by Bookings
           </p>
           <TopPropertiesChart data={topProps} />
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Quick Stats</p>
-          <div className="divide-y divide-slate-100">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6">
+          <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-4">Quick Stats</p>
+          <div className="divide-y divide-[#1B3A5C]/5">
             {[
               { label: "Confirmed Bookings", value: kpi.confirmedBookings },
               { label: "Cancelled Bookings", value: kpi.cancelledBookings },
@@ -132,8 +133,8 @@ export default async function AdminReportsPage({
               { label: "Avg Rating",         value: kpi.avgRating ? `${Number(kpi.avgRating).toFixed(1)} / 5` : "—" },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between py-3.5 first:pt-0 last:pb-0">
-                <span className="text-sm text-slate-500">{label}</span>
-                <span className="text-sm font-semibold text-slate-800">{value}</span>
+                <span className="text-[13px] text-[#1B3A5C]/50">{label}</span>
+                <span className="text-[13px] font-semibold text-[#1B3A5C] tabular-nums">{value}</span>
               </div>
             ))}
           </div>

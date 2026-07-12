@@ -59,37 +59,37 @@ export function SendMessageForm({ userEmail, userName }: { userEmail: string; us
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-sans font-medium block mb-3">Subject</label>
+        <label className="text-[13px] uppercase tracking-[0.16em] text-[#1B3A5C]/70 font-medium block mb-2.5">Subject</label>
         <input
           type="text"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Question about Sunshine Villa"
-          className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors"
+          className="w-full bg-[#FBF9F4] border border-[#1B3A5C]/10 rounded-lg text-[#1B3A5C] px-4 py-3.5 text-[15px] placeholder:text-[#1B3A5C]/40 focus:outline-none focus:border-[#1B3A5C]/30 transition-colors"
         />
       </div>
       <div>
-        <label className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-sans font-medium block mb-3">Message</label>
+        <label className="text-[13px] uppercase tracking-[0.16em] text-[#1B3A5C]/70 font-medium block mb-2.5">Message</label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Share what you would like help with..."
           rows={4}
-          className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors resize-none"
+          className="w-full bg-[#FBF9F4] border border-[#1B3A5C]/10 rounded-lg text-[#1B3A5C] px-4 py-3.5 text-[15px] placeholder:text-[#1B3A5C]/40 focus:outline-none focus:border-[#1B3A5C]/30 transition-colors resize-none"
         />
       </div>
 
       {error && (
-        <p className="text-red-500 text-[10px] uppercase tracking-[0.2em] font-medium">{error}</p>
+        <p className="text-[13px] text-rose-600 font-medium">{error}</p>
       )}
       {success && (
-        <p className="text-green-600 text-[10px] uppercase tracking-[0.2em] font-medium">Your message has been sent.</p>
+        <p className="text-[13px] text-emerald-700 font-medium">Your message has been sent.</p>
       )}
 
       <button
         type="submit"
         disabled={isPending}
-        className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isPending ? "Sending..." : "Send Message"}
       </button>

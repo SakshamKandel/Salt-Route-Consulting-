@@ -73,13 +73,13 @@ export function SidebarNav({ isCollapsed = false, onNavigate }: SidebarNavProps)
                       isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-2 py-2.5"
                     } ${
                       active
-                        ? "bg-[#1B3A5C] text-[#FFFDF8]"
+                        ? "bg-[#1B3A5C] text-[#FFFAF3]"
                         : "text-[#1B3A5C]/55 hover:bg-[#F5F1E8] hover:text-[#1B3A5C]"
                     }`}
                   >
                     <Icon
                       className={`h-4 w-4 shrink-0 transition-colors ${
-                        active ? "text-[#FFFDF8]" : "text-[#1B3A5C]/35 group-hover:text-[#1B3A5C]/70"
+                        active ? "text-[#FFFAF3]" : "text-[#1B3A5C]/35 group-hover:text-[#1B3A5C]/70"
                       }`}
                     />
                     {!isCollapsed && (
@@ -103,7 +103,7 @@ export function MobileNav() {
   const allItems = NAV_GROUPS.flatMap((g) => g.items)
 
   return (
-    <nav className="md:hidden bg-[#FFFDF8] border-b border-[#1B3A5C]/5 shrink-0 overflow-x-auto">
+    <nav className="md:hidden bg-[#FFFAF3] border-b border-[#1B3A5C]/5 shrink-0 overflow-x-auto">
       <div className="flex min-w-max px-4">
         {allItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/")

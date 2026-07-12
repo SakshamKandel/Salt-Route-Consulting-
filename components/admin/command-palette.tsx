@@ -69,32 +69,32 @@ export function CommandPalette() {
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
       onClick={() => setOpen(false)}
     >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[#1B3A5C]/40 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-lg mx-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl"
+        className="relative w-full max-w-lg mx-4 overflow-hidden rounded-2xl border border-[#1B3A5C]/10 bg-[#FFFAF3] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <Command>
-          <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
-            <Search className="h-4 w-4 text-slate-400 shrink-0" />
+          <div className="flex items-center gap-3 border-b border-[#1B3A5C]/8 px-4 py-3">
+            <Search className="h-4 w-4 text-[#1B3A5C]/30 shrink-0" />
             <Command.Input
               placeholder="Search pages and actions..."
-              className="flex-1 text-sm outline-none placeholder:text-slate-400 bg-transparent"
+              className="flex-1 text-sm text-[#1B3A5C] outline-none placeholder:text-[#1B3A5C]/30 bg-transparent"
               autoFocus
             />
             <button
               onClick={() => setOpen(false)}
-              className="text-slate-400 hover:text-slate-600"
+              className="text-[#1B3A5C]/30 hover:text-[#1B3A5C]/60 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
           <Command.List className="max-h-[380px] overflow-y-auto p-2">
-            <Command.Empty className="py-8 text-center text-sm text-slate-400">
+            <Command.Empty className="py-8 text-center text-[13px] text-[#1B3A5C]/35">
               No results found.
             </Command.Empty>
             {groups.map((group) => (
-              <Command.Group key={group} heading={group} className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-slate-400">
+              <Command.Group key={group} heading={group} className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1 [&_[cmdk-group-heading]]:text-[9px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.2em] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-[#1B3A5C]/35">
                 {COMMANDS.filter((c) => c.group === group).map((cmd) => {
                   const Icon = cmd.icon
                   return (
@@ -102,9 +102,9 @@ export function CommandPalette() {
                       key={cmd.href}
                       value={cmd.label}
                       onSelect={() => handleSelect(cmd.href)}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 cursor-pointer aria-selected:bg-slate-100 aria-selected:text-navy"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] text-[#1B3A5C]/70 cursor-pointer aria-selected:bg-[#F5F1E8] aria-selected:text-[#1B3A5C]"
                     >
-                      <Icon className="h-4 w-4 text-slate-400 shrink-0" />
+                      <Icon className="h-4 w-4 text-[#1B3A5C]/30 shrink-0" />
                       {cmd.label}
                     </Command.Item>
                   )
@@ -112,15 +112,15 @@ export function CommandPalette() {
               </Command.Group>
             ))}
           </Command.List>
-          <div className="border-t border-slate-100 px-4 py-2 flex items-center justify-between">
-            <span className="text-[10px] text-slate-400">
-              <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd>
+          <div className="border-t border-[#1B3A5C]/8 px-4 py-2 flex items-center justify-between">
+            <span className="text-[10px] text-[#1B3A5C]/35">
+              <kbd className="rounded border border-[#1B3A5C]/10 bg-[#FBF9F4] px-1.5 py-0.5 font-mono text-[10px] text-[#1B3A5C]/50">⌘K</kbd>
               {" "}to toggle
             </span>
-            <span className="text-[10px] text-slate-400">
-              <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px]">↑↓</kbd>
+            <span className="text-[10px] text-[#1B3A5C]/35">
+              <kbd className="rounded border border-[#1B3A5C]/10 bg-[#FBF9F4] px-1.5 py-0.5 font-mono text-[10px] text-[#1B3A5C]/50">↑↓</kbd>
               {" navigate · "}
-              <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
+              <kbd className="rounded border border-[#1B3A5C]/10 bg-[#FBF9F4] px-1.5 py-0.5 font-mono text-[10px] text-[#1B3A5C]/50">↵</kbd>
               {" "}select
             </span>
           </div>

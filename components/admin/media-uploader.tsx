@@ -392,7 +392,7 @@ export function MediaUploader({
       </div>
 
       {pasteError && <p className="text-xs text-red-600">{pasteError}</p>}
-      <p className="text-[10px] text-charcoal/40">
+      <p className="text-[10px] text-[#1B3A5C]/40">
         Images compressed automatically (max 4MB). Videos up to 2GB, uploaded in chunks and compressed by Cloudinary. JPG, PNG, WebP, AVIF, MP4, WebM, MOV.
       </p>
     </div>

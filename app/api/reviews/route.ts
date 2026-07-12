@@ -60,7 +60,6 @@ export async function POST(request: Request) {
         propertyId: booking.propertyId,
         bookingId: booking.id,
         status: "PENDING",
-        isApproved: false,
         images: {
           create: (validated.images || []).map((img) => ({
             url: img.url,

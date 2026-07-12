@@ -3,29 +3,35 @@ import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { CancelBookingButton } from "./CancelBookingButton"
-import { ArrowLeft, Calendar, Users, MapPin, Star } from "lucide-react"
+import { ArrowLeft, Calendar, Users, MapPin, Star, Hash } from "lucide-react"
 import { BOOKING_STATUS_LABELS, canReviewBooking } from "@/lib/booking-lifecycle"
 import { formatNpr } from "@/lib/currency"
 
 export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id) return redirect("/login")
-  
+
   const { id } = await params
 
-  const booking = await prisma.booking.findUnique({
-    where: { id },
-    include: { property: true, roomType: { select: { name: true, classType: true } } }
-  })
+  // Check if user has already reviewed this completed stay (fetched in
+  // parallel with the booking; the review is keyed by the same booking id)
+  const [booking, existingReview] = await Promise.all([
+    prisma.booking.findUnique({
+      where: { id },
+      include: {
+        property: { select: { title: true, location: true } },
+        roomType: { select: { name: true, classType: true } },
+      },
+    }),
+    prisma.review.findUnique({
+      where: { bookingId: id },
+      select: { id: true },
+    }),
+  ])
 
   if (!booking || booking.guestId !== session.user.id) {
     return redirect("/account/bookings")
   }
-
-  // Check if user has already reviewed this completed stay
-  const existingReview = await prisma.review.findUnique({
-    where: { bookingId: booking.id }
-  })
 
   const nights = Math.ceil(
     (new Date(booking.checkOut).getTime() - new Date(booking.checkIn).getTime()) / (1000 * 60 * 60 * 24)
@@ -33,98 +39,105 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
 
   const canReview = canReviewBooking(booking) && !existingReview
 
-  const statusColor = 
-    booking.status === "CONFIRMED" ? "border-charcoal/20 text-charcoal bg-charcoal/[0.02]" :
-    booking.status === "PENDING" ? "border-gold/30 text-gold-dark bg-gold/5" :
-    booking.status === "CHECKED_IN" ? "border-blue-200 text-blue-500 bg-blue-50" :
-    booking.status === "COMPLETED" ? "border-emerald-200 text-emerald-500 bg-emerald-50" :
-    booking.status === "NO_SHOW" ? "border-orange-200 text-orange-500 bg-orange-50" :
-    "border-red-200 text-red-500 bg-red-50"
+  const statusChip =
+    booking.status === "CONFIRMED" ? "bg-emerald-50 text-emerald-700 border-emerald-200/60" :
+    booking.status === "PENDING" ? "bg-amber-50 text-amber-700 border-amber-200/60" :
+    booking.status === "CHECKED_IN" ? "bg-sky-50 text-sky-700 border-sky-200/60" :
+    booking.status === "COMPLETED" ? "bg-[#1B3A5C]/5 text-[#1B3A5C]/70 border-[#1B3A5C]/10" :
+    booking.status === "NO_SHOW" ? "bg-amber-50 text-amber-700 border-amber-200/60" :
+    "bg-rose-50 text-rose-600 border-rose-200/60"
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-10">
 
       {/* ─── HEADER ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
-          <Link href="/account/bookings" className="text-charcoal/30 hover:text-charcoal transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="flex items-start gap-5">
+          <Link
+            href="/account/bookings"
+            className="mt-1.5 w-9 h-9 flex items-center justify-center rounded-lg border border-[#1B3A5C]/10 text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/25 transition-colors shrink-0"
+            aria-label="Back to reservations"
+          >
+            <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <h1 className="font-display text-2xl text-charcoal uppercase tracking-widest">{booking.property.title}</h1>
+            <p className="text-[11px] text-[#C9A96E] uppercase tracking-[0.18em] font-medium mb-1.5 flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {booking.property.location}
+            </p>
+            <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">{booking.property.title}</h1>
             {booking.roomType && (
-              <p className="text-[10px] uppercase tracking-[0.25em] text-gold mt-2 font-sans font-bold">{booking.roomType.name}</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 mt-2 font-medium">{booking.roomType.name}</p>
             )}
-            <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30 mt-2 font-sans">{booking.property.location}</p>
           </div>
         </div>
-        <div className={`px-5 py-2.5 text-[8px] uppercase tracking-[0.4em] border ${statusColor}`}>
+        <span className={`inline-flex items-center rounded-full text-[11px] font-semibold border uppercase tracking-[0.1em] px-2.5 py-1 shrink-0 ${statusChip}`}>
           {BOOKING_STATUS_LABELS[booking.status]}
-        </div>
+        </span>
       </div>
 
       {/* ─── BOOKING DETAILS GRID ─── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-charcoal/5 border border-charcoal/5">
-        <div className="bg-white p-10 flex flex-col gap-2">
-          <Calendar className="w-4 h-4 text-charcoal/20 mb-2 stroke-[1.2]" />
-          <p className="text-[8px] uppercase tracking-[0.4em] text-charcoal/25">Check In</p>
-          <p className="text-lg font-display text-charcoal uppercase tracking-widest">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+          <Calendar className="w-4 h-4 text-[#1B3A5C]/25 mb-3 stroke-[1.5]" />
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-1.5">Check in</p>
+          <p className="text-base font-semibold text-[#1B3A5C]">
             {new Date(booking.checkIn).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <div className="bg-white p-10 flex flex-col gap-2">
-          <Calendar className="w-4 h-4 text-charcoal/20 mb-2 stroke-[1.2]" />
-          <p className="text-[8px] uppercase tracking-[0.4em] text-charcoal/25">Check Out</p>
-          <p className="text-lg font-display text-charcoal uppercase tracking-widest">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+          <Calendar className="w-4 h-4 text-[#1B3A5C]/25 mb-3 stroke-[1.5]" />
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-1.5">Check out</p>
+          <p className="text-base font-semibold text-[#1B3A5C]">
             {new Date(booking.checkOut).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <div className="bg-white p-10 flex flex-col gap-2">
-          <Users className="w-4 h-4 text-charcoal/20 mb-2 stroke-[1.2]" />
-          <p className="text-[8px] uppercase tracking-[0.4em] text-charcoal/25">Guests</p>
-          <p className="text-lg font-display text-charcoal uppercase tracking-widest">{booking.guests} Guests</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+          <Users className="w-4 h-4 text-[#1B3A5C]/25 mb-3 stroke-[1.5]" />
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-1.5">Guests</p>
+          <p className="text-base font-semibold text-[#1B3A5C] tabular-nums">{booking.guests} Guests</p>
         </div>
-        <div className="bg-white p-10 flex flex-col gap-2">
-          <MapPin className="w-4 h-4 text-charcoal/20 mb-2 stroke-[1.2]" />
-          <p className="text-[8px] uppercase tracking-[0.4em] text-charcoal/25">Reference</p>
-          <p className="text-sm font-mono text-charcoal/40 tracking-wider">{booking.bookingCode}</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+          <Hash className="w-4 h-4 text-[#1B3A5C]/25 mb-3 stroke-[1.5]" />
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-1.5">Reference</p>
+          <p className="text-base font-semibold text-[#1B3A5C] font-mono tracking-wider">{booking.bookingCode}</p>
         </div>
       </div>
 
       {/* ─── PRICING ─── */}
-      <div className="border border-charcoal/5 bg-white p-10">
-        <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/30 mb-8 font-sans font-bold">Stay Summary</p>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-6">Stay Summary</p>
         <div className="space-y-4">
-          <div className="flex justify-between text-charcoal/50 text-sm font-sans">
+          <div className="flex justify-between text-[14px] text-[#1B3A5C]/65">
             <span>{nights} night{nights > 1 ? "s" : ""} x {formatNpr(Number(booking.totalPrice) / nights)}</span>
-            <span>{formatNpr(booking.totalPrice)}</span>
+            <span className="tabular-nums">{formatNpr(booking.totalPrice)}</span>
           </div>
-          <div className="pt-4 border-t border-charcoal/5 flex justify-between items-center">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/25 font-bold">Total</span>
-            <span className="text-2xl font-display text-charcoal tracking-widest">{formatNpr(booking.totalPrice)}</span>
+          <div className="pt-4 border-t border-[#1B3A5C]/5 flex justify-between items-center">
+            <span className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium">Total</span>
+            <span className="font-display text-2xl text-[#1B3A5C] tracking-wide tabular-nums">{formatNpr(booking.totalPrice)}</span>
           </div>
         </div>
       </div>
 
       {/* ─── NOTES ─── */}
       {booking.notes && (
-        <div className="border border-charcoal/5 bg-white p-10">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/30 mb-6 font-sans font-bold">Special Requests</p>
-          <p className="text-charcoal/60 text-sm leading-relaxed font-sans font-light italic">{booking.notes}</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-4">Special Requests</p>
+          <p className="text-[15px] text-[#1B3A5C]/70 leading-relaxed italic">{booking.notes}</p>
         </div>
       )}
 
       {/* ─── CANCELLATION INFO ─── */}
       {booking.cancellationReason && (
-        <div className="border border-red-900/20 bg-red-950/10 p-10">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-red-400/60 mb-6 font-sans font-bold">Cancellation Note</p>
-          <p className="text-red-300/80 text-sm leading-relaxed font-sans font-light">{booking.cancellationReason}</p>
+        <div className="bg-rose-50/60 border border-rose-200/60 rounded-xl p-6 sm:p-8">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-rose-600 font-medium mb-4">Cancellation Note</p>
+          <p className="text-[15px] text-rose-700/90 leading-relaxed">{booking.cancellationReason}</p>
         </div>
       )}
 
       {/* ─── STATUS TIMELINE ─── */}
-      <div className="border border-charcoal/5 bg-white p-10">
-        <p className="text-[9px] uppercase tracking-[0.4em] text-charcoal/30 mb-8 font-sans font-bold">Journey Timeline</p>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-6">Journey Timeline</p>
         <div className="flex flex-col gap-6">
           <TimelineStep label="Requested" date={booking.createdAt} active />
           <TimelineStep
@@ -152,14 +165,17 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
 
       {/* ─── REVIEW PROMPT ─── */}
       {canReview && (
-        <div className="border border-charcoal/10 bg-charcoal/[0.02] p-12 text-center">
-          <Star className="w-6 h-6 text-charcoal/20 mx-auto mb-6 stroke-[1.2]" />
-          <p className="text-[11px] uppercase tracking-[0.4em] text-charcoal/60 font-sans mb-8 leading-loose">
-            Your stay at {booking.property.title} is complete.<br/>We would love to hear about your experience.
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center">
+          <Star className="w-6 h-6 text-[#C9A96E]/60 mx-auto mb-4 stroke-[1.5]" />
+          <h3 className="font-display text-xl text-[#1B3A5C] tracking-wide mb-2">
+            Your stay at {booking.property.title} is complete
+          </h3>
+          <p className="text-[14px] text-[#1B3A5C]/60 mb-6 max-w-sm mx-auto">
+            We would love to hear about your experience.
           </p>
           <Link
             href={`/account/reviews?booking=${booking.id}`}
-            className="inline-block bg-charcoal text-white px-12 py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-charcoal/90 transition-all duration-300"
+            className="inline-flex items-center px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors"
           >
             Share Experience
           </Link>
@@ -174,21 +190,25 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
   )
 }
 
-function TimelineStep({ label, date, active, note, color = "charcoal" }: {
+function TimelineStep({ label, date, active, note, color = "navy" }: {
   label: string
   date?: Date | string
   active: boolean
   note?: string
   color?: string
 }) {
-  const dotColor = !active ? "bg-charcoal/10" : color === "red" ? "bg-red-400" : color === "orange" ? "bg-orange-400" : "bg-charcoal"
+  const dotColor = !active ? "bg-[#1B3A5C]/10" : color === "red" ? "bg-rose-400" : color === "orange" ? "bg-amber-400" : "bg-[#1B3A5C]"
   return (
-    <div className="flex gap-6 items-start">
+    <div className="flex gap-5 items-start">
       <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${dotColor}`} />
       <div>
-        <p className={`text-sm font-sans tracking-tight ${active ? "text-charcoal" : "text-charcoal/20"}`}>{label}</p>
-        {date && <p className="text-[9px] text-charcoal/30 mt-1 uppercase tracking-wider">{new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>}
-        {note && <p className="text-[9px] text-charcoal/40 mt-1 italic font-sans">{note}</p>}
+        <p className={`text-[15px] font-medium ${active ? "text-[#1B3A5C]" : "text-[#1B3A5C]/55"}`}>{label}</p>
+        {date && (
+          <p className="text-[11px] text-[#1B3A5C]/55 mt-1 uppercase tracking-[0.15em] font-medium">
+            {new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        )}
+        {note && <p className="text-[13px] text-[#1B3A5C]/60 mt-1 italic">{note}</p>}
       </div>
     </div>
   )

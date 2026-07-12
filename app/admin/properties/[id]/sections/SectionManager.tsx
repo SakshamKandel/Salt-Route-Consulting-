@@ -100,22 +100,25 @@ export function SectionManager({
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`rounded-lg p-3 text-sm ${message.type === "success" ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-800"}`}>
+        <div className={`rounded-xl p-3 text-[13px] ${message.type === "success" ? "bg-emerald-50 border border-emerald-200/60 text-emerald-700" : "bg-rose-50 border border-rose-200/60 text-[#B84040]"}`}>
           {message.text}
         </div>
       )}
 
       {!showForm && (
-        <Button onClick={startCreate} className="bg-navy text-cream">
-          <Plus className="w-4 h-4 mr-2" /> Add Story Section
+        <Button onClick={startCreate} className="rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]">
+          <Plus className="w-3.5 h-3.5 mr-2" /> Add Story Section
         </Button>
       )}
 
       {showForm && (
-        <div className="bg-white border rounded-xl p-6 space-y-5">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-navy text-lg">{editingId ? "Edit Section" : "New Section"}</h3>
-            <Button variant="ghost" size="icon" onClick={() => { setShowForm(false); setEditingId(null) }}>
+            <div>
+              <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-1">Story Section</p>
+              <h3 className="text-[15px] font-semibold text-[#1B3A5C]">{editingId ? "Edit Section" : "New Section"}</h3>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => { setShowForm(false); setEditingId(null) }} className="rounded-lg text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -142,7 +145,7 @@ export function SectionManager({
               <div className="flex items-start gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={form.imageUrl} alt="Section" className="h-28 w-44 object-cover rounded-lg border" />
-                <Button variant="outline" size="sm" onClick={() => set("imageUrl", "")}>
+                <Button variant="outline" size="sm" onClick={() => set("imageUrl", "")} className="rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#B84040] hover:border-[#B84040]/30 bg-transparent">
                   <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Remove
                 </Button>
               </div>
@@ -151,50 +154,51 @@ export function SectionManager({
             )}
           </div>
 
-          <Button onClick={handleSave} disabled={pending === "save" || !form.title.trim() || form.body.trim().length < 10} className="bg-navy text-cream w-full">
+          <Button onClick={handleSave} disabled={pending === "save" || !form.title.trim() || form.body.trim().length < 10} className="w-full rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]">
             {pending === "save" ? "Saving..." : editingId ? "Update Section" : "Add Section"}
           </Button>
         </div>
       )}
 
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b flex items-center gap-2">
-          <LayoutList size={18} className="text-navy" />
-          <h3 className="font-semibold text-navy">{initial.length} Section{initial.length === 1 ? "" : "s"}</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#1B3A5C]/8 flex items-center gap-2">
+          <LayoutList className="h-4 w-4 text-[#C9A96E]" />
+          <h3 className="text-[15px] font-semibold text-[#1B3A5C]">{initial.length} Section{initial.length === 1 ? "" : "s"}</h3>
         </div>
         {initial.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 space-y-1">
-            <p>No story sections yet.</p>
-            <p className="text-xs">Add editorial sections (the view, dining, the host&apos;s story...) to make the public page feel richer.</p>
+          <div className="p-10 text-center">
+            <LayoutList className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+            <p className="text-[13px] text-[#1B3A5C]/40">No story sections yet.</p>
+            <p className="text-[11px] text-[#1B3A5C]/30 mt-1">Add editorial sections (the view, dining, the host&apos;s story...) to make the public page feel richer.</p>
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y divide-[#1B3A5C]/5">
             {initial.map((s, idx) => (
-              <div key={s.id} className="flex items-start gap-4 px-5 py-4">
-                <div className="h-16 w-24 shrink-0 rounded-lg border bg-slate-50 overflow-hidden flex items-center justify-center">
+              <div key={s.id} className="flex items-start gap-4 px-5 py-4 hover:bg-[#FBF9F4] transition-colors">
+                <div className="h-16 w-24 shrink-0 rounded-lg border border-[#1B3A5C]/8 bg-[#FBF9F4] overflow-hidden flex items-center justify-center">
                   {s.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.imageUrl} alt={s.title} className="h-full w-full object-cover" />
                   ) : (
-                    <ImageIcon className="w-5 h-5 text-slate-300" />
+                    <ImageIcon className="w-5 h-5 text-[#1B3A5C]/15" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  {s.subtitle && <p className="text-[11px] uppercase tracking-wide text-slate-400">{s.subtitle}</p>}
-                  <p className="font-semibold text-navy truncate">{s.title}</p>
-                  <p className="text-xs text-slate-500 line-clamp-2 mt-1">{s.body}</p>
+                  {s.subtitle && <p className="text-[10px] uppercase tracking-[0.2em] text-[#C9A96E]">{s.subtitle}</p>}
+                  <p className="font-semibold text-[#1B3A5C] truncate">{s.title}</p>
+                  <p className="text-xs text-[#1B3A5C]/45 line-clamp-2 mt-1">{s.body}</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
-                  <Button variant="ghost" size="icon" disabled={idx === 0 || pending === s.id} onClick={() => handleMove(s.id, "up")} className="h-8 w-8 text-slate-500">
+                  <Button variant="ghost" size="icon" disabled={idx === 0 || pending === s.id} onClick={() => handleMove(s.id, "up")} className="h-8 w-8 text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
                     <ArrowUp className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" disabled={idx === initial.length - 1 || pending === s.id} onClick={() => handleMove(s.id, "down")} className="h-8 w-8 text-slate-500">
+                  <Button variant="ghost" size="icon" disabled={idx === initial.length - 1 || pending === s.id} onClick={() => handleMove(s.id, "down")} className="h-8 w-8 text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
                     <ArrowDown className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => startEdit(s)} className="h-8 w-8 text-navy">
+                  <Button variant="ghost" size="icon" onClick={() => startEdit(s)} className="h-8 w-8 text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
                     <Pencil className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(s.id, s.title)} disabled={pending === s.id} className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(s.id, s.title)} disabled={pending === s.id} className="h-8 w-8 text-[#B84040] hover:text-[#B84040] hover:bg-rose-50">
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>

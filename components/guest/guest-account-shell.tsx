@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import {
   Calendar, Heart, Star, UserCircle, Bell,
@@ -28,6 +29,9 @@ type Props = {
 export function GuestAccountShell({ userName, userInitial, unreadNotifications }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const closeDrawer = () => setIsDrawerOpen(false)
+  const pathname = usePathname()
+  const isActive = (href: string) =>
+    href === "/account" ? pathname === "/account" : pathname?.startsWith(href)
 
   return (
     <>
@@ -42,7 +46,7 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
 
       {/* ─── Mobile drawer ─── */}
       <div
-        className="fixed inset-y-0 left-0 z-50 w-72 flex flex-col bg-[#FFFDF8] lg:hidden"
+        className="fixed inset-y-0 left-0 z-50 w-72 flex flex-col bg-[#FFFAF3] lg:hidden"
         style={{
           transform: isDrawerOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
@@ -70,7 +74,7 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
               <span className="font-display text-lg text-[#1B3A5C]/60">{userInitial}</span>
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium mb-0.5">Welcome back</p>
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-0.5">Welcome back</p>
               <p className="font-display text-base text-[#1B3A5C]">{userName}</p>
             </div>
           </div>
@@ -81,17 +85,25 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon
             const isNotif = item.href === "/account/notifications"
+            const active = isActive(item.href)
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={closeDrawer}
-                className="flex items-center gap-3 px-3 py-3 rounded-lg text-[#1B3A5C]/55 hover:text-[#1B3A5C] hover:bg-[#F5F1E8] transition-colors group"
+                aria-current={active ? "page" : undefined}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group ${
+                  active
+                    ? "text-[#1B3A5C] bg-[#F5F1E8]"
+                    : "text-[#1B3A5C]/65 hover:text-[#1B3A5C] hover:bg-[#F5F1E8]"
+                }`}
               >
-                <Icon className="h-4 w-4 stroke-[1.5] text-[#1B3A5C]/30 group-hover:text-[#1B3A5C]/60 transition-colors shrink-0" />
-                <span className="text-[13px] font-medium flex-1">{item.label}</span>
+                <Icon className={`h-4 w-4 stroke-[1.5] transition-colors shrink-0 ${
+                  active ? "text-[#C9A96E]" : "text-[#1B3A5C]/40 group-hover:text-[#1B3A5C]/70"
+                }`} />
+                <span className="text-sm font-medium flex-1">{item.label}</span>
                 {isNotif && unreadNotifications > 0 && (
-                  <span className="min-w-5 h-5 rounded-full bg-[#1B3A5C] text-[#FFFDF8] text-[9px] flex items-center justify-center font-bold px-1.5">
+                  <span className="min-w-5 h-5 rounded-full bg-[#1B3A5C] text-[#FFFAF3] text-[10px] flex items-center justify-center font-bold px-1.5">
                     {unreadNotifications > 9 ? "9+" : unreadNotifications}
                   </span>
                 )}
@@ -105,25 +117,25 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
           <Link
             href="/properties"
             onClick={closeDrawer}
-            className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-[#1B3A5C]/10 text-[#1B3A5C]/55 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/25 transition-colors"
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-[#1B3A5C]/10 text-[#1B3A5C]/65 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/25 transition-colors"
           >
-            <span className="text-[11px] uppercase tracking-[0.2em] font-medium">Browse Stays</span>
+            <span className="text-[12px] uppercase tracking-[0.16em] font-medium">Browse Stays</span>
             <ArrowRight className="h-3.5 w-3.5 stroke-[1.5]" />
           </Link>
           <form action={signOutToHome}>
             <button
               type="submit"
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#F5F1E8] transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:bg-[#F5F1E8] transition-colors"
             >
               <LogOut className="h-3.5 w-3.5 stroke-[1.5]" />
-              <span className="text-[11px] uppercase tracking-[0.2em] font-medium">Sign Out</span>
+              <span className="text-[12px] uppercase tracking-[0.16em] font-medium">Sign Out</span>
             </button>
           </form>
         </div>
       </div>
 
       {/* ─── Top nav bar ─── */}
-      <header className="sticky top-0 z-30 bg-[#FFFDF8]/90 backdrop-blur-lg border-b border-[#1B3A5C]/5">
+      <header className="sticky top-0 z-30 bg-[#FFFAF3]/90 backdrop-blur-lg border-b border-[#1B3A5C]/5">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-12">
           <div className="h-20 flex items-center justify-between gap-4">
 
@@ -139,28 +151,35 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
 
               <Link href="/" className="flex items-center gap-4">
                 <Image src="/logo.png" alt="Salt Route" width={60} height={28} className="object-contain" />
-                <span className="hidden md:block w-px h-6 bg-[#1B3A5C]/10" />
-                <span className="hidden md:block text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/40 font-medium">
+                <span className="hidden md:max-lg:block xl:block w-px h-6 bg-[#1B3A5C]/10" />
+                <span className="hidden md:max-lg:block xl:block text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium whitespace-nowrap">
                   Guest Journey
                 </span>
               </Link>
             </div>
 
             {/* Center: Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 justify-center min-w-0">
               {NAV_ITEMS.map((item) => {
-                const Icon = item.icon
                 const isNotif = item.href === "/account/notifications"
+                const active = isActive(item.href)
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="relative px-3.5 py-2 text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/50 hover:text-[#1B3A5C] flex items-center gap-2 group transition-colors"
+                    aria-current={active ? "page" : undefined}
+                    className={`relative px-3 py-2.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition-colors ${
+                      active
+                        ? "text-[#1B3A5C] bg-[#F5F1E8]"
+                        : "text-[#1B3A5C]/65 hover:text-[#1B3A5C] hover:bg-[#F5F1E8]"
+                    }`}
                   >
-                    <Icon className="w-3.5 h-3.5 stroke-[1.5] text-[#1B3A5C]/30 group-hover:text-[#1B3A5C]/60 transition-colors" />
                     <span>{item.label}</span>
+                    {active && (
+                      <span className="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-[#C9A96E]" />
+                    )}
                     {isNotif && unreadNotifications > 0 && (
-                      <span className="absolute -top-0.5 right-0.5 min-w-4 h-4 rounded-full bg-[#1B3A5C] text-[#FFFDF8] text-[8px] flex items-center justify-center font-bold px-1">
+                      <span className="absolute -top-1 -right-1 min-w-4 h-4 rounded-full bg-[#1B3A5C] text-[#FFFAF3] text-[10px] flex items-center justify-center font-bold px-1">
                         {unreadNotifications > 9 ? "9+" : unreadNotifications}
                       </span>
                     )}
@@ -173,17 +192,17 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/properties"
-                className="hidden sm:flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors"
+                className="hidden sm:max-lg:flex xl:flex items-center gap-2 py-2.5 text-[12px] uppercase tracking-[0.12em] font-medium text-[#1B3A5C]/65 hover:text-[#1B3A5C] transition-colors whitespace-nowrap"
               >
                 <span>Browse Stays</span>
-                <ArrowRight className="w-3 h-3 stroke-[1.5]" />
+                <ArrowRight className="w-3 h-3 stroke-[1.5] shrink-0" />
               </Link>
               <form action={signOutToHome}>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-4 py-2 border border-[#1B3A5C]/10 text-[9px] uppercase tracking-[0.2em] text-[#1B3A5C]/50 hover:border-[#1B3A5C]/25 hover:text-[#1B3A5C] transition-colors rounded"
+                  className="flex items-center gap-2 px-4 py-2.5 border border-[#1B3A5C]/10 text-[12px] uppercase tracking-[0.12em] font-medium text-[#1B3A5C]/65 hover:border-[#1B3A5C]/25 hover:text-[#1B3A5C] transition-colors rounded whitespace-nowrap"
                 >
-                  <LogOut className="w-3 h-3 stroke-[1.5]" />
+                  <LogOut className="w-3 h-3 stroke-[1.5] shrink-0" />
                   <span className="hidden sm:inline">Sign Out</span>
                 </button>
               </form>

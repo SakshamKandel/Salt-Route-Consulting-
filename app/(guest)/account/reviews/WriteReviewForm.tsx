@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -65,31 +65,31 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
 
   if (success) {
     return (
-      <div className="border border-charcoal/10 bg-[#FBF9F4] p-12 text-center">
-        <div className="w-12 h-[1px] bg-gold mx-auto mb-6" />
-        <p className="text-charcoal text-[10px] uppercase tracking-[0.3em] font-sans font-medium">
-          Thank You For Sharing.
+      <div className="py-10 text-center">
+        <div className="w-12 h-px bg-[#C9A96E] mx-auto mb-5" />
+        <p className="font-display text-lg text-[#1B3A5C] tracking-wide mb-1.5">
+          Thank you for sharing
         </p>
-        <p className="text-charcoal/50 text-[10px] uppercase tracking-[0.2em] mt-2 font-light">
-          Thank you for sharing your experience.
+        <p className="text-[13px] text-[#1B3A5C]/60">
+          Your reflection means a great deal to us.
         </p>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
-      <div className="space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 font-sans font-medium">
+    <form onSubmit={handleSubmit} className="space-y-7">
+      <div className="space-y-1.5">
+        <p className="text-[11px] text-[#C9A96E] uppercase tracking-[0.18em] font-medium">
           Your Stay
         </p>
-        <h3 className="font-display text-2xl text-charcoal tracking-wide">{propertyName}</h3>
+        <h3 className="font-display text-xl text-[#1B3A5C] tracking-wide">{propertyName}</h3>
       </div>
-      
+
       {/* Star Rating */}
-      <div className="space-y-4">
-        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">How Did It Feel?</label>
-        <div className="flex items-center gap-3">
+      <div className="space-y-3">
+        <label className="text-[13px] uppercase tracking-[0.14em] font-medium text-[#1B3A5C]/70 block">How Did It Feel?</label>
+        <div className="flex items-center gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -102,15 +102,15 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
               <Star
                 className={`w-7 h-7 transition-colors ${
                   star <= (hoverRating || rating)
-                    ? "text-gold fill-gold"
-                    : "text-charcoal/10"
+                    ? "text-[#C9A96E] fill-[#C9A96E]"
+                    : "text-[#1B3A5C]/10"
                 }`}
-                strokeWidth={1}
+                strokeWidth={1.5}
               />
             </button>
           ))}
           {rating > 0 && (
-            <span className="text-[9px] uppercase tracking-[0.2em] text-gold ml-4 font-bold">
+            <span className="text-[11px] uppercase tracking-[0.16em] text-[#C9A96E] ml-3 font-semibold">
               {rating === 5 ? "Exceptional" : rating === 4 ? "Excellent" : rating === 3 ? "Good" : rating === 2 ? "Fair" : "Poor"}
             </span>
           )}
@@ -118,38 +118,38 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
       </div>
 
       {/* Comment */}
-      <div className="space-y-4">
-        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">Your Experience</label>
+      <div className="space-y-3">
+        <label className="text-[13px] uppercase tracking-[0.14em] font-medium text-[#1B3A5C]/70 block">Your Experience</label>
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Describe the atmosphere, the service, and the stay..."
           rows={5}
-          className="w-full bg-[#FBF9F4] border-b border-charcoal/10 text-charcoal px-0 py-4 text-sm font-sans placeholder:text-charcoal/20 focus:outline-none focus:border-charcoal/30 transition-colors resize-none font-light"
+          className="w-full bg-[#FBF9F4] border border-[#1B3A5C]/10 rounded-lg text-[#1B3A5C] px-4 py-3.5 text-[15px] leading-relaxed placeholder:text-[#1B3A5C]/40 focus:outline-none focus:border-[#1B3A5C]/30 transition-colors resize-none"
         />
       </div>
 
       {/* Image Upload */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-        <label className="text-[9px] uppercase tracking-[0.2em] font-semibold text-charcoal/40 block">Photos From Your Stay</label>
-          <span className="text-[8px] uppercase tracking-[0.1em] text-charcoal/30 font-light">{images.length} of 5 photos</span>
+          <label className="text-[13px] uppercase tracking-[0.14em] font-medium text-[#1B3A5C]/70 block">Photos From Your Stay</label>
+          <span className="text-[11px] uppercase tracking-[0.1em] text-[#1B3A5C]/55">{images.length} of 5 photos</span>
         </div>
-        
+
         {images.length > 0 && (
-          <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex flex-wrap gap-3">
             {images.map((img, idx) => (
-              <div key={idx} className="relative w-24 h-24 group">
-                <Image 
-                  src={img.url} 
-                  alt="Review preview" 
-                  fill 
-                  className="object-cover rounded-sm grayscale hover:grayscale-0 transition-all duration-700"
+              <div key={idx} className="relative w-20 h-20 group">
+                <Image
+                  src={img.url}
+                  alt="Review preview"
+                  fill
+                  className="object-cover rounded-lg border border-[#1B3A5C]/8"
                 />
                 <button
                   type="button"
                   onClick={() => removeImage(idx)}
-                  className="absolute -top-2 -right-2 bg-charcoal text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-2 -right-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -171,15 +171,13 @@ export function WriteReviewForm({ bookingId, propertyName }: { bookingId: string
       </div>
 
       {error && (
-        <div className="bg-red-50 border-l-2 border-red-500 p-4">
-          <p className="text-red-600 text-[10px] uppercase tracking-[0.2em] font-medium">{error}</p>
-        </div>
+        <p className="text-[13px] text-rose-600 font-medium">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-charcoal text-white py-5 text-[10px] uppercase tracking-[0.4em] font-sans hover:bg-gold hover:text-white transition-all duration-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+        className="w-full inline-flex items-center justify-center py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isPending ? "Sharing..." : "Share Review"}
       </button>

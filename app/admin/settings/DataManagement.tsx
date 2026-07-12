@@ -132,12 +132,12 @@ export function DataManagementSection({ counts }: { counts: Counts }) {
   }
 
   return (
-    <div className="bg-white border border-red-200 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-red-100 bg-red-50/60">
-        <AlertTriangle className="h-4 w-4 text-red-500" />
+    <div className="bg-[#FFFAF3] border border-rose-200/70 rounded-2xl overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-rose-200/50 bg-rose-50/60">
+        <AlertTriangle className="h-4 w-4 text-[#B84040]" />
         <div>
-          <p className="text-sm font-semibold text-red-700">Danger Zone — Data Management</p>
-          <p className="text-xs text-red-400">
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#B84040]">Danger Zone — Data Management</p>
+          <p className="text-[11px] text-[#B84040]/60 mt-0.5">
             Permanently remove data. These actions cannot be undone.
           </p>
         </div>
@@ -146,12 +146,12 @@ export function DataManagementSection({ counts }: { counts: Counts }) {
       {result && (
         <div className="px-5 pt-4">
           {result.type === "success" ? (
-            <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-sm">
+            <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-lg px-4 py-3 text-[12px]">
               <CheckCircle className="h-4 w-4 shrink-0" />
               {result.msg}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm">
+            <div className="flex items-center gap-2 text-[#B84040] bg-rose-50 border border-rose-200/60 rounded-lg px-4 py-3 text-[12px]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {result.msg}
             </div>
@@ -166,13 +166,13 @@ export function DataManagementSection({ counts }: { counts: Counts }) {
           return (
             <div
               key={item.key}
-              className="flex items-center gap-4 rounded-lg border border-slate-200 px-4 py-3"
+              className="flex items-center gap-4 rounded-xl border border-[#1B3A5C]/8 px-4 py-3"
             >
-              <Icon className="h-5 w-5 text-slate-400 shrink-0" />
+              <Icon className="h-5 w-5 text-[#1B3A5C]/25 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-800">{item.title}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-[13px] font-medium text-[#1B3A5C]">{item.title}</p>
+                <p className="text-[11px] text-[#1B3A5C]/45 mt-0.5">{item.desc}</p>
+                <p className="text-[11px] text-[#1B3A5C]/35 mt-1 tabular-nums">
                   {item.key === "finances"
                     ? `NPR ${formatNpr(item.count)} on the books`
                     : `${item.count} ${item.countLabel}`}
@@ -182,7 +182,7 @@ export function DataManagementSection({ counts }: { counts: Counts }) {
                 type="button"
                 onClick={() => open(item)}
                 disabled={empty && item.key !== "finances"}
-                className="h-9 px-4 rounded-lg border border-red-300 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                className="h-9 px-4 rounded-lg border border-rose-200/70 text-[#B84040] text-[12px] font-medium hover:bg-rose-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
                 {item.verb}
               </button>
@@ -224,32 +224,32 @@ function ConfirmDialog({
   const Icon = item.icon
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1B3A5C]/40 backdrop-blur-[2px] p-4">
+      <div className="w-full max-w-md bg-[#FFFAF3] rounded-2xl shadow-xl border border-[#1B3A5C]/8 overflow-hidden">
+        <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-[#1B3A5C]/8">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50">
-              <Icon className="h-4.5 w-4.5 text-red-500" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50">
+              <Icon className="h-4.5 w-4.5 text-[#B84040]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-              <p className="text-xs text-slate-400">This cannot be undone</p>
+              <p className="text-[13px] font-semibold text-[#1B3A5C]">{item.title}</p>
+              <p className="text-[11px] text-[#1B3A5C]/40">This cannot be undone</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="text-slate-300 hover:text-slate-500 transition-colors disabled:opacity-40"
+            className="text-[#1B3A5C]/25 hover:text-[#1B3A5C]/50 transition-colors disabled:opacity-40"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="px-5 py-4 space-y-3">
-          <p className="text-sm text-slate-600">
+          <p className="text-[13px] text-[#1B3A5C]/60">
             You are about to affect{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-[#1B3A5C] tabular-nums">
               {item.key === "finances"
                 ? `NPR ${formatNpr(item.count)} across all bookings`
                 : `${item.count} ${item.countLabel}`}
@@ -257,14 +257,14 @@ function ConfirmDialog({
             .
           </p>
           {item.cascade && (
-            <div className="flex gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5">
+            <div className="flex gap-2 rounded-lg bg-amber-50 border border-amber-200/60 px-3 py-2.5">
               <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
               <p className="text-xs text-amber-700">{item.cascade}</p>
             </div>
           )}
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-              Type <span className="font-mono text-red-600">{CONFIRM_PHRASE}</span> to confirm
+            <label className="block text-[11px] font-medium text-[#1B3A5C]/60 mb-1.5">
+              Type <span className="font-mono text-[#B84040]">{CONFIRM_PHRASE}</span> to confirm
             </label>
             <input
               autoFocus
@@ -275,17 +275,17 @@ function ConfirmDialog({
               }}
               placeholder={CONFIRM_PHRASE}
               disabled={busy}
-              className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm text-slate-800 placeholder:text-slate-300 outline-none focus:border-red-400 focus:ring-1 focus:ring-red-200 disabled:bg-slate-50"
+              className="w-full h-10 px-3 rounded-lg border border-[#1B3A5C]/10 bg-white/60 text-sm text-[#1B3A5C] placeholder:text-[#1B3A5C]/25 outline-none focus:border-rose-300 disabled:bg-[#FBF9F4]"
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 px-5 py-4 border-t border-slate-100">
+        <div className="flex justify-end gap-2 px-5 py-4 border-t border-[#1B3A5C]/8">
           <button
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="h-9 px-4 rounded-lg border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-40"
+            className="h-9 px-4 rounded-lg border border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors disabled:opacity-40"
           >
             Cancel
           </button>
@@ -293,7 +293,7 @@ function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={!ready || busy}
-            className="h-9 px-4 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            className="h-9 px-4 rounded-lg bg-[#B84040] text-white text-[12px] font-medium hover:bg-[#a13636] transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
           >
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             {busy ? "Working…" : item.verb}

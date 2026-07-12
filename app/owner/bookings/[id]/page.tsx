@@ -4,23 +4,15 @@ import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { formatNpr } from "@/lib/currency"
 import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, CalendarDays, MessageCircle, Moon, Quote } from "lucide-react"
 
-const statusColors: Record<string, string> = {
-  CONFIRMED:  "rgba(96,165,250,0.85)",
-  CHECKED_IN: "rgba(52,211,153,0.85)",
-  COMPLETED:  "rgba(27,58,92,0.50)",
-  CANCELLED:  "rgba(239,100,100,0.7)",
-  NO_SHOW:    "rgba(251,191,36,0.7)",
-  PENDING:    "rgba(251,191,36,0.85)",
-}
-const statusBorders: Record<string, string> = {
-  CONFIRMED:  "rgba(96,165,250,0.2)",
-  CHECKED_IN: "rgba(52,211,153,0.2)",
-  COMPLETED:  "rgba(27,58,92,0.12)",
-  CANCELLED:  "rgba(239,100,100,0.2)",
-  NO_SHOW:    "rgba(251,191,36,0.2)",
-  PENDING:    "rgba(251,191,36,0.2)",
+const STATUS_CHIP: Record<string, string> = {
+  PENDING:    "bg-amber-50 text-amber-600 border-amber-200/60",
+  CONFIRMED:  "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  CHECKED_IN: "bg-sky-50 text-sky-600 border-sky-200/60",
+  COMPLETED:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+  CANCELLED:  "bg-rose-50 text-rose-500 border-rose-200/60",
+  NO_SHOW:    "bg-amber-50 text-amber-600 border-amber-200/60",
 }
 
 export default async function OwnerBookingDetailPage({
@@ -49,8 +41,7 @@ export default async function OwnerBookingDetailPage({
       (1000 * 60 * 60 * 24)
   )
 
-  const statusColor  = statusColors[booking.status]  ?? "rgba(27,58,92,0.40)"
-  const statusBorder = statusBorders[booking.status] ?? "rgba(27,58,92,0.12)"
+  const chip = STATUS_CHIP[booking.status] ?? STATUS_CHIP.COMPLETED
 
   const stayDetails = [
     { label: "Property",   value: booking.property.title,     link: `/owner/properties/${booking.property.id}` },
@@ -69,114 +60,85 @@ export default async function OwnerBookingDetailPage({
   ]
 
   return (
-    <div className="space-y-14">
+    <div className="pb-12 space-y-8">
 
-      {/* ─── BACK + HEADER ─── */}
-      <div className="space-y-5">
+      {/* ── BACK + HEADER ── */}
+      <div className="space-y-4">
         <Link
           href="/owner/bookings"
-          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500"
+          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
-          Guest Stays
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to reservations
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-          <div className="space-y-2">
-            <div className="flex items-center gap-4">
-              <span className="w-8 h-px bg-gold/40" />
-              <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-                Stay Detail
-              </p>
-            </div>
-            <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide font-mono">
-              {booking.bookingCode}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+              Stay Detail
+            </p>
+            <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+              <span className="font-mono">{booking.bookingCode}</span>
             </h1>
           </div>
 
-          <span
-            className="self-start sm:self-auto px-5 py-2.5 text-[9px] uppercase tracking-[0.35em] font-medium"
-            style={{ color: statusColor, border: `1px solid ${statusBorder}` }}
-          >
+          <span className={`self-start sm:self-auto inline-flex items-center rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] ${chip}`}>
             {BOOKING_STATUS_LABELS[booking.status]}
           </span>
         </div>
       </div>
 
-      {/* ─── REVENUE HIGHLIGHT ─── */}
-      <div
-        className="px-10 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        style={{
-          border: "1px solid rgba(201,169,110,0.15)",
-          background: "rgba(201,169,110,0.04)",
-        }}
-      >
-        <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
-            Total Stay Value
-          </p>
-          <p className="font-display text-3xl text-gold tracking-wide">
+      {/* ── SUMMARY STRIP ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5">
+          <p className="text-[10px] text-[#1B3A5C]/40 uppercase tracking-[0.2em] font-medium mb-2">Total stay value</p>
+          <p className="text-xl sm:text-2xl font-semibold text-[#C9A96E] leading-tight tabular-nums break-words">
             {formatNpr(booking.totalPrice)}
           </p>
         </div>
-        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
-        <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
-            Duration
-          </p>
-          <p className="font-display text-2xl text-[#1B3A5C]/70 tracking-wide">
-            {nights} night{nights !== 1 ? "s" : ""}
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5">
+          <p className="text-[10px] text-[#1B3A5C]/40 uppercase tracking-[0.2em] font-medium mb-2">Duration</p>
+          <p className="text-xl sm:text-2xl font-semibold text-[#1B3A5C] leading-tight tabular-nums">
+            {nights} <span className="text-[13px] font-medium text-[#1B3A5C]/40">night{nights !== 1 ? "s" : ""}</span>
           </p>
         </div>
-        <div className="h-px sm:h-10 w-full sm:w-px" style={{ background: "rgba(201,169,110,0.1)" }} />
-        <div>
-          <p className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
-            Booked
-          </p>
-          <p className="text-[12.5px] text-[#1B3A5C]/50 font-light">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5">
+          <p className="text-[10px] text-[#1B3A5C]/40 uppercase tracking-[0.2em] font-medium mb-2">Booked on</p>
+          <p className="text-[14px] font-semibold text-[#1B3A5C] leading-tight pt-1.5">
             {new Date(booking.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
           </p>
         </div>
       </div>
 
-      {/* ─── TWO-COLUMN DETAIL ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+      {/* ── TWO-COLUMN DETAIL ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
 
         {/* Stay Information */}
-        <div
-          className="overflow-hidden"
-          style={{ border: "1px solid rgba(201,169,110,0.08)" }}
-        >
-          <div
-            className="px-8 py-5 flex items-center gap-4"
-            style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
-          >
-            <span className="w-5 h-px bg-gold/40" />
-            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
-            Property Stay
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5 flex items-center gap-2.5">
+            <CalendarDays className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+            <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
+              Property Stay
             </h2>
           </div>
-          <div>
-            {stayDetails.map((row, i) => (
+          <div className="divide-y divide-[#1B3A5C]/5">
+            {stayDetails.map((row) => (
               <div
                 key={row.label}
-                className="flex items-start px-8 py-4.5 gap-4 hover:bg-[#FBF9F4] transition-colors duration-500"
-                style={{
-                  borderBottom: i < stayDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
-                }}
+                className="flex items-start px-5 py-3.5 gap-4 hover:bg-[#FBF9F4] transition-colors"
               >
-                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium w-24 shrink-0 pt-0.5">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium w-24 shrink-0 pt-0.5">
                   {row.label}
                 </p>
                 {row.link ? (
                   <Link
                     href={row.link}
-                    className="text-[12.5px] text-gold/70 hover:text-gold transition-colors font-light"
+                    className="text-[13px] font-medium text-[#1B3A5C] hover:text-[#C9A96E] transition-colors"
                   >
                     {row.value}
                   </Link>
                 ) : (
-                  <p className="text-[12.5px] text-[#1B3A5C]/60 font-light">{row.value}</p>
+                  <p className="text-[13px] text-[#1B3A5C]/70">{row.value}</p>
                 )}
               </div>
             ))}
@@ -184,40 +146,31 @@ export default async function OwnerBookingDetailPage({
         </div>
 
         {/* Guest Details */}
-        <div
-          className="overflow-hidden"
-          style={{ border: "1px solid rgba(201,169,110,0.08)" }}
-        >
-          <div
-            className="px-8 py-5 flex items-center gap-4"
-            style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
-          >
-            <span className="w-5 h-px bg-gold/40" />
-            <h2 className="text-[9.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
-            Guest Contact
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden self-start">
+          <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5 flex items-center gap-2.5">
+            <MessageCircle className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+            <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
+              Guest Contact
             </h2>
           </div>
-          <div>
-            {guestDetails.map((row, i) => (
+          <div className="divide-y divide-[#1B3A5C]/5">
+            {guestDetails.map((row) => (
               <div
                 key={row.label}
-                className="flex items-start px-8 py-4.5 gap-4 hover:bg-[#FBF9F4] transition-colors duration-500"
-                style={{
-                  borderBottom: i < guestDetails.length - 1 ? "1px solid rgba(201,169,110,0.04)" : "none",
-                }}
+                className="flex items-start px-5 py-3.5 gap-4 hover:bg-[#FBF9F4] transition-colors"
               >
-                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 font-medium w-24 shrink-0 pt-0.5">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium w-24 shrink-0 pt-0.5">
                   {row.label}
                 </p>
                 {row.href ? (
                   <a
                     href={row.href}
-                    className="text-[12.5px] text-gold/70 hover:text-gold transition-colors font-light break-all"
+                    className="text-[13px] font-medium text-[#1B3A5C] hover:text-[#C9A96E] transition-colors break-all"
                   >
                     {row.value}
                   </a>
                 ) : (
-                  <p className="text-[12.5px] text-[#1B3A5C]/60 font-light">{row.value}</p>
+                  <p className="text-[13px] text-[#1B3A5C]/70">{row.value}</p>
                 )}
               </div>
             ))}
@@ -225,40 +178,36 @@ export default async function OwnerBookingDetailPage({
         </div>
       </div>
 
-      {/* ─── GUEST NOTES ─── */}
+      {/* ── GUEST NOTES ── */}
       {booking.notes && (
-        <div className="space-y-5">
-          <div className="flex items-center gap-4">
-            <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5 flex items-center gap-2.5">
+            <Quote className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+            <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
               Guest Requests
             </h2>
           </div>
-          <div
-            className="px-8 py-6"
-            style={{ border: "1px solid rgba(201,169,110,0.08)", background: "rgba(201,169,110,0.02)" }}
-          >
-            <p className="text-[13px] text-[#1B3A5C]/50 font-light leading-[1.9] whitespace-pre-wrap italic">
-              &ldquo;{booking.notes}&rdquo;
+          <div className="px-5 py-4">
+            <p className="text-[13px] text-[#1B3A5C]/60 leading-relaxed whitespace-pre-wrap">
+              {booking.notes}
             </p>
           </div>
         </div>
       )}
 
-      {/* ─── FOOTER ACTION ─── */}
-      <div
-        className="flex flex-col sm:flex-row items-center justify-between gap-6 px-8 py-7"
-        style={{ border: "1px solid rgba(201,169,110,0.08)" }}
-      >
-        <p className="text-[11.5px] text-[#1B3A5C]/30 font-light">
-          Questions about this stay or property preparation? Contact the Salt Route team.
-        </p>
+      {/* ── FOOTER ACTION ── */}
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4">
+        <div className="flex items-start gap-3">
+          <Moon className="h-4 w-4 text-[#1B3A5C]/25 mt-0.5 shrink-0" />
+          <p className="text-[12px] text-[#1B3A5C]/45">
+            Questions about this stay or property preparation? Contact the Salt Route team.
+          </p>
+        </div>
         <Link
           href="/owner/messages"
-          className="shrink-0 px-7 py-3.5 text-[9px] uppercase tracking-[0.35em] font-medium text-gold/70 hover:text-gold transition-all duration-500"
-          style={{ border: "1px solid rgba(201,169,110,0.2)" }}
+          className="shrink-0 self-start sm:self-auto inline-flex items-center px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors"
         >
-          Open Messages
+          Open messages
         </Link>
       </div>
     </div>

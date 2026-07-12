@@ -3,6 +3,8 @@ export type PropertyMediaLike = {
   isPrimary?: boolean | null
   isBanner?: boolean | null
   order?: number | null
+  /** Optional tiny blur-up placeholder source (additive — never required). */
+  blurDataURL?: string | null
 }
 
 const VIDEO_EXTENSION_PATTERN = /\.(mp4|webm|mov|m4v|avi|mkv)(?:[?#].*)?$/i
@@ -55,6 +57,18 @@ export function getOptimizedVideoUrl(url: string): string {
 
   const transform = "f_auto,q_auto,c_limit,w_1920/"
   return url.slice(0, idx + marker.length) + transform + after
+}
+
+// Derive a tiny low-quality Cloudinary placeholder (LQIP) for blur-up loading.
+// Returns null for non-Cloudinary URLs so callers can simply skip the blur.
+export function getLqipUrl(url: string): string | null {
+  const marker = "/image/upload/"
+  const idx = url.indexOf(marker)
+  if (idx === -1) return null
+  const after = url.slice(idx + marker.length)
+  // If a transformation segment is already present, don't double-apply.
+  if (/^[^/]*(?:e_blur|q_1\b|w_20\b)/.test(after)) return url
+  return url.slice(0, idx + marker.length) + "e_blur:1000,q_1,w_20/" + after
 }
 
 // Cloudinary can also generate a still poster from the video's first frame,

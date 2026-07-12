@@ -49,11 +49,11 @@ export function UserActions({
     <div className="flex flex-col items-end gap-3">
       <div className="flex items-center gap-3">
         {status === "ACTIVE" ? (
-          <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" onClick={handleToggle} disabled={isPending}>
+          <Button variant="outline" className="border-rose-200/60 text-[#B84040] hover:bg-rose-50 rounded-lg text-[12px] font-medium" onClick={handleToggle} disabled={isPending}>
             {isPending ? "Suspending..." : "Suspend User"}
           </Button>
         ) : (
-          <Button variant="outline" className="border-green-200 text-green-600 hover:bg-green-50" onClick={handleToggle} disabled={isPending}>
+          <Button variant="outline" className="border-emerald-200/60 text-emerald-600 hover:bg-emerald-50 rounded-lg text-[12px] font-medium" onClick={handleToggle} disabled={isPending}>
             {isPending ? "Restoring..." : "Restore User"}
           </Button>
         )}
@@ -72,10 +72,10 @@ export function UserActions({
       </div>
 
       {showConfirmDelete && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-lg space-y-4 max-w-xs">
+        <div className="mt-4 p-4 bg-rose-50 border border-rose-200/60 rounded-xl space-y-4 max-w-xs">
           <div className="flex items-start gap-3">
-            <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-red-800 leading-relaxed">
+            <ShieldAlert className="w-5 h-5 text-[#B84040] shrink-0 mt-0.5" />
+            <p className="text-xs text-[#B84040] leading-relaxed">
               <strong>Are you absolutely sure?</strong> This will permanently delete this user, all their properties, and all their data. This action cannot be undone.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function UserActions({
         </div>
       )}
 
-      {error && <p className="text-red-600 text-[10px] font-medium uppercase tracking-wider">{error}</p>}
+      {error && <p className="text-[#B84040] text-[10px] font-medium uppercase tracking-[0.15em]">{error}</p>}
     </div>
   )
 }

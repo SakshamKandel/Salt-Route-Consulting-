@@ -18,157 +18,161 @@ export default async function ReviewsPage({
   if (!session?.user?.id) return redirect("/login")
   const params = await searchParams
   const requestedPage = parsePage(params.page)
-  const total = await prisma.review.count({ where: { guestId: session.user.id } })
-  const pagination = getPagination(requestedPage, total)
-
-  const [reviews, reviewedRows] = await Promise.all([
-    prisma.review.findMany({
-      where: { guestId: session.user.id },
-      include: { property: true, images: true },
-      orderBy: { createdAt: "desc" },
-      skip: pagination.skip,
-      take: pagination.take,
-    }),
+  const [total, reviewedRows] = await Promise.all([
+    prisma.review.count({ where: { guestId: session.user.id } }),
     prisma.review.findMany({
       where: { guestId: session.user.id, bookingId: { not: null } },
       select: { bookingId: true },
     }),
   ])
+  const pagination = getPagination(requestedPage, total)
 
   const reviewedBookingIds = reviewedRows.map((review) => review.bookingId).filter(Boolean) as string[]
-  const reviewableBookings = await prisma.booking.findMany({
-    where: {
-      guestId: session.user.id,
-      status: "COMPLETED",
-      checkedOutAt: { not: null },
-      id: { notIn: reviewedBookingIds },
-    },
-    include: { property: { select: { id: true, title: true } } },
-    orderBy: { checkOut: "desc" },
-    take: 10,
-  })
+  const [reviews, reviewableBookings] = await Promise.all([
+    prisma.review.findMany({
+      where: { guestId: session.user.id },
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        status: true,
+        createdAt: true,
+        property: { select: { title: true } },
+        images: true,
+      },
+      orderBy: { createdAt: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.booking.findMany({
+      where: {
+        guestId: session.user.id,
+        status: "COMPLETED",
+        checkedOutAt: { not: null },
+        id: { notIn: reviewedBookingIds },
+      },
+      select: {
+        id: true,
+        status: true,
+        checkedOutAt: true,
+        property: { select: { id: true, title: true } },
+      },
+      orderBy: { checkOut: "desc" },
+      take: 10,
+    }),
+  ])
   const eligibleBookings = reviewableBookings.filter(canReviewBooking)
 
   return (
-    <div className="space-y-20">
-      
+    <div className="space-y-10">
+
       {/* ─── PAGE HEADER ─── */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-[1px] bg-charcoal/20" />
-          <h1 className="text-[11px] uppercase tracking-[0.4em] text-charcoal/50 font-bold">
-            Guest Reflections
-          </h1>
-        </div>
-        <h2 className="font-display text-5xl text-charcoal tracking-tight">Your <span className="text-charcoal/40">Reviews</span></h2>
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Guest Reflections
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
+          Your Reviews
+        </h1>
+        <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+          Your words help future guests feel the place before they arrive.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+
         {/* ─── LEFT: WRITE REVIEWS ─── */}
-        <div className="lg:col-span-4 space-y-12">
-          <div className="space-y-6">
-            <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">Ready For Your Note</h3>
-            
-            {eligibleBookings.length > 0 ? (
-              <div className="space-y-8">
-                <p className="text-sm text-charcoal/50 leading-relaxed italic">
-                  &ldquo;Your words help future guests feel the place before they arrive.&rdquo;
-                </p>
-                
-                <div className="space-y-6">
-                  {eligibleBookings.map((booking) => (
-                    <div key={booking.id} className="bg-white border border-charcoal/10 p-8 shadow-sm">
-                       <WriteReviewForm
-                        bookingId={booking.id}
-                        propertyName={booking.property.title}
-                      />
-                    </div>
-                  ))}
+        <div className="lg:col-span-4 space-y-5">
+          <h2 className="text-lg font-semibold text-[#1B3A5C]">Awaiting your note</h2>
+
+          {eligibleBookings.length > 0 ? (
+            <div className="space-y-5">
+              {eligibleBookings.map((booking) => (
+                <div key={booking.id} className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+                  <WriteReviewForm
+                    bookingId={booking.id}
+                    propertyName={booking.property.title}
+                  />
                 </div>
-              </div>
-            ) : (
-              <div className="bg-white border border-charcoal/5 p-8 text-center space-y-4">
-                <PenLine className="w-6 h-6 text-charcoal/10 mx-auto" strokeWidth={1} />
-                <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/30 font-medium">No stays awaiting a review</p>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-12 px-6 text-center">
+              <PenLine className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" strokeWidth={1.5} />
+              <p className="font-display text-lg text-[#1B3A5C] tracking-wide mb-1">All caught up</p>
+              <p className="text-[13px] text-[#1B3A5C]/60">No stays awaiting a review.</p>
+            </div>
+          )}
         </div>
 
         {/* ─── RIGHT: PUBLISHED REVIEWS ─── */}
-        <div className="lg:col-span-8 space-y-12">
-          <h3 className="text-[10px] uppercase tracking-[0.3em] text-charcoal font-bold pb-4 border-b border-charcoal/10">My Reviews</h3>
-          
+        <div className="lg:col-span-8 space-y-5">
+          <h2 className="text-lg font-semibold text-[#1B3A5C]">My reviews</h2>
+
           {reviews.length === 0 ? (
-            <div className="text-center py-24 bg-white border border-charcoal/10 shadow-sm">
-              <Quote className="w-12 h-12 text-charcoal/5 mx-auto mb-8" strokeWidth={1} />
-              <p className="text-charcoal/40 text-sm font-sans tracking-wide">Your review history will appear here.</p>
+            <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-16 text-center">
+              <Quote className="h-8 w-8 text-[#1B3A5C]/15 mx-auto mb-4" strokeWidth={1.5} />
+              <h3 className="font-display text-xl text-[#1B3A5C] tracking-wide mb-1.5">No reviews yet</h3>
+              <p className="text-[13px] text-[#1B3A5C]/60">Your review history will appear here.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-12">
+            <div className="space-y-5">
               {reviews.map((review) => (
-                <div key={review.id} className="group relative">
-                  <div className="bg-white border border-charcoal/10 p-10 md:p-14 shadow-sm hover:shadow-md transition-all duration-500">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8 mb-10">
-                      <div className="space-y-4">
-                        <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/30 font-bold">Property Reviewed</p>
-                        <h4 className="font-display text-2xl md:text-3xl text-charcoal tracking-wide">{review.property.title}</h4>
-                        <div className="flex gap-1.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              size={12}
-                              className={i < review.rating ? "text-gold fill-gold" : "text-charcoal/10"}
-                              strokeWidth={1}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/20 font-bold mb-1">Status</p>
-                          <span className={`text-[8px] uppercase tracking-[0.2em] px-3 py-1.5 border ${
-                            review.status === "PUBLISHED"
-                              ? "border-charcoal/10 text-charcoal/50"
-                              : "border-gold/25 text-gold-dark"
-                          }`}>
-                            {review.status}
-                          </span>
-                        </div>
-                        
-                        <form action={async () => {
-                          "use server"
-                          await deleteGuestReviewAction(review.id)
-                        }}>
-                          <button
-                            type="submit"
-                            className="w-10 h-10 rounded-full border border-charcoal/5 flex items-center justify-center text-charcoal/20 hover:text-red-400 hover:border-red-100 transition-all duration-300"
-                            title="Remove Review"
-                          >
-                            <Trash size={14} strokeWidth={1.5} />
-                          </button>
-                        </form>
+                <div key={review.id} className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8 hover:border-[#1B3A5C]/15 transition-colors">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-5 mb-6">
+                    <div>
+                      <p className="text-[11px] text-[#C9A96E] uppercase tracking-[0.18em] font-medium mb-1.5">Property Reviewed</p>
+                      <h3 className="font-display text-xl md:text-2xl text-[#1B3A5C] tracking-wide mb-2.5">{review.property.title}</h3>
+                      <div className="flex gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            size={13}
+                            className={i < review.rating ? "text-[#C9A96E] fill-[#C9A96E]" : "text-[#1B3A5C]/10"}
+                            strokeWidth={1.5}
+                          />
+                        ))}
                       </div>
                     </div>
 
-                    <div className="relative">
-                      <Quote className="absolute -top-6 -left-6 w-12 h-12 text-charcoal/[0.03] rotate-180" strokeWidth={1} />
-                      <blockquote className="text-charcoal/70 text-lg leading-relaxed font-sans italic border-l-4 border-charcoal/[0.03] pl-8 relative z-10">
-                        &ldquo;{review.comment}&rdquo;
-                      </blockquote>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className={`inline-flex items-center rounded-full text-[11px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${
+                        review.status === "PUBLISHED"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+                          : "bg-amber-50 text-amber-700 border-amber-200/60"
+                      }`}>
+                        {review.status}
+                      </span>
 
-                      {review.images && review.images.length > 0 && (
-                        <ReviewImageGallery images={review.images} />
-                      )}
+                      <form action={async () => {
+                        "use server"
+                        await deleteGuestReviewAction(review.id)
+                      }}>
+                        <button
+                          type="submit"
+                          className="w-9 h-9 rounded-full border border-[#1B3A5C]/10 flex items-center justify-center text-[#1B3A5C]/30 hover:text-rose-500 hover:border-rose-200 transition-colors"
+                          title="Remove Review"
+                        >
+                          <Trash size={13} strokeWidth={1.5} />
+                        </button>
+                      </form>
                     </div>
+                  </div>
 
-                    <div className="mt-12 pt-8 border-t border-charcoal/5 flex justify-between items-center">
-                      <p className="text-[9px] uppercase tracking-[0.3em] text-charcoal/20 font-bold">
-                        Submitted on {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                      </p>
-                    </div>
+                  <div>
+                    <blockquote className="text-[15px] text-[#1B3A5C]/75 leading-relaxed italic border-l-2 border-[#C9A96E]/30 pl-5">
+                      &ldquo;{review.comment}&rdquo;
+                    </blockquote>
+
+                    {review.images && review.images.length > 0 && (
+                      <ReviewImageGallery images={review.images} />
+                    )}
+                  </div>
+
+                  <div className="mt-6 pt-5 border-t border-[#1B3A5C]/5">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium">
+                      Submitted on {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
                   </div>
                 </div>
               ))}

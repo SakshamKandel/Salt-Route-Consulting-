@@ -3,7 +3,13 @@ import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { formatNpr } from "@/lib/currency"
-import { ArrowRight, BarChart3, CalendarCheck, Home, Star, TrendingUp } from "lucide-react"
+import { BarChart3, CalendarCheck, ChevronRight, Home, MapPin, Star, TrendingUp } from "lucide-react"
+
+const PROPERTY_STATUS_CHIP: Record<string, string> = {
+  ACTIVE:   "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  DRAFT:    "bg-amber-50 text-amber-600 border-amber-200/60",
+  INACTIVE: "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+}
 
 export default async function OwnerReportsPage() {
   const session = await auth()
@@ -33,7 +39,11 @@ export default async function OwnerReportsPage() {
       }),
       prisma.property.findMany({
         where: { ownerId: session.user.id, status: "ACTIVE" },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          location: true,
+          status: true,
           _count: {
             select: {
               bookings: { where: { status: { in: ["CONFIRMED", "COMPLETED", "CHECKED_IN"] } } },
@@ -46,97 +56,99 @@ export default async function OwnerReportsPage() {
     ])
 
   const summaryMetrics = [
-    { icon: TrendingUp, label: "Lifetime Revenue", value: formatNpr(totalRevenue._sum.totalPrice) },
-    { icon: Home, label: "Active Properties", value: propertiesCount },
-    { icon: CalendarCheck, label: "Total Stays", value: totalBookings },
-    { icon: Star, label: "Completed Stays", value: completedStays },
+    { icon: TrendingUp,    label: "Lifetime revenue",  value: formatNpr(totalRevenue._sum.totalPrice) },
+    { icon: Home,          label: "Active properties", value: propertiesCount },
+    { icon: CalendarCheck, label: "Total stays",       value: totalBookings },
+    { icon: Star,          label: "Completed stays",   value: completedStays },
   ]
 
   const maxBookings = Math.max(1, ...properties.map((p) => p._count.bookings))
 
   return (
-    <div className="space-y-16">
-      <section className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <span className="h-px w-8 bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60">Owner Insights</p>
-          </div>
-          <h1 className="font-display text-4xl leading-[1.12] tracking-wide text-[#1B3A5C] md:text-5xl">
-            Stay value and guest interest for every property.
+    <div className="pb-12 space-y-8">
+
+      {/* ── PAGE HEADER ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+            Owner Insights
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            Earnings &amp; performance
           </h1>
-          <p className="max-w-2xl text-sm font-light leading-[1.85] text-[#1B3A5C]/50">
-            A clear owner view of total value, completed stays, active properties, and how each place is growing.
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-1.5 max-w-xl">
+            Total value, completed stays, active properties, and how each place is growing.
           </p>
         </div>
-
         <Link
           href="/owner/properties"
-          className="group flex items-center justify-between border border-[#1B3A5C]/10 bg-[#FFFDF8] px-6 py-5 text-[9px] uppercase tracking-[0.3em] text-gold/58 transition-colors duration-500 hover:border-gold/25 hover:text-gold"
+          className="shrink-0 self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2 border border-[#1B3A5C]/15 rounded-lg text-[11px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors"
         >
           Review properties
-          <ArrowRight className="h-3.5 w-3.5 stroke-[1.3] transition-transform duration-500 group-hover:translate-x-1" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </Link>
-      </section>
+      </div>
 
-      <section className="grid grid-cols-2 gap-px bg-[#1B3A5C]/5 lg:grid-cols-4">
-        {summaryMetrics.map((m) => (
-          <div key={m.label} className="group bg-[#FFFDF8] px-5 py-7 transition-colors duration-700 hover:bg-[#F5F1E8] sm:px-8 sm:py-9">
-            <m.icon className="mb-6 h-4 w-4 text-gold/35 stroke-[1.3] transition-colors duration-700 group-hover:text-gold" />
-            <p className="mb-3 text-[8px] uppercase tracking-[0.34em] text-[#1B3A5C]/40 sm:text-[8.5px]">
-              {m.label}
-            </p>
-            <p className="break-words font-display text-2xl tracking-wide text-gold/75 transition-colors duration-700 group-hover:text-gold sm:text-3xl">
-              {m.value}
-            </p>
+      {/* ── SUMMARY METRICS ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {summaryMetrics.map(({ icon: Icon, label, value }) => (
+          <div key={label} className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5">
+            <Icon className="h-4 w-4 text-[#1B3A5C]/25 mb-3" />
+            <p className="text-xl sm:text-2xl font-semibold text-[#1B3A5C] leading-tight tabular-nums break-words">{value}</p>
+            <p className="text-[10px] text-[#1B3A5C]/40 mt-1 uppercase tracking-[0.2em] font-medium">{label}</p>
           </div>
         ))}
-      </section>
+      </div>
 
-      <section className="space-y-8">
-        <div className="flex items-center gap-4">
-          <span className="h-px w-8 bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/50">Property Notes</h2>
-        </div>
+      {/* ── PROPERTY PERFORMANCE ── */}
+      <div>
+        <h2 className="text-[15px] font-semibold text-[#1B3A5C] mb-4">Property performance</h2>
 
         {properties.length > 0 ? (
-          <div className="grid grid-cols-1 gap-px bg-[#1B3A5C]/5 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {properties.map((p) => {
               const width = Math.max(8, Math.round((p._count.bookings / maxBookings) * 100))
+              const chip = PROPERTY_STATUS_CHIP[p.status] ?? PROPERTY_STATUS_CHIP.INACTIVE
               return (
                 <Link
                   key={p.id}
                   href={`/owner/properties/${p.id}`}
-                  className="group bg-[#FFFDF8] p-6 transition-colors duration-500 hover:bg-[#F5F1E8] sm:p-7"
+                  className="group bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-5 hover:border-[#1B3A5C]/15 transition-colors"
                 >
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-[9px] uppercase tracking-[0.28em] text-gold/45">{p.location}</p>
-                      <h3 className="mt-3 font-display text-2xl tracking-wide text-[#1B3A5C]">{p.title}</h3>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-1 text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1">
+                        <MapPin className="h-2.5 w-2.5" />
+                        {p.location}
+                      </p>
+                      <h3 className="text-[14px] font-semibold text-[#1B3A5C] leading-snug truncate">{p.title}</h3>
                     </div>
-                    <span className="self-start border border-[#1B3A5C]/10 px-4 py-2 text-[8px] uppercase tracking-[0.28em] text-[#1B3A5C]/50">
+                    <span className={`shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] ${chip}`}>
                       {p.status}
                     </span>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-2 gap-px bg-[#1B3A5C]/5">
-                    <div className="bg-[#FFFDF8] p-4">
-                      <p className="text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">Confirmed Stays</p>
-                      <p className="mt-2 font-display text-3xl text-gold/75">{p._count.bookings}</p>
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <div className="rounded-lg bg-[#FBF9F4] border border-[#1B3A5C]/5 p-3">
+                      <p className="text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">Confirmed stays</p>
+                      <p className="mt-1 text-lg font-semibold text-[#1B3A5C] tabular-nums">{p._count.bookings}</p>
                     </div>
-                    <div className="bg-[#FFFDF8] p-4">
-                      <p className="text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">Reviews</p>
-                      <p className="mt-2 font-display text-3xl text-gold/75">{p._count.reviews}</p>
+                    <div className="rounded-lg bg-[#FBF9F4] border border-[#1B3A5C]/5 p-3">
+                      <p className="text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">Reviews</p>
+                      <p className="mt-1 text-lg font-semibold text-[#1B3A5C] tabular-nums">{p._count.reviews}</p>
                     </div>
                   </div>
 
-                  <div className="mt-7">
-                    <div className="mb-3 flex items-center justify-between text-[8px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">
+                  <div className="mt-4">
+                    <div className="mb-1.5 flex items-center justify-between text-[9px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">
                       <span>Guest interest</span>
-                      <span>{width}%</span>
+                      <span className="tabular-nums">{width}%</span>
                     </div>
-                    <div className="h-1 bg-[#1B3A5C]/5">
-                      <div className="h-full bg-gold/70 transition-all duration-700 group-hover:bg-gold" style={{ width: `${width}%` }} />
+                    <div className="h-1.5 rounded-full bg-[#1B3A5C]/5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#C9A96E] transition-all duration-500"
+                        style={{ width: `${width}%` }}
+                      />
                     </div>
                   </div>
                 </Link>
@@ -144,35 +156,25 @@ export default async function OwnerReportsPage() {
             })}
           </div>
         ) : (
-          <div className="border border-[#1B3A5C]/8 py-20 text-center">
-            <BarChart3 className="mx-auto mb-6 h-8 w-8 text-gold/24 stroke-[1.2]" />
-            <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">No stay results yet</p>
-            <p className="mt-3 text-[11px] font-light text-[#1B3A5C]/30">Active properties and guest stays will appear here.</p>
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-16 text-center">
+            <BarChart3 className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+            <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No stay results yet</p>
+            <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Active properties and guest stays will appear here</p>
           </div>
         )}
-      </section>
+      </div>
 
-      <section className="space-y-8">
-        <div className="flex items-center gap-4">
-          <span className="h-px w-8 bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/50">Monthly View</h2>
-        </div>
-        <div className="border border-[#1B3A5C]/8 bg-[#FFFDF8] px-6 py-12 text-center sm:px-10">
-          <div className="mx-auto mb-8 flex max-w-md items-end justify-center gap-2">
-            {[40, 65, 50, 80, 55, 90, 70, 85, 60, 95, 75, 100].map((height, index) => (
-              <div
-                key={index}
-                className="w-full max-w-7 bg-gold/25"
-                style={{ height: `${height * 0.72}px` }}
-              />
-            ))}
-          </div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40">Monthly view ready as stays grow</p>
-          <p className="mx-auto mt-3 max-w-xl text-[12px] font-light leading-[1.8] text-[#1B3A5C]/30">
+      {/* ── MONTHLY VIEW ── */}
+      <div>
+        <h2 className="text-[15px] font-semibold text-[#1B3A5C] mb-4">Monthly view</h2>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-14 text-center px-6">
+          <BarChart3 className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">Monthly view ready as stays grow</p>
+          <p className="mx-auto mt-1 max-w-md text-[11px] text-[#1B3A5C]/25">
             As more stays are completed, this space will show monthly patterns, guest interest, and property comparisons.
           </p>
         </div>
-      </section>
+      </div>
     </div>
   )
 }

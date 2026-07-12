@@ -1,8 +1,8 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Info, KeyRound } from "lucide-react"
 import { changeOwnerPasswordAction } from "./actions"
 
 export default function OwnerChangePasswordPage() {
@@ -29,104 +29,98 @@ export default function OwnerChangePasswordPage() {
   }
 
   const inputClass =
-    "w-full bg-transparent text-[#1B3A5C]/70 text-[12.5px] px-5 py-4 outline-none transition-all duration-500 placeholder:text-[#1B3A5C]/30 font-light"
-  const inputStyle = { border: "1px solid rgba(201,169,110,0.15)" }
+    "w-full bg-[#FBF9F4] text-[#1B3A5C] text-[13px] px-4 py-2.5 border border-[#1B3A5C]/10 rounded-lg outline-none transition-colors placeholder:text-[#1B3A5C]/30 focus:border-[#C9A96E] focus:ring-3 focus:ring-[#C9A96E]/20"
 
   const fields = [
-    { id: "current",  label: "Current Password",  value: current,  setter: setCurrent  },
-    { id: "next",     label: "New Password",       value: next,     setter: setNext     },
-    { id: "confirm",  label: "Confirm New Password", value: confirm, setter: setConfirm  },
+    { id: "current",  label: "Current Password",     value: current,  setter: setCurrent  },
+    { id: "next",     label: "New Password",          value: next,     setter: setNext     },
+    { id: "confirm",  label: "Confirm New Password",  value: confirm,  setter: setConfirm  },
   ]
 
   return (
-    <div className="space-y-14 max-w-lg">
+    <div className="pb-12 space-y-8 max-w-lg">
 
-      {/* â”€â”€â”€ PAGE HEADER â”€â”€â”€ */}
+      {/* ── PAGE HEADER ── */}
       <div className="space-y-4">
         <Link
           href="/owner/profile"
-          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500"
+          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
-          Back to Profile
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to profile
         </Link>
-        <div className="space-y-2">
-          <div className="flex items-center gap-4">
-            <span className="w-8 h-px bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-              Security
-            </p>
-          </div>
-          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
-            Change Password
+        <div>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+            Security
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            Change password
           </h1>
         </div>
       </div>
 
-      {/* â”€â”€â”€ FORM â”€â”€â”€ */}
-      <div
-        className="p-10 space-y-8"
-        style={{
-          border: "1px solid rgba(201,169,110,0.1)",
-          background: "rgba(201,169,110,0.025)",
-        }}
-      >
-        {/* Feedback message */}
-        {message && (
-          <div
-            className="px-6 py-4 text-[11px] font-light leading-[1.8]"
-            style={{
-              border: `1px solid ${message.type === "success" ? "rgba(52,211,153,0.25)" : "rgba(239,100,100,0.25)"}`,
-              background: message.type === "success" ? "rgba(52,211,153,0.06)" : "rgba(239,100,100,0.06)",
-              color: message.type === "success" ? "rgba(52,211,153,0.9)" : "rgba(239,100,100,0.9)",
-            }}
-          >
-            {message.text}
-          </div>
-        )}
+      {/* ── FORM CARD ── */}
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5 flex items-center gap-2.5">
+          <KeyRound className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+          <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
+            Update Password
+          </h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {fields.map((field) => (
-            <div key={field.id} className="space-y-2.5">
-              <label
-                htmlFor={field.id}
-                className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block"
-              >
-                {field.label}
-              </label>
-              <input
-                id={field.id}
-                type="password"
-                value={field.value}
-                onChange={(e) => field.setter(e.target.value)}
-                required
-                minLength={field.id === "next" ? 8 : undefined}
-                className={inputClass}
-                style={inputStyle}
-                placeholder="••••••••"
-              />
-            </div>
-          ))}
-
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isPending || !current || !next || !confirm}
-              className="w-full sm:w-auto px-10 py-4 text-[9px] uppercase tracking-[0.4em] font-medium text-[#0C1F33] bg-gold hover:bg-gold/90 transition-all duration-500 disabled:opacity-40 disabled:cursor-not-allowed"
+        <div className="p-5 space-y-5">
+          {/* Feedback message */}
+          {message && (
+            <div
+              className={`px-4 py-3 text-[12px] rounded-lg border ${
+                message.type === "success"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+                  : "bg-rose-50 text-rose-600 border-rose-200/60"
+              }`}
             >
-              {isPending ? "Saving..." : "Update Password"}
-            </button>
-          </div>
-        </form>
+              {message.text}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {fields.map((field) => (
+              <div key={field.id} className="space-y-1.5">
+                <label
+                  htmlFor={field.id}
+                  className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/40 font-medium block"
+                >
+                  {field.label}
+                </label>
+                <input
+                  id={field.id}
+                  type="password"
+                  value={field.value}
+                  onChange={(e) => field.setter(e.target.value)}
+                  required
+                  minLength={field.id === "next" ? 8 : undefined}
+                  className={inputClass}
+                  placeholder="••••••••"
+                />
+              </div>
+            ))}
+
+            <div className="pt-1">
+              <button
+                type="submit"
+                disabled={isPending || !current || !next || !confirm}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isPending ? "Saving..." : "Update password"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      {/* â”€â”€â”€ NOTE â”€â”€â”€ */}
-      <div
-        className="flex items-start gap-5 px-7 py-6"
-        style={{ border: "1px solid rgba(201,169,110,0.07)" }}
-      >
-        <span className="w-4 h-px bg-gold/35 mt-2 shrink-0" />
-        <p className="text-[11.5px] text-[#1B3A5C]/30 font-light leading-[1.8]">
+      {/* ── NOTE ── */}
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl flex items-start gap-3 px-4 py-3.5">
+        <Info className="h-3.5 w-3.5 text-[#1B3A5C]/30 mt-0.5 shrink-0" />
+        <p className="text-[11px] text-[#1B3A5C]/45 leading-relaxed">
           Your new password must be at least 8 characters. If you&apos;ve forgotten your
           current password, sign out and use the &ldquo;Forgot password&rdquo; link on the login page.
         </p>
@@ -134,4 +128,3 @@ export default function OwnerChangePasswordPage() {
     </div>
   )
 }
-

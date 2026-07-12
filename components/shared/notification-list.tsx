@@ -21,26 +21,26 @@ export function NotificationList({ notifications }: { notifications: Notificatio
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-navy/40 text-[10px] uppercase font-bold tracking-widest">
+        <p className="text-navy/60 text-[12px] uppercase font-semibold tracking-[0.14em]">
           {unreadCount} unread notification{unreadCount === 1 ? "" : "s"}
         </p>
         {unreadCount > 0 && (
           <form action={async () => {
             await markAllCurrentUserNotificationsReadAction()
           }}>
-            <Button type="submit" variant="outline" className="text-[10px] font-semibold uppercase tracking-widest h-8 px-3">
-              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 opacity-60" />
+            <Button type="submit" variant="outline" className="text-[12px] font-semibold uppercase tracking-[0.12em] h-10 px-4">
+              <CheckCircle2 className="mr-1.5 h-4 w-4 opacity-70" />
               Mark all read
             </Button>
           </form>
         )}
       </div>
 
-      <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFDF8] overflow-hidden divide-y divide-[#1B3A5C]/5">
+      <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFAF3] overflow-hidden divide-y divide-[#1B3A5C]/5">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <Bell className="h-6 w-6 text-navy/20 mb-3" />
-            <p className="text-xs text-navy/40 font-light">No notifications yet</p>
+            <p className="text-[15px] text-navy/60">No notifications yet</p>
           </div>
         ) : (
           notifications.map((notification) => (
@@ -62,16 +62,16 @@ export function NotificationList({ notifications }: { notifications: Notificatio
               
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs font-semibold text-navy leading-none">
+                  <p className="text-[15px] font-semibold text-navy leading-snug">
                     {notification.title}
                   </p>
-                  <p className="shrink-0 text-[10px] text-navy/40 font-light">
+                  <p className="shrink-0 text-[12px] text-navy/55">
                     {formatDistanceToNow(new Date(notification.createdAt), {
                       addSuffix: true,
                     })}
                   </p>
                 </div>
-                <p className="text-navy/60 text-xs font-light mt-1.5 leading-relaxed">
+                <p className="text-navy/65 text-[14px] mt-1.5 leading-relaxed">
                   {notification.body}
                 </p>
                 
@@ -83,7 +83,7 @@ export function NotificationList({ notifications }: { notifications: Notificatio
                     }}
                   >
                     <button
-                      className="text-[10px] text-gold font-semibold uppercase tracking-widest hover:underline"
+                      className="text-[12px] text-gold font-semibold uppercase tracking-[0.12em] hover:underline py-1"
                       type="submit"
                     >
                       Mark as read

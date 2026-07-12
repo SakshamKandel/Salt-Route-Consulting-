@@ -27,17 +27,17 @@ export function BookingsBarChart({ data }: { data: DayPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={aggregated} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,58,92,0.06)" vertical={false} />
         <XAxis
           dataKey="date"
           tickFormatter={formatDate}
-          tick={{ fontSize: 11, fill: "#94a3b8" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.4)" }}
           axisLine={false}
           tickLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "#94a3b8" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.4)" }}
           axisLine={false}
           tickLine={false}
           allowDecimals={false}
@@ -46,9 +46,11 @@ export function BookingsBarChart({ data }: { data: DayPoint[] }) {
         <Tooltip
           formatter={(v) => [Number(v ?? 0), "Bookings"]}
           contentStyle={{
-            border: "1px solid #e2e8f0",
-            borderRadius: "8px",
+            border: "1px solid rgba(27,58,92,0.12)",
+            borderRadius: "10px",
             fontSize: "12px",
+            background: "#FFFAF3",
+            color: "#1B3A5C",
           }}
         />
         <Bar dataKey="count" fill="#C9A96E" radius={[4, 4, 0, 0]} />

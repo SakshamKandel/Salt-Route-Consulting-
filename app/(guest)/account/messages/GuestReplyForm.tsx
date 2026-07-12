@@ -38,19 +38,19 @@ export function GuestReplyForm({ inquiryId }: { inquiryId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <label className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 font-sans font-medium block">Your Note</label>
+      <label className="text-[13px] uppercase tracking-[0.16em] text-[#1B3A5C]/70 font-medium block">Your Reply</label>
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Write your note here..."
         rows={3}
-        className="w-full bg-white border border-charcoal/10 text-charcoal px-5 py-4 text-sm font-sans placeholder:text-charcoal/30 focus:outline-none focus:border-charcoal/30 transition-colors resize-none"
+        className="w-full bg-[#FBF9F4] border border-[#1B3A5C]/10 rounded-lg text-[#1B3A5C] px-4 py-3.5 text-[15px] placeholder:text-[#1B3A5C]/40 focus:outline-none focus:border-[#1B3A5C]/30 transition-colors resize-none"
       />
-      {error && <p className="text-red-500 text-[10px] uppercase tracking-[0.2em] font-medium">{error}</p>}
+      {error && <p className="text-[13px] text-rose-600 font-medium">{error}</p>}
       <button
         type="submit"
         disabled={isPending || !message.trim()}
-        className="bg-charcoal text-white px-8 py-3 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center px-6 py-2.5 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isPending ? "Sending..." : "Send Reply"}
       </button>

@@ -7,10 +7,10 @@ import Image from "next/image"
 
 function StatusMsg({ type, text }: { type: "success" | "error"; text: string }) {
   return (
-    <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${
+    <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-[12px] ${
       type === "success"
-        ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
-        : "bg-red-50 border border-red-200 text-red-700"
+        ? "bg-emerald-50 border border-emerald-200/60 text-emerald-700"
+        : "bg-rose-50 border border-rose-200/60 text-[#B84040]"
     }`}>
       {type === "success"
         ? <CheckCircle className="h-4 w-4 shrink-0" />
@@ -71,7 +71,7 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
   if (enabled && step !== "success") {
     return (
       <div className="space-y-4">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex items-start gap-4">
+        <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-5 flex items-start gap-4">
             <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
           <div>
             <p className="font-semibold text-emerald-800 text-sm">2FA is enabled</p>
@@ -84,7 +84,7 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
         <button
           onClick={handleDisable}
           disabled={isPending}
-          className="w-full h-10 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full h-10 rounded-lg bg-[#B84040] text-white text-[12px] font-medium hover:bg-[#a13636] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <ShieldOff className="h-4 w-4" />
           {isPending ? "Disabling..." : "Disable Two-Factor Authentication"}
@@ -95,33 +95,33 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
 
   if (step === "setup" && qrDataUrl) {
     return (
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6 space-y-6">
         <div className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-[#1B3A5C] text-white flex items-center justify-center text-xs font-bold shrink-0">1</div>
+          <div className="w-7 h-7 rounded-full bg-[#1B3A5C] text-[#C9A96E] flex items-center justify-center text-xs font-bold shrink-0">1</div>
           <div>
-            <p className="font-semibold text-slate-800 text-sm">Scan this QR code</p>
-            <p className="text-sm text-slate-500 mt-0.5">Open Google Authenticator (or any TOTP app) and scan the code below.</p>
+            <p className="font-semibold text-[#1B3A5C] text-[13px]">Scan this QR code</p>
+            <p className="text-[12px] text-[#1B3A5C]/50 mt-0.5">Open Google Authenticator (or any TOTP app) and scan the code below.</p>
           </div>
         </div>
 
         <div className="flex justify-center">
-          <div className="border border-slate-200 rounded-lg p-4 bg-white">
+          <div className="border border-[#1B3A5C]/10 rounded-xl p-4 bg-white">
             <Image src={qrDataUrl} alt="2FA QR Code" width={200} height={200} unoptimized />
           </div>
         </div>
 
         {secret && (
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-            <p className="text-xs text-slate-400 mb-1">Manual entry code</p>
-            <p className="font-mono text-sm tracking-widest text-slate-700 break-all">{secret}</p>
+          <div className="bg-[#FBF9F4] border border-[#1B3A5C]/8 rounded-lg p-3 text-center">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-[#1B3A5C]/35 mb-1">Manual entry code</p>
+            <p className="font-mono text-sm tracking-widest text-[#1B3A5C]/70 break-all">{secret}</p>
           </div>
         )}
 
         <div className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-[#1B3A5C] text-white flex items-center justify-center text-xs font-bold shrink-0">2</div>
+          <div className="w-7 h-7 rounded-full bg-[#1B3A5C] text-[#C9A96E] flex items-center justify-center text-xs font-bold shrink-0">2</div>
           <div className="flex-1">
-            <p className="font-semibold text-slate-800 text-sm">Enter the 6-digit code</p>
-            <p className="text-sm text-slate-500 mt-0.5 mb-3">Enter the code shown in your authenticator app to verify and activate 2FA.</p>
+            <p className="font-semibold text-[#1B3A5C] text-[13px]">Enter the 6-digit code</p>
+            <p className="text-[12px] text-[#1B3A5C]/50 mt-0.5 mb-3">Enter the code shown in your authenticator app to verify and activate 2FA.</p>
             <div className="flex gap-3">
               <input
                 type="text"
@@ -130,12 +130,12 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
                 placeholder="000000"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="flex-1 h-10 px-3 rounded-lg border border-slate-200 font-mono text-center text-lg tracking-widest outline-none focus:border-[#1B3A5C] focus:ring-1 focus:ring-[#1B3A5C]/20 transition-colors"
+                className="flex-1 h-10 px-3 rounded-lg border border-[#1B3A5C]/10 bg-white/60 font-mono text-center text-lg tracking-widest text-[#1B3A5C] outline-none focus:border-[#1B3A5C]/30 transition-colors"
               />
               <button
                 onClick={handleVerify}
                 disabled={code.length !== 6 || isPending}
-                className="h-10 px-5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors disabled:opacity-50 shrink-0"
+                className="h-10 px-5 rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-50 shrink-0"
               >
                 {isPending ? "Verifying..." : "Verify"}
               </button>
@@ -150,7 +150,7 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
 
   if (step === "success") {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-8 text-center space-y-4">
+      <div className="bg-emerald-50 border border-emerald-200/60 rounded-2xl p-8 text-center space-y-4">
         <div className="inline-flex w-14 h-14 rounded-full bg-emerald-100 items-center justify-center mx-auto">
           <Shield className="h-6 w-6 text-emerald-700" />
         </div>
@@ -161,12 +161,12 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
+    <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-6 space-y-4">
       <div className="flex items-start gap-4">
-        <QrCode className="h-4 w-4 text-slate-400 shrink-0" />
+        <QrCode className="h-4 w-4 text-[#C9A96E] shrink-0" />
         <div>
-          <p className="font-semibold text-slate-800 text-sm">Authenticator App Setup</p>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="font-semibold text-[#1B3A5C] text-[13px]">Authenticator App Setup</p>
+          <p className="text-[12px] text-[#1B3A5C]/50 mt-1">
             Use Google Authenticator, Authy, or any TOTP-compatible app to generate time-based verification codes.
             Once enabled, you will be required to enter a code on every login.
           </p>
@@ -176,7 +176,7 @@ export function TwoFactorSetup({ enabled }: { enabled: boolean }) {
       <button
         onClick={handleStartSetup}
         disabled={isPending}
-        className="w-full h-10 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full h-10 rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
         <Shield className="h-4 w-4" />
         {isPending ? "Generating..." : "Set Up Two-Factor Authentication"}

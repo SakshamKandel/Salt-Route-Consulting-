@@ -7,12 +7,12 @@ import { isInquiryUnreadForOwner, normalizeInquiryMessages } from "@/lib/inquiri
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
 
-const statusConfig: Record<string, { label: string; color: string; border: string }> = {
-  NEW:         { label: "New",         color: "rgba(201,169,110,0.9)", border: "rgba(201,169,110,0.25)" },
-  OPEN:        { label: "Open",        color: "rgba(96,165,250,0.8)",  border: "rgba(96,165,250,0.2)"  },
-  IN_PROGRESS: { label: "In Care",     color: "rgba(251,191,36,0.8)",  border: "rgba(251,191,36,0.2)"  },
-  RESPONDED:   { label: "Responded",   color: "rgba(52,211,153,0.8)",  border: "rgba(52,211,153,0.2)"  },
-  CLOSED:      { label: "Closed",      color: "rgba(27,58,92,0.35)",   border: "rgba(27,58,92,0.1)"    },
+const STATUS_CHIP: Record<string, { label: string; cls: string }> = {
+  NEW:         { label: "New",       cls: "bg-[#C9A96E]/10 text-[#A8863F] border-[#C9A96E]/30" },
+  OPEN:        { label: "Open",      cls: "bg-sky-50 text-sky-600 border-sky-200/60" },
+  IN_PROGRESS: { label: "In care",   cls: "bg-amber-50 text-amber-600 border-amber-200/60" },
+  RESPONDED:   { label: "Responded", cls: "bg-emerald-50 text-emerald-600 border-emerald-200/60" },
+  CLOSED:      { label: "Closed",    cls: "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10" },
 }
 
 export default async function OwnerMessagesPage({
@@ -38,75 +38,53 @@ export default async function OwnerMessagesPage({
   })
 
   return (
-    <div className="space-y-14">
+    <div className="pb-12 space-y-8">
 
-      {/* ─── PAGE HEADER ─── */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-4">
-          <span className="w-8 h-px bg-gold/40" />
-          <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-            Owner Conversations
-          </p>
-        </div>
-        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
-          Salt Route Support
+      {/* ── PAGE HEADER ── */}
+      <div>
+        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+          Owner Conversations
+        </p>
+        <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+          Messages
         </h1>
-        <p className="text-[12.5px] text-[#1B3A5C]/50 font-light max-w-lg leading-[1.8]">
+        <p className="text-[12px] text-[#1B3A5C]/45 mt-1.5 max-w-xl">
           Your direct channel for property updates, guest care, calendar questions, and Salt Route support.
         </p>
       </div>
 
       {inquiries.length === 0 ? (
-        <div
-          className="py-24 flex flex-col items-center justify-center text-center"
-          style={{ border: "1px solid rgba(201,169,110,0.07)" }}
-        >
-          <MessageSquare
-            className="mb-6 h-8 w-8 stroke-[1.2]"
-            style={{ color: "rgba(201,169,110,0.25)" }}
-          />
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30 font-medium">
-            No communications yet
-          </p>
-          <p className="text-[11px] text-[#1B3A5C]/30 font-light mt-2">
-            Your messages with the Salt Route team will appear here.
-          </p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-16 text-center">
+          <MessageSquare className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No conversations yet</p>
+          <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Your messages with the Salt Route team will appear here</p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-5">
           {inquiries.map((inquiry) => {
             const messages = normalizeInquiryMessages(inquiry)
             const unread = isInquiryUnreadForOwner(inquiry)
-            const statusStyle = statusConfig[inquiry.status] ?? statusConfig.CLOSED
+            const chip = STATUS_CHIP[inquiry.status] ?? STATUS_CHIP.CLOSED
 
             return (
               <div
                 key={inquiry.id}
-                className="space-y-0 overflow-hidden transition-all duration-500"
-                style={{
-                  border: unread
-                    ? "1px solid rgba(201,169,110,0.25)"
-                    : "1px solid rgba(201,169,110,0.08)",
-                  background: unread
-                    ? "rgba(201,169,110,0.06)"
-                    : "#FFFDF8",
-                }}
+                className={`bg-[#FFFAF3] rounded-2xl overflow-hidden border ${
+                  unread ? "border-[#C9A96E]/40" : "border-[#1B3A5C]/8"
+                }`}
               >
                 {/* Thread header */}
-                <div
-                  className="px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-                  style={{ borderBottom: "1px solid rgba(201,169,110,0.07)" }}
-                >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-3">
+                <div className="px-5 py-4 border-b border-[#1B3A5C]/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5">
                       {unread && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#C9A96E] shrink-0" />
                       )}
-                      <p className="font-display text-lg text-[#1B3A5C] tracking-wide">
+                      <p className="text-[14px] font-semibold text-[#1B3A5C] truncate">
                         {inquiry.subject}
                       </p>
                     </div>
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/40 font-light">
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium mt-1">
                       Last activity{" "}
                       {new Date(inquiry.lastMessageAt).toLocaleDateString(undefined, {
                         year: "numeric",
@@ -117,53 +95,48 @@ export default async function OwnerMessagesPage({
                       })}
                     </p>
                   </div>
-                  <span
-                    className="self-start sm:self-auto px-4 py-2 text-[8.5px] uppercase tracking-[0.3em] font-medium shrink-0"
-                    style={{
-                      color: statusStyle.color,
-                      border: `1px solid ${statusStyle.border}`,
-                    }}
-                  >
-                    {statusStyle.label}
+                  <span className={`self-start sm:self-auto inline-flex items-center rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] shrink-0 ${chip.cls}`}>
+                    {chip.label}
                   </span>
                 </div>
 
                 {/* Messages */}
-                <div className="px-8 py-6 space-y-7">
+                <div className="px-5 py-5 space-y-5">
                   {messages.map((msg) => {
                     const isAdmin = msg.sender === "ADMIN"
                     return (
-                      <div key={msg.id} className="flex gap-4 items-start">
+                      <div key={msg.id} className="flex gap-3 items-start">
                         <div
-                          className="w-8 h-8 flex items-center justify-center shrink-0 mt-0.5"
-                          style={{
-                            background: isAdmin ? "rgba(201,169,110,0.1)" : "rgba(27,58,92,0.05)",
-                            border: isAdmin ? "1px solid rgba(201,169,110,0.2)" : "1px solid rgba(27,58,92,0.1)",
-                          }}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 border ${
+                            isAdmin
+                              ? "bg-[#C9A96E]/10 border-[#C9A96E]/25"
+                              : "bg-[#1B3A5C]/5 border-[#1B3A5C]/10"
+                          }`}
                         >
                           {isAdmin ? (
-                            <ShieldCheck className="w-3.5 h-3.5 text-gold/70" strokeWidth={1.3} />
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#C9A96E]" strokeWidth={1.5} />
                           ) : (
-                            <User className="w-3.5 h-3.5 text-[#1B3A5C]/50" strokeWidth={1.3} />
+                            <User className="w-3.5 h-3.5 text-[#1B3A5C]/50" strokeWidth={1.5} />
                           )}
                         </div>
-                        <div className="space-y-2 flex-1 min-w-0">
-                          <p
-                            className="text-[9px] uppercase tracking-[0.35em] font-medium"
-                            style={{ color: isAdmin ? "rgba(201,169,110,0.8)" : "rgba(27,58,92,0.5)" }}
-                          >
-                            {isAdmin ? "Salt Route Team" : "You"}
-                          </p>
-                          <p className="text-[13px] text-[#1B3A5C]/70 leading-[1.9] font-light whitespace-pre-wrap">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <div className="flex items-baseline gap-2.5">
+                            <p className={`text-[10px] uppercase tracking-[0.15em] font-semibold ${
+                              isAdmin ? "text-[#A8863F]" : "text-[#1B3A5C]/50"
+                            }`}>
+                              {isAdmin ? "Salt Route Team" : "You"}
+                            </p>
+                            <p className="text-[10px] text-[#1B3A5C]/30">
+                              {new Date(msg.createdAt).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                          <p className="text-[13px] text-[#1B3A5C]/70 leading-relaxed whitespace-pre-wrap">
                             {msg.body}
-                          </p>
-                          <p className="text-[8.5px] uppercase tracking-[0.25em] text-[#1B3A5C]/30">
-                            {new Date(msg.createdAt).toLocaleDateString(undefined, {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
                           </p>
                         </div>
                       </div>
@@ -173,7 +146,7 @@ export default async function OwnerMessagesPage({
 
                 {/* Reply form */}
                 {inquiry.status !== "CLOSED" && (
-                  <div className="px-8 pb-8">
+                  <div className="px-5 pb-5">
                     <OwnerReplyForm inquiryId={inquiry.id} />
                   </div>
                 )}

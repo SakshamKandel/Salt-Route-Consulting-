@@ -1,25 +1,61 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { LottieAnimation } from "@/components/ui/lottie-animation"
-import srgAnimation from "@/lib/animations/srg.json"
+import { useEffect, useState, useSyncExternalStore } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import Image from "next/image"
+import { EASE } from "@/components/public/motion"
 
-/** Keep the brand reveal on screen long enough to read, even on fast loads. */
-const MIN_DISPLAY_MS = 500
+const noop = () => () => {}
+/** True only after hydration on the client — safe for motion/portal usage. */
+function useHydrated() {
+  return useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  )
+}
+
+/** Keep the brand reveal on screen just long enough to register (§6: ≤300ms).
+ *  Reduced from 300→120ms for faster perceived load on repeat visits. */
+const MIN_DISPLAY_MS = 120
 /** Safety net: never trap the visitor behind the overlay if `load` never fires. */
-const MAX_DISPLAY_MS = 6000
+const MAX_DISPLAY_MS = 4000
+/** sessionStorage key — once a visitor has seen the loader this session,
+ *  skip it on subsequent navigations back to the public site. */
+const SEEN_KEY = "site-loader-seen"
 
 /**
  * Full-screen branded preloader shown on the first paint of the public site.
- * It mounts immediately (covering content), then fades out once the window has
- * finished loading — i.e. "until the content comes". Lives in the persistent
- * public layout, so it does NOT re-trigger on client-side navigation.
+ * It mounts immediately (covering content), then fades out once the DOM is
+ * interactive. Lives in the persistent public layout, so it does NOT
+ * re-trigger on client-side navigation.
+ *
+ * Per plan §6.5 ("slim SiteLoader") this renders a static logo with a gentle
+ * CSS opacity pulse instead of the Lottie, keeping lottie-web (~250KB) off
+ * the critical path — the player is now only fetched where AiConcierge needs
+ * it. LottieAnimation's prop API in components/ui/lottie-animation.tsx is
+ * untouched. Preserved contracts: `.site-loader` class (noscript
+ * kill-switch), z-[10100] above Nav, MIN/MAX display failsafes,
+ * DOMContentLoaded-based hide, body scroll lock while covering.
  */
 export function SiteLoader() {
+  const hydrated = useHydrated()
+  // Skip the overlay entirely on repeat visits within the same browser session
+  // (e.g. navigating back to the homepage from a sub-page). First-time visitors
+  // still get the branded reveal.
   const [visible, setVisible] = useState(true)
+  const reduce = useReducedMotion()
 
   useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SEEN_KEY) === "1") {
+        setVisible(false)
+        return
+      }
+    } catch {
+      /* sessionStorage may be unavailable (private mode) — non-fatal */
+    }
+    if (!visible) return
     const start = performance.now()
     let hidden = false
 
@@ -27,7 +63,14 @@ export function SiteLoader() {
       if (hidden) return
       hidden = true
       const remaining = Math.max(0, MIN_DISPLAY_MS - (performance.now() - start))
-      window.setTimeout(() => setVisible(false), remaining)
+      window.setTimeout(() => {
+        setVisible(false)
+        try {
+          sessionStorage.setItem(SEEN_KEY, "1")
+        } catch {
+          /* sessionStorage may be unavailable (private mode) — non-fatal */
+        }
+      }, remaining)
     }
 
     // Clear as soon as the DOM is parsed/interactive — do NOT wait for the
@@ -43,7 +86,7 @@ export function SiteLoader() {
       document.removeEventListener("DOMContentLoaded", hide)
       window.clearTimeout(maxTimer)
     }
-  }, [])
+  }, [visible])
 
   // Lock background scroll while the overlay is covering the page.
   useEffect(() => {
@@ -55,6 +98,27 @@ export function SiteLoader() {
     }
   }, [visible])
 
+  if (!hydrated) {
+    return visible ? (
+      <div
+        className="site-loader fixed inset-0 z-[10100] flex items-center justify-center bg-cream"
+        style={{ opacity: 1 }}
+        role="status"
+        aria-label="Loading Salt Route Corp"
+      >
+        <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
+        <Image
+          src="/logo.png"
+          alt=""
+          width={187}
+          height={88}
+          priority
+          className="h-auto w-28 sm:w-36"
+        />
+      </div>
+    ) : null
+  }
+
   return (
     <AnimatePresence>
       {visible && (
@@ -63,14 +127,25 @@ export function SiteLoader() {
           className="site-loader fixed inset-0 z-[10100] flex items-center justify-center bg-cream"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          transition={{ duration: reduce ? 0 : 0.5, ease: EASE.inOutLuxe }}
           role="status"
           aria-label="Loading Salt Route Corp"
         >
-          <LottieAnimation
-            animationData={srgAnimation}
-            loop
-            className="h-44 w-44 sm:h-56 sm:w-56"
+          {/* Keyframes are scoped here (globals.css is owned elsewhere); the
+              global reduced-motion backstop also freezes this CSS animation. */}
+          <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
+          <Image
+            src="/logo.png"
+            alt=""
+            width={187}
+            height={88}
+            priority
+            className="h-auto w-28 sm:w-36"
+            style={
+              reduce
+                ? undefined
+                : { animation: "site-loader-pulse 2.4s var(--ease-in-out-luxe) infinite" }
+            }
           />
         </motion.div>
       )}

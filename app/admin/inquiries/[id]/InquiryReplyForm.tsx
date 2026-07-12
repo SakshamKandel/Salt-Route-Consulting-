@@ -37,12 +37,18 @@ export function InquiryReplyForm({ inquiry }: { inquiry: InquiryReplyRow }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-navy flex items-center gap-2">
-          <Mail className="w-5 h-5" /> Reply to Guest
+        <h3 className="text-[15px] font-semibold text-[#1B3A5C] flex items-center gap-2">
+          <Mail className="w-4 h-4 text-[#C9A96E]" /> Reply to Guest
         </h3>
         {inquiry.status !== "CLOSED" && (
-          <Button variant="outline" size="sm" onClick={handleMarkResolved} disabled={isSending}>
-            <Check className="w-4 h-4 mr-2" /> Mark as Resolved
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleMarkResolved}
+            disabled={isSending}
+            className="h-8 rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 bg-transparent"
+          >
+            <Check className="w-3.5 h-3.5 mr-2" /> Mark as Resolved
           </Button>
         )}
       </div>
@@ -52,14 +58,14 @@ export function InquiryReplyForm({ inquiry }: { inquiry: InquiryReplyRow }) {
           placeholder="Type your reply here..."
           value={reply}
           onChange={(e) => setReply(e.target.value)}
-          className="min-h-[150px]"
+          className="min-h-[150px] rounded-xl border-[#1B3A5C]/10 bg-[#FBF9F4]/50 text-[13px] text-[#1B3A5C] placeholder:text-[#1B3A5C]/30 focus:border-[#1B3A5C]/30 focus:ring-0"
         />
-        <Button 
-          onClick={handleReply} 
+        <Button
+          onClick={handleReply}
           disabled={!reply.trim() || isSending}
-          className="bg-navy text-cream"
+          className="rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]"
         >
-          <Send className="w-4 h-4 mr-2" /> {isSending ? "Sending..." : "Send Reply"}
+          <Send className="w-3.5 h-3.5 mr-2" /> {isSending ? "Sending..." : "Send Reply"}
         </Button>
       </div>
     </div>

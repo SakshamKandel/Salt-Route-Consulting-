@@ -30,17 +30,17 @@ export function RevenueLineChart({ data }: { data: MonthPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <LineChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,58,92,0.06)" />
         <XAxis
           dataKey="month"
           tickFormatter={formatMonth}
-          tick={{ fontSize: 11, fill: "#94a3b8" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.4)" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
           tickFormatter={formatRevenue}
-          tick={{ fontSize: 11, fill: "#94a3b8" }}
+          tick={{ fontSize: 11, fill: "rgba(27,58,92,0.4)" }}
           axisLine={false}
           tickLine={false}
           width={70}
@@ -49,9 +49,11 @@ export function RevenueLineChart({ data }: { data: MonthPoint[] }) {
           formatter={(v) => [formatRevenue(Number(v ?? 0)), "Revenue"]}
           labelFormatter={(label) => formatMonth(String(label))}
           contentStyle={{
-            border: "1px solid #e2e8f0",
-            borderRadius: "8px",
+            border: "1px solid rgba(27,58,92,0.12)",
+            borderRadius: "10px",
             fontSize: "12px",
+            background: "#FFFAF3",
+            color: "#1B3A5C",
           }}
         />
         <Line

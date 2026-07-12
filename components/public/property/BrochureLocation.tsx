@@ -1,9 +1,11 @@
 "use client"
 
 // ── Brochure: Location ───────────────────────────────────────────────────────
-// Editorial location block — a quiet map beside an address, neighbourhood prose,
-// "getting here" travel legs, and an optional host note. No boxes/borders; the
-// only ornament is the gold hairline. Motion auto-disables in the admin preview.
+// Asymmetric editorial location block: the map is the dominant panel (≈60/40),
+// bleeding to the left viewport edge, with the address, neighbourhood prose,
+// "getting here" travel legs, and optional host note set in the right column.
+// No boxes/borders; the only ornament is the gold hairline. Motion is
+// preview-gated through the shared primitives.
 
 import { MapPin, Plane, Quote } from "lucide-react"
 import { PropertyDetailMap } from "@/components/public/PropertyDetailMap"
@@ -40,19 +42,30 @@ export function BrochureLocation({
     : ""
 
   return (
-    <section id="location" className="py-16 md:py-28 bg-white">
-      <SectionHeading eyebrow="Find Us" title="Location" />
+    <section id="location" className="py-10 md:py-16 bg-white overflow-hidden">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
+        <SectionHeading
+          eyebrow="Find Us"
+          title="Location"
+          align="left"
+          variant="editorial"
+          className="mb-8"
+        />
+      </div>
 
-      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-16 items-start">
-        {/* Left — map */}
+      <div className="lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:gap-14 items-start">
+        {/* Left — the dominant map panel, bleeding to the viewport edge. */}
         <FadeUp>
-          <div className="relative w-full h-[320px] sm:h-[360px] md:h-[460px] overflow-hidden">
+          <div className="relative w-full h-[320px] sm:h-[360px] md:h-[420px] overflow-hidden">
             <PropertyDetailMap location={location} address={address} title={location} />
           </div>
         </FadeUp>
 
-        {/* Right — address, neighbourhood, getting here, host note */}
-        <FadeUp delay={0.1} className="space-y-10">
+        {/* Right — address, neighbourhood, getting here, host note. */}
+        <FadeUp
+          delay={0.1}
+          className="mt-8 lg:mt-0 space-y-6 px-5 sm:px-6 md:px-12 lg:px-0 lg:pr-12"
+        >
           <div className="flex items-start gap-4">
             <MapPin className="w-5 h-5 text-gold shrink-0 mt-1" strokeWidth={1.5} />
             <div className="space-y-1">
@@ -63,29 +76,34 @@ export function BrochureLocation({
             </div>
           </div>
 
+          {/* Neighbourhood — a hairline definition row under a tiny kicker. */}
           {neighborhood ? (
-            <p className="font-sans text-[15px] leading-loose font-light text-charcoal/60 whitespace-pre-line">
-              {neighborhood}
-            </p>
+            <div className="border-t border-charcoal/10 pt-4">
+              <Eyebrow>The Neighbourhood</Eyebrow>
+              <p className="mt-3 font-sans text-[14px] leading-relaxed font-light text-charcoal/60 whitespace-pre-line">
+                {neighborhood}
+              </p>
+            </div>
           ) : null}
 
+          {/* Getting here — compact hairline travel-leg rows. */}
           {legs.length > 0 ? (
-            <div id="getting-here" className="space-y-5">
+            <div id="getting-here" className="border-t border-charcoal/10 pt-4">
               <Eyebrow>Getting Here</Eyebrow>
-              <ul className="space-y-4">
+              <ul className="mt-2">
                 {legs.map((leg, i) => (
                   <li
                     key={`${leg.time}-${leg.from}-${i}`}
-                    className={`flex items-start gap-4 ${
-                      i > 0 ? "pt-4 border-t border-charcoal/10" : ""
-                    }`}
+                    className="flex items-baseline gap-4 border-b border-charcoal/10 py-2.5"
                   >
-                    <Plane className="w-4 h-4 text-gold shrink-0 mt-1" strokeWidth={1.5} />
-                    <p className="font-sans text-[13px] text-charcoal/55">
-                      <span className="font-display text-charcoal">{leg.time}</span>{" "}
+                    <Plane className="w-3.5 h-3.5 self-center text-gold shrink-0" strokeWidth={1.5} />
+                    <span className="font-display text-[15px] text-charcoal shrink-0">
+                      {leg.time}
+                    </span>
+                    <span className="font-sans text-[13px] text-charcoal/55">
                       {leg.from}
                       {leg.distance ? ` · ${leg.distance}` : ""}
-                    </p>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -93,10 +111,10 @@ export function BrochureLocation({
           ) : null}
 
           {hostNote ? (
-            <figure className="space-y-5">
+            <figure className="space-y-4 border-t border-charcoal/10 pt-4">
               <div className="flex items-start gap-4">
-                <Quote className="w-5 h-5 text-gold shrink-0 mt-1" strokeWidth={1.5} />
-                <blockquote className="italic font-sans text-[15px] leading-loose text-charcoal/70 whitespace-pre-line">
+                <Quote className="w-4 h-4 text-gold shrink-0 mt-1" strokeWidth={1.5} />
+                <blockquote className="italic font-sans text-[14px] leading-relaxed text-charcoal/70 whitespace-pre-line">
                   {hostNote}
                 </blockquote>
               </div>

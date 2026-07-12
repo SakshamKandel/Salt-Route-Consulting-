@@ -14,7 +14,7 @@ interface Props {
 
 function SuccessMsg({ msg }: { msg: string }) {
   return (
-    <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-sm">
+    <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-lg px-4 py-3 text-[12px]">
       <CheckCircle className="h-4 w-4 shrink-0" />
       {msg}
     </div>
@@ -23,7 +23,7 @@ function SuccessMsg({ msg }: { msg: string }) {
 
 function ErrorMsg({ msg }: { msg: string }) {
   return (
-    <div className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm">
+    <div className="flex items-center gap-2 text-[#B84040] bg-rose-50 border border-rose-200/60 rounded-lg px-4 py-3 text-[12px]">
       <AlertCircle className="h-4 w-4 shrink-0" />
       {msg}
     </div>
@@ -51,7 +51,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-slate-500 mb-1.5">{label}</label>
+      <label className="block text-[11px] font-medium text-[#1B3A5C]/60 mb-1.5">{label}</label>
       <div className="relative">
         <input
           type={type}
@@ -59,17 +59,17 @@ function Field({
           onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           placeholder={placeholder}
           disabled={disabled}
-          className={`w-full h-10 px-3 rounded-lg border text-sm text-slate-800 placeholder:text-slate-300 outline-none transition-colors ${
+          className={`w-full h-10 px-3 rounded-lg border text-sm text-[#1B3A5C] placeholder:text-[#1B3A5C]/25 outline-none transition-colors ${
             disabled
-              ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
-              : "bg-white border-slate-200 focus:border-[#1B3A5C] focus:ring-1 focus:ring-[#1B3A5C]/20"
+              ? "bg-[#FBF9F4] border-[#1B3A5C]/8 text-[#1B3A5C]/40 cursor-not-allowed"
+              : "bg-white/60 border-[#1B3A5C]/10 focus:border-[#1B3A5C]/30"
           } ${suffix ? "pr-10" : ""}`}
         />
         {suffix && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">{suffix}</div>
         )}
       </div>
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {hint && <p className="text-[11px] text-[#1B3A5C]/35 mt-1">{hint}</p>}
     </div>
   )
 }
@@ -97,7 +97,7 @@ function PasswordField({
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-[#1B3A5C]/30 hover:text-[#1B3A5C]/60 transition-colors"
           tabIndex={-1}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -123,12 +123,12 @@ export function ProfileSection({ user }: Props) {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
-        <User className="h-4 w-4 text-slate-400" />
+    <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#1B3A5C]/8">
+        <User className="h-4 w-4 text-[#C9A96E]" />
         <div>
-          <p className="text-sm font-semibold text-slate-800">Profile</p>
-          <p className="text-xs text-slate-400">Your display name and contact details</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60">Profile</p>
+          <p className="text-[11px] text-[#1B3A5C]/40 mt-0.5">Your display name and contact details</p>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="p-5 space-y-4">
@@ -158,7 +158,7 @@ export function ProfileSection({ user }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="h-9 px-5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors disabled:opacity-50"
+            className="h-9 px-5 rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save Profile"}
           </button>
@@ -200,12 +200,12 @@ export function SecuritySection() {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
-        <Lock className="h-4 w-4 text-slate-400" />
+    <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#1B3A5C]/8">
+        <Lock className="h-4 w-4 text-[#C9A96E]" />
         <div>
-          <p className="text-sm font-semibold text-slate-800">Change Password</p>
-          <p className="text-xs text-slate-400">Use a strong, unique password</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60">Change Password</p>
+          <p className="text-[11px] text-[#1B3A5C]/40 mt-0.5">Use a strong, unique password</p>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="p-5 space-y-4">
@@ -220,7 +220,7 @@ export function SecuritySection() {
           <button
             type="submit"
             disabled={saving || !current || !newPw || !confirm}
-            className="h-9 px-5 rounded-lg bg-[#1B3A5C] text-white text-sm font-medium hover:bg-[#1B3A5C]/90 transition-colors disabled:opacity-50"
+            className="h-9 px-5 rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-50"
           >
             {saving ? "Updating..." : "Update Password"}
           </button>

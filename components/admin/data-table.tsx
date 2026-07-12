@@ -56,7 +56,7 @@ export function DataTable<T>({
     <div className="space-y-4">
       {searchKey && (
         <div className="flex w-full items-center relative sm:max-w-sm">
-          <Search className="absolute left-3 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 w-3.5 h-3.5 text-[#1B3A5C]/30" />
           <Input
             placeholder={searchPlaceholder}
             value={search}
@@ -64,32 +64,32 @@ export function DataTable<T>({
               setSearch(e.target.value)
               setPage(1)
             }}
-            className="pl-9 border-slate-200"
+            className="pl-9 h-9 rounded-lg border-[#1B3A5C]/10 bg-[#FFFAF3] text-[13px] text-[#1B3A5C] placeholder:text-[#1B3A5C]/30 focus:border-[#1B3A5C]/30 focus:ring-0"
           />
         </div>
       )}
-      <div className="border border-slate-200 rounded-md bg-white overflow-hidden">
+      <div className="border border-[#1B3A5C]/8 rounded-2xl bg-[#FFFAF3] overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[720px]">
-            <TableHeader className="bg-slate-50">
-              <TableRow>
+            <TableHeader>
+              <TableRow className="border-b border-[#1B3A5C]/8 hover:bg-transparent">
                 {columns.map((col, i) => (
-                  <TableHead key={i} className="text-slate-600 font-semibold">{col.header}</TableHead>
+                  <TableHead key={i} className="text-[10px] uppercase tracking-[0.15em] font-medium text-[#1B3A5C]/35 h-11">{col.header}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-[#1B3A5C]/5">
               {filteredData.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center h-24 text-slate-500">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={columns.length} className="text-center h-24 text-[13px] text-[#1B3A5C]/35">
                     {emptyMessage}
                   </TableCell>
                 </TableRow>
               ) : (
                 paginatedData.map((row, i) => (
-                  <TableRow key={i} className="hover:bg-slate-50 transition-colors">
+                  <TableRow key={i} className="border-b border-[#1B3A5C]/5 last:border-0 hover:bg-[#FBF9F4] transition-colors">
                     {columns.map((col, j) => (
-                      <TableCell key={j} className="py-3">
+                      <TableCell key={j} className="py-3 text-sm text-[#1B3A5C]/80">
                         {col.cell ? col.cell(row) : (col.accessorKey ? String(row[col.accessorKey] || "") : "")}
                       </TableCell>
                     ))}
@@ -101,8 +101,8 @@ export function DataTable<T>({
         </div>
       </div>
       {filteredData.length > pageSize && (
-        <div className="flex flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <span>
+        <div className="flex flex-col gap-3 text-[12px] text-[#1B3A5C]/45 sm:flex-row sm:items-center sm:justify-between">
+          <span className="tabular-nums">
             Showing {resultStart}-{resultEnd} of {filteredData.length}
           </span>
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
@@ -110,19 +110,19 @@ export function DataTable<T>({
               type="button"
               onClick={() => setPage((value) => Math.max(1, value - 1))}
               disabled={currentPage <= 1}
-              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
+              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 text-xs font-medium text-[#1B3A5C]/60 transition-colors hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Previous
             </button>
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-medium text-[#1B3A5C]/35 tabular-nums">
               Page {currentPage} of {totalPages}
             </span>
             <button
               type="button"
               onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
               disabled={currentPage >= totalPages}
-              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 px-3 text-xs font-medium text-slate-600 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
+              className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 text-xs font-medium text-[#1B3A5C]/60 transition-colors hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
             >
               Next
               <ChevronRight className="h-3.5 w-3.5" />

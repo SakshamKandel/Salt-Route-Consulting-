@@ -55,19 +55,21 @@ export function LocationPicker({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-5 space-y-5">
+    <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFAF3] p-5 space-y-5">
       <div className="flex items-start gap-3">
-        <MapPin className="h-5 w-5 text-slate-500 mt-0.5 shrink-0" />
+        <div className="w-8 h-8 rounded-lg bg-[#1B3A5C]/5 flex items-center justify-center shrink-0">
+          <MapPin className="h-4 w-4 text-[#C9A96E]" />
+        </div>
         <div>
-          <h3 className="font-semibold text-navy">Location</h3>
-          <p className="text-sm text-slate-500">
+          <h3 className="text-[13px] font-semibold text-[#1B3A5C]">Location</h3>
+          <p className="text-[12px] text-[#1B3A5C]/45">
             Enter the city or area where the property is located.
           </p>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">City / Area</label>
+        <label className="text-[11px] font-medium text-[#1B3A5C]/60 uppercase tracking-[0.15em]">City / Area</label>
         <div className="flex gap-2">
           <Input
             list="lp-known-locations"
@@ -101,17 +103,17 @@ export function LocationPicker({
         </datalist>
         {knownLocations.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
-            <span className="text-xs text-slate-400 mr-1">Existing:</span>
+            <span className="text-xs text-[#1B3A5C]/35 mr-1">Existing:</span>
             {knownLocations.map((loc) => (
               <button
                 key={loc}
                 type="button"
                 onClick={() => { onLocationChange(loc); setCoords(null) }}
                 className={
-                  "text-xs px-2 py-0.5 rounded-full border transition-colors " +
+                  "text-xs px-2.5 py-0.5 rounded-full border transition-colors " +
                   (loc === location
-                    ? "bg-navy text-cream border-navy"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-navy")
+                    ? "bg-[#1B3A5C] text-[#FFFAF3] border-[#1B3A5C]"
+                    : "bg-[#FBF9F4] text-[#1B3A5C]/55 border-[#1B3A5C]/10 hover:border-[#1B3A5C]/30")
                 }
               >
                 {loc}
@@ -119,7 +121,7 @@ export function LocationPicker({
             ))}
           </div>
         )}
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-rose-500">{error}</p>}
       </div>
 
       <div className="flex items-center justify-between text-xs">
@@ -127,7 +129,7 @@ export function LocationPicker({
           href={mapSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-navy hover:underline"
+          className="inline-flex items-center gap-1 text-[#C9A96E] hover:underline"
         >
           Open Google Maps <ExternalLink className="h-3 w-3" />
         </a>
@@ -142,12 +144,12 @@ export function LocationPicker({
             <button
               type="button"
               onClick={() => setCoords(null)}
-              className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1"
+              className="text-xs text-[#1B3A5C]/35 hover:text-[#1B3A5C]/60 flex items-center gap-1 transition-colors"
             >
               <X className="h-3 w-3" /> Close
             </button>
           </div>
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="overflow-hidden rounded-lg border border-[#1B3A5C]/10">
             <iframe
               title="Map preview"
               src={embedUrl}
@@ -157,8 +159,8 @@ export function LocationPicker({
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-slate-200 bg-white p-4 text-center">
-          <p className="text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-[#1B3A5C]/15 bg-[#FBF9F4] p-4 text-center">
+          <p className="text-[13px] text-[#1B3A5C]/35">
             Click &ldquo;Preview Map&rdquo; to verify this location on a map.
           </p>
         </div>

@@ -21,8 +21,8 @@ const STATUS_BAR_STYLES: Record<string, string> = {
   PENDING: "bg-amber-400",
   CONFIRMED: "bg-emerald-500",
   CHECKED_IN: "bg-sky-500",
-  COMPLETED: "bg-blue-500",
-  CANCELLED: "bg-red-400",
+  COMPLETED: "bg-[#1B3A5C]",
+  CANCELLED: "bg-rose-400",
   NO_SHOW: "bg-orange-500",
 }
 
@@ -30,8 +30,8 @@ const STATUS_DOT_STYLES: Record<string, string> = {
   PENDING: "bg-amber-400",
   CONFIRMED: "bg-emerald-500",
   CHECKED_IN: "bg-sky-500",
-  COMPLETED: "bg-blue-500",
-  CANCELLED: "bg-red-400",
+  COMPLETED: "bg-[#1B3A5C]",
+  CANCELLED: "bg-rose-400",
   NO_SHOW: "bg-orange-500",
 }
 
@@ -88,26 +88,26 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
   const ticks = buildTicks(rangeStart, totalDays)
 
   return (
-    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <div className="flex flex-col gap-4 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-start sm:justify-between sm:px-5">
+    <section className="overflow-hidden rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFAF3]">
+      <div className="flex flex-col gap-4 border-b border-[#1B3A5C]/8 px-4 py-4 sm:flex-row sm:items-start sm:justify-between sm:px-5">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B3A5C]/5 text-[#1B3A5C]">
               <CalendarDays className="h-4 w-4" />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-800">Booking Gantt Chart</h2>
-              <p className="text-xs text-slate-500">
+              <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Stay Timeline</h2>
+              <p className="text-[11px] text-[#1B3A5C]/45">
                 Stay duration by property, room class, guest, and status.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {Object.entries(BOOKING_STATUS_LABELS).map(([status, label]) => (
-            <span key={status} className="inline-flex items-center gap-1.5 text-[10px] font-medium text-slate-500">
-              <span className={`h-2 w-2 rounded-full ${STATUS_DOT_STYLES[status] ?? "bg-slate-300"}`} />
+            <span key={status} className="inline-flex items-center gap-1.5 text-[10px] font-medium text-[#1B3A5C]/50">
+              <span className={`h-2 w-2 rounded-full ${STATUS_DOT_STYLES[status] ?? "bg-[#1B3A5C]/20"}`} />
               {label}
             </span>
           ))}
@@ -116,14 +116,15 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
 
       {items.length === 0 ? (
         <div className="px-5 py-12 text-center">
-          <p className="text-sm font-medium text-slate-500">No bookings to plot for the current filters.</p>
-          <p className="mt-1 text-xs text-slate-400">Change status, search, or date filters to see stay timelines.</p>
+          <CalendarDays className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/40">No bookings to plot for the current filters.</p>
+          <p className="mt-1 text-[11px] text-[#1B3A5C]/30">Change status, search, or date filters to see stay timelines.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <div className="min-w-[920px]">
-            <div className="grid grid-cols-[260px_1fr] border-b border-slate-100 bg-slate-50/70">
-              <div className="border-r border-slate-100 px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+            <div className="grid grid-cols-[260px_1fr] border-b border-[#1B3A5C]/8 bg-[#FBF9F4]">
+              <div className="border-r border-[#1B3A5C]/8 px-5 py-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/35">
                 Booking
               </div>
               <div className="relative px-4 py-3">
@@ -136,8 +137,8 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
                         className="absolute top-0 flex h-full -translate-x-1/2 flex-col items-center justify-between"
                         style={{ left: `${left}%` }}
                       >
-                        <span className="h-3 w-px bg-slate-200" />
-                        <span className="whitespace-nowrap text-[10px] font-medium text-slate-400">{formatDay(tick)}</span>
+                        <span className="h-3 w-px bg-[#1B3A5C]/15" />
+                        <span className="whitespace-nowrap text-[10px] font-medium text-[#1B3A5C]/35">{formatDay(tick)}</span>
                       </div>
                     )
                   })}
@@ -158,19 +159,19 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
                 return (
                   <div
                     key={booking.id}
-                    className="grid min-h-[72px] grid-cols-[260px_1fr] border-b border-slate-100 last:border-b-0"
+                    className="grid min-h-[72px] grid-cols-[260px_1fr] border-b border-[#1B3A5C]/5 last:border-b-0"
                   >
                     <Link
                       href={`/admin/bookings/${booking.id}`}
-                      className="flex min-w-0 flex-col justify-center border-r border-slate-100 px-5 py-3 transition-colors hover:bg-slate-50"
+                      className="flex min-w-0 flex-col justify-center border-r border-[#1B3A5C]/8 px-5 py-3 transition-colors hover:bg-[#FBF9F4]"
                     >
                       <span className="font-mono text-[11px] font-semibold tracking-wider text-[#1B3A5C]">
                         {booking.bookingCode}
                       </span>
-                      <span className="mt-1 truncate text-xs font-medium text-slate-700">
+                      <span className="mt-1 truncate text-xs font-medium text-[#1B3A5C]/80">
                         {booking.property?.title ?? "Untitled property"}
                       </span>
-                      <span className="mt-0.5 truncate text-[11px] text-slate-400">
+                      <span className="mt-0.5 truncate text-[11px] text-[#1B3A5C]/40">
                         {roomLabel} · {booking.guest?.name ?? "Guest"}
                       </span>
                     </Link>
@@ -182,7 +183,7 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
                           return (
                             <span
                               key={tick.toISOString()}
-                              className="absolute top-0 h-full w-px bg-slate-100"
+                              className="absolute top-0 h-full w-px bg-[#1B3A5C]/5"
                               style={{ left: `${left}%` }}
                             />
                           )
@@ -193,7 +194,7 @@ export function BookingGanttChart({ bookings }: { bookings: BookingGanttItem[] }
                         <Link
                           href={`/admin/bookings/${booking.id}`}
                           className={`absolute top-1/2 flex min-h-9 -translate-y-1/2 items-center overflow-hidden rounded-lg px-3 text-left text-white shadow-sm transition-transform hover:scale-[1.01] ${
-                            STATUS_BAR_STYLES[booking.status] ?? "bg-slate-400"
+                            STATUS_BAR_STYLES[booking.status] ?? "bg-[#1B3A5C]/40"
                           }`}
                           style={{ left: `${left}%`, width: `${width}%` }}
                           title={`${booking.bookingCode}: ${formatLong(booking.checkInDate)} to ${formatLong(booking.checkOutDate)}`}

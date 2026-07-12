@@ -1,14 +1,15 @@
 "use client"
 
 // ── Brochure booking bar ────────────────────────────────────────────────────
-// Slim, image-forward availability strip that sits directly under the hero.
-// Underline-only fields + a hairline text CTA — no boxes, borders, or shadows.
+// Availability strip docked into the hero's bottom edge: a contained cream
+// panel that overlaps the hero image with a decisive hairline seam. Underline
+// fields + a left-grow-underline text CTA — no boxes, shadows, or heavy chrome.
+// (The page's single high-weight primary CTA lives in the Reservation band.)
 
 import { ArrowRight } from "lucide-react"
-import { GoldRule } from "@/components/public/property/primitives"
 
 const FIELD_LABEL =
-  "text-[9px] uppercase tracking-[0.16em] sm:tracking-[0.25em] font-sans font-bold text-charcoal/40"
+  "text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.25em] font-sans font-bold text-charcoal/40"
 const FIELD_CONTROL =
   "bg-transparent border-0 border-b border-charcoal/20 focus:border-gold focus:outline-none px-0 py-1.5 text-[13px] text-charcoal w-full min-w-0"
 
@@ -36,8 +37,8 @@ export function BrochureBookingBar({
   const guestOptions = Array.from({ length: Math.max(maxGuests, 1) }, (_, i) => i + 1)
 
   return (
-    <section className="w-full bg-white">
-      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 py-6">
+    <section className="relative z-10 -mt-14 md:-mt-16 w-full px-5 sm:px-6 md:px-12">
+      <div className="max-w-screen-xl mx-auto bg-cream border border-charcoal/10 border-t-gold/60 px-6 md:px-10 py-6 md:py-7">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-4 md:gap-8 items-end">
           <label className="block space-y-2">
             <span className={FIELD_LABEL}>Check In</span>
@@ -76,16 +77,19 @@ export function BrochureBookingBar({
             </select>
           </label>
 
-          <div className="space-y-2">
+          <div className="group space-y-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={onSearch}
-              className="group inline-flex w-full items-center justify-between gap-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.18em] text-charcoal sm:w-auto sm:justify-start sm:tracking-[0.3em]"
+              className="inline-flex w-full items-center justify-between gap-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.18em] text-charcoal sm:w-auto sm:justify-start sm:tracking-[0.28em]"
             >
               Check Availability
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
-            <GoldRule />
+            {/* Left-grow gold underline over a resting hairline. */}
+            <div className="relative h-px w-full sm:w-44 bg-charcoal/15 overflow-hidden">
+              <span className="absolute inset-0 origin-left scale-x-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-x-100" />
+            </div>
           </div>
         </div>
       </div>

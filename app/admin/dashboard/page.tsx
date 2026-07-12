@@ -52,31 +52,30 @@ export default async function AdminDashboard({
   const prevId = allProperties.length > 1 ? allProperties[(selectedIndex - 1 + allProperties.length) % allProperties.length].id : null
   const nextId = allProperties.length > 1 ? allProperties[(selectedIndex + 1) % allProperties.length].id : null
 
-  const featured = selectedId
-    ? await prisma.property.findUnique({
-        where: { id: selectedId },
-        include: {
-          images: { orderBy: [{ isBanner: "desc" }, { isPrimary: "desc" }, { order: "asc" }] },
-          owner: { select: { name: true, phone: true } },
-          roomTypes: { where: { active: true }, select: { totalUnits: true } },
-          _count: { select: { bookings: true, reviews: true } },
-        },
-      })
-    : null
-
-  const fpUnits = featured
-    ? (featured.roomTypes.length > 0
-        ? featured.roomTypes.reduce((s, r) => s + r.totalUnits, 0)
-        : Math.max(1, featured.totalUnits))
-    : 0
-
   const [
+    featured,
     propertyCount, activeProperties, guestCount, ownerCount,
     pendingBookings, newInquiries, avgRating,
     revenueMonth, pendingValueMonth, upcomingValue, cancelledMonth,
     fpBookedAgg, fpUpcoming, fpPending, fpConfirmed, fpCheckedIn, fpCompleted,
     requests, attention, arrivals, sparkData,
   ] = await Promise.all([
+    selectedId
+      ? prisma.property.findUnique({
+          where: { id: selectedId },
+          select: {
+            id: true, title: true, location: true, propertyType: true, totalUnits: true,
+            images: {
+              orderBy: [{ isBanner: "desc" }, { isPrimary: "desc" }, { order: "asc" }],
+              select: { url: true, isPrimary: true, isBanner: true },
+            },
+            owner: { select: { name: true, phone: true } },
+            roomTypes: { where: { active: true }, select: { totalUnits: true } },
+            _count: { select: { bookings: true } },
+          },
+        })
+      : Promise.resolve(null),
+
     prisma.property.count(),
     prisma.property.count({ where: { status: "ACTIVE" } }),
     prisma.user.count({ where: { role: "GUEST" } }),
@@ -92,14 +91,14 @@ export default async function AdminDashboard({
     prisma.booking.aggregate({ _sum: { totalPrice: true }, where: { status: "CANCELLED", createdAt: { gte: monthStart } } }),
 
     // Featured property occupancy + pipeline
-    featured
-      ? prisma.booking.aggregate({ _sum: { units: true }, where: { propertyId: featured.id, status: { in: ACTIVE_BOOKING_STATUSES }, checkIn: { lte: now }, checkOut: { gte: now } } })
+    selectedId
+      ? prisma.booking.aggregate({ _sum: { units: true }, where: { propertyId: selectedId, status: { in: ACTIVE_BOOKING_STATUSES }, checkIn: { lte: now }, checkOut: { gte: now } } })
       : Promise.resolve({ _sum: { units: 0 } }),
-    featured ? prisma.booking.count({ where: { propertyId: featured.id, status: { in: ACTIVE_BOOKING_STATUSES }, checkIn: { gte: now, lte: in30 } } }) : Promise.resolve(0),
-    featured ? prisma.booking.count({ where: { propertyId: featured.id, status: "PENDING" } }) : Promise.resolve(0),
-    featured ? prisma.booking.count({ where: { propertyId: featured.id, status: "CONFIRMED" } }) : Promise.resolve(0),
-    featured ? prisma.booking.count({ where: { propertyId: featured.id, status: "CHECKED_IN" } }) : Promise.resolve(0),
-    featured ? prisma.booking.count({ where: { propertyId: featured.id, status: "COMPLETED" } }) : Promise.resolve(0),
+    selectedId ? prisma.booking.count({ where: { propertyId: selectedId, status: { in: ACTIVE_BOOKING_STATUSES }, checkIn: { gte: now, lte: in30 } } }) : Promise.resolve(0),
+    selectedId ? prisma.booking.count({ where: { propertyId: selectedId, status: "PENDING" } }) : Promise.resolve(0),
+    selectedId ? prisma.booking.count({ where: { propertyId: selectedId, status: "CONFIRMED" } }) : Promise.resolve(0),
+    selectedId ? prisma.booking.count({ where: { propertyId: selectedId, status: "CHECKED_IN" } }) : Promise.resolve(0),
+    selectedId ? prisma.booking.count({ where: { propertyId: selectedId, status: "COMPLETED" } }) : Promise.resolve(0),
 
     // New requests (latest inquiries)
     prisma.inquiry.findMany({ take: 3, orderBy: { createdAt: "desc" }, select: { id: true, name: true, subject: true, message: true, createdAt: true } }),
@@ -109,7 +108,8 @@ export default async function AdminDashboard({
       where: { status: "PENDING" },
       take: 4,
       orderBy: { createdAt: "asc" },
-      include: {
+      select: {
+        id: true, bookingCode: true, createdAt: true,
         property: { select: { title: true } },
         roomType: { select: { name: true } },
         guest: { select: { name: true, email: true, image: true } },
@@ -121,14 +121,29 @@ export default async function AdminDashboard({
       where: { status: { in: ["CONFIRMED", "PENDING"] }, checkIn: { gte: now } },
       take: 4,
       orderBy: { checkIn: "asc" },
-      include: {
-        property: { select: { title: true, images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }] } } },
+      select: {
+        id: true, checkIn: true, checkOut: true, totalPrice: true,
+        property: {
+          select: {
+            title: true,
+            images: {
+              orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
+              select: { url: true, isPrimary: true },
+            },
+          },
+        },
         roomType: { select: { name: true } },
       },
     }),
 
     bookingsByDay(fourteenAgo, now),
   ])
+
+  const fpUnits = featured
+    ? (featured.roomTypes.length > 0
+        ? featured.roomTypes.reduce((s, r) => s + r.totalUnits, 0)
+        : Math.max(1, featured.totalUnits))
+    : 0
 
   const booked = fpBookedAgg._sum.units ?? 0
   const available = Math.max(0, fpUnits - booked)
@@ -154,7 +169,7 @@ export default async function AdminDashboard({
   ]
 
   const navy = "text-[#1B3A5C]"
-  const card = "bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-2xl"
+  const card = "bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl"
 
   return (
     <div className="pb-12 space-y-6">

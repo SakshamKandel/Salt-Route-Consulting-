@@ -5,22 +5,8 @@ import { useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
-import { LuxuryButton } from "@/components/ui/luxury-button"
-import { Mail, Phone, MapPin, Send } from "lucide-react"
-
-function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
-}
+import { Send } from "lucide-react"
+import { CurtainImage, EASE, KenBurns, Reveal, RevealText } from "@/components/public/motion"
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false)
@@ -56,126 +42,141 @@ export default function ContactPage() {
 
   return (
     <div className="bg-background text-charcoal min-h-screen">
-      {/* HERO SECTION - Elegant & Focused */}
-      <section className="relative h-[60svh] w-full flex items-center justify-center pt-20 bg-charcoal">
+      {/* ── HERO ── */}
+      <section className="relative h-[60svh] min-h-[480px] md:h-[68vh] w-full flex items-center justify-center overflow-hidden pt-20 bg-charcoal">
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/luxury_himalayan_retreat_exterior_1777124225845.png"
-            alt="Reach Salt Route Corp"
-            fill
-            className="object-cover opacity-50"
-            priority
-          />
+          <KenBurns className="h-full w-full">
+            <Image
+              src="/luxury_himalayan_retreat_exterior_1777124225845.png"
+              alt="Reach Salt Route Corp"
+              fill
+              className="object-cover opacity-50"
+              priority
+            />
+          </KenBurns>
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
         </div>
 
         <div className="relative z-10 text-center px-5 sm:px-6">
-          <FadeUp>
-            <p className="text-[10px] uppercase tracking-[0.24em] sm:tracking-[0.6em] text-white/80 font-sans mb-6 md:mb-8 font-medium">Thoughtful Enquiry</p>
-            <h1 className="font-display text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-wide leading-none mb-8 md:mb-10 font-normal">
-              Conversation.
-            </h1>
+          <Reveal delay={0.2} y={16}>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-white/80 font-sans mb-6 md:mb-8 font-medium">Thoughtful Enquiry</p>
+          </Reveal>
+          <RevealText
+            as="h1"
+            lines={["Conversation."]}
+            delay={0.35}
+            clipPad="1.5em"
+            className="font-script text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-normal leading-[2] pb-2 mb-6 md:mb-8"
+          />
+          <Reveal delay={0.65} y={16}>
             <div className="flex max-w-full items-center justify-center gap-3 text-white/40 sm:gap-6">
-                <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
-                <p className="text-[9px] uppercase tracking-[0.16em] font-sans sm:tracking-[0.4em]">Reach Out to {siteConfig.name}</p>
-                <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
+              <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
+              <p className="text-[10px] uppercase tracking-[0.16em] font-sans sm:tracking-[0.28em]">Reach Out to {siteConfig.name}</p>
+              <span className="hidden w-12 h-[1px] bg-white/20 min-[380px]:block" />
             </div>
-          </FadeUp>
+          </Reveal>
         </div>
       </section>
 
-      {/* CONTACT GRID - COMPACT LUXURY */}
-      <section className="py-12 md:py-16 bg-white border-b border-charcoal/5">
-        <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-            
-            {/* Info Column */}
-            <div className="lg:col-span-5 space-y-16">
-              <FadeUp>
+      {/* ── CONTACT — asymmetric info + form (42/58) ── */}
+      <section className="py-10 md:py-16">
+        <div className="max-w-screen-xl mx-auto px-5 sm:px-8 md:px-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-12">
+
+            {/* Info column */}
+            <div className="lg:col-span-5 space-y-10">
+              <Reveal>
                 <div className="space-y-6">
-                  <p className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.4em] text-charcoal/40 font-medium">Direct Contact</p>
-                  <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-charcoal tracking-wide leading-[1.1]">
-                    We&apos;d Love to<br/>Hear From You.
+                  <p className="type-eyebrow">Direct Contact</p>
+                  <h2 className="type-h2">
+                    We&apos;d Love to<br />Hear From You.
                   </h2>
                 </div>
-              </FadeUp>
+              </Reveal>
 
-              <div className="space-y-10">
-                <FadeUp delay={0.1}>
-                  <div className="group flex items-start gap-6 border-t border-charcoal/10 pt-10">
-                    <div className="w-10 h-10 border border-charcoal/10 flex items-center justify-center shrink-0 group-hover:bg-charcoal group-hover:text-white transition-all duration-500">
-                      <Mail className="w-4 h-4" strokeWidth={1.5} />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Email</p>
-                      <a href="mailto:connect@saltroutecorp.com" className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors block">
-                        connect@saltroutecorp.com
-                      </a>
-                    </div>
-                  </div>
-                </FadeUp>
+              {/* Hairline-divided definition list */}
+              <dl>
+                <Reveal delay={0.05} className="border-t border-charcoal/10 py-8">
+                  <dt className="type-eyebrow">Email</dt>
+                  <dd className="mt-3">
+                    <a href="mailto:connect@saltroutecorp.com" className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors duration-500 block">
+                      connect@saltroutecorp.com
+                    </a>
+                  </dd>
+                </Reveal>
 
-                <FadeUp delay={0.2}>
-                  <div className="group flex items-start gap-6 border-t border-charcoal/10 pt-10">
-                    <div className="w-10 h-10 border border-charcoal/10 flex items-center justify-center shrink-0 group-hover:bg-charcoal group-hover:text-white transition-all duration-500">
-                      <Phone className="w-4 h-4" strokeWidth={1.5} />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Phone</p>
-                      <a href={siteConfig.contact.phoneHref} className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors block">
-                        {siteConfig.contact.phone}
-                      </a>
-                    </div>
-                  </div>
-                </FadeUp>
+                <Reveal delay={0.1} className="border-t border-charcoal/10 py-8">
+                  <dt className="type-eyebrow">Phone</dt>
+                  <dd className="mt-3">
+                    <a href={siteConfig.contact.phoneHref} className="font-display text-xl sm:text-2xl text-charcoal hover:text-gold transition-colors duration-500 block">
+                      {siteConfig.contact.phone}
+                    </a>
+                  </dd>
+                </Reveal>
 
-                <FadeUp delay={0.3}>
-                  <div className="group flex items-start gap-6 border-t border-charcoal/10 pt-10">
-                    <div className="w-10 h-10 border border-charcoal/10 flex items-center justify-center shrink-0 group-hover:bg-charcoal group-hover:text-white transition-all duration-500">
-                      <MapPin className="w-4 h-4" strokeWidth={1.5} />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.3em] font-bold text-charcoal/40">Location</p>
-                      <p className="font-display text-xl sm:text-2xl text-charcoal leading-snug">
-                        {siteConfig.contact.addressFull}
-                      </p>
-                    </div>
-                  </div>
-                </FadeUp>
-              </div>
+                <Reveal delay={0.15} className="border-t border-charcoal/10 py-8">
+                  <dt className="type-eyebrow">Location</dt>
+                  <dd className="mt-3">
+                    <p className="font-display text-xl sm:text-2xl text-charcoal leading-snug">
+                      {siteConfig.contact.addressFull}
+                    </p>
+                  </dd>
+                </Reveal>
+              </dl>
 
-              <FadeUp delay={0.4} className="pt-10">
-                <p className="font-sans text-[14px] text-charcoal/50 leading-relaxed font-light italic">
-                  &ldquo;For property enquiries, booking requests, or partnership conversations, we typically respond within one business day.&rdquo;
+              <Reveal delay={0.1}>
+                <span className="block w-10 h-px bg-gold/50 mb-6" aria-hidden />
+                <p className="font-sans text-sm text-charcoal/50 leading-[1.8] font-light max-w-sm">
+                  For property enquiries, booking requests, or partnership conversations, we typically respond within one business day.
                 </p>
-              </FadeUp>
+              </Reveal>
+
+              {/* Location / imagery anchor */}
+              <Reveal delay={0.15}>
+                <CurtainImage className="aspect-[3/4] w-full max-w-sm">
+                  <Image
+                    src="/luxury_nepalese_interior_details_1777124245155.png"
+                    alt="Interior detail at a Salt Route property"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 30vw"
+                  />
+                </CurtainImage>
+                <p className="type-caption mt-4">Kathmandu · Nepal</p>
+              </Reveal>
             </div>
 
-            {/* Form Column */}
-            <div className="lg:col-span-7">
-              <FadeUp className="bg-[#FBF9F4] border border-charcoal/10 p-5 sm:p-8 md:p-16 h-full">
+            {/* Form column */}
+            <div className="lg:col-span-7 lg:border-l lg:border-charcoal/10 lg:pl-12 xl:pl-20">
+              <Reveal delay={0.1} className="h-full">
                 {sent ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="h-full flex flex-col justify-center items-center text-center space-y-8"
+                    transition={{ duration: 0.6, ease: EASE.outLuxe }}
+                    className="h-full flex flex-col justify-center items-center text-center space-y-8 py-16"
                   >
-                    <div className="w-16 h-16 border border-gold flex items-center justify-center rounded-full">
-                       <Send className="w-6 h-6 text-gold" />
-                    </div>
+                    <Send className="w-6 h-6 text-gold" strokeWidth={1.5} />
                     <div className="space-y-4">
-                      <h3 className="font-display text-4xl text-charcoal tracking-wide">Message Received.</h3>
+                      <h3 className="font-display text-3xl md:text-4xl text-charcoal tracking-[-0.01em]">Message Received.</h3>
                       <p className="font-sans text-base text-charcoal/60 leading-relaxed font-light">
                         Thank you for reaching out. The {siteConfig.name} team will contact you shortly.
                       </p>
                     </div>
-                    <LuxuryButton onClick={() => setSent(false)}>Send Another</LuxuryButton>
+                    <button
+                      type="button"
+                      onClick={() => setSent(false)}
+                      className="group relative inline-block text-[10px] uppercase tracking-[0.24em] text-charcoal/60 hover:text-charcoal transition-colors duration-300"
+                    >
+                      Send Another
+                      <span className="absolute left-0 -bottom-1 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-500 ease-out-quart group-hover:scale-x-100" aria-hidden />
+                    </button>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-9 md:space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-9 md:gap-12">
                       <div className="space-y-3 group">
-                        <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Your Name</label>
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-charcoal/40 group-focus-within:text-charcoal transition-colors">Your Name</label>
                         <input
                           name="name"
                           required
@@ -184,7 +185,7 @@ export default function ContactPage() {
                         />
                       </div>
                       <div className="space-y-3 group">
-                        <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Email Address</label>
+                        <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-charcoal/40 group-focus-within:text-charcoal transition-colors">Email Address</label>
                         <input
                           name="email"
                           type="email"
@@ -196,7 +197,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-3 group">
-                      <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Subject</label>
+                      <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-charcoal/40 group-focus-within:text-charcoal transition-colors">Subject</label>
                       <input
                         name="subject"
                         className="w-full bg-transparent border-b border-charcoal/10 pb-4 font-sans text-lg text-charcoal placeholder:text-charcoal/20 focus:outline-none focus:border-charcoal transition-colors font-light"
@@ -205,7 +206,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-3 group">
-                      <label className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.4em] font-bold text-charcoal/40 group-focus-within:text-charcoal transition-colors">Message</label>
+                      <label className="text-[10px] uppercase tracking-[0.24em] font-medium text-charcoal/40 group-focus-within:text-charcoal transition-colors">Message</label>
                       <textarea
                         name="message"
                         required
@@ -216,13 +217,18 @@ export default function ContactPage() {
                     </div>
 
                     <div className="pt-6">
-                      <LuxuryButton type="submit" disabled={loading} className="w-full">
-                        {loading ? "Sending..." : "Send Enquiry"}
-                      </LuxuryButton>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="btn-primary group relative w-full overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="absolute inset-0 origin-left scale-x-0 bg-navy-dark transition-transform duration-300 ease-in-out group-hover:scale-x-100" aria-hidden />
+                        <span className="relative z-10">{loading ? "Sending..." : "Send Enquiry"}</span>
+                      </button>
                     </div>
                   </form>
                 )}
-              </FadeUp>
+              </Reveal>
             </div>
 
           </div>

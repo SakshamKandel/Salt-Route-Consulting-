@@ -29,15 +29,16 @@ export default async function PropertyCalendarPage({
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
+      <div className="flex items-center gap-3">
+        <Button asChild variant="ghost" size="icon" className="rounded-lg text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5">
           <Link href={`/admin/properties/${id}`}>
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </Link>
         </Button>
         <div>
-          <h2 className="text-3xl font-display text-navy">Manage Calendar</h2>
-          <p className="text-slate-500">{property.title} — block dates to prevent bookings.</p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Portfolio</p>
+          <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Manage Calendar</h2>
+          <p className="text-[13px] text-[#1B3A5C]/45 mt-1">{property.title} — block dates to prevent bookings.</p>
         </div>
       </div>
 

@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </Link>
         </div>
         
-        <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 p-10 md:p-14">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 p-10 md:p-14">
           {children}
         </div>
 

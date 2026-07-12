@@ -35,7 +35,7 @@ export function OwnerReplyForm({ inquiryId }: { inquiryId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-5 border-t border-[#1B3A5C]/8">
-      <label className="text-[9px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium block">
+      <label className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/40 font-medium block">
         Your Note
       </label>
       <textarea
@@ -43,19 +43,19 @@ export function OwnerReplyForm({ inquiryId }: { inquiryId: string }) {
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Write your note to the Salt Route team..."
         rows={3}
-        className="w-full bg-[#F9F7F2] text-[#1B3A5C] text-[13px] px-4 py-3 border border-[#1B3A5C]/10 rounded-lg outline-none resize-none transition-colors placeholder:text-[#1B3A5C]/30 focus:border-[#C9A96E] focus:ring-3 focus:ring-[#C9A96E]/20 font-light leading-[1.8]"
+        className="w-full bg-[#FBF9F4] text-[#1B3A5C] text-[13px] px-4 py-2.5 border border-[#1B3A5C]/10 rounded-lg outline-none resize-none transition-colors placeholder:text-[#1B3A5C]/30 focus:border-[#C9A96E] focus:ring-3 focus:ring-[#C9A96E]/20 leading-relaxed"
       />
       {error && (
-        <p className="text-[10px] text-[#B84040] uppercase tracking-[0.3em] font-medium">
+        <p className="text-[12px] text-[#B84040] font-medium">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={isPending || !message.trim()}
-        className="px-6 py-2.5 text-[9px] uppercase tracking-[0.35em] font-medium text-[#FFFDF8] bg-[#1B3A5C] hover:bg-[#2A4F7A] rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {isPending ? "Sending..." : "Send Reply"}
+        {isPending ? "Sending..." : "Send reply"}
       </button>
     </form>
   )

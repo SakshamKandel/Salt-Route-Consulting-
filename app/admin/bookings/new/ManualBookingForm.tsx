@@ -72,7 +72,7 @@ export function ManualBookingForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">{error}</div>
+        <div className="bg-rose-50 border border-rose-200/60 rounded-xl p-3 text-[13px] text-[#B84040]">{error}</div>
       )}
 
       <div>
@@ -82,7 +82,7 @@ export function ManualBookingForm({
           value={guestId}
           onChange={(e) => setGuestId(e.target.value)}
           required
-          className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="mt-1 flex h-10 w-full rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 py-2 text-sm text-[#1B3A5C] focus:border-[#1B3A5C]/30 focus:outline-none"
         >
           <option value="">Select a guest...</option>
           {guests.map((g) => (
@@ -100,7 +100,7 @@ export function ManualBookingForm({
           value={propertyId}
           onChange={(e) => { setPropertyId(e.target.value); setRoomTypeId(""); setUnitCount(1) }}
           required
-          className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="mt-1 flex h-10 w-full rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 py-2 text-sm text-[#1B3A5C] focus:border-[#1B3A5C]/30 focus:outline-none"
         >
           <option value="">Select a property...</option>
           {properties.map((p) => (
@@ -119,7 +119,7 @@ export function ManualBookingForm({
             value={roomTypeId}
             onChange={(e) => setRoomTypeId(e.target.value)}
             required
-            className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="mt-1 flex h-10 w-full rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 py-2 text-sm text-[#1B3A5C] focus:border-[#1B3A5C]/30 focus:outline-none"
           >
             <option value="">Select a room class...</option>
             {roomTypes.map((rt) => (
@@ -186,9 +186,9 @@ export function ManualBookingForm({
       </div>
 
       {totalPrice && (
-        <div className="bg-navy/5 rounded-lg p-4 flex justify-between items-center">
-          <span className="text-slate-600 text-sm">{nights} night{nights !== 1 ? "s" : ""} x {formatNpr(nightlyPrice)}{selectedRoomType ? ` (${selectedRoomType.name})` : ""}</span>
-          <span className="text-xl font-bold text-navy">{formatNpr(totalPrice)}</span>
+        <div className="bg-[#1B3A5C]/5 border border-[#1B3A5C]/8 rounded-xl p-4 flex justify-between items-center">
+          <span className="text-[#1B3A5C]/60 text-[12px]">{nights} night{nights !== 1 ? "s" : ""} x {formatNpr(nightlyPrice)}{selectedRoomType ? ` (${selectedRoomType.name})` : ""}</span>
+          <span className="text-xl font-semibold text-[#1B3A5C] tabular-nums">{formatNpr(totalPrice)}</span>
         </div>
       )}
 
@@ -207,12 +207,12 @@ export function ManualBookingForm({
       <Button
         type="submit"
         disabled={isPending || !guestId || !propertyId || !checkIn || !checkOut || (roomTypes.length > 0 && !roomTypeId)}
-        className="w-full bg-navy text-cream hover:bg-navy/90"
+        className="w-full rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]"
       >
         {isPending ? "Creating booking..." : "Create Confirmed Booking"}
       </Button>
 
-      <p className="text-xs text-slate-500 text-center">
+      <p className="text-[11px] text-[#1B3A5C]/40 text-center">
         This booking will be created with status <strong>CONFIRMED</strong> and a confirmation email sent to the guest.
       </p>
     </form>

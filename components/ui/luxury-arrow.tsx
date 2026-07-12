@@ -22,7 +22,7 @@ export function LuxuryArrow({ className, color = "charcoal" }: LuxuryArrowProps)
         viewBox="0 0 6 10" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className={cn("transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-2", colorMap[color].split(' ')[1])}
+        className={cn("transition-transform duration-300 ease-out-quart group-hover:translate-x-1.5", colorMap[color].split(' ')[1])}
       >
         <path d="M1 9L5 5L1 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>

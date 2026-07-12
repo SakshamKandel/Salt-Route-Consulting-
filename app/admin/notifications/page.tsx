@@ -30,8 +30,9 @@ export default async function AdminNotificationsPage({
       
       {/* ━━━ HEADER ━━━ */}
       <div>
-        <h2 className="text-3xl font-display text-navy tracking-wide">Notifications</h2>
-        <p className="text-navy/40 text-xs uppercase tracking-wider font-medium mt-1">
+        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Inbox</p>
+        <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Notifications</h2>
+        <p className="text-[12px] text-[#1B3A5C]/45 mt-1">
           Unread work across bookings, inquiries, reviews, and owner requests.
         </p>
       </div>

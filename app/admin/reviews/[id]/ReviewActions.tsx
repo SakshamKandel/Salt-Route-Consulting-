@@ -9,7 +9,6 @@ import type { ReviewStatus } from "@prisma/client"
 
 type ReviewActionRow = {
   id: string
-  isApproved: boolean
   status: ReviewStatus
 }
 
@@ -47,19 +46,19 @@ export function ReviewActions({ review }: { review: ReviewActionRow }) {
   }
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       {review.status !== "PUBLISHED" && (
-        <Button onClick={handleApprove} disabled={isPending} className="bg-green-600 hover:bg-green-700 text-white">
-          <Check className="w-4 h-4 mr-2" /> Publish
+        <Button onClick={handleApprove} disabled={isPending} className="h-9 rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]">
+          <Check className="w-3.5 h-3.5 mr-2" /> Publish
         </Button>
       )}
       {review.status !== "HIDDEN" && (
-        <Button variant="outline" onClick={handleHide} disabled={isPending}>
-          <EyeOff className="w-4 h-4 mr-2" /> Hide
+        <Button variant="outline" onClick={handleHide} disabled={isPending} className="h-9 rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 bg-transparent">
+          <EyeOff className="w-3.5 h-3.5 mr-2" /> Hide
         </Button>
       )}
-      <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
-        <Trash2 className="w-4 h-4 mr-2" /> Delete
+      <Button onClick={handleDelete} disabled={isPending} className="h-9 rounded-lg bg-[#B84040] text-white text-[12px] font-medium hover:bg-[#B84040]/85">
+        <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
       </Button>
     </div>
   )

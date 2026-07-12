@@ -22,16 +22,16 @@ export function LiveStatCard({ title, initial, icon, eventType, description, hre
   const Icon = ICONS[icon]
 
   const inner = (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors">
-      <div className="flex items-start justify-between mb-3">
-        <Icon className="w-4 h-4 text-slate-400" />
+    <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-5 hover:border-[#1B3A5C]/15 transition-colors">
+      <div className="flex items-start justify-between mb-4">
+        <Icon className="w-4 h-4 text-[#1B3A5C]/30" />
         <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 rounded-full px-2 py-0.5">Live</span>
       </div>
-      <p className="text-2xl font-bold text-slate-800 tabular-nums">
+      <p className="text-2xl font-semibold text-[#1B3A5C] tabular-nums leading-tight">
         <LiveCounter initial={initial} eventType={eventType} />
       </p>
-      <p className="text-sm text-slate-500 mt-0.5">{title}</p>
-      {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
+      <p className="text-[11px] text-[#1B3A5C]/45 mt-1 uppercase tracking-[0.2em] font-medium">{title}</p>
+      {description && <p className="text-xs text-[#1B3A5C]/35 mt-1.5">{description}</p>}
     </div>
   )
 

@@ -135,46 +135,49 @@ export function ImageManager({
     <div className="space-y-6">
       {message && (
         <div
-          className={`rounded-lg p-3 text-sm ${
+          className={`rounded-xl p-3 text-[13px] ${
             message.type === "success"
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+              ? "bg-emerald-50 border border-emerald-200/60 text-emerald-700"
+              : "bg-rose-50 border border-rose-200/60 text-[#B84040]"
           }`}
         >
           {message.text}
         </div>
       )}
 
-      <div className="bg-white border rounded-xl p-5 space-y-5">
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-5 space-y-5">
         <div>
-          <h3 className="font-semibold text-navy">Upload New Media{images.length > 0 ? ` · ${images.length} on file` : ""}</h3>
-          <p className="text-sm text-slate-500">Photos and videos have separate uploaders. Click upload again to add more.</p>
+          <p className="text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em] mb-1">Upload</p>
+          <h3 className="text-[15px] font-semibold text-[#1B3A5C]">New Media{images.length > 0 ? ` · ${images.length} on file` : ""}</h3>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-0.5">Photos and videos have separate uploaders. Click upload again to add more.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg border border-slate-200 p-4 space-y-2">
+          <div className="rounded-xl border border-[#1B3A5C]/8 p-4 space-y-2">
             <div>
-              <h4 className="text-sm font-semibold text-navy">Photos</h4>
-              <p className="text-xs text-slate-500">JPG, PNG, WEBP, AVIF. Up to 30 at once.</p>
+              <h4 className="text-sm font-semibold text-[#1B3A5C]">Photos</h4>
+              <p className="text-xs text-[#1B3A5C]/45">JPG, PNG, WEBP, AVIF. Up to 30 at once.</p>
             </div>
             <MediaUploader onAdd={handleAddMedia} multiple maxFiles={30} kind="image" />
           </div>
 
-          <div className="rounded-lg border border-slate-200 p-4 space-y-2">
+          <div className="rounded-xl border border-[#1B3A5C]/8 p-4 space-y-2">
             <div>
-              <h4 className="text-sm font-semibold text-navy">Videos</h4>
-              <p className="text-xs text-slate-500">MP4, WEBM, MOV. Up to 200 MB per video.</p>
+              <h4 className="text-sm font-semibold text-[#1B3A5C]">Videos</h4>
+              <p className="text-xs text-[#1B3A5C]/45">MP4, WEBM, MOV. Up to 200 MB per video.</p>
             </div>
             <MediaUploader onAdd={handleAddMedia} multiple maxFiles={10} kind="video" />
           </div>
         </div>
 
-        {pending === "upload" && <p className="text-xs text-slate-500">Saving...</p>}
+        {pending === "upload" && <p className="text-xs text-[#1B3A5C]/45">Saving...</p>}
       </div>
 
       {images.length === 0 ? (
-        <div className="bg-white border rounded-xl p-12 text-center">
-          <p className="text-slate-400">No media yet. Upload the first photo or video above.</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-12 text-center">
+          <ImageIcon className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/40">No media yet.</p>
+          <p className="text-[11px] text-[#1B3A5C]/30 mt-1">Upload the first photo or video above.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,8 +187,8 @@ export function ImageManager({
               return (
             <div
               key={img.id}
-              className={`bg-white border rounded-xl overflow-hidden shadow-sm ${
-                img.isPrimary || img.isBanner ? "ring-2 ring-navy" : ""
+              className={`bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden ${
+                img.isPrimary || img.isBanner ? "ring-2 ring-[#C9A96E]/60" : ""
               }`}
             >
               <div className="relative aspect-video">
@@ -207,17 +210,17 @@ export function ImageManager({
                 )}
                 <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                   {img.isPrimary && (
-                    <span className="bg-navy text-cream text-xs px-2 py-0.5 rounded-full font-medium">
+                    <span className="bg-[#1B3A5C] text-[#FFFAF3] text-[9px] uppercase tracking-[0.15em] px-2.5 py-1 rounded-full font-semibold">
                       Thumbnail
                     </span>
                   )}
                   {img.isBanner && (
-                    <span className="bg-gold text-charcoal text-xs px-2 py-0.5 rounded-full font-medium">
+                    <span className="bg-[#C9A96E] text-[#1B3A5C] text-[9px] uppercase tracking-[0.15em] px-2.5 py-1 rounded-full font-semibold">
                       Banner
                     </span>
                   )}
                 </div>
-                <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy">
+                <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium text-[#1B3A5C]">
                   {isVideo ? <Film className="h-3 w-3" /> : <ImageIcon className="h-3 w-3" />}
                   {isVideo ? "Video" : "Image"}
                 </span>
@@ -229,10 +232,10 @@ export function ImageManager({
                       type="button"
                       variant={img.isPrimary ? "default" : "outline"}
                       size="sm"
-                      className={`h-8 text-xs ${
+                      className={`h-8 text-xs rounded-lg ${
                         img.isPrimary
-                          ? "bg-navy text-cream hover:bg-navy/90"
-                          : "border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                          ? "bg-[#1B3A5C] text-[#FFFAF3] hover:bg-[#2A4F7A]"
+                          : "border-[#1B3A5C]/15 text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 hover:bg-transparent"
                       }`}
                       onClick={() => handleSetPrimary(img.id)}
                       disabled={img.isPrimary || pending === img.id + "-primary"}
@@ -245,10 +248,10 @@ export function ImageManager({
                       type="button"
                       variant={img.isBanner ? "default" : "outline"}
                       size="sm"
-                      className={`h-8 text-xs ${
+                      className={`h-8 text-xs rounded-lg ${
                         img.isBanner
-                          ? "bg-gold text-charcoal hover:bg-gold/90"
-                          : "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                          ? "bg-[#C9A96E] text-[#1B3A5C] hover:bg-[#C9A96E]/85"
+                          : "border-[#C9A96E]/40 text-[#C9A96E] hover:bg-[#C9A96E]/10 hover:text-[#1B3A5C] hover:border-[#C9A96E]/60"
                       }`}
                       onClick={() => handleSetBanner(img.id)}
                       disabled={img.isBanner || pending === img.id + "-banner"}
@@ -286,7 +289,7 @@ export function ImageManager({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="h-8 w-8 text-[#B84040] hover:text-[#B84040] hover:bg-rose-50"
                     onClick={() => handleDelete(img.id)}
                     disabled={pending === img.id}
                     title="Delete media"

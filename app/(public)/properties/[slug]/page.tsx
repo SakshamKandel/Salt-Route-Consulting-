@@ -3,7 +3,10 @@ import { auth } from "@/auth"
 import { notFound } from "next/navigation"
 import PropertyDetailClient from "@/components/public/PropertyDetailClient"
 
-export const dynamic = "force-dynamic"
+// auth() reads cookies → this route is already dynamic.
+// Removing force-dynamic lets Next.js cache the property data fetch
+// and apply Partial Prerendering for the static brochure shell.
+export const revalidate = 3600
 
 type Props = {
   params: Promise<{ slug: string }>

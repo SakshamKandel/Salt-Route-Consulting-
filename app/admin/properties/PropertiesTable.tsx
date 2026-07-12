@@ -37,9 +37,10 @@ type PropertyRow = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
-  DRAFT: "bg-amber-50 text-amber-600 border-amber-200/50",
-  ARCHIVED: "bg-red-50 text-red-500 border-red-200/50",
+  ACTIVE: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  DRAFT: "bg-amber-50 text-amber-600 border-amber-200/60",
+  PENDING: "bg-sky-50 text-sky-600 border-sky-200/60",
+  ARCHIVED: "bg-rose-50 text-rose-600 border-rose-200/60",
 }
 
 interface PropertiesTableProps {
@@ -96,14 +97,14 @@ export function PropertiesTable({
       id: "title",
       header: "Title",
       cell: ({ row }) => (
-        <span className="font-medium text-navy text-xs">{row.original.title}</span>
+        <span className="font-medium text-[#1B3A5C] text-xs">{row.original.title}</span>
       ),
     },
     {
       id: "location",
       header: "Location",
       cell: ({ row }) => (
-        <span className="text-navy/60 text-xs font-light">{row.original.location}</span>
+        <span className="text-[#1B3A5C]/60 text-xs">{row.original.location}</span>
       ),
     },
     {
@@ -111,8 +112,8 @@ export function PropertiesTable({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-            STATUS_STYLES[row.original.status] || "bg-slate-50 text-slate-500 border-slate-200"
+          className={`inline-flex rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${
+            STATUS_STYLES[row.original.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10"
           }`}
         >
           {row.original.status}
@@ -123,14 +124,14 @@ export function PropertiesTable({
       id: "pricePerNight",
       header: "Price/Night",
       cell: ({ row }) => (
-        <span className="font-semibold text-navy/80 text-xs">{formatNpr(row.original.pricePerNight)}</span>
+        <span className="font-semibold text-[#1B3A5C]/80 text-xs tabular-nums">{formatNpr(row.original.pricePerNight)}</span>
       ),
     },
     {
       id: "createdAt",
       header: "Added",
       cell: ({ row }) => (
-        <span className="text-[10px] text-navy/40">
+        <span className="text-[10px] text-[#1B3A5C]/40 tabular-nums">
           {new Date(row.original.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -143,27 +144,27 @@ export function PropertiesTable({
         const p = row.original
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-gold/10 hover:text-gold transition-colors focus-visible:outline-none">
+            <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#1B3A5C]/40 hover:bg-[#C9A96E]/10 hover:text-[#C9A96E] transition-colors focus-visible:outline-none">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-xl border-[#1B3A5C]/10 bg-[#FFFDF8] p-1.5 text-[#1B3A5C]">
-              <DropdownMenuLabel className="text-[10px] text-navy/30 uppercase tracking-widest font-semibold px-2.5 py-1.5">Manage</DropdownMenuLabel>
-              <DropdownMenuItem className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-navy/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}`)}>
+            <DropdownMenuContent align="end" className="rounded-xl border-[#1B3A5C]/10 bg-[#FFFAF3] p-1.5 text-[#1B3A5C]">
+              <DropdownMenuLabel className="text-[10px] text-[#1B3A5C]/30 uppercase tracking-[0.2em] font-medium px-2.5 py-1.5">Manage</DropdownMenuLabel>
+              <DropdownMenuItem className="rounded-lg text-xs px-2.5 py-2 hover:bg-[#1B3A5C]/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}`)}>
                 <Edit className="w-3.5 h-3.5 opacity-60" /> View Details
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-navy/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/edit`)}>
+              <DropdownMenuItem className="rounded-lg text-xs px-2.5 py-2 hover:bg-[#1B3A5C]/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/edit`)}>
                 <Edit className="w-3.5 h-3.5 opacity-60" /> Edit Property
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-navy/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/images`)}>
+              <DropdownMenuItem className="rounded-lg text-xs px-2.5 py-2 hover:bg-[#1B3A5C]/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/images`)}>
                 <ImageIcon className="w-3.5 h-3.5 opacity-60" /> Manage Media
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-navy/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/calendar`)}>
+              <DropdownMenuItem className="rounded-lg text-xs px-2.5 py-2 hover:bg-[#1B3A5C]/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/properties/${p.id}/calendar`)}>
                 <Calendar className="w-3.5 h-3.5 opacity-60" /> Manage Calendar
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1 bg-navy/5" />
+              <DropdownMenuSeparator className="my-1 bg-[#1B3A5C]/5" />
               <DropdownMenuItem
-                className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-rose-50 text-rose-600 focus:text-rose-600 cursor-pointer flex items-center gap-2"
+                className="rounded-lg text-xs px-2.5 py-2 hover:bg-rose-50 text-rose-600 focus:text-rose-600 cursor-pointer flex items-center gap-2"
                 onClick={() => handleDelete(p)}
                 disabled={pendingDeleteId === p.id}
               >

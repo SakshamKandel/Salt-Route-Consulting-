@@ -23,14 +23,13 @@ import { toDateOnlyString } from "@/lib/booking-dates"
 
 import { BrochureHero } from "./property/BrochureHero"
 import { BrochureBookingBar } from "./property/BrochureBookingBar"
+import { BrochureOverviewStrip } from "./property/BrochureOverviewStrip"
 import { BrochureStory } from "./property/BrochureStory"
 import { BrochureSections } from "./property/BrochureSections"
 import { BrochurePhotoBand } from "./property/BrochurePhotoBand"
 import { BrochureRooms } from "./property/BrochureRooms"
-import { BrochureFeatureStrip } from "./property/BrochureFeatureStrip"
 import { BrochureVideoBand } from "./property/BrochureVideoBand"
 import { BrochureFacilities } from "./property/BrochureFacilities"
-import { BrochureStayDetails } from "./property/BrochureStayDetails"
 import { BrochureLocation } from "./property/BrochureLocation"
 import { BrochureReviews } from "./property/BrochureReviews"
 import { BrochureReservation } from "./property/BrochureReservation"
@@ -116,7 +115,20 @@ export default function PropertyDetailClient({
     scrollTo("reservation")
   }
 
-  const reservationImage = galleryImages[2]?.url || galleryImages[0]?.url || heroImage
+  // ── De-duplicated image plan: no photo repeats within two viewports. ──
+  // Story gets the first gallery image that isn't the hero; the PhotoBand
+  // starts after both; the Reservation band closes with a photo not shown in
+  // the band. Every fallback keeps the original precedence chain intact.
+  const storyAccent = galleryImages.find((img) => img.url !== heroImage)?.url ?? null
+  const photoBandImages = galleryImages.filter(
+    (img) => img.url !== heroImage && img.url !== storyAccent,
+  )
+  const photoBandMax = photoBandImages.length >= 7 ? 5 : 3
+  const reservationImage =
+    photoBandImages[photoBandImages.length - 1]?.url ||
+    galleryImages[2]?.url ||
+    galleryImages[0]?.url ||
+    heroImage
 
   return (
     <PreviewContext.Provider value={previewMode}>
@@ -150,16 +162,35 @@ export default function PropertyDetailClient({
           />
         )}
 
+        {/* Overview facts strip (#stay-details) — stayDetails overrides win. */}
+        <BrochureOverviewStrip
+          stayDetails={stayDetailRows}
+          bedrooms={property.bedrooms}
+          bathrooms={property.bathrooms}
+          maxGuests={property.maxGuests}
+          totalUnitsDisplay={totalUnitsDisplay}
+          checkInTime={property.checkInTime}
+          checkOutTime={property.checkOutTime}
+          propertyType={property.propertyType}
+          rules={property.rules}
+        />
+
         <BrochureStory
           story={property.story}
           description={property.description}
-          accentImage={galleryImages[0]?.url ?? null}
+          accentImage={storyAccent}
+          highlights={property.highlights}
+          highlightsTitle={property.highlightsTitle}
         />
 
         {/* The admin-editable Story Sections — the spine of the brochure. */}
         <BrochureSections sections={sections} />
 
-        <BrochurePhotoBand images={galleryImages} max={3} onViewAll={() => scrollTo("full-gallery")} />
+        <BrochurePhotoBand
+          images={photoBandImages}
+          max={photoBandMax}
+          onViewAll={() => scrollTo("full-gallery")}
+        />
 
         <BrochureRooms
           roomTypes={roomTypes}
@@ -169,32 +200,16 @@ export default function PropertyDetailClient({
           onReserve={handleReserve}
         />
 
-        <BrochureFeatureStrip
-          whatToExpect={whatToExpect}
-          highlights={property.highlights}
-          highlightsTitle={property.highlightsTitle}
-          featureIcons={property.featureIcons}
-        />
-
-        <BrochureVideoBand videoUrl={videoUrl} videoPoster={videoPoster} title={property.title} />
-
+        {/* ONE organized facilities moment (highlights live in Story now). */}
         <BrochureFacilities
+          whatToExpect={whatToExpect}
           services={services}
           amenities={property.amenities}
           amenitiesTitle={property.amenitiesTitle}
           featureIcons={property.featureIcons}
         />
 
-        <BrochureStayDetails
-          stayDetails={stayDetailRows}
-          bedrooms={property.bedrooms}
-          bathrooms={property.bathrooms}
-          maxGuests={property.maxGuests}
-          totalUnitsDisplay={totalUnitsDisplay}
-          checkInTime={property.checkInTime}
-          checkOutTime={property.checkOutTime}
-          rules={property.rules}
-        />
+        <BrochureVideoBand videoUrl={videoUrl} videoPoster={videoPoster} title={property.title} />
 
         <BrochureLocation
           location={property.location}

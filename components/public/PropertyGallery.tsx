@@ -10,7 +10,16 @@ type GalleryImage = {
   alt?: string | null
 }
 
-export function PropertyGallery({ images }: { images: GalleryImage[] }) {
+// Masonry tiles cycle mixed editorial ratios (portrait / square / 4:5).
+const MASONRY_ASPECTS = ["aspect-[3/4]", "aspect-square", "aspect-[4/5]"] as const
+
+export function PropertyGallery({
+  images,
+  layout = "carousel",
+}: {
+  images: GalleryImage[]
+  layout?: "carousel" | "masonry"
+}) {
   const [active, setActive] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
@@ -61,6 +70,31 @@ export function PropertyGallery({ images }: { images: GalleryImage[] }) {
 
   return (
     <>
+      {layout === "masonry" ? (
+        /* Masonry columns with mixed ratios; tiles open the shared lightbox. */
+        <div className="columns-2 md:columns-3 gap-1">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              type="button"
+              onClick={() => openLightbox(i)}
+              aria-label={`View image ${i + 1}`}
+              className={`group relative mb-1 block w-full overflow-hidden break-inside-avoid ${
+                MASONRY_ASPECTS[i % MASONRY_ASPECTS.length]
+              }`}
+            >
+              <Image
+                src={img.url}
+                alt={img.alt || `Property image ${i + 1}`}
+                fill
+                sizes="(max-width: 768px) 50vw, 33vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              />
+            </button>
+          ))}
+        </div>
+      ) : (
+      <>
       {/* Inline carousel with prev/next + thumbnails */}
       <div className="relative w-full">
         <div
@@ -139,6 +173,8 @@ export function PropertyGallery({ images }: { images: GalleryImage[] }) {
             </button>
           ))}
         </div>
+      )}
+      </>
       )}
 
       {/* Lightbox */}

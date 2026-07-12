@@ -5,6 +5,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { formatNpr } from "@/lib/currency"
 import { getPrimaryImageUrl } from "@/lib/property-media"
+import { Bath, BedDouble, Check, ChevronRight, Edit3, ImageOff, MapPin, Star, Users } from "lucide-react"
+
+const PROPERTY_STATUS_CHIP: Record<string, string> = {
+  ACTIVE:   "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  DRAFT:    "bg-amber-50 text-amber-600 border-amber-200/60",
+  INACTIVE: "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10",
+}
 
 export default async function OwnerPropertyDetailPage({
   params,
@@ -54,62 +61,88 @@ export default async function OwnerPropertyDetailPage({
         ).toFixed(1)
       : null
 
+  const statusChip = PROPERTY_STATUS_CHIP[property.status] ?? PROPERTY_STATUS_CHIP.INACTIVE
+
   const performanceMetrics = [
-    { label: "Total Bookings", value: stats._count.id },
-    { label: "Published Reviews", value: property._count.reviews },
-    { label: "Guest Rating", value: avgRating ? `${avgRating} / 5` : "-" },
-    {
-      label: "Lifetime Revenue",
-      value: formatNpr(stats._sum.totalPrice),
-    },
+    { label: "Total bookings",    value: stats._count.id },
+    { label: "Published reviews", value: property._count.reviews },
+    { label: "Guest rating",      value: avgRating ? `${avgRating} / 5` : "—" },
+    { label: "Lifetime revenue",  value: formatNpr(stats._sum.totalPrice) },
   ]
 
   return (
-    <div className="space-y-14">
+    <div className="pb-12 space-y-8">
 
-      {/* ─── BREADCRUMB ─── */}
-      <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.35em]">
-        <Link href="/owner/properties" className="text-[#1B3A5C]/30 hover:text-gold transition-colors duration-500">
-              Properties
+      {/* ── BREADCRUMB ── */}
+      <div className="flex items-center gap-1.5 text-[11px] font-medium">
+        <Link href="/owner/properties" className="text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors">
+          Properties
         </Link>
-        <span className="text-[#1B3A5C]/20">·</span>
-        <span className="text-[#1B3A5C]/50">{property.title}</span>
+        <ChevronRight className="h-3 w-3 text-[#1B3A5C]/25" />
+        <span className="text-[#1B3A5C]/70 truncate">{property.title}</span>
       </div>
 
-      {/* ─── IMAGE GALLERY ─── */}
+      {/* ── HEADER ROW ── */}
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <p className="flex items-center gap-1.5 text-[10px] text-[#C9A96E] uppercase tracking-[0.2em] font-medium mb-1">
+            <MapPin className="h-3 w-3" />
+            {property.location}
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            {property.title}
+          </h1>
+          <div className="flex items-center gap-4 mt-2 text-[11px] text-[#1B3A5C]/45">
+            <span className="inline-flex items-center gap-1.5">
+              <BedDouble className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+              {property.bedrooms} bedroom{property.bedrooms !== 1 ? "s" : ""}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Bath className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+              {property.bathrooms} bathroom{property.bathrooms !== 1 ? "s" : ""}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5 text-[#1B3A5C]/30" />
+              {property.maxGuests} guests
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[9px] font-semibold border uppercase tracking-[0.15em] ${statusChip}`}>
+            {property.status}
+          </span>
+          <Link
+            href={`/owner/request-edit?propertyId=${property.id}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors"
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+            Request update
+          </Link>
+        </div>
+      </div>
+
+      {/* ── IMAGE GALLERY ── */}
       {galleryImages.length > 0 ? (
-        <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[420px] md:h-[520px]">
-          {/* Hero image - spans 2 cols and 2 rows */}
-          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#E8E4DC]">
+        <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden">
+          {/* Hero image */}
+          <div className="col-span-4 md:col-span-2 row-span-2 relative overflow-hidden bg-[#1B3A5C]/5">
             {heroImage && (
               <Image
                 src={heroImage}
                 alt={property.title}
                 fill
-                className="object-cover transition-transform duration-[2s] hover:scale-105"
+                className="object-cover transition-transform duration-700 hover:scale-105"
                 priority
               />
             )}
-            {/* Status badge */}
-            <div className="absolute top-5 left-5">
-              <span
-                className="px-4 py-2 text-[8.5px] uppercase tracking-[0.3em] font-medium"
-                style={{
-                  background: "#0C1F33",
-                  border: "1px solid rgba(201,169,110,0.25)",
-                  color: "#C9A96E",
-                }}
-              >
-                {property.status}
-              </span>
-            </div>
           </div>
 
           {/* Secondary images */}
           {galleryImages.slice(1, 5).map((img, i) => (
             <div
               key={img.id}
-              className={`hidden md:block relative overflow-hidden bg-[#E8E4DC] ${
+              className={`hidden md:block relative overflow-hidden bg-[#1B3A5C]/5 ${
                 i >= 2 ? "row-start-2" : ""
               }`}
             >
@@ -117,7 +150,7 @@ export default async function OwnerPropertyDetailPage({
                 src={img.url}
                 alt={`${property.title} ${i + 2}`}
                 fill
-                className="object-cover transition-transform duration-[2s] hover:scale-105"
+                className="object-cover transition-transform duration-700 hover:scale-105"
               />
             </div>
           ))}
@@ -127,114 +160,62 @@ export default async function OwnerPropertyDetailPage({
             (_, i) => (
               <div
                 key={`ph-${i}`}
-                className="hidden md:block bg-[#E8E4DC]"
-                style={{ border: "1px solid rgba(201,169,110,0.06)" }}
-              />
+                className="hidden md:flex items-center justify-center bg-[#FFFAF3] border border-[#1B3A5C]/8"
+              >
+                <ImageOff className="h-4 w-4 text-[#1B3A5C]/10" />
+              </div>
             )
           )}
         </div>
       ) : (
-        <div
-          className="h-64 flex items-center justify-center"
-          style={{ border: "1px solid rgba(201,169,110,0.08)", background: "#F5F1E8" }}
-        >
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30">
-            No images uploaded
-          </p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl h-56 flex flex-col items-center justify-center">
+          <ImageOff className="h-6 w-6 text-[#1B3A5C]/15 mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No images uploaded yet</p>
         </div>
       )}
 
-      {/* ─── HEADER ROW ─── */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-4">
-            <span className="w-8 h-px bg-gold/35" />
-            <p className="text-[9px] uppercase tracking-[0.4em] text-gold/60">
-              {property.location}
-            </p>
+      {/* ── PERFORMANCE METRICS ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {performanceMetrics.map((m) => (
+          <div key={m.label} className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5">
+            <p className="text-xl sm:text-2xl font-semibold text-[#1B3A5C] leading-tight tabular-nums break-words">{m.value}</p>
+            <p className="text-[10px] text-[#1B3A5C]/40 mt-1 uppercase tracking-[0.2em] font-medium">{m.label}</p>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
-            {property.title}
-          </h1>
-          <div className="flex items-center gap-6 text-[9.5px] uppercase tracking-[0.25em] text-[#1B3A5C]/40">
-            <span>{property.bedrooms} Bedroom{property.bedrooms !== 1 ? "s" : ""}</span>
-            <span className="w-1 h-1 rounded-full bg-[#1B3A5C]/20" />
-            <span>{property.bathrooms} Bathroom{property.bathrooms !== 1 ? "s" : ""}</span>
-            <span className="w-1 h-1 rounded-full bg-[#1B3A5C]/20" />
-            <span>{property.maxGuests} Guests</span>
-          </div>
-        </div>
-
-        <Link
-          href={`/owner/request-edit?propertyId=${property.id}`}
-          className="inline-flex items-center gap-3 px-7 py-4 text-[9px] uppercase tracking-[0.35em] font-medium text-gold transition-all duration-500 hover:bg-gold/8 shrink-0"
-          style={{ border: "1px solid rgba(201,169,110,0.3)" }}
-        >
-              Request Update
-          <span className="text-gold/60">→</span>
-        </Link>
+        ))}
       </div>
 
-      {/* ─── PERFORMANCE METRICS ─── */}
-      <div>
-        <div className="flex items-center gap-4 mb-8">
-          <span className="w-8 h-px bg-gold/30" />
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
-            Stay Results
-          </h2>
-        </div>
-        <div
-          className="grid grid-cols-2 md:grid-cols-4 gap-px"
-          style={{ background: "rgba(201,169,110,0.06)" }}
-        >
-          {performanceMetrics.map((m) => (
-            <div
-              key={m.label}
-              className="bg-[#FFFDF8] px-7 py-8 group hover:bg-[#F5F1E8] transition-colors duration-700"
-            >
-              <p className="text-[8.5px] uppercase tracking-[0.4em] text-[#1B3A5C]/30 mb-2 font-medium">
-                {m.label}
-              </p>
-              <p className="font-display text-2xl md:text-3xl text-gold/75 group-hover:text-gold transition-colors duration-700">
-                {m.value}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-start">
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-
-        {/* ─── DESCRIPTION + DETAILS ─── */}
-        <div className="lg:col-span-2 space-y-12">
+        {/* ── DESCRIPTION + HIGHLIGHTS ── */}
+        <div className="lg:col-span-2 space-y-4 lg:space-y-5">
 
           {/* Description */}
-          <div>
-            <div className="flex items-center gap-4 mb-6">
-              <span className="w-8 h-px bg-gold/30" />
-              <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5">
+              <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
                 Property Story
               </h2>
             </div>
-            <p className="text-[13px] text-[#1B3A5C]/50 leading-[1.95] font-light">
-              {property.description}
-            </p>
+            <div className="px-5 py-4">
+              <p className="text-[13px] text-[#1B3A5C]/60 leading-relaxed">
+                {property.description}
+              </p>
+            </div>
           </div>
 
           {/* Highlights */}
           {property.highlights.length > 0 && (
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <span className="w-8 h-px bg-gold/30" />
-                <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
-                  Additional Features
+            <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5">
+                <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
+                  Highlights
                 </h2>
               </div>
-              <ul className="space-y-2.5">
+              <ul className="px-5 py-4 space-y-2.5">
                 {property.highlights.map((h, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="w-1 h-1 rounded-full bg-gold/50 mt-2 shrink-0" />
-                    <span className="text-[12.5px] text-[#1B3A5C]/50 font-light leading-relaxed">
+                  <li key={i} className="flex items-start gap-2.5">
+                    <Check className="h-3.5 w-3.5 text-[#C9A96E] mt-0.5 shrink-0" />
+                    <span className="text-[13px] text-[#1B3A5C]/60 leading-relaxed">
                       {h}
                     </span>
                   </li>
@@ -244,72 +225,64 @@ export default async function OwnerPropertyDetailPage({
           )}
         </div>
 
-        {/* ─── AMENITIES ─── */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-4 mb-2">
-            <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
+        {/* ── AMENITIES ── */}
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[#1B3A5C]/5">
+            <h2 className="text-[10px] uppercase tracking-[0.2em] text-[#1B3A5C]/45 font-medium">
               Amenities
             </h2>
           </div>
           {property.amenities.length > 0 ? (
-            <ul className="space-y-2.5">
+            <ul className="px-5 py-4 space-y-2.5">
               {property.amenities.map((a, i) => (
-                <li
-                  key={i}
-                  className="flex items-center gap-3 text-[11.5px] text-[#1B3A5C]/50 font-light"
-                >
-                  <span className="w-4 h-px bg-gold/30 shrink-0" />
+                <li key={i} className="flex items-center gap-2.5 text-[12px] text-[#1B3A5C]/60">
+                  <span className="w-1 h-1 rounded-full bg-[#C9A96E]/60 shrink-0" />
                   {a}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-[11px] text-[#1B3A5C]/30 italic">No amenities listed.</p>
+            <p className="px-5 py-4 text-[12px] text-[#1B3A5C]/35">No amenities listed yet.</p>
           )}
         </div>
       </div>
 
-      {/* ─── GUEST REVIEWS ─── */}
+      {/* ── GUEST REVIEWS ── */}
       {property.reviews.length > 0 && (
-        <div className="space-y-8">
-          <div className="flex items-center gap-4">
-            <span className="w-8 h-px bg-gold/30" />
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium">
-              Guest Reviews
-            </h2>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30 ml-2">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-[15px] font-semibold text-[#1B3A5C]">Guest reviews</h2>
+            <span className="text-[11px] text-[#1B3A5C]/35 tabular-nums">
               ({property._count.reviews} total)
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {property.reviews.map((review) => (
               <div
                 key={review.id}
-                className="p-7 space-y-4"
-                style={{ border: "1px solid rgba(201,169,110,0.07)", background: "rgba(201,169,110,0.02)" }}
+                className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-5 space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] text-[#1B3A5C]/60 font-medium tracking-wide">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[12px] font-semibold text-[#1B3A5C] truncate">
                     {review.guest.name ?? "Anonymous Guest"}
                   </p>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5 shrink-0">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <span
+                      <Star
                         key={i}
-                        className={`text-[10px] ${
-                          i < review.rating ? "text-gold/80" : "text-[#1B3A5C]/15"
+                        className={`h-3 w-3 ${
+                          i < review.rating
+                            ? "text-[#C9A96E] fill-[#C9A96E]"
+                            : "text-[#1B3A5C]/15"
                         }`}
-                      >
-                        ★
-                      </span>
+                      />
                     ))}
                   </div>
                 </div>
-                <p className="text-[12px] text-[#1B3A5C]/40 leading-[1.8] font-light italic">
+                <p className="text-[12px] text-[#1B3A5C]/55 leading-relaxed">
                   &ldquo;{review.comment}&rdquo;
                 </p>
-                <p className="text-[9px] uppercase tracking-[0.3em] text-[#1B3A5C]/30">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35 font-medium">
                   {new Date(review.createdAt).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "long",
@@ -321,24 +294,19 @@ export default async function OwnerPropertyDetailPage({
         </div>
       )}
 
-      {/* ─── FOOTER CTA ─── */}
-      <div
-        className="flex flex-col sm:flex-row items-center justify-between gap-6 px-10 py-8"
-        style={{ border: "1px solid rgba(201,169,110,0.1)", background: "rgba(201,169,110,0.025)" }}
-      >
+      {/* ── FOOTER CTA ── */}
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/40 font-medium mb-1">
-            Need to update this property?
-          </p>
-          <p className="text-[12px] text-[#1B3A5C]/30 font-light">
-            Send property, calendar, feature, amenity, pricing, or photo updates to the Salt Route team.
+          <p className="text-[13px] font-semibold text-[#1B3A5C]">Need to update this property?</p>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-0.5">
+            Send calendar, feature, amenity, pricing, or photo updates to the Salt Route team.
           </p>
         </div>
         <Link
           href={`/owner/request-edit?propertyId=${property.id}`}
-          className="shrink-0 px-8 py-4 text-[9px] uppercase tracking-[0.35em] font-medium text-[#0C1F33] bg-gold hover:bg-gold/90 transition-all duration-500"
+          className="shrink-0 self-start sm:self-auto inline-flex items-center px-4 py-2 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[12px] font-medium hover:bg-[#2A4F7A] transition-colors"
         >
-          Request Update
+          Request update
         </Link>
       </div>
     </div>

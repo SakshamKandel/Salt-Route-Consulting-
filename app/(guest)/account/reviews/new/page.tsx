@@ -3,12 +3,10 @@ import { useState, use } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { createReviewAction } from "./actions"
-import { Star, ImagePlus, X } from "lucide-react"
+import { Star, ImagePlus, X, AlertCircle, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary"
@@ -40,10 +38,16 @@ export default function NewReviewPage({
 
   if (!bookingId) {
     return (
-      <div className="space-y-6 max-w-2xl text-center">
-        <h1 className="text-3xl font-display text-navy">Review Not Ready</h1>
-        <p className="text-gray-500">Please choose a completed stay before writing a review.</p>
-        <Button asChild><Link href="/account/bookings">Back to Bookings</Link></Button>
+      <div className="max-w-2xl mx-auto bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center space-y-4">
+        <Star className="h-8 w-8 text-[#1B3A5C]/15 mx-auto" strokeWidth={1.5} />
+        <h1 className="font-display text-2xl text-[#1B3A5C] tracking-wide">Review Not Ready</h1>
+        <p className="text-[13px] text-[#1B3A5C]/60">Please choose a completed stay before writing a review.</p>
+        <Link
+          href="/account/bookings"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors"
+        >
+          Back to Reservations <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
     )
   }
@@ -52,9 +56,9 @@ export default function NewReviewPage({
     setIsPending(true)
     setError(null)
     setSuccess(null)
-    
+
     const res = await createReviewAction({ ...data, images: uploadedImages })
-    
+
     if (res?.error) {
       setError(res.error)
     } else if (res?.success) {
@@ -65,119 +69,147 @@ export default function NewReviewPage({
 
   if (success) {
     return (
-      <div className="space-y-6 max-w-2xl text-center">
-        <h1 className="text-3xl font-display text-navy">Thank You!</h1>
-        <p className="text-green-600">{success}</p>
-        <Button asChild><Link href="/account/reviews">View My Reviews</Link></Button>
+      <div className="max-w-2xl mx-auto bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center space-y-4">
+        <div className="w-12 h-px bg-[#C9A96E] mx-auto" />
+        <h1 className="font-display text-2xl text-[#1B3A5C] tracking-wide">Thank You</h1>
+        <p className="text-[13px] text-emerald-600">{success}</p>
+        <Link
+          href="/account/reviews"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors"
+        >
+          View My Reviews <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-display text-navy">Share Your Stay</h1>
-      
-      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+    <div className="space-y-8 max-w-2xl">
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Guest Reflections
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">Share Your Stay</h1>
+        <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+          Tell future guests what made your stay memorable.
+        </p>
+      </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="rating"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Rating</FormLabel>
-                <FormControl>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => field.onChange(star)}
-                        className="focus:outline-none"
-                      >
-                        <Star 
-                          size={32} 
-                          fill={star <= field.value ? "#D4AF37" : "none"} 
-                          color={star <= field.value ? "#D4AF37" : "#CBD5E1"} 
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      {error && (
+        <div className="flex items-center gap-3 p-4 rounded-lg border border-rose-200/60 bg-rose-50 text-rose-600 text-[13px]">
+          <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+          {error}
+        </div>
+      )}
 
-          <FormField
-            control={form.control}
-            name="comment"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Your Reflection</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Tell us about your stay..." 
-                    className="min-h-[150px]" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium">Rating</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => field.onChange(star)}
+                          className="focus:outline-none transition-transform hover:scale-110"
+                        >
+                          <Star
+                            size={28}
+                            strokeWidth={1.5}
+                            fill={star <= field.value ? "#C9A96E" : "none"}
+                            color={star <= field.value ? "#C9A96E" : "rgba(27,58,92,0.15)"}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-rose-600 text-[13px]" />
+                </FormItem>
+              )}
+            />
 
-          {/* Photo upload */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-slate-700">Photos <span className="text-slate-400 font-normal">(optional, up to 5)</span></p>
-            <div className="flex flex-wrap gap-3">
-              {uploadedImages.map((img, i) => (
-                <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-slate-200 group">
-                  <Image src={img.url} alt={`Review photo ${i + 1}`} fill className="object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setUploadedImages((prev) => prev.filter((_, idx) => idx !== i))}
-                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X size={18} className="text-white" />
-                  </button>
-                </div>
-              ))}
-              {uploadedImages.length < 5 && (
-                <CldUploadWidget
-                  signatureEndpoint="/api/upload/signature"
-                  options={{ multiple: true, maxFiles: 5 - uploadedImages.length, folder: "salt-route/reviews" }}
-                  onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                    const info = typeof result.info === "object" ? result.info : undefined
-                    if (info?.secure_url) {
-                      setUploadedImages((prev) => [
-                        ...prev,
-                        { url: info.secure_url, publicId: info.public_id },
-                      ])
-                    }
-                  }}
-                >
-                  {({ open }) => (
+            <FormField
+              control={form.control}
+              name="comment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium">Your Reflection</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Tell us about your stay..."
+                      className="min-h-[150px] bg-[#FBF9F4] border-[#1B3A5C]/10 rounded-lg text-[15px] leading-relaxed text-[#1B3A5C] px-4 py-3 placeholder:text-[#1B3A5C]/40 focus-visible:border-[#1B3A5C]/30 focus-visible:ring-0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-rose-600 text-[13px]" />
+                </FormItem>
+              )}
+            />
+
+            {/* Photo upload */}
+            <div className="space-y-3">
+              <p className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium">
+                Photos <span className="text-[#1B3A5C]/55 normal-case tracking-normal font-normal">(optional, up to 5)</span>
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {uploadedImages.map((img, i) => (
+                  <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-[#1B3A5C]/8 group">
+                    <Image src={img.url} alt={`Review photo ${i + 1}`} fill className="object-cover" />
                     <button
                       type="button"
-                      onClick={() => open()}
-                      className="w-24 h-24 flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 rounded-lg text-slate-400 hover:border-navy/40 hover:text-navy transition-colors"
+                      onClick={() => setUploadedImages((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="absolute inset-0 bg-[#1B3A5C]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <ImagePlus size={20} />
-                      <span className="text-[10px] uppercase tracking-wider">Add</span>
+                      <X size={18} className="text-[#FFFAF3]" />
                     </button>
-                  )}
-                </CldUploadWidget>
-              )}
+                  </div>
+                ))}
+                {uploadedImages.length < 5 && (
+                  <CldUploadWidget
+                    signatureEndpoint="/api/upload/signature"
+                    options={{ multiple: true, maxFiles: 5 - uploadedImages.length, folder: "salt-route/reviews" }}
+                    onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                      const info = typeof result.info === "object" ? result.info : undefined
+                      if (info?.secure_url) {
+                        setUploadedImages((prev) => [
+                          ...prev,
+                          { url: info.secure_url, publicId: info.public_id },
+                        ])
+                      }
+                    }}
+                  >
+                    {({ open }) => (
+                      <button
+                        type="button"
+                        onClick={() => open()}
+                        className="w-24 h-24 flex flex-col items-center justify-center gap-1 border-2 border-dashed border-[#1B3A5C]/15 rounded-lg text-[#1B3A5C]/55 hover:border-[#C9A96E]/60 hover:text-[#C9A96E] transition-colors"
+                      >
+                        <ImagePlus size={20} strokeWidth={1.5} />
+                        <span className="text-[11px] uppercase tracking-[0.15em] font-medium">Add</span>
+                      </button>
+                    )}
+                  </CldUploadWidget>
+                )}
+              </div>
             </div>
-          </div>
 
-          <Button type="submit" className="bg-navy text-cream" disabled={isPending}>
-            {isPending ? "Sharing..." : "Share Review"}
-          </Button>
-        </form>
-      </Form>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex items-center px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {isPending ? "Sharing..." : "Share Review"}
+            </button>
+          </form>
+        </Form>
+      </div>
     </div>
   )
 }

@@ -32,15 +32,15 @@ export function PropertyFormPreview({ property }: { property: PropertyDetail }) 
   const preview = <PropertyDetailClient property={property} wishlistItem={false} previewMode />
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/70">
-        <p className="text-xs font-semibold text-navy">Live Page Preview</p>
-        <p className="text-[10px] text-slate-400">updates as you type</p>
+    <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFAF3] overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1B3A5C]/8 bg-[#FBF9F4]">
+        <p className="text-[10px] font-medium text-[#1B3A5C]/50 uppercase tracking-[0.2em]">Live Page Preview</p>
+        <p className="text-[10px] text-[#1B3A5C]/30">updates as you type</p>
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
             onClick={() => setDevice("desktop")}
-            className={`p-1.5 rounded ${device === "desktop" ? "bg-navy text-white" : "text-slate-400 hover:bg-slate-200"}`}
+            className={`p-1.5 rounded-md transition-colors ${device === "desktop" ? "bg-[#1B3A5C] text-[#FFFAF3]" : "text-[#1B3A5C]/35 hover:bg-[#1B3A5C]/8"}`}
             title="Desktop"
           >
             <Monitor className="w-3.5 h-3.5" />
@@ -48,7 +48,7 @@ export function PropertyFormPreview({ property }: { property: PropertyDetail }) 
           <button
             type="button"
             onClick={() => setDevice("mobile")}
-            className={`p-1.5 rounded ${device === "mobile" ? "bg-navy text-white" : "text-slate-400 hover:bg-slate-200"}`}
+            className={`p-1.5 rounded-md transition-colors ${device === "mobile" ? "bg-[#1B3A5C] text-[#FFFAF3]" : "text-[#1B3A5C]/35 hover:bg-[#1B3A5C]/8"}`}
             title="Mobile"
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -57,7 +57,7 @@ export function PropertyFormPreview({ property }: { property: PropertyDetail }) 
       </div>
 
       <div
-        className="relative bg-slate-100 overflow-y-auto overflow-x-hidden"
+        className="relative bg-[#1B3A5C]/5 overflow-y-auto overflow-x-hidden"
         style={{ height: "calc(100vh - 170px)", minHeight: 460 }}
       >
         {device === "desktop" ? (

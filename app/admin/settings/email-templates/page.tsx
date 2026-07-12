@@ -19,29 +19,30 @@ export default function EmailTemplatesPage() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h2 className="text-3xl font-display text-navy">Email Templates</h2>
-        <p className="text-slate-500 mt-1">
+        <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Settings</p>
+        <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Email Templates</h2>
+        <p className="text-[12px] text-[#1B3A5C]/45 mt-1">
           Transactional emails sent automatically when a guest, owner, or admin event occurs.
         </p>
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b flex items-center gap-2">
-          <Mail size={18} className="text-navy" />
-          <h3 className="font-semibold text-navy">{TEMPLATES.length} Templates</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#1B3A5C]/8 flex items-center gap-2">
+          <Mail size={16} className="text-[#C9A96E]" />
+          <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60"><span className="tabular-nums">{TEMPLATES.length}</span> Templates</h3>
         </div>
-        <div className="divide-y">
+        <div className="divide-y divide-[#1B3A5C]/5">
           {TEMPLATES.map((t) => (
-            <div key={t.name} className="flex items-start gap-4 px-5 py-4">
-              <div className="w-8 h-8 rounded-full bg-navy/5 flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle size={15} className="text-green-600" />
+            <div key={t.name} className="flex items-start gap-4 px-5 py-4 hover:bg-[#FBF9F4] transition-colors">
+              <div className="w-8 h-8 rounded-full bg-[#1B3A5C]/5 flex items-center justify-center shrink-0 mt-0.5">
+                <CheckCircle size={15} className="text-emerald-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-navy text-sm">{t.name}</p>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">Subject: {t.subject}</p>
+                <p className="font-mono font-medium text-[#1B3A5C] text-[13px]">{t.name}</p>
+                <p className="text-[11px] text-[#1B3A5C]/50 mt-0.5 truncate">Subject: {t.subject}</p>
                 <div className="flex items-center gap-4 mt-1">
-                  <span className="text-xs text-slate-400">Trigger: {t.trigger}</span>
-                  <span className="text-xs text-slate-400">To: {t.recipient}</span>
+                  <span className="text-[11px] text-[#1B3A5C]/35">Trigger: {t.trigger}</span>
+                  <span className="text-[11px] text-[#1B3A5C]/35">To: {t.recipient}</span>
                 </div>
               </div>
             </div>

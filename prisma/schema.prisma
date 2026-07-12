@@ -246,7 +246,6 @@ model Review {
   propertyId String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  isApproved Boolean       @default(false)
   bookingId  String?       @unique
   status     ReviewStatus  @default(PENDING)
   images     ReviewImage[]
@@ -310,10 +309,8 @@ model Inquiry {
   subject         String
   message         String
   status          InquiryStatus    @default(NEW)
-  reply           String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  replies         Json?
   adminLastReadAt DateTime?
   guestLastReadAt DateTime?
   lastMessageAt   DateTime         @default(now())

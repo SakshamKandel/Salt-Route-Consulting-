@@ -50,13 +50,13 @@ export function AmenitiesManager({ amenities: initial }: { amenities: Amenity[] 
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`rounded-lg p-3 text-sm ${message.type === "success" ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-800"}`}>
+        <div className={`rounded-lg p-3 text-[12px] ${message.type === "success" ? "bg-emerald-50 border border-emerald-200/60 text-emerald-700" : "bg-rose-50 border border-rose-200/60 text-[#B84040]"}`}>
           {message.text}
         </div>
       )}
 
-      <div className="bg-white border rounded-xl p-5 space-y-4">
-        <h3 className="font-semibold text-navy">Add New Amenity</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl p-5 space-y-4">
+        <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60">Add New Amenity</h3>
         <div className="flex gap-3">
           <Input
             value={newName}
@@ -67,35 +67,35 @@ export function AmenitiesManager({ amenities: initial }: { amenities: Amenity[] 
           <Button
             onClick={handleAdd}
             disabled={!newName.trim() || pending === "add"}
-            className="bg-navy text-cream shrink-0"
+            className="bg-[#1B3A5C] text-[#FFFAF3] hover:bg-[#2A4F7A] rounded-lg text-[12px] font-medium shrink-0"
           >
             <Plus className="w-4 h-4 mr-1" />
             {pending === "add" ? "Adding..." : "Add"}
           </Button>
         </div>
-        <p className="text-xs text-slate-500">Adding an amenity here adds it to all existing properties.</p>
+        <p className="text-[11px] text-[#1B3A5C]/45">Adding an amenity here adds it to all existing properties.</p>
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b">
-          <h3 className="font-semibold text-navy">{amenities.length} Amenities in Use</h3>
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#1B3A5C]/8">
+          <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#1B3A5C]/60"><span className="tabular-nums">{amenities.length}</span> Amenities in Use</h3>
         </div>
         {amenities.length === 0 ? (
-          <p className="p-8 text-center text-slate-400">No amenities found. Add one above or update a property.</p>
+          <p className="p-8 text-center text-[13px] text-[#1B3A5C]/40">No amenities found. Add one above or update a property.</p>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y divide-[#1B3A5C]/5">
             {amenities.map(({ name, count }) => (
-              <div key={name} className="flex items-center justify-between px-5 py-3">
+              <div key={name} className="flex items-center justify-between px-5 py-3 hover:bg-[#FBF9F4] transition-colors">
                 <div>
-                  <p className="font-medium text-navy">{name}</p>
-                  <p className="text-xs text-slate-400">{count} {count === 1 ? "property" : "properties"}</p>
+                  <p className="text-[13px] font-medium text-[#1B3A5C]">{name}</p>
+                  <p className="text-[11px] text-[#1B3A5C]/40 tabular-nums">{count} {count === 1 ? "property" : "properties"}</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => handleRemove(name)}
                   disabled={pending === name}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  className="text-[#B84040]/70 hover:text-[#B84040] hover:bg-rose-50 rounded-lg"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

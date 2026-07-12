@@ -27,27 +27,30 @@ export default async function NotificationsPage({
   })
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* ─── PAGE HEADER ─── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-[1px] bg-charcoal/20" />
-          <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
-            Notifications
-          </h1>
-          {notifications.length > 0 && (
-            <span className="text-[9px] text-charcoal/25 font-sans">{notifications.length}</span>
-          )}
-        </div>
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Updates
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
+          Notifications
+        </h1>
+        <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+          {notifications.length > 0
+            ? "News about your reservations, messages, and account."
+            : "We will keep you posted about your reservations and messages."}
+        </p>
       </div>
 
       {notifications.length === 0 ? (
-        <div className="text-center py-20 bg-white border border-charcoal/5">
-          <Bell className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
-          <p className="text-charcoal/40 text-sm font-sans">No notifications yet. We&apos;ll keep you posted.</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-16 text-center">
+          <Bell className="h-8 w-8 text-[#1B3A5C]/15 mx-auto mb-4" strokeWidth={1.5} />
+          <h3 className="font-display text-xl text-[#1B3A5C] tracking-wide mb-1.5">All quiet for now</h3>
+          <p className="text-[13px] text-[#1B3A5C]/60">No notifications yet. We&apos;ll keep you posted.</p>
         </div>
       ) : (
-        <div className="bg-white border border-charcoal/5 divide-y divide-charcoal/5">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl divide-y divide-[#1B3A5C]/5 overflow-hidden">
           <NotificationList notifications={notifications} />
         </div>
       )}

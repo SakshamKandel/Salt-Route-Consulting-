@@ -5,6 +5,7 @@ import { markAllCurrentUserNotificationsReadAction, markNotificationReadAction }
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
 import { formatDistanceToNow } from "date-fns"
+import { Bell } from "lucide-react"
 
 export default async function OwnerNotificationsPage({
   searchParams,
@@ -30,22 +31,19 @@ export default async function OwnerNotificationsPage({
   const unreadCount = notifications.filter((n) => !n.readAt).length
 
   return (
-    <div className="space-y-14">
+    <div className="pb-12 space-y-8">
 
-      {/* ─── PAGE HEADER ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-4">
-            <span className="w-8 h-px bg-gold/40" />
-            <p className="text-[9px] uppercase tracking-[0.45em] text-gold/60 font-medium">
-              Property Alerts
-            </p>
-          </div>
-          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
-            Portfolio Notifications
+      {/* ── PAGE HEADER ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.3em] mb-1">
+            Property Alerts
+          </p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">
+            Notifications
           </h1>
           {unreadCount > 0 && (
-            <p className="text-[11px] text-[#1B3A5C]/50 font-light">
+            <p className="text-[12px] text-[#1B3A5C]/45 mt-1.5">
               {unreadCount} unread alert{unreadCount !== 1 ? "s" : ""}
             </p>
           )}
@@ -60,66 +58,55 @@ export default async function OwnerNotificationsPage({
           >
             <button
               type="submit"
-              className="text-[9px] uppercase tracking-[0.35em] font-medium text-[#1B3A5C]/50 hover:text-gold transition-colors duration-500 px-6 py-3"
-              style={{ border: "1px solid rgba(201,169,110,0.12)" }}
+              className="inline-flex items-center px-4 py-2 border border-[#1B3A5C]/15 rounded-lg text-[11px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors"
             >
-              Mark All Read
+              Mark all read
             </button>
           </form>
         )}
       </div>
 
-      {/* ─── NOTIFICATIONS ─── */}
+      {/* ── NOTIFICATIONS ── */}
       {notifications.length === 0 ? (
-        <div
-          className="py-24 flex flex-col items-center justify-center text-center"
-          style={{ border: "1px solid rgba(201,169,110,0.07)" }}
-        >
-          <div className="w-10 h-px bg-gold/20 mb-6" />
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#1B3A5C]/30 font-medium">
-            You&apos;re all caught up
-          </p>
-            <p className="text-[11px] text-[#1B3A5C]/30 font-light mt-2">
-            Booking, support, and property updates will appear here.
-          </p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-16 text-center">
+          <Bell className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">You&apos;re all caught up</p>
+          <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Booking, support, and property updates will appear here</p>
         </div>
       ) : (
-        <div style={{ border: "1px solid rgba(201,169,110,0.08)" }}>
-          {notifications.map((notification, i) => {
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden divide-y divide-[#1B3A5C]/5">
+          {notifications.map((notification) => {
             const isUnread = !notification.readAt
-            const isLast = i === notifications.length - 1
 
             return (
               <div
                 key={notification.id}
-                className="flex items-start gap-5 px-8 py-7 transition-all duration-500 hover:bg-[#FBF9F4] group"
-                style={{
-                  background: isUnread ? "rgba(201,169,110,0.035)" : "transparent",
-                  borderBottom: isLast ? "none" : "1px solid rgba(201,169,110,0.05)",
-                }}
+                className={`flex items-start gap-4 px-5 py-4 hover:bg-[#FBF9F4] transition-colors ${
+                  isUnread ? "bg-[#C9A96E]/[0.04]" : ""
+                }`}
               >
                 {/* Unread indicator */}
                 <div className="shrink-0 mt-1.5 w-2 h-2 flex items-center justify-center">
                   {isUnread && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3">
                     <p
-                      className={`text-[13px] font-medium tracking-wide leading-snug ${
+                      className={`text-[13px] font-semibold leading-snug ${
                         isUnread ? "text-[#1B3A5C]" : "text-[#1B3A5C]/70"
                       }`}
                     >
                       {notification.title}
                     </p>
-                    <p className="text-[9px] uppercase tracking-[0.25em] text-[#1B3A5C]/30 shrink-0">
+                    <p className="text-[10px] text-[#1B3A5C]/35 shrink-0 sm:mt-0.5">
                       {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                     </p>
                   </div>
-                  <p className="text-[12px] text-[#1B3A5C]/50 font-light leading-[1.85]">
+                  <p className="text-[12px] text-[#1B3A5C]/50 leading-relaxed">
                     {notification.body}
                   </p>
 
@@ -132,7 +119,7 @@ export default async function OwnerNotificationsPage({
                     >
                       <button
                         type="submit"
-                        className="mt-1 text-[9px] uppercase tracking-[0.3em] text-gold/45 hover:text-gold transition-colors duration-500"
+                        className="mt-1 text-[11px] font-medium text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors"
                       >
                         Mark as read
                       </button>

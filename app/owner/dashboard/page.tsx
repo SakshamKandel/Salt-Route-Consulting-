@@ -65,7 +65,11 @@ export default async function OwnerDashboardPage() {
       },
       take: 5,
       orderBy: { checkIn: "asc" },
-      include: {
+      select: {
+        id: true,
+        status: true,
+        checkIn: true,
+        checkOut: true,
         property: { select: { title: true, id: true, location: true } },
         guest: { select: { name: true, email: true, image: true } },
       },
@@ -82,8 +86,15 @@ export default async function OwnerDashboardPage() {
       where: { ownerId: session.user.id, status: { not: "ARCHIVED" } },
       take: 4,
       orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
-      include: {
-        images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 },
+      select: {
+        id: true,
+        title: true,
+        location: true,
+        images: {
+          orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
+          take: 1,
+          select: { url: true, isPrimary: true },
+        },
         _count: {
           select: {
             bookings: { where: { status: { in: ["CONFIRMED", "COMPLETED", "CHECKED_IN"] } } },
@@ -169,7 +180,7 @@ export default async function OwnerDashboardPage() {
           <Link
             key={label}
             href={href}
-            className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
+            className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 sm:p-5 hover:border-[#1B3A5C]/15 transition-colors group"
           >
             <Icon className="h-4 w-4 text-[#1B3A5C]/25 mb-3 group-hover:text-[#C9A96E] transition-colors" />
             <p className="text-xl sm:text-2xl font-semibold text-[#1B3A5C] leading-tight tabular-nums">{value}</p>
@@ -187,7 +198,7 @@ export default async function OwnerDashboardPage() {
           </Link>
         </div>
 
-        <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden divide-y divide-[#1B3A5C]/5">
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden divide-y divide-[#1B3A5C]/5">
           {recentBookings.length === 0 ? (
             <div className="py-12 text-center">
               <Calendar className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
@@ -246,7 +257,7 @@ export default async function OwnerDashboardPage() {
         </div>
 
         {properties.length === 0 ? (
-          <div className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl py-14 text-center">
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-14 text-center">
             <Home className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
             <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No properties yet</p>
             <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Salt Route will add your property once preparations begin</p>
@@ -259,7 +270,7 @@ export default async function OwnerDashboardPage() {
                 <Link
                   key={property.id}
                   href={`/owner/properties/${property.id}`}
-                  className="bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
+                  className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors group"
                 >
                   {/* Property image */}
                   <div className="relative h-36 bg-[#1B3A5C]/5">
@@ -308,7 +319,7 @@ export default async function OwnerDashboardPage() {
             <Link
               key={label}
               href={href}
-              className="flex items-start gap-3 bg-[#FFFDF8] border border-[#1B3A5C]/8 rounded-xl p-4 hover:border-[#1B3A5C]/15 hover:bg-[#FBF9F4] transition-colors group"
+              className="flex items-start gap-3 bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-4 hover:border-[#1B3A5C]/15 hover:bg-[#FBF9F4] transition-colors group"
             >
               <div className="w-8 h-8 rounded-lg bg-[#1B3A5C]/5 flex items-center justify-center shrink-0 group-hover:bg-[#1B3A5C]/10 transition-colors">
                 <Icon className="h-4 w-4 text-[#1B3A5C]/40" />

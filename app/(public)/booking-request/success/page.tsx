@@ -11,30 +11,30 @@ export default async function BookingSuccessPage({
   const code = resolvedParams.code as string | undefined
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 bg-[#E6E2DA] selection:bg-charcoal selection:text-white">
-      <div className="max-w-3xl w-full bg-[#F7F5F0] border border-charcoal relative shadow-2xl shadow-charcoal/5">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 pb-4 pt-24 sm:px-8 sm:pb-8 sm:pt-28 bg-beige selection:bg-navy selection:text-cream">
+      <div className="max-w-3xl w-full bg-cream border border-navy relative">
         
         {/* Top thick black bar */}
         <div className="absolute top-0 left-0 w-full h-2 bg-charcoal" />
 
         <div className="p-8 sm:p-16">
           {/* Header */}
-          <div className="flex justify-between items-start mb-16 border-b border-charcoal pb-8">
+          <div className="flex justify-between items-start mb-6 md:mb-8 border-b border-charcoal pb-8">
             <div className="flex flex-col">
               <span className="font-display text-2xl tracking-widest uppercase text-charcoal leading-none">{siteConfig.name}</span>
             </div>
             <div className="text-right flex flex-col items-end">
-              <span className="text-[9px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal">Status</span>
+              <span className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal">Status</span>
               <div className="flex items-center gap-2 mt-2 border border-charcoal px-3 py-1 bg-charcoal text-white">
                 <Check className="w-3 h-3" />
-                <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Received</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Received</span>
               </div>
             </div>
           </div>
 
           {/* Title Area */}
-          <div className="mb-16">
-            <h1 className="font-display text-5xl md:text-6xl text-charcoal tracking-tight leading-none mb-6">
+          <div className="mb-6 md:mb-10">
+            <h1 className="font-script text-5xl md:text-6xl text-charcoal tracking-normal leading-[1.4] pb-2 mb-4">
               Request <br/> <span className="italic text-charcoal/70">Confirmed.</span>
             </h1>
             <p className="font-sans text-xs md:text-sm tracking-[0.1em] text-charcoal/60 leading-relaxed max-w-md uppercase">
@@ -43,12 +43,12 @@ export default async function BookingSuccessPage({
           </div>
 
           {/* Reference Folio */}
-          <div className="border border-charcoal bg-white mb-16">
+          <div className="border border-charcoal bg-white mb-6 md:mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-8 border-b md:border-b-0 md:border-r border-charcoal flex flex-col justify-between">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-2">Folio Reference</p>
-                  <p className="font-mono text-3xl text-charcoal tracking-widest">
+                  <p className="font-display text-3xl text-charcoal tracking-[0.18em]">
                     {code || "SLT-PENDING"}
                   </p>
                 </div>
@@ -59,7 +59,7 @@ export default async function BookingSuccessPage({
                 </div>
               </div>
 
-              <div className="p-8 flex flex-col justify-center bg-[#F9F9F8]">
+              <div className="p-8 flex flex-col justify-center bg-beige">
                 <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-6">Next Steps Protocol</p>
                 <ul className="space-y-4">
                   {[
@@ -89,7 +89,7 @@ export default async function BookingSuccessPage({
             {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER && (
               <Link 
                 href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-                className="w-full sm:w-auto border border-charcoal text-charcoal bg-transparent text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-[#E6E2DA] transition-all duration-500 ease-out text-center font-bold"
+                className="w-full sm:w-auto border border-charcoal text-charcoal bg-transparent text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-beige transition-all duration-500 ease-out text-center font-bold"
               >
                 Message Concierge
               </Link>
@@ -99,8 +99,8 @@ export default async function BookingSuccessPage({
         
         {/* Footer Bar */}
         <div className="bg-charcoal text-white p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-white/50">{siteConfig.brandName} © {new Date().getFullYear()}</span>
-          <Link href="/contact" className="group flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-white/70 hover:text-gold transition-all">
+          <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-white/50">{siteConfig.brandName} © {new Date().getFullYear()}</span>
+          <Link href="/contact" className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/70 hover:text-gold transition-all">
             <span>Contact Support</span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </Link>

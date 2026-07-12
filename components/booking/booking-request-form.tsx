@@ -276,14 +276,14 @@ export function BookingRequestForm({
   const unitNoun = selectedRoomType ? selectedRoomType.name : "Unit"
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#FBF9F4] p-5 sm:p-8 md:p-12 border border-charcoal/10">
-      <div className="mb-8 text-center md:mb-10">
-        <h2 className="text-2xl sm:text-3xl font-display text-charcoal mb-4">RESERVE YOUR STAY</h2>
-        <p className="text-charcoal/60 font-sans text-sm tracking-[0.12em] uppercase sm:tracking-widest">
+    <div className="w-full max-w-lg mx-auto bg-sand border-t border-charcoal/15 p-5 sm:p-8 md:p-12">
+      <div className="mb-8 border-b border-charcoal/10 pb-6 md:mb-10 md:pb-8">
+        <h2 className="type-h3 mb-3">Reserve Your Stay</h2>
+        <p className="font-sans font-medium uppercase text-charcoal/60 text-[11px] tracking-[0.12em] sm:tracking-[0.2em]">
           {formatNpr(effectivePrice)} <span className="lowercase text-[10px] tracking-normal">/ night</span>
         </p>
         {selectedRoomType && (
-          <p className="mt-2 text-[9px] uppercase tracking-[0.16em] text-gold/80 font-sans font-bold sm:tracking-[0.3em]">
+          <p className="mt-2 text-[10px] uppercase tracking-[0.16em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
             {selectedRoomType.name}
           </p>
         )}
@@ -308,7 +308,7 @@ export function BookingRequestForm({
             <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
               01. Select Your Stay
             </Label>
-            <div className="space-y-3">
+            <div className="border-y border-charcoal/10 divide-y divide-charcoal/10">
               {roomTypes.map((rt) => {
                 const selected = rt.id === roomTypeId
                 return (
@@ -316,14 +316,14 @@ export function BookingRequestForm({
                     key={rt.id}
                     type="button"
                     onClick={() => setRoomTypeId(rt.id)}
-                    className={`w-full text-left border transition-all duration-300 bg-white group overflow-hidden ${
-                      selected ? "border-charcoal shadow-sm" : "border-charcoal/10 hover:border-charcoal/40"
+                    className={`w-full text-left border-l-2 transition-colors duration-300 ${
+                      selected ? "border-l-charcoal bg-sand-dark/60" : "border-l-transparent hover:bg-charcoal/[0.03]"
                     }`}
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1 min-w-0">
-                          <p className="text-[9px] uppercase tracking-[0.14em] text-gold/80 font-sans font-bold sm:tracking-[0.25em]">
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
                             {formatClassLabel(rt.classType)}
                           </p>
                           <p className="font-display text-base text-charcoal uppercase tracking-wide">{rt.name}</p>
@@ -358,13 +358,13 @@ export function BookingRequestForm({
           <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
             {String(stepOffset + 1).padStart(2, "0")}. Dates
           </Label>
-          <div className="border border-charcoal/10 bg-white p-2 sm:p-4">
+          <div className="pt-1">
             <BookingCalendar propertyId={propertyId} date={date} setDate={setDate} roomTypeId={roomTypeId} availability={availability} />
           </div>
         </div>
 
         {!isAuthenticated && (
-          <div className="p-4 border border-charcoal/10 bg-charcoal/5 text-xs text-charcoal/70 font-sans text-center tracking-wide">
+          <div className="border-y border-charcoal/10 py-4 text-xs text-charcoal/70 font-sans text-center tracking-wide">
             Select dates and details. You will be asked to sign in before confirming.
           </div>
         )}
@@ -460,7 +460,7 @@ export function BookingRequestForm({
         )}
 
         {error && (
-          <div className="p-4 bg-red-50/50 text-red-800 text-xs uppercase tracking-wide font-sans text-center border border-red-100">
+          <div className="border-l-2 border-l-red-700/70 py-2 pl-4 text-red-800 text-xs uppercase tracking-wide font-sans">
             {error}
           </div>
         )}
@@ -469,7 +469,8 @@ export function BookingRequestForm({
         <div className="pt-4">
           <LuxuryButton
             type="submit"
-            className="w-full"
+            dark
+            className="w-full bg-navy border-navy py-5"
             disabled={isSubmitting || numberOfNights <= 0}
           >
             {isSubmitting

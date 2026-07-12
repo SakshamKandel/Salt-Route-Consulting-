@@ -6,8 +6,21 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, X, ArrowRight } from "lucide-react"
 import { VISUAL_JOURNEY_TILES, type VisualJourneyTile } from "@/lib/visual-journey-tiles"
+import { Reveal, EASE as MOTION_EASE } from "@/components/public/motion"
 
-const EASE = [0.22, 1, 0.36, 1] as const
+const EASE = MOTION_EASE.outLuxe
+
+// Editorial mosaic — a curated six of the thirteen tiles in a compact
+// two-row grid (mixed ratios, light stagger). Indices map into
+// VISUAL_JOURNEY_TILES so the lightbox's prev/next still cycles all thirteen.
+const MOSAIC: { idx: number; span: string; ratio: string }[] = [
+  { idx: 0, span: "col-span-2 md:col-span-5", ratio: "aspect-[4/3]" },
+  { idx: 1, span: "col-span-1 md:col-span-3", ratio: "aspect-[3/4]" },
+  { idx: 2, span: "col-span-1 md:col-span-4", ratio: "aspect-[4/3]" },
+  { idx: 3, span: "col-span-1 md:col-span-4", ratio: "aspect-[4/3]" },
+  { idx: 4, span: "col-span-1 md:col-span-3", ratio: "aspect-[3/4]" },
+  { idx: 5, span: "col-span-2 md:col-span-5", ratio: "aspect-[4/3]" },
+]
 
 export function VisualJourney() {
   const [activeIdx, setActiveIdx] = useState<number | null>(null)
@@ -54,68 +67,71 @@ export function VisualJourney() {
 
   return (
     <>
-      <section className="py-24 md:py-32 bg-white overflow-hidden">
+      <section className="py-10 md:py-16 bg-white overflow-hidden">
         {/* Eyebrow + Title */}
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div className="space-y-5 max-w-2xl">
-            <p className="text-sm uppercase tracking-[0.4em] text-charcoal/45 font-medium">Visual Journey</p>
-            <h2
-              className="font-display text-charcoal tracking-wide uppercase leading-[1.05]"
-              style={{ fontSize: "clamp(2.5rem, 5.5vw, 5rem)" }}
-            >
-              Tapestry of Nepal.
-            </h2>
-            <p className="font-sans text-base md:text-lg text-charcoal/60 leading-[1.85] font-light pt-2 max-w-xl">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <Reveal className="space-y-5 max-w-2xl">
+            <p className="type-eyebrow">Visual Journey</p>
+            <h2 className="type-h2">Tapestry of Nepal.</h2>
+            <p className="type-body pt-1 max-w-xl">
               Thirteen windows into a single country, each one its own world. Tap a tile to step inside.
             </p>
-          </div>
-          <Link
-            href="/visual-journey"
-            className="hidden md:inline-flex items-center gap-3 text-sm uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors group whitespace-nowrap"
-          >
-            Read the full journey
-            <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" strokeWidth={1.4} />
-          </Link>
-        </div>
-
-        {/* Horizontal scroll of 13 tiles */}
-        <div className="vj-scroller flex overflow-x-auto snap-x snap-mandatory gap-6 md:gap-8 px-6 md:px-12 pb-12 w-full">
-          {VISUAL_JOURNEY_TILES.map((tile, idx) => (
-            <button
-              key={tile.slug}
-              onClick={() => open(idx)}
-              className="snap-center shrink-0 w-[78vw] sm:w-[55vw] md:w-[40vw] lg:w-[28vw] flex flex-col group text-left focus:outline-none"
-              aria-label={`Open ${tile.title}`}
+          </Reveal>
+          <Reveal delay={0.15}>
+            <Link
+              href="/visual-journey"
+              className="hidden md:inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors group whitespace-nowrap"
             >
-              <div className="relative aspect-[3/4] overflow-hidden mb-5 bg-[#F5F1E8]">
-                <Image
-                  src={tile.cover}
-                  alt={tile.title}
-                  fill
-                  sizes="(max-width: 640px) 78vw, (max-width: 768px) 55vw, (max-width: 1024px) 40vw, 28vw"
-                  className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/45 via-charcoal/0 to-charcoal/0" />
-                <span className="absolute top-5 left-5 font-display text-3xl text-white/85 tracking-wide">
-                  {tile.num}
-                </span>
-                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-white/85 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  Read <ArrowRight className="w-3 h-3" strokeWidth={1.4} />
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline px-1">
-                <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide group-hover:text-gold transition-colors duration-500">
-                  {tile.title}
-                </h3>
-              </div>
-            </button>
-          ))}
+              Read the full journey
+              <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" strokeWidth={1.4} />
+            </Link>
+          </Reveal>
         </div>
 
-        <div className="md:hidden px-6 mt-4">
+        {/* Editorial mosaic — six curated tiles, uneven grid, staggered baselines */}
+        <Reveal
+          stagger={0.08}
+          className="max-w-screen-2xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-5"
+        >
+          {MOSAIC.map(({ idx, span, ratio }) => {
+            const tile = VISUAL_JOURNEY_TILES[idx]
+            if (!tile) return null
+            return (
+              <Reveal.Item key={tile.slug} className={span}>
+                <button
+                  onClick={() => open(idx)}
+                  className="group block w-full text-left focus:outline-none"
+                  aria-label={`Open ${tile.title}`}
+                >
+                  <div className={`relative ${ratio} overflow-hidden mb-3 bg-beige w-full`}>
+                    <Image
+                      src={tile.cover}
+                      alt={tile.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 42vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/45 via-charcoal/0 to-charcoal/0" />
+                    <span className="absolute top-4 left-4 font-display text-xl md:text-2xl text-white/85">
+                      {tile.num}
+                    </span>
+                    <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.28em] text-white/85 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      Read <ArrowRight className="w-3 h-3" strokeWidth={1.4} />
+                    </span>
+                  </div>
+                  <h3 className="font-display text-base md:text-lg text-charcoal tracking-[-0.01em] leading-tight group-hover:text-gold transition-colors duration-500">
+                    {tile.title}
+                  </h3>
+                </button>
+              </Reveal.Item>
+            )
+          })}
+        </Reveal>
+
+        <div className="md:hidden px-6 mt-10">
           <Link
             href="/visual-journey"
-            className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors"
+            className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-charcoal/70 hover:text-charcoal transition-colors"
           >
             Read the full journey
             <ArrowRight className="w-4 h-4" strokeWidth={1.4} />
@@ -139,7 +155,7 @@ export function VisualJourney() {
               type="button"
               aria-label="Close"
               onClick={close}
-              className="absolute inset-0 bg-charcoal/85 backdrop-blur-sm"
+              className="absolute inset-0 bg-charcoal/85"
             />
 
             {/* Desktop: centered split panel. Mobile: full-screen slide-up overlay. */}
@@ -152,13 +168,13 @@ export function VisualJourney() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "6%", opacity: 0 }}
               transition={{ duration: 0.6, ease: EASE }}
-              className="absolute inset-0 md:inset-8 lg:inset-12 bg-background text-charcoal flex flex-col md:flex-row overflow-hidden md:rounded-sm md:shadow-2xl"
+              className="absolute inset-0 md:inset-8 lg:inset-12 bg-background text-charcoal flex flex-col md:flex-row overflow-hidden"
             >
               {/* Close */}
               <button
                 onClick={close}
                 aria-label="Close"
-                className="absolute top-5 right-5 z-20 w-11 h-11 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal shadow-md transition-colors"
+                className="absolute top-5 right-5 z-20 w-11 h-11 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal border border-charcoal/10 transition-colors"
               >
                 <X className="w-5 h-5" strokeWidth={1.4} />
               </button>
@@ -167,14 +183,14 @@ export function VisualJourney() {
               <button
                 onClick={prev}
                 aria-label="Previous"
-                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal shadow-md transition-colors"
+                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal border border-charcoal/10 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" strokeWidth={1.4} />
               </button>
               <button
                 onClick={next}
                 aria-label="Next"
-                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal shadow-md transition-colors"
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-charcoal border border-charcoal/10 transition-colors"
               >
                 <ChevronRight className="w-5 h-5" strokeWidth={1.4} />
               </button>
@@ -238,10 +254,10 @@ export function VisualJourney() {
               {/* RIGHT 40% — Text (scrolls independently) */}
               <div className="md:w-[40%] flex flex-col bg-background">
                 <div className="overflow-y-auto flex-1 px-6 md:px-10 lg:px-14 py-10 md:py-14 lg:py-16">
-                  <p className="text-xs uppercase tracking-[0.4em] text-charcoal/45 font-medium mb-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-charcoal/45 font-medium mb-5">
                     Tile {active.num} · Tapestry of Nepal
                   </p>
-                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-charcoal tracking-wide uppercase leading-[1.1] mb-7">
+                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-charcoal tracking-[-0.01em] leading-[1.1] mb-7">
                     {active.title}
                   </h3>
 
@@ -310,12 +326,6 @@ export function VisualJourney() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Local styles */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .vj-scroller::-webkit-scrollbar { display: none; }
-        .vj-scroller { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
     </>
   )
 }

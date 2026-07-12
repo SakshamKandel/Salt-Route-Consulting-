@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { EASE } from "./motion"
 
 type Lang = { code: string; label: string; short: string }
 
@@ -126,15 +127,15 @@ export function LanguageSwitcher({
 
   if (variant === "mobile") {
     return (
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+      <div className="flex flex-wrap items-center justify-start gap-x-6 gap-y-3">
         {LANGUAGES.map((l) => (
           <button
             key={l.code}
             onClick={() => choose(l.code)}
-            className={`text-sm uppercase tracking-[0.2em] font-sans transition-colors ${
+            className={`py-1 text-[12px] uppercase tracking-[0.2em] font-sans transition-colors duration-300 ${
               l.code === current
-                ? "text-charcoal"
-                : "text-charcoal/40 hover:text-charcoal/70"
+                ? "text-navy"
+                : "text-navy/40 hover:text-navy/70"
             }`}
           >
             {l.label}
@@ -145,15 +146,15 @@ export function LanguageSwitcher({
   }
 
   const triggerColor = transparent
-    ? "text-charcoal/70 md:text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]"
-    : "text-charcoal/40 hover:text-charcoal/70"
+    ? "text-cream/80 hover:text-cream"
+    : "text-navy/50 hover:text-navy/80"
 
   return (
     <div ref={ref} className="relative notranslate" translate="no">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Select language"
-        className={`flex items-center gap-1.5 text-sm uppercase tracking-[0.2em] font-sans font-medium transition-colors duration-300 ${triggerColor}`}
+        className={`flex items-center gap-1.5 text-[11px] uppercase tracking-[0.24em] font-sans font-medium transition-colors duration-300 ${triggerColor}`}
       >
         {active.short}
         <svg
@@ -173,17 +174,17 @@ export function LanguageSwitcher({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute left-0 top-full mt-4 min-w-[150px] bg-cream/95 backdrop-blur-xl border border-charcoal/10 shadow-xl py-2 z-[10002]"
+            transition={{ duration: 0.2, ease: EASE.outLuxe }}
+            className="absolute left-0 top-full mt-4 min-w-[150px] bg-cream/95 backdrop-blur-xl border border-navy/10 py-2 z-[10002]"
           >
             {LANGUAGES.map((l) => (
               <li key={l.code}>
                 <button
                   onClick={() => choose(l.code)}
-                  className={`w-full text-left px-5 py-2.5 text-sm tracking-[0.15em] uppercase font-sans transition-colors ${
+                  className={`w-full text-left px-5 py-2.5 text-[12px] tracking-[0.15em] uppercase font-sans transition-colors duration-300 ${
                     l.code === current
-                      ? "text-charcoal bg-charcoal/[0.04]"
-                      : "text-charcoal/55 hover:text-charcoal hover:bg-charcoal/[0.03]"
+                      ? "text-navy bg-navy/[0.04]"
+                      : "text-navy/55 hover:text-navy hover:bg-navy/[0.03]"
                   }`}
                 >
                   {l.label}

@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/db"
 import HomeClient from "@/components/public/HomeClient"
 
-export const dynamic = "force-dynamic"
+// ISR: the homepage content (featured properties) changes infrequently.
+// Cache the rendered page for 1 hour, then revalidate in the background.
+// This eliminates a DB round-trip on every visit → near-instant reloads.
+export const revalidate = 3600
 
 export default async function HomePage() {
   const [featured, allActive] = await Promise.all([

@@ -6,9 +6,17 @@ import { BookingStatus, Prisma } from "@prisma/client"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import { BOOKING_STATUS_LABELS } from "@/lib/booking-lifecycle"
 import { formatNpr } from "@/lib/currency"
-import { ArrowRight, Calendar } from "lucide-react"
+import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
+
+const STATUS_CHIP: Record<string, string> = {
+  PENDING:    "bg-amber-50 text-amber-700 border-amber-200/60",
+  CONFIRMED:  "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  CHECKED_IN: "bg-sky-50 text-sky-700 border-sky-200/60",
+  COMPLETED:  "bg-[#1B3A5C]/5 text-[#1B3A5C]/70 border-[#1B3A5C]/10",
+  CANCELLED:  "bg-rose-50 text-rose-600 border-rose-200/60",
+}
 
 export default async function BookingsPage({
   searchParams,
@@ -37,10 +45,24 @@ export default async function BookingsPage({
     where: whereClause,
     skip: pagination.skip,
     take: pagination.take,
-    include: {
+    select: {
+      id: true,
+      status: true,
+      checkIn: true,
+      checkOut: true,
+      totalPrice: true,
+      bookingCode: true,
       property: {
-        include: { images: { take: 1, orderBy: [{ isPrimary: "desc" }, { order: "asc" }] } }
-      }
+        select: {
+          title: true,
+          location: true,
+          images: {
+            take: 1,
+            orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
+            select: { url: true, isPrimary: true },
+          },
+        },
+      },
     },
     orderBy: { createdAt: "desc" }
   })
@@ -48,15 +70,18 @@ export default async function BookingsPage({
   const statuses = ["ALL", "PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED", "CANCELLED"]
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* ─── PAGE HEADER ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-[1px] bg-charcoal/20" />
-          <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
-            Your Reservations
-          </h1>
-        </div>
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Guest Journey
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
+          Your Reservations
+        </h1>
+        <p className="text-[15px] leading-relaxed text-[#1B3A5C]/70 mt-2">
+          Every stay you have planned with Salt Route, past and upcoming.
+        </p>
       </div>
 
       {/* ─── FILTER TABS ─── */}
@@ -67,10 +92,10 @@ export default async function BookingsPage({
             <Link
               key={status}
               href={status === "ALL" ? "/account/bookings" : `/account/bookings?status=${status}`}
-              className={`text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border transition-all duration-300 whitespace-nowrap ${
+              className={`rounded-full text-[12px] uppercase tracking-[0.1em] px-4 py-2.5 border font-medium transition-colors whitespace-nowrap ${
                 isActive
-                  ? "bg-charcoal text-white border-charcoal"
-                  : "bg-white text-charcoal/40 border-charcoal/10 hover:border-charcoal/20 hover:text-charcoal/60"
+                  ? "bg-[#1B3A5C] text-[#FFFAF3] border-[#1B3A5C]"
+                  : "bg-[#FFFAF3] text-[#1B3A5C]/60 border-[#1B3A5C]/10 hover:border-[#1B3A5C]/25 hover:text-[#1B3A5C]/80"
               }`}
             >
               {status.replace("_", " ")}
@@ -81,103 +106,95 @@ export default async function BookingsPage({
 
       {/* ─── BOOKING CARDS ─── */}
       {bookings.length === 0 ? (
-        <div className="text-center py-24 bg-white border border-charcoal/5">
-          <Calendar className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
-          <p className="text-charcoal/40 text-sm font-sans mb-6">No reservations found</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-16 text-center">
+          <Calendar className="h-8 w-8 text-[#1B3A5C]/15 mx-auto mb-4" strokeWidth={1.5} />
+          <h3 className="font-display text-xl text-[#1B3A5C] tracking-wide mb-2">No reservations found</h3>
+          <p className="text-[14px] text-[#1B3A5C]/60 mb-6 max-w-sm mx-auto">
+            When you reserve a stay, it will appear here with every detail at hand.
+          </p>
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 text-[9px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors"
           >
-            <span>Browse Stays</span>
-            <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+            Browse stays <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {bookings.map((booking) => {
             const imageUrl = getPrimaryImageUrl(booking.property.images) || "/placeholder-property.jpg"
             const nights = Math.ceil(
               (new Date(booking.checkOut).getTime() - new Date(booking.checkIn).getTime()) / (1000 * 60 * 60 * 24)
             )
+            const chip = STATUS_CHIP[booking.status] ?? STATUS_CHIP.PENDING
 
             return (
               <Link
                 key={booking.id}
                 href={`/account/bookings/${booking.id}`}
-                className="group block bg-white border border-charcoal/5 hover:border-charcoal/15 transition-all duration-300 overflow-hidden"
+                className="group flex flex-col md:flex-row bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl overflow-hidden hover:border-[#1B3A5C]/15 transition-colors"
               >
-                <div className="flex flex-col md:flex-row">
-                  {/* Image */}
-                  <div className="relative w-full md:w-64 lg:w-80 aspect-[16/10] md:aspect-auto md:min-h-[200px] overflow-hidden shrink-0">
-                    <Image
-                      src={imageUrl}
-                      alt={booking.property.title}
-                      fill
-                      sizes="(min-width: 768px) 320px, 100vw"
-                      className="object-cover transition-transform duration-[2s] group-hover:scale-105"
-                    />
+                {/* Image */}
+                <div className="relative w-full md:w-64 lg:w-72 aspect-[16/10] md:aspect-auto md:min-h-[200px] overflow-hidden shrink-0 bg-[#1B3A5C]/5">
+                  <Image
+                    src={imageUrl}
+                    alt={booking.property.title}
+                    fill
+                    sizes="(min-width: 768px) 320px, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <span className={`absolute top-3 left-3 inline-flex items-center rounded-full text-[11px] font-semibold border uppercase tracking-[0.1em] px-2.5 py-1 ${chip}`}>
+                    {BOOKING_STATUS_LABELS[booking.status]}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 p-5 sm:p-6 md:p-7 flex flex-col justify-between gap-5">
+                  <div>
+                    <p className="text-[11px] text-[#C9A96E] uppercase tracking-[0.18em] font-medium mb-1.5 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {booking.property.location}
+                    </p>
+                    <h3 className="font-display text-xl md:text-2xl text-[#1B3A5C] tracking-wide">
+                      {booking.property.title}
+                    </h3>
                   </div>
 
-                  {/* Content */}
-                  <div className="flex-1 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
                     <div>
-                      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-                        <div>
-                          <h3 className="font-display text-xl md:text-2xl text-charcoal tracking-wide mb-1 group-hover:text-charcoal/70 transition-colors">
-                            {booking.property.title}
-                          </h3>
-                          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30">
-                            {booking.property.location}
-                          </p>
-                        </div>
-                        <span className={`text-[8px] uppercase tracking-[0.2em] px-3 py-1.5 border shrink-0 ${
-                          booking.status === "CONFIRMED" ? "border-charcoal/15 text-charcoal/60 bg-charcoal/[0.02]" :
-                          booking.status === "PENDING" ? "border-gold/30 text-gold-dark bg-gold/5" :
-                          booking.status === "CHECKED_IN" ? "border-blue-200 text-blue-500 bg-blue-50" :
-                          booking.status === "COMPLETED" ? "border-charcoal/10 text-charcoal/40" :
-                          "border-red-200 text-red-400 bg-red-50"
-                        }`}>
-                          {BOOKING_STATUS_LABELS[booking.status]}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                        <div>
-                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Check In</p>
-                          <p className="text-sm text-charcoal/70 font-sans">
-                            {new Date(booking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Check Out</p>
-                          <p className="text-sm text-charcoal/70 font-sans">
-                            {new Date(booking.checkOut).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Duration</p>
-                          <p className="text-sm text-charcoal/70 font-sans">
-                            {nights} night{nights !== 1 ? "s" : ""}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Total</p>
-                          <p className="text-sm text-charcoal font-display tracking-wider">
-                            {formatNpr(booking.totalPrice)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-6 border-t border-charcoal/5 flex items-center justify-between">
-                      <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/20">
-                        Ref: {booking.bookingCode}
+                      <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.18em] font-medium mb-1">Check in</p>
+                      <p className="text-base font-semibold text-[#1B3A5C]">
+                        {new Date(booking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-charcoal/30 group-hover:text-charcoal/60 transition-colors">
-                        <span>Stay Details</span>
-                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" strokeWidth={1.5} />
-                      </span>
                     </div>
+                    <div>
+                      <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.18em] font-medium mb-1">Check out</p>
+                      <p className="text-base font-semibold text-[#1B3A5C]">
+                        {new Date(booking.checkOut).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.18em] font-medium mb-1">Duration</p>
+                      <p className="text-base font-semibold text-[#1B3A5C] tabular-nums">
+                        {nights} night{nights !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-[#1B3A5C]/55 uppercase tracking-[0.18em] font-medium mb-1">Total</p>
+                      <p className="text-base font-semibold text-[#1B3A5C] tabular-nums">
+                        {formatNpr(booking.totalPrice)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#1B3A5C]/5 flex items-center justify-between">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium">
+                      Ref: {booking.bookingCode}
+                    </p>
+                    <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#1B3A5C]/60 group-hover:text-[#1B3A5C] transition-colors">
+                      Stay details
+                      <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
                   </div>
                 </div>
               </Link>

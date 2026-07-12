@@ -135,17 +135,15 @@ function SectionCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5 space-y-6">
+    <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FBF9F4]/70 p-4 sm:p-5 space-y-6">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-navy shadow-sm">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFFAF3] border border-[#1B3A5C]/8 text-[#C9A96E]">
           <Icon className="h-4 w-4" />
         </span>
         <div>
-          <h3 className="font-semibold text-navy">
-            <span className="text-slate-400 mr-2">{step}.</span>
-            {title}
-          </h3>
-          <p className="text-sm text-slate-500">{description}</p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.25em] mb-0.5">Step {step}</p>
+          <h3 className="text-[15px] font-semibold text-[#1B3A5C]">{title}</h3>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-0.5">{description}</p>
         </div>
       </div>
       {children}
@@ -211,9 +209,9 @@ function BulkListTextarea({
             <FormLabel>{label}</FormLabel>
             {aiField && <AiSuggestButton field={aiField} onSuggestion={onChange} context={aiContext} />}
           </div>
-          <p className="mt-1 text-sm text-slate-500">{description}</p>
+          <p className="mt-1 text-[12px] text-[#1B3A5C]/45">{description}</p>
         </div>
-        <span className="text-xs font-medium text-slate-400">{count} added</span>
+        <span className="text-xs font-medium text-[#1B3A5C]/35 tabular-nums">{count} added</span>
       </div>
       <FormControl>
         <Textarea
@@ -506,7 +504,7 @@ export function PropertyForm({
       <form onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_390px] gap-8 items-start">
       <div className="space-y-6 md:space-y-8 min-w-0">
-        {error && <div className="text-red-500 bg-red-50 p-4 rounded-md">{error}</div>}
+        {error && <div className="text-[#B84040] text-[13px] bg-rose-50 border border-rose-200/60 p-4 rounded-xl">{error}</div>}
 
         <PropertyAiAssistant onApply={handleAiApply} />
 
@@ -566,7 +564,7 @@ export function PropertyForm({
                   <option key={t} value={t} />
                 ))}
               </datalist>
-              <p className="text-sm text-slate-500">
+              <p className="text-[12px] text-[#1B3A5C]/45">
                 Free text. The room categories below adapt to this — villas get villa categories, hotels get room categories, apartments get layouts.
               </p>
               <FormMessage />
@@ -672,7 +670,7 @@ export function PropertyForm({
               <FormItem>
                 <FormLabel>Base Price Per Night (NPR)</FormLabel>
                 <FormControl><NumberInput min={1} step={1} value={field.value} onChange={field.onChange} /></FormControl>
-                <p className="text-sm text-slate-500">Shown as &ldquo;starting from&rdquo; price. Room types below can have their own prices.</p>
+                <p className="text-[12px] text-[#1B3A5C]/45">Shown as &ldquo;starting from&rdquo; price. Room types below can have their own prices.</p>
                 <FormMessage />
               </FormItem>
             )} />
@@ -680,7 +678,7 @@ export function PropertyForm({
               <FormItem>
                 <FormLabel>Total Bookable Units</FormLabel>
                 <FormControl><NumberInput min={1} step={1} value={field.value} onChange={field.onChange} /></FormControl>
-                <p className="text-sm text-slate-500">
+                <p className="text-[12px] text-[#1B3A5C]/45">
                   {roomTypes.length > 0
                     ? `Ignored while room types exist — inventory is the ${roomTypeUnitsSum} unit(s) defined below.`
                     : "Used when you have identical rooms without separate types. A date only shows as booked once ALL units are taken."}
@@ -716,13 +714,13 @@ export function PropertyForm({
           description={`${inventoryHintFor(watchedPropertyType)} Names are free text — write anything. Optional: skip this and the property books as identical units. Availability is automatic: a date only closes when every unit of a category is taken.`}
         >
           {roomTypes.length === 0 ? (
-            <p className="text-sm text-slate-500 bg-white border border-dashed border-slate-300 rounded-lg p-4">
+            <p className="text-[12px] text-[#1B3A5C]/50 bg-[#FFFAF3] border border-dashed border-[#1B3A5C]/15 rounded-xl p-4">
               No room types yet — the property books as <strong>{form.watch("totalUnits") || 1} identical unit(s)</strong> at the base price.
               Add types if guests should choose between categories (e.g. {roomSuggestions.slice(0, 3).join(", ")}...).
             </p>
           ) : (
             <div className="space-y-3">
-              <div className="hidden lg:grid grid-cols-[1fr_1fr_90px_120px_90px_80px_80px_36px] gap-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              <div className="hidden lg:grid grid-cols-[1fr_1fr_90px_120px_90px_80px_80px_36px] gap-2 px-1 text-[10px] font-medium uppercase tracking-[0.15em] text-[#1B3A5C]/35">
                 <span>Room Type</span>
                 <span>Display Name (optional)</span>
                 <span>Units</span>
@@ -733,10 +731,10 @@ export function PropertyForm({
                 <span />
               </div>
               {roomTypes.map((rt, index) => (
-                <div key={rt.id ?? `new-${index}`} className="bg-white border border-slate-200 rounded-lg p-3 space-y-3">
+                <div key={rt.id ?? `new-${index}`} className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-3 space-y-3">
                 <div className="grid grid-cols-2 lg:grid-cols-[1fr_1fr_90px_120px_90px_80px_80px_36px] gap-2 items-center">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label className="lg:hidden text-[11px] text-slate-400">Room Type</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Room Type</Label>
                     <Input
                       list="room-type-suggestions-form"
                       value={rt.classType}
@@ -745,7 +743,7 @@ export function PropertyForm({
                     />
                   </div>
                   <div className="col-span-2 lg:col-span-1">
-                    <Label className="lg:hidden text-[11px] text-slate-400">Display Name (optional)</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Display Name (optional)</Label>
                     <Input
                       value={rt.name}
                       onChange={(e) => updateRoomTypeRow(index, { name: e.target.value })}
@@ -753,23 +751,23 @@ export function PropertyForm({
                     />
                   </div>
                   <div>
-                    <Label className="lg:hidden text-[11px] text-slate-400">Units</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Units</Label>
                     <NumberInput min={1} step={1} value={rt.totalUnits} onChange={(v) => updateRoomTypeRow(index, { totalUnits: v })} />
                   </div>
                   <div>
-                    <Label className="lg:hidden text-[11px] text-slate-400">Price/Night</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Price/Night</Label>
                     <NumberInput min={1} step={1} value={rt.pricePerNight} onChange={(v) => updateRoomTypeRow(index, { pricePerNight: v })} />
                   </div>
                   <div>
-                    <Label className="lg:hidden text-[11px] text-slate-400">Guests</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Guests</Label>
                     <NumberInput min={1} step={1} value={rt.maxGuests} onChange={(v) => updateRoomTypeRow(index, { maxGuests: v })} />
                   </div>
                   <div>
-                    <Label className="lg:hidden text-[11px] text-slate-400">Beds</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Beds</Label>
                     <NumberInput min={0} step={1} value={rt.bedrooms} onChange={(v) => updateRoomTypeRow(index, { bedrooms: v })} />
                   </div>
                   <div>
-                    <Label className="lg:hidden text-[11px] text-slate-400">Baths</Label>
+                    <Label className="lg:hidden text-[10px] uppercase tracking-[0.15em] text-[#1B3A5C]/35">Baths</Label>
                     <NumberInput min={0} step={1} value={rt.bathrooms} onChange={(v) => updateRoomTypeRow(index, { bathrooms: v })} />
                   </div>
                   <Button
@@ -784,8 +782,8 @@ export function PropertyForm({
                 </div>
 
                 {/* Room photos — multiple, uploaded to Cloudinary, shown as a gallery on the public room card */}
-                <div className="pt-2 border-t border-slate-100 space-y-2">
-                  <p className="text-[11px] text-slate-500">Room photos (first is the cover; guests can view the whole gallery)</p>
+                <div className="pt-2 border-t border-[#1B3A5C]/5 space-y-2">
+                  <p className="text-[11px] text-[#1B3A5C]/45">Room photos (first is the cover; guests can view the whole gallery)</p>
                   {(rt.images?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {rt.images!.map((url, imgIdx) => (
@@ -818,7 +816,7 @@ export function PropertyForm({
                 </div>
                 </div>
               ))}
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[#1B3A5C]/45">
                 Total inventory: <strong>{roomTypeUnitsSum} unit(s)</strong> across {roomTypes.length} type(s).
                 Photos, bed setup, size, and per-type amenities can be added later under <strong>Room Classes</strong> on the property page.
               </p>
@@ -831,8 +829,8 @@ export function PropertyForm({
             ))}
           </datalist>
 
-          <Button type="button" variant="outline" onClick={addRoomTypeRow} className="text-navy border-navy/20">
-            <Plus className="w-4 h-4 mr-2" /> Add Room Type
+          <Button type="button" variant="outline" onClick={addRoomTypeRow} className="rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 bg-transparent">
+            <Plus className="w-3.5 h-3.5 mr-2" /> Add Room Type
           </Button>
         </SectionCard>
 
@@ -847,13 +845,13 @@ export function PropertyForm({
             <div className="flex items-center justify-between">
               <div>
                 <FormLabel>What to Expect (icon strip)</FormLabel>
-                <p className="text-sm text-slate-500">Select features to show as icons near the top of the public page.</p>
+                <p className="text-[12px] text-[#1B3A5C]/45">Select features to show as icons near the top of the public page.</p>
               </div>
-              <span className="text-xs font-medium text-slate-400">{(form.watch("whatToExpect") || []).length} selected</span>
+              <span className="text-xs font-medium text-[#1B3A5C]/35 tabular-nums">{(form.watch("whatToExpect") || []).length} selected</span>
             </div>
             {availableFeatures.length === 0 ? (
-              <p className="text-sm text-slate-400 bg-white border border-dashed border-slate-300 rounded-lg p-4">
-                No features defined yet. <a href="/admin/settings/features" className="text-navy underline">Add features in Settings</a>.
+              <p className="text-[12px] text-[#1B3A5C]/40 bg-[#FFFAF3] border border-dashed border-[#1B3A5C]/15 rounded-xl p-4">
+                No features defined yet. <a href="/admin/settings/features" className="text-[#C9A96E] underline">Add features in Settings</a>.
               </p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
@@ -872,13 +870,13 @@ export function PropertyForm({
                           form.setValue("whatToExpect", [...current, feature.name], { shouldValidate: true })
                         }
                       }}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[13px] transition-colors ${
                         selected
-                          ? "bg-navy text-white border-navy"
-                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                          ? "bg-[#1B3A5C] text-[#FFFAF3] border-[#1B3A5C]"
+                          : "bg-[#FFFAF3] text-[#1B3A5C]/60 border-[#1B3A5C]/10 hover:border-[#1B3A5C]/25"
                       }`}
                     >
-                      <Icon className={`w-4 h-4 shrink-0 ${selected ? "text-gold" : "text-slate-400"}`} strokeWidth={1} />
+                      <Icon className={`w-4 h-4 shrink-0 ${selected ? "text-[#C9A96E]" : "text-[#1B3A5C]/35"}`} strokeWidth={1} />
                       <span className="truncate">{feature.name}</span>
                       {selected && <Check className="w-3 h-3 ml-auto shrink-0" />}
                     </button>
@@ -933,13 +931,13 @@ export function PropertyForm({
           </div>
 
           {/* Stay Details — custom label/value rows */}
-          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-3">
+          <div className="rounded-xl border border-[#1B3A5C]/8 bg-[#FFFAF3] p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-navy">Stay Details rows</p>
-                <p className="text-[11px] text-slate-500">Custom label/value facts (e.g. Guest Rooms · 8, Setting · Eastern Hills). Leave empty to show bedrooms/bathrooms/capacity automatically.</p>
+                <p className="text-sm font-semibold text-[#1B3A5C]">Stay Details rows</p>
+                <p className="text-[11px] text-[#1B3A5C]/45">Custom label/value facts (e.g. Guest Rooms · 8, Setting · Eastern Hills). Leave empty to show bedrooms/bathrooms/capacity automatically.</p>
               </div>
-              <Button type="button" variant="outline" size="sm" className="text-navy border-navy/20" onClick={addStayDetail}>
+              <Button type="button" variant="outline" size="sm" className="rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 bg-transparent" onClick={addStayDetail}>
                 <Plus className="w-3.5 h-3.5 mr-1.5" /> Add row
               </Button>
             </div>
@@ -959,13 +957,13 @@ export function PropertyForm({
           </div>
 
           {/* Getting Here — travel times */}
-          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-3">
+          <div className="rounded-xl border border-[#1B3A5C]/8 bg-[#FFFAF3] p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-navy">Getting Here (travel times)</p>
-                <p className="text-[11px] text-slate-500">Shown as a &ldquo;Getting Here&rdquo; section, e.g. <strong>2hr 30 mins</strong> · From Donyi Polo Airport, Itanagar · 128 km.</p>
+                <p className="text-sm font-semibold text-[#1B3A5C]">Getting Here (travel times)</p>
+                <p className="text-[11px] text-[#1B3A5C]/45">Shown as a &ldquo;Getting Here&rdquo; section, e.g. <strong>2hr 30 mins</strong> · From Donyi Polo Airport, Itanagar · 128 km.</p>
               </div>
-              <Button type="button" variant="outline" size="sm" className="text-navy border-navy/20" onClick={addGettingHere}>
+              <Button type="button" variant="outline" size="sm" className="rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 bg-transparent" onClick={addGettingHere}>
                 <Plus className="w-3.5 h-3.5 mr-1.5" /> Add leg
               </Button>
             </div>
@@ -1025,7 +1023,7 @@ export function PropertyForm({
                 <FormLabel>Tagline</FormLabel>
                 <AiSuggestButton field="tagline" onSuggestion={(text) => form.setValue("tagline", text, { shouldValidate: true })} context={aiContext} />
               </div>
-              <p className="text-sm text-slate-500">A short signature line shown under the property title.</p>
+              <p className="text-[12px] text-[#1B3A5C]/45">A short signature line shown under the property title.</p>
               <FormControl><Input {...field} placeholder="e.g. A lakeside retreat where the mountains meet stillness" /></FormControl>
               <FormMessage />
             </FormItem>
@@ -1038,7 +1036,7 @@ export function PropertyForm({
                   <FormLabel>The Story</FormLabel>
                   <AiSuggestButton field="story" onSuggestion={(text) => form.setValue("story", text, { shouldValidate: true })} context={aiContext} />
                 </div>
-                <p className="text-sm text-slate-500">The deeper story of this place — its history, design, philosophy.</p>
+                <p className="text-[12px] text-[#1B3A5C]/45">The deeper story of this place — its history, design, philosophy.</p>
                 <FormControl><Textarea className="min-h-[140px]" {...field} placeholder="Built in 1972 by..." /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -1050,7 +1048,7 @@ export function PropertyForm({
                   <FormLabel>The Neighborhood</FormLabel>
                   <AiSuggestButton field="neighborhood" onSuggestion={(text) => form.setValue("neighborhood", text, { shouldValidate: true })} context={aiContext} />
                 </div>
-                <p className="text-sm text-slate-500">What surrounds the stay — walks, food, culture, views.</p>
+                <p className="text-[12px] text-[#1B3A5C]/45">What surrounds the stay — walks, food, culture, views.</p>
                 <FormControl><Textarea className="min-h-[140px]" {...field} placeholder="Five minutes from the old bazaar..." /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -1063,7 +1061,7 @@ export function PropertyForm({
                 <FormLabel>A Note From The Host</FormLabel>
                 <AiSuggestButton field="hostNote" onSuggestion={(text) => form.setValue("hostNote", text, { shouldValidate: true })} context={aiContext} />
               </div>
-              <p className="text-sm text-slate-500">A personal welcome message from the owner, shown with their name.</p>
+              <p className="text-[12px] text-[#1B3A5C]/45">A personal welcome message from the owner, shown with their name.</p>
               <FormControl><Textarea className="min-h-[100px]" {...field} placeholder="We look forward to welcoming you..." /></FormControl>
               <FormMessage />
             </FormItem>
@@ -1078,18 +1076,18 @@ export function PropertyForm({
           description="Upload photos and videos. After saving you can add more, reorder them, and pick a primary cover image."
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
+            <div className="rounded-xl border border-[#1B3A5C]/8 bg-[#FFFAF3] p-4 space-y-2">
               <div>
-                <h4 className="text-sm font-semibold text-navy">Photos</h4>
-                <p className="text-xs text-slate-500">JPG, PNG, WEBP, AVIF. Up to 30 at once.</p>
+                <h4 className="text-sm font-semibold text-[#1B3A5C]">Photos</h4>
+                <p className="text-xs text-[#1B3A5C]/45">JPG, PNG, WEBP, AVIF. Up to 30 at once.</p>
               </div>
               <MediaUploader onAdd={handleAddMedia} multiple maxFiles={30} kind="image" />
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
+            <div className="rounded-xl border border-[#1B3A5C]/8 bg-[#FFFAF3] p-4 space-y-2">
               <div>
-                <h4 className="text-sm font-semibold text-navy">Videos</h4>
-                <p className="text-xs text-slate-500">MP4, WEBM, MOV. Up to 200 MB per video.</p>
+                <h4 className="text-sm font-semibold text-[#1B3A5C]">Videos</h4>
+                <p className="text-xs text-[#1B3A5C]/45">MP4, WEBM, MOV. Up to 200 MB per video.</p>
               </div>
               <MediaUploader onAdd={handleAddMedia} multiple maxFiles={10} kind="video" />
             </div>
@@ -1100,8 +1098,8 @@ export function PropertyForm({
               {media.map((item) => {
                 const video = isVideoUrl(item.url)
                 return (
-                  <div key={item.publicId} className="overflow-hidden rounded-lg border bg-white">
-                    <div className="relative aspect-video bg-slate-100">
+                  <div key={item.publicId} className="overflow-hidden rounded-xl border border-[#1B3A5C]/8 bg-[#FFFAF3]">
+                    <div className="relative aspect-video bg-[#1B3A5C]/5">
                       {video ? (
                         <video src={item.url} className="h-full w-full object-cover" controls muted playsInline />
                       ) : (
@@ -1110,7 +1108,7 @@ export function PropertyForm({
                       )}
                     </div>
                     <div className="flex items-center justify-between gap-2 p-2">
-                      <span className="flex min-w-0 items-center gap-1.5 text-xs text-slate-600">
+                      <span className="flex min-w-0 items-center gap-1.5 text-xs text-[#1B3A5C]/60">
                         {video ? <Film className="h-3.5 w-3.5 shrink-0" /> : <ImageIcon className="h-3.5 w-3.5 shrink-0" />}
                         <span className="truncate">{item.alt || item.publicId}</span>
                       </span>
@@ -1131,7 +1129,7 @@ export function PropertyForm({
           )}
         </SectionCard>
 
-        <Button type="submit" className="bg-navy text-cream w-full" disabled={isPending}>
+        <Button type="submit" className="w-full rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]" disabled={isPending}>
           {isPending ? "Saving..." : initialData ? "Update Property" : "Create Property"}
         </Button>
       </div>

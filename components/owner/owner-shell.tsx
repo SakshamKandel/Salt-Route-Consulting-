@@ -34,7 +34,7 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
 
       {/* ─── Mobile drawer ─── */}
       <div
-        className="fixed inset-y-0 left-0 z-40 w-72 flex flex-col bg-[#FFFDF8] border-r border-[#1B3A5C]/8 md:hidden"
+        className="fixed inset-y-0 left-0 z-40 w-72 flex flex-col bg-[#FFFAF3] border-r border-[#1B3A5C]/8 md:hidden"
         style={{
           transform: isDrawerOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
@@ -85,7 +85,7 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
       </div>
 
       {/* ─── Desktop sidebar ─── */}
-      <aside className="w-[240px] flex-col hidden md:flex shrink-0 bg-[#FFFDF8] border-r border-[#1B3A5C]/8 overflow-hidden">
+      <aside className="w-[240px] flex-col hidden md:flex shrink-0 bg-[#FFFAF3] border-r border-[#1B3A5C]/8 overflow-hidden">
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-[#1B3A5C]/8 shrink-0">
           <Link href="/" className="flex items-center gap-3">
@@ -128,7 +128,7 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Topbar */}
-        <header className="h-14 bg-[#FFFDF8] border-b border-[#1B3A5C]/8 flex items-center justify-between px-4 sm:px-6 shrink-0">
+        <header className="h-14 bg-[#FFFAF3] border-b border-[#1B3A5C]/8 flex items-center justify-between px-4 sm:px-6 shrink-0">
           {/* Mobile hamburger */}
           <button
             className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-[#F5F1E8] transition-colors"
@@ -154,7 +154,7 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
             >
               <Bell className="h-4 w-4" />
               {unreadNotifications > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 min-w-[16px] h-4 rounded-full bg-[#B84040] text-[#FFFDF8] text-[9px] font-bold flex items-center justify-center px-1 leading-none">
+                <span className="absolute -right-0.5 -top-0.5 min-w-[16px] h-4 rounded-full bg-[#B84040] text-[#FFFAF3] text-[9px] font-bold flex items-center justify-center px-1 leading-none">
                   {unreadNotifications > 9 ? "9+" : unreadNotifications}
                 </span>
               )}

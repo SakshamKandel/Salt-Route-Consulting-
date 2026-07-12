@@ -17,7 +17,7 @@ export async function bulkApproveReviewsAction(ids: string[]) {
   try {
     await prisma.review.updateMany({
       where: { id: { in: ids } },
-      data: { status: ReviewStatus.PUBLISHED, isApproved: true },
+      data: { status: ReviewStatus.PUBLISHED },
     })
     await createAuditLog({
       action: "BULK_UPDATE",
@@ -37,7 +37,7 @@ export async function bulkHideReviewsAction(ids: string[]) {
   try {
     await prisma.review.updateMany({
       where: { id: { in: ids } },
-      data: { status: ReviewStatus.HIDDEN, isApproved: false },
+      data: { status: ReviewStatus.HIDDEN },
     })
     await createAuditLog({
       action: "BULK_UPDATE",

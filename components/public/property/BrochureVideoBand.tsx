@@ -1,11 +1,15 @@
 "use client"
 
 // ── Brochure: full-bleed film / virtual-tour band ───────────────────────────
-// An editorial, image-forward video band. A native autoplaying loop sits
-// behind a non-interactive bottom-left caption so the video controls remain
-// clickable. Renders nothing when no video source is supplied.
+// Lazy editorial video band. The poster renders immediately (next/image); the
+// video element only mounts — and its bytes only download — once the band is
+// about a viewport away (IntersectionObserver, fired once). Reduced-motion and
+// Save-Data get the poster with tap-to-play controls instead of autoplay. The
+// admin live preview renders the poster only, with no <video> element at all.
 
-import { Eyebrow } from "@/components/public/property/primitives"
+import { useEffect, useRef, useState } from "react"
+import { useReducedMotion } from "framer-motion"
+import { Eyebrow, SafeImage, usePreview } from "@/components/public/property/primitives"
 
 export function BrochureVideoBand({
   videoUrl,
@@ -16,25 +20,82 @@ export function BrochureVideoBand({
   videoPoster?: string | null
   title: string
 }) {
+  const preview = usePreview()
+  const reduce = useReducedMotion()
+  const [saveData, setSaveData] = useState(false)
+  const [near, setNear] = useState(false)
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  // Respect the Save-Data hint the same way as reduced motion.
+  useEffect(() => {
+    if (preview) return
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
+    if (conn?.saveData) setSaveData(true)
+  }, [preview])
+
+  const noAutoplay = !!reduce || saveData
+
+  // Attach the source only when the band is ~1 viewport away (fired once).
+  useEffect(() => {
+    if (preview || noAutoplay || near || !videoUrl) return
+    const el = sectionRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: "100% 0px" },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [preview, noAutoplay, near, videoUrl])
+
+  // Start the quiet loop once the source is attached (iOS: muted+playsInline).
+  useEffect(() => {
+    if (near && videoRef.current) {
+      videoRef.current.play().catch(() => {})
+    }
+  }, [near])
+
   if (!videoUrl) return null
 
+  const showVideo = !preview && (near || noAutoplay)
+
   return (
-    <section id="virtual-tour" className="relative w-full bg-charcoal">
-      <div className="relative aspect-[4/5] md:aspect-[21/9]">
-        <video
-          src={videoUrl}
-          poster={videoPoster ?? undefined}
-          className="h-full w-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          controls
-          controlsList="nodownload"
-        />
+    <section id="virtual-tour" ref={sectionRef} className="relative w-full bg-charcoal">
+      <div className="relative aspect-video md:aspect-[21/9]">
+        {videoPoster ? (
+          <SafeImage
+            src={videoPoster}
+            alt={`${title} film`}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+        ) : null}
+
+        {showVideo && (
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            poster={videoPoster ?? undefined}
+            preload="none"
+            className="absolute inset-0 h-full w-full object-cover"
+            loop
+            muted
+            playsInline
+            controls
+            controlsList="nodownload"
+          />
+        )}
+
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-8 md:p-12">
           <Eyebrow light>Film</Eyebrow>
-          <h2 className="mt-4 font-display text-3xl uppercase tracking-wide text-white md:text-5xl">
+          <h2 className="mt-4 font-display font-normal text-3xl md:text-5xl leading-[1.1] tracking-[-0.01em] text-white">
             {title}
           </h2>
         </div>

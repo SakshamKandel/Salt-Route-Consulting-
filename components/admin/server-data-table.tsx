@@ -101,7 +101,7 @@ export function ServerDataTable<T>({
               indeterminate={table.getIsSomePageRowsSelected()}
               onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
               aria-label="Select all"
-              className="border-slate-300 data-[state=checked]:bg-[#1B3A5C] data-[state=checked]:border-[#1B3A5C]"
+              className="border-[#1B3A5C]/25 data-[state=checked]:bg-[#1B3A5C] data-[state=checked]:border-[#1B3A5C]"
             />
           ),
           cell: ({ row }) => (
@@ -110,7 +110,7 @@ export function ServerDataTable<T>({
               onCheckedChange={(v) => row.toggleSelected(!!v)}
               aria-label="Select row"
               onClick={(e) => e.stopPropagation()}
-              className="border-slate-300 data-[state=checked]:bg-[#1B3A5C] data-[state=checked]:border-[#1B3A5C]"
+              className="border-[#1B3A5C]/25 data-[state=checked]:bg-[#1B3A5C] data-[state=checked]:border-[#1B3A5C]"
             />
           ),
         },
@@ -138,23 +138,23 @@ export function ServerDataTable<T>({
       {/* Toolbar */}
       <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#1B3A5C]/30 pointer-events-none" />
           <Input
             placeholder={searchPlaceholder}
             value={localSearch}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 h-9 border-slate-200 bg-white text-sm placeholder:text-slate-400 rounded-lg focus:border-slate-400 focus:ring-0"
+            className="pl-9 h-9 border-[#1B3A5C]/10 bg-[#FFFAF3] text-[13px] text-[#1B3A5C] placeholder:text-[#1B3A5C]/30 rounded-lg focus:border-[#1B3A5C]/30 focus:ring-0"
           />
         </div>
         {bulkActionBar}
       </div>
 
       {/* Table card */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[700px]">
             <TableHeader>
-              <TableRow className="bg-slate-50 border-b border-slate-200 hover:bg-slate-50">
+              <TableRow className="border-b border-[#1B3A5C]/8 hover:bg-transparent">
                 {table.getHeaderGroups().map((hg) =>
                   hg.headers.map((header) => {
                     const isSortable = header.id !== "__select"
@@ -162,8 +162,8 @@ export function ServerDataTable<T>({
                     return (
                       <TableHead
                         key={header.id}
-                        className={`text-slate-500 text-xs font-semibold h-11 select-none ${
-                          isSortable ? "cursor-pointer hover:text-slate-800" : ""
+                        className={`text-[10px] uppercase tracking-[0.15em] font-medium text-[#1B3A5C]/35 h-11 select-none ${
+                          isSortable ? "cursor-pointer hover:text-[#1B3A5C]/70" : ""
                         }`}
                         onClick={() => { if (isSortable) handleSort(header.id) }}
                         style={{ width: header.column.columnDef.size }}
@@ -174,9 +174,9 @@ export function ServerDataTable<T>({
                             <span>
                               {isActive
                                 ? order === "asc"
-                                  ? <ChevronUp className="h-3 w-3 text-[#1B3A5C]" />
-                                  : <ChevronDown className="h-3 w-3 text-[#1B3A5C]" />
-                                : <ChevronsUpDown className="h-3 w-3 text-slate-300" />
+                                  ? <ChevronUp className="h-3 w-3 text-[#C9A96E]" />
+                                  : <ChevronDown className="h-3 w-3 text-[#C9A96E]" />
+                                : <ChevronsUpDown className="h-3 w-3 text-[#1B3A5C]/15" />
                               }
                             </span>
                           )}
@@ -187,12 +187,12 @@ export function ServerDataTable<T>({
                 )}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-[#1B3A5C]/5">
               {table.getRowModel().rows.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={withCheckbox.length}
-                    className="text-center h-32 text-sm text-slate-400"
+                    className="text-center h-32 text-[13px] text-[#1B3A5C]/35"
                   >
                     {emptyMessage}
                   </TableCell>
@@ -202,10 +202,10 @@ export function ServerDataTable<T>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() ? "selected" : undefined}
-                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors data-[state=selected]:bg-blue-50/40"
+                    className="border-b border-[#1B3A5C]/5 last:border-0 hover:bg-[#FBF9F4] transition-colors data-[state=selected]:bg-[#C9A96E]/8"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-3 text-sm text-slate-700">
+                      <TableCell key={cell.id} className="py-3 text-sm text-[#1B3A5C]/80">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -218,8 +218,8 @@ export function ServerDataTable<T>({
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col gap-3 text-sm text-slate-500 px-1 sm:flex-row sm:items-center sm:justify-between">
-        <span>
+      <div className="flex flex-col gap-3 text-[12px] text-[#1B3A5C]/45 px-1 sm:flex-row sm:items-center sm:justify-between">
+        <span className="tabular-nums">
           {total === 0 ? "No results" : `${startItem}–${endItem} of ${total.toLocaleString()} results`}
         </span>
         <div className="flex flex-wrap items-center gap-2">
@@ -227,16 +227,16 @@ export function ServerDataTable<T>({
             type="button"
             onClick={() => updateParam({ page: String(page - 1) })}
             disabled={page <= 1}
-            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
+            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 text-xs font-medium text-[#1B3A5C]/60 transition-colors hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
           >
             <ChevronLeft className="h-3.5 w-3.5" /> Previous
           </button>
-          <span className="text-xs text-slate-400 px-1">Page {page} of {totalPages}</span>
+          <span className="text-xs text-[#1B3A5C]/35 px-1 tabular-nums">Page {page} of {totalPages}</span>
           <button
             type="button"
             onClick={() => updateParam({ page: String(page + 1) })}
             disabled={page >= totalPages}
-            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
+            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] px-3 text-xs font-medium text-[#1B3A5C]/60 transition-colors hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 disabled:pointer-events-none disabled:opacity-40 sm:flex-none"
           >
             Next <ChevronRight className="h-3.5 w-3.5" />
           </button>

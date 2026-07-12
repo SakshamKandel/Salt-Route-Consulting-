@@ -6,9 +6,8 @@ async function main() {
   console.log('Publishing all pending reviews...')
   const result = await prisma.review.updateMany({
     where: { status: 'PENDING' },
-    data: { 
-      status: 'PUBLISHED',
-      isApproved: true
+    data: {
+      status: 'PUBLISHED'
     }
   })
   console.log(`Success: Updated ${result.count} reviews.`)

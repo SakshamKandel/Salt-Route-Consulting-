@@ -47,7 +47,6 @@ export async function replyToInquiryAction(id: string, replyMessage: string) {
       where: { id },
       data: {
         status: "RESPONDED",
-        reply: replyMessage,
         lastMessageAt: now,
         lastMessageBy: "ADMIN",
         adminLastReadAt: now,

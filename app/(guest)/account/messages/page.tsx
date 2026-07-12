@@ -8,6 +8,12 @@ import { isInquiryUnreadForGuest, normalizeInquiryMessages } from "@/lib/inquiri
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
 
+const INQUIRY_STATUS_CHIP: Record<string, string> = {
+  RESPONDED:   "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  CLOSED:      "bg-[#1B3A5C]/5 text-[#1B3A5C]/55 border-[#1B3A5C]/10",
+  IN_PROGRESS: "bg-amber-50 text-amber-700 border-amber-200/60",
+}
+
 export default async function GuestMessagesPage({
   searchParams,
 }: {
@@ -27,44 +33,56 @@ export default async function GuestMessagesPage({
     skip: pagination.skip,
     take: pagination.take,
     include: {
-      messages: { orderBy: { createdAt: "asc" } },
+      messages: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, sender: true, body: true, createdAt: true },
+      },
     },
   })
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* ─── PAGE HEADER ─── */}
-      <div className="flex items-center gap-4">
-        <div className="w-8 h-[1px] bg-charcoal/20" />
-        <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Concierge
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
           Conversations
         </h1>
+        <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+          Speak with our team about any stay, request, or detail of your journey.
+        </p>
       </div>
 
       {/* ─── COMPOSE NEW MESSAGE ─── */}
-      <div className="bg-white border border-charcoal/5 p-8 md:p-10">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-8 h-8 rounded-full bg-charcoal/[0.03] flex items-center justify-center border border-charcoal/5">
-            <Send className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.5} />
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-7">
+          <div className="w-9 h-9 rounded-full bg-[#1B3A5C]/[0.04] flex items-center justify-center border border-[#1B3A5C]/8">
+            <Send className="w-3.5 h-3.5 text-[#1B3A5C]/40" strokeWidth={1.5} />
           </div>
-          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">Start a Conversation</h2>
+          <div>
+            <h2 className="font-display text-lg text-[#1B3A5C] tracking-wide">Start a conversation</h2>
+            <p className="text-[13px] text-[#1B3A5C]/60 mt-0.5">Our team typically replies within a day.</p>
+          </div>
         </div>
         <SendMessageForm userEmail={session.user.email!} userName={session.user.name || "Guest"} />
       </div>
 
       {/* ─── CONVERSATION HISTORY ─── */}
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-charcoal/[0.03] flex items-center justify-center border border-charcoal/5">
-            <MessageSquare className="w-3.5 h-3.5 text-charcoal/30" strokeWidth={1.5} />
+          <div className="w-9 h-9 rounded-full bg-[#1B3A5C]/[0.04] flex items-center justify-center border border-[#1B3A5C]/8">
+            <MessageSquare className="w-3.5 h-3.5 text-[#1B3A5C]/40" strokeWidth={1.5} />
           </div>
-          <h2 className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-medium">Your Notes</h2>
+          <h2 className="font-display text-lg text-[#1B3A5C] tracking-wide">Your conversations</h2>
         </div>
 
         {inquiries.length === 0 ? (
-          <div className="text-center py-20 bg-white border border-charcoal/5">
-            <MessageSquare className="w-8 h-8 text-charcoal/15 mx-auto mb-6" strokeWidth={1} />
-            <p className="text-charcoal/40 text-sm font-sans">No messages yet. Start a conversation above.</p>
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl py-16 text-center">
+            <MessageSquare className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-4" strokeWidth={1.5} />
+            <h3 className="font-display text-lg text-[#1B3A5C] tracking-wide mb-1.5">No messages yet</h3>
+            <p className="text-[13px] text-[#1B3A5C]/60">Start a conversation above and we will take it from there.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -74,28 +92,25 @@ export default async function GuestMessagesPage({
               return (
                 <div
                   key={inq.id}
-                  className={`bg-white border p-6 md:p-8 space-y-6 transition-colors duration-300 ${
-                    unread ? "border-charcoal/15" : "border-charcoal/5"
+                  className={`bg-[#FFFAF3] border rounded-xl p-5 sm:p-7 space-y-6 transition-colors ${
+                    unread ? "border-[#1B3A5C]/20" : "border-[#1B3A5C]/8"
                   }`}
                 >
                   {/* Header */}
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 pb-5 border-b border-charcoal/5">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 pb-5 border-b border-[#1B3A5C]/5">
                     <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-display text-base text-charcoal tracking-wide">{inq.subject}</h3>
+                      <div className="flex items-center gap-3 mb-1.5">
+                        <h3 className="font-display text-lg text-[#1B3A5C] tracking-wide">{inq.subject}</h3>
                         {unread && (
-                          <span className="w-2 h-2 rounded-full bg-charcoal" />
+                          <span className="w-2 h-2 rounded-full bg-[#C9A96E]" />
                         )}
                       </div>
-                      <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25">
+                      <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium">
                         {new Date(inq.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                       </p>
                     </div>
-                    <span className={`text-[8px] uppercase tracking-[0.2em] px-3 py-1.5 border shrink-0 ${
-                      inq.status === "RESPONDED" ? "border-charcoal/15 text-charcoal/50" :
-                      inq.status === "CLOSED" ? "border-charcoal/10 text-charcoal/25" :
-                      inq.status === "IN_PROGRESS" ? "border-gold/25 text-gold-dark" :
-                      "border-charcoal/10 text-charcoal/40"
+                    <span className={`inline-flex items-center rounded-full text-[11px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 shrink-0 ${
+                      INQUIRY_STATUS_CHIP[inq.status] ?? "bg-[#1B3A5C]/5 text-[#1B3A5C]/55 border-[#1B3A5C]/10"
                     }`}>
                       {inq.status.replace("_", " ")}
                     </span>
@@ -105,24 +120,24 @@ export default async function GuestMessagesPage({
                   <div className="space-y-5">
                     {messages.map((reply) => (
                       <div key={reply.id} className="flex gap-4">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
                           reply.sender === "ADMIN"
-                            ? "bg-charcoal/[0.03] border-charcoal/10"
-                            : "bg-transparent border-charcoal/5"
+                            ? "bg-[#1B3A5C]/[0.04] border-[#1B3A5C]/10"
+                            : "bg-transparent border-[#1B3A5C]/8"
                         }`}>
                           {reply.sender === "ADMIN"
-                            ? <ShieldCheck className="w-3 h-3 text-charcoal/40" strokeWidth={1.5} />
-                            : <User className="w-3 h-3 text-charcoal/25" strokeWidth={1.5} />
+                            ? <ShieldCheck className="w-3.5 h-3.5 text-[#C9A96E]" strokeWidth={1.5} />
+                            : <User className="w-3.5 h-3.5 text-[#1B3A5C]/30" strokeWidth={1.5} />
                           }
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-[9px] uppercase tracking-[0.2em] font-medium mb-1.5 ${
-                            reply.sender === "ADMIN" ? "text-charcoal/60" : "text-charcoal/30"
+                          <p className={`text-[11px] uppercase tracking-[0.16em] font-medium mb-1.5 ${
+                            reply.sender === "ADMIN" ? "text-[#1B3A5C]/70" : "text-[#1B3A5C]/55"
                           }`}>
                             {reply.sender === "ADMIN" ? "Salt Route Team" : "You"}
                           </p>
-                          <p className="text-charcoal/65 text-sm leading-relaxed font-sans">{reply.body}</p>
-                          <p className="text-[8px] text-charcoal/15 uppercase tracking-[0.15em] mt-2">
+                          <p className="text-[15px] text-[#1B3A5C]/75 leading-relaxed">{reply.body}</p>
+                          <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
                             {new Date(reply.createdAt).toLocaleString()}
                           </p>
                         </div>
@@ -132,7 +147,7 @@ export default async function GuestMessagesPage({
 
                   {/* Reply Form */}
                   {inq.status !== "CLOSED" && (
-                    <div className="pt-4 border-t border-charcoal/5">
+                    <div className="pt-4 border-t border-[#1B3A5C]/5">
                       <GuestReplyForm inquiryId={inq.id} />
                     </div>
                   )}

@@ -30,7 +30,7 @@ export const siteConfig = {
     fromEmail: process.env.SMTP_FROM ?? `"Salt Route Corp" <connect@saltroutecorp.com>`,
     /** Fallback admin notification recipient if no admin users in DB */
     adminEmail: process.env.ADMIN_EMAIL ?? "connect@saltroutecorp.com",
-    phone: process.env.CONTACT_PHONE ?? "+977 980 130 0001",
+    phone: process.env.CONTACT_PHONE ?? "+977 9801300001",
     phoneHref: process.env.CONTACT_PHONE_HREF ?? "tel:+9779801300001",
     address: process.env.CONTACT_ADDRESS ?? "P8FW+78R, Kathmandu 44600, Nepal",
     addressFull: process.env.CONTACT_ADDRESS_FULL ?? "Salt Route Group HQ, P8FW+78R, Kathmandu 44600, Nepal",

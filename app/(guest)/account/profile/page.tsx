@@ -16,37 +16,42 @@ export default async function ProfilePage() {
   if (!user) redirect("/login")
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Page header */}
-      <div className="flex items-center gap-4">
-        <div className="w-8 h-[1px] bg-charcoal/20" />
-        <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">
+      <div>
+        <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+          Your Account
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">
           Personal Profile
         </h1>
+        <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+          Keep your details current so we can care for every stay properly.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-8">
         {/* Profile form */}
-        <div className="bg-white border border-charcoal/5 p-8 md:p-12">
-          <h2 className="font-display text-xl text-charcoal tracking-wide mb-2">Your Details</h2>
-          <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 mb-10">Keep your contact details current</p>
+        <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8 md:p-10">
+          <h2 className="font-display text-xl text-[#1B3A5C] tracking-wide mb-1.5">Your Details</h2>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-8">Keep your contact details current</p>
           <ProfileForm initialData={{ name: user.name || "", phone: user.phone || "", image: user.image || "" }} />
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Account info */}
-          <div className="bg-white border border-charcoal/5 p-8">
-            <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-6">Account Details</h3>
-            <div className="space-y-5">
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+            <h3 className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-5">Account Details</h3>
+            <div className="space-y-4">
               <div>
-                <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Email</p>
-                <p className="text-sm text-charcoal/70 font-sans">{user.email}</p>
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-1">Email</p>
+                <p className="text-[13px] text-[#1B3A5C]/70">{user.email}</p>
               </div>
-              <div className="w-full h-[1px] bg-charcoal/5" />
+              <div className="w-full h-px bg-[#1B3A5C]/5" />
               <div>
-                <p className="text-[8px] uppercase tracking-[0.2em] text-charcoal/25 mb-1">Member Since</p>
-                <p className="text-sm text-charcoal/70 font-sans">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-1">Member Since</p>
+                <p className="text-[13px] text-[#1B3A5C]/70">
                   {user.createdAt.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
                 </p>
               </div>
@@ -54,19 +59,19 @@ export default async function ProfilePage() {
           </div>
 
           {/* Security */}
-          <div className="bg-white border border-charcoal/5 p-8">
-            <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-6">Security</h3>
+          <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-7">
+            <h3 className="text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium mb-5">Security</h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-charcoal/70 font-medium mb-1">Password</p>
-                <p className="text-[11px] text-charcoal/35 leading-relaxed mb-4">
+                <p className="text-[13px] text-[#1B3A5C] font-medium mb-1">Password</p>
+                <p className="text-[13px] text-[#1B3A5C]/60 leading-relaxed mb-4">
                   {user.hashedPassword
                     ? "Keep your account secure with a strong password."
                     : "You signed in with Google. Set a password to enable email login."}
                 </p>
                 <Link
                   href="/account/profile/password"
-                  className="inline-flex items-center text-[9px] uppercase tracking-[0.25em] text-charcoal/50 hover:text-charcoal transition-colors underline underline-offset-4 decoration-charcoal/15"
+                  className="inline-flex items-center min-h-[40px] text-[13px] uppercase tracking-[0.16em] font-medium text-[#C9A96E] hover:text-[#1B3A5C] transition-colors"
                 >
                   {user.hashedPassword ? "Change Password" : "Set Password"}
                 </Link>
@@ -75,14 +80,14 @@ export default async function ProfilePage() {
           </div>
 
           {/* Help */}
-          <div className="bg-charcoal/[0.02] border border-charcoal/5 p-8">
-            <h3 className="text-[9px] uppercase tracking-[0.2em] text-charcoal/30 font-medium mb-4">Need Help?</h3>
-            <p className="text-xs text-charcoal/40 leading-relaxed font-sans mb-4">
+          <div className="bg-[#1B3A5C] rounded-xl p-6 sm:p-7">
+            <h3 className="text-[11px] uppercase tracking-[0.16em] text-[#FFFAF3]/60 font-medium mb-3">Need Help?</h3>
+            <p className="text-[13px] text-[#FFFAF3]/70 leading-relaxed mb-4">
               The Salt Route team is available to help with stay questions, profile updates, or guest care.
             </p>
             <a
               href="mailto:connect@saltroutecorp.com"
-              className="text-[9px] uppercase tracking-[0.2em] text-charcoal/50 hover:text-charcoal transition-colors underline underline-offset-4 decoration-charcoal/15"
+              className="inline-flex items-center min-h-[40px] text-[13px] uppercase tracking-[0.16em] font-medium text-[#C9A96E] hover:text-[#FFFAF3] transition-colors"
             >
               Contact Support
             </a>

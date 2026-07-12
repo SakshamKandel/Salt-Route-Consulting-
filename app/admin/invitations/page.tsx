@@ -25,67 +25,69 @@ export default async function AdminInvitationsPage({
     <div className="space-y-6">
       
       {/* ━━━ HEADER ━━━ */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display text-navy tracking-wide">Invitations</h2>
-          <p className="text-navy/40 text-xs uppercase tracking-wider font-medium mt-1">
-            Manage invites for new owners and admins.
-          </p>
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Access</p>
+          <h2 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">Invitations</h2>
+          <p className="text-[12px] text-[#1B3A5C]/45 mt-1">Manage invites for new owners and admins.</p>
         </div>
         <div className="flex gap-2.5 shrink-0">
-          <Button asChild className="bg-navy hover:bg-navy/90 text-cream text-[10px] font-semibold uppercase tracking-widest rounded-xl h-10 px-4 shadow-md shadow-navy/10">
+          <Button asChild className="bg-[#1B3A5C] hover:bg-[#2A4F7A] text-[#FFFAF3] text-[12px] font-medium rounded-lg h-9 px-4">
             <Link href="/admin/invitations/new">
-              <Plus className="w-4 h-4 mr-1.5" /> Send Invite
+              <Plus className="w-3.5 h-3.5 mr-1.5" /> Send Invite
             </Link>
           </Button>
         </div>
       </div>
 
       {/* ━━━ TABLE ━━━ */}
-      <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFDF8] overflow-hidden">
+      <div className="rounded-2xl border border-[#1B3A5C]/8 bg-[#FFFAF3] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-navy/10 bg-navy/[0.02]">
-                <th className="text-[10px] uppercase font-bold tracking-widest text-navy/60 px-5 py-4">Email</th>
-                <th className="text-[10px] uppercase font-bold tracking-widest text-navy/60 px-5 py-4">Role</th>
-                <th className="text-[10px] uppercase font-bold tracking-widest text-navy/60 px-5 py-4">Status</th>
-                <th className="text-[10px] uppercase font-bold tracking-widest text-navy/60 px-5 py-4">Sent At</th>
-                <th className="text-[10px] uppercase font-bold tracking-widest text-navy/60 px-5 py-4">Expires</th>
+              <tr className="border-b border-[#1B3A5C]/8">
+                <th className="text-[10px] uppercase font-medium tracking-[0.15em] text-[#1B3A5C]/35 px-5 py-4">Email</th>
+                <th className="text-[10px] uppercase font-medium tracking-[0.15em] text-[#1B3A5C]/35 px-5 py-4">Role</th>
+                <th className="text-[10px] uppercase font-medium tracking-[0.15em] text-[#1B3A5C]/35 px-5 py-4">Status</th>
+                <th className="text-[10px] uppercase font-medium tracking-[0.15em] text-[#1B3A5C]/35 px-5 py-4">Sent At</th>
+                <th className="text-[10px] uppercase font-medium tracking-[0.15em] text-[#1B3A5C]/35 px-5 py-4">Expires</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-navy/[0.04]">
+            <tbody className="divide-y divide-[#1B3A5C]/5">
               {invitations.map(inv => {
                 const isExpired = new Date() > new Date(inv.expiresAt)
                 const status = inv.status === "ACCEPTED" ? "ACCEPTED" : isExpired && inv.status === "PENDING" ? "EXPIRED" : inv.status
                 
                 const statusStyles: Record<string, string> = {
-                  ACCEPTED: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
-                  EXPIRED: "bg-red-50 text-red-500 border-red-200/50",
-                  PENDING: "bg-amber-50 text-amber-600 border-amber-200/50",
+                  ACCEPTED: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+                  EXPIRED: "bg-rose-50 text-rose-500 border-rose-200/60",
+                  PENDING: "bg-amber-50 text-amber-700 border-amber-200/60",
                 }
 
                 return (
-                  <tr key={inv.id} className="hover:bg-navy/[0.02] transition-colors">
-                    <td className="px-5 py-4 font-medium text-navy text-xs">{inv.email}</td>
+                  <tr key={inv.id} className="hover:bg-[#FBF9F4] transition-colors">
+                    <td className="px-5 py-4 font-medium text-[#1B3A5C] text-xs">{inv.email}</td>
                     <td className="px-5 py-4">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-navy/5 border border-navy/10 text-navy/70 font-semibold tracking-wider">
+                      <span className="inline-flex items-center rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 bg-[#1B3A5C]/5 text-[#1B3A5C]/70 border-[#1B3A5C]/10">
                         {inv.role}
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1 text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${statusStyles[status] || "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                      <span className={`inline-flex items-center rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${statusStyles[status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10"}`}>
                         {status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-navy/40 text-[10px]">{new Date(inv.createdAt).toLocaleDateString()}</td>
-                    <td className="px-5 py-4 text-navy/40 text-[10px]">{new Date(inv.expiresAt).toLocaleDateString()}</td>
+                    <td className="px-5 py-4 text-[#1B3A5C]/40 text-[11px] tabular-nums">{new Date(inv.createdAt).toLocaleDateString()}</td>
+                    <td className="px-5 py-4 text-[#1B3A5C]/40 text-[11px] tabular-nums">{new Date(inv.expiresAt).toLocaleDateString()}</td>
                   </tr>
                 )
               })}
               {invitations.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center text-xs font-light text-navy/40">No invitations found.</td>
+                  <td colSpan={5} className="px-5 py-12 text-center">
+                    <p className="text-[13px] text-[#1B3A5C]/40">No invitations found.</p>
+                    <p className="text-[11px] text-[#1B3A5C]/30 mt-1">Sent invites will appear here.</p>
+                  </td>
                 </tr>
               )}
             </tbody>

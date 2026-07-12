@@ -25,12 +25,12 @@ type BookingTableRow = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-600 border-amber-200/50",
-  CONFIRMED: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
-  CHECKED_IN: "bg-sky-50 text-sky-600 border-sky-200/50",
-  COMPLETED: "bg-blue-50 text-blue-600 border-blue-200/50",
-  CANCELLED: "bg-red-50 text-red-500 border-red-200/50",
-  NO_SHOW: "bg-orange-50 text-orange-600 border-orange-200/50",
+  PENDING: "bg-amber-50 text-amber-600 border-amber-200/60",
+  CONFIRMED: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  CHECKED_IN: "bg-sky-50 text-sky-600 border-sky-200/60",
+  COMPLETED: "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10",
+  CANCELLED: "bg-rose-50 text-rose-600 border-rose-200/60",
+  NO_SHOW: "bg-orange-50 text-orange-600 border-orange-200/60",
 }
 
 interface BookingsTableProps {
@@ -91,7 +91,7 @@ export function BookingsTable({
       id: "bookingCode",
       header: "Ref Code",
       cell: ({ row }) => (
-        <span className="font-mono text-xs font-semibold text-navy/70 tracking-wider">
+        <span className="font-mono text-xs font-semibold text-[#1B3A5C]/70 tracking-wider">
           {row.original.bookingCode}
         </span>
       ),
@@ -102,8 +102,8 @@ export function BookingsTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div>
-          <p className="font-medium text-navy text-xs">{row.original.guest?.name || "—"}</p>
-          <p className="text-[10px] text-navy/40 font-light mt-0.5">{row.original.guest?.email}</p>
+          <p className="font-medium text-[#1B3A5C] text-xs">{row.original.guest?.name || "—"}</p>
+          <p className="text-[10px] text-[#1B3A5C]/40 mt-0.5">{row.original.guest?.email}</p>
         </div>
       ),
     },
@@ -112,14 +112,14 @@ export function BookingsTable({
       header: "Property",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="font-medium text-navy/80 text-xs">{row.original.property?.title}</span>
+        <span className="font-medium text-[#1B3A5C]/80 text-xs">{row.original.property?.title}</span>
       ),
     },
     {
       id: "checkIn",
       header: "Dates",
       cell: ({ row }) => (
-        <span className="text-xs text-navy/70">
+        <span className="text-xs text-[#1B3A5C]/70 tabular-nums">
           {new Date(row.original.checkIn).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
@@ -136,7 +136,7 @@ export function BookingsTable({
       id: "totalPrice",
       header: "Total",
       cell: ({ row }) => (
-        <span className="font-semibold text-navy/80 text-xs">{formatNpr(row.original.totalPrice)}</span>
+        <span className="font-semibold text-[#1B3A5C]/80 text-xs tabular-nums">{formatNpr(row.original.totalPrice)}</span>
       ),
     },
     {
@@ -144,8 +144,8 @@ export function BookingsTable({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-            STATUS_STYLES[row.original.status] || "bg-slate-50 text-slate-500 border-slate-200"
+          className={`inline-flex rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${
+            STATUS_STYLES[row.original.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10"
           }`}
         >
           {BOOKING_STATUS_LABELS[row.original.status as keyof typeof BOOKING_STATUS_LABELS] ??
@@ -157,7 +157,7 @@ export function BookingsTable({
       id: "createdAt",
       header: "Created",
       cell: ({ row }) => (
-        <span className="text-[10px] text-navy/40">
+        <span className="text-[10px] text-[#1B3A5C]/40 tabular-nums">
           {new Date(row.original.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -167,7 +167,7 @@ export function BookingsTable({
       header: "",
       enableSorting: false,
       cell: ({ row }) => (
-        <Button asChild variant="ghost" className="hover:bg-gold/10 hover:text-gold rounded-lg h-8 px-2 transition-colors">
+        <Button asChild variant="ghost" className="text-[#1B3A5C]/40 hover:bg-[#C9A96E]/10 hover:text-[#C9A96E] rounded-lg h-8 px-2 transition-colors">
           <Link href={`/admin/bookings/${row.original.id}`}>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>

@@ -3,7 +3,10 @@ import PropertiesClient from "@/components/public/PropertiesClient"
 import { Prisma } from "@prisma/client"
 import { getUnavailablePropertyIds } from "@/lib/room-availability"
 
-export const dynamic = "force-dynamic"
+// searchParams already opts this route into dynamic rendering.
+// Removing force-dynamic allows Next.js to cache data fetches and
+// apply Partial Prerendering where possible.
+export const revalidate = 300
 
 type SearchFilters = {
   location?: string
@@ -14,27 +17,6 @@ type SearchFilters = {
 }
 
 const PAGE_SIZE = 12
-
-// Fallback used only when Nominatim is unavailable.
-const NEPAL_CENTER: [number, number] = [27.7172, 85.3240]
-
-// Geocodes a location string via Nominatim with a 7-day Next.js Data Cache entry.
-async function geocodeForMap(location: string): Promise<[number, number]> {
-  try {
-    const query = /nepal/i.test(location) ? location : `${location}, Nepal`
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=np`
-    const res = await fetch(url, {
-      headers: { "User-Agent": "SaltRouteConsulting/1.0 (connect@saltroutecorp.com)" },
-      next: { revalidate: 604800 },
-    })
-    if (!res.ok) return NEPAL_CENTER
-    const data: { lat: string; lon: string }[] = await res.json()
-    if (!data[0]) return NEPAL_CENTER
-    return [Number(data[0].lat), Number(data[0].lon)]
-  } catch {
-    return NEPAL_CENTER
-  }
-}
 
 async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: SearchFilters) {
   const where: Prisma.PropertyWhereInput = { status: "ACTIVE" }
@@ -67,6 +49,9 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       select: { title: true, slug: true, location: true },
       orderBy: [{ featured: "desc" }, { title: "asc" }],
     }),
+    // Map property metadata — coordinates are fetched client-side via
+    // /api/properties/map-coords AFTER the page renders, so Nominatim
+    // geocoding latency never blocks the page load.
     prisma.property.findMany({
       where: { status: "ACTIVE" },
       select: {
@@ -128,33 +113,17 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       return city ? [city] : []
     }),
     knownProperties: propertyList,
-    mapProperties: await (async () => {
-      // Geocode unique locations in parallel, then apply a small jitter
-      // when multiple properties share the same location so markers don't overlap.
-      const uniqueLocations = [...new Set(mapProperties.map((p) => p.location))]
-      const coordsMap = new Map<string, [number, number]>()
-      await Promise.all(
-        uniqueLocations.map(async (loc) => {
-          coordsMap.set(loc, await geocodeForMap(loc))
-        })
-      )
-      const locationCount = new Map<string, number>()
-      return mapProperties.map((p) => {
-        const idx = locationCount.get(p.location) ?? 0
-        locationCount.set(p.location, idx + 1)
-        const [lat, lng] = coordsMap.get(p.location) ?? NEPAL_CENTER
-        return {
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          location: p.location,
-          pricePerNight: Number(p.pricePerNight),
-          latitude: lat + idx * 0.002,
-          longitude: lng + idx * 0.002,
-          imageUrl: p.images[0]?.url ?? undefined,
-        }
-      })
-    })(),
+    // Return map property metadata WITHOUT coordinates. The PropertyMap
+    // component fetches coordinates from /api/properties/map-coords after
+    // mounting, so the page renders instantly.
+    mapProperties: mapProperties.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      location: p.location,
+      pricePerNight: Number(p.pricePerNight),
+      imageUrl: p.images[0]?.url ?? undefined,
+    })),
   }
 }
 

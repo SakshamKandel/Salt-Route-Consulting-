@@ -39,6 +39,10 @@ export default async function AdminInquiriesPage({
     orderBy: { [query.sort === "lastMessageAt" ? "lastMessageAt" : "createdAt"]: query.order },
     skip: pagination.skip,
     take: pagination.take,
+    select: {
+      id: true, name: true, email: true, message: true, status: true,
+      createdAt: true, lastMessageAt: true, lastMessageBy: true, adminLastReadAt: true,
+    },
   })
 
   const unreadCount = inquiries.filter(isInquiryUnreadForAdmin).length
@@ -55,28 +59,29 @@ export default async function AdminInquiriesPage({
     <div className="space-y-6">
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">
+          <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Guest Relations</p>
+          <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide flex items-center gap-3">
             Inquiries
             {unreadCount > 0 && (
-              <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
+              <span className="inline-flex items-center rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 bg-amber-50 text-amber-600 border-amber-200/60">
                 {unreadCount} unread
               </span>
             )}
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">Manage messages and inquiries from guests.</p>
+          <p className="text-[13px] text-[#1B3A5C]/45 mt-1">Manage messages and inquiries from guests.</p>
         </div>
         <Link
           href={`/api/admin/export/inquiries?status=${statusFilter}`}
-          className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] text-[12px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors shrink-0"
         >
-          <Download className="h-3.5 w-3.5 text-slate-400" /> Export
+          <Download className="h-3.5 w-3.5 text-[#1B3A5C]/35" /> Export
         </Link>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-slate-200">
+      <div className="border-b border-[#1B3A5C]/10">
         <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
           {tabs.map((tab) => {
             const active = statusFilter === tab.value
@@ -84,10 +89,10 @@ export default async function AdminInquiriesPage({
               <Link
                 key={tab.value}
                 href={`/admin/inquiries?status=${tab.value}`}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-medium border-b-2 whitespace-nowrap transition-colors ${
                   active
-                    ? "border-[#1B3A5C] text-[#1B3A5C]"
-                    : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    ? "border-[#C9A96E] text-[#1B3A5C]"
+                    : "border-transparent text-[#1B3A5C]/40 hover:text-[#1B3A5C]/70 hover:border-[#1B3A5C]/15"
                 }`}
               >
                 {tab.label}

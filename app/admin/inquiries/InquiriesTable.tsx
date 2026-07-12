@@ -25,10 +25,10 @@ type InquiryTableRow = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  NEW: "bg-rose-50 text-rose-600 border-rose-200/50",
-  IN_PROGRESS: "bg-amber-50 text-amber-600 border-amber-200/50",
-  RESPONDED: "bg-sky-50 text-sky-600 border-sky-200/50",
-  CLOSED: "bg-slate-50 text-slate-500 border-slate-200",
+  NEW: "bg-rose-50 text-rose-600 border-rose-200/60",
+  IN_PROGRESS: "bg-amber-50 text-amber-600 border-amber-200/60",
+  RESPONDED: "bg-sky-50 text-sky-600 border-sky-200/60",
+  CLOSED: "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10",
 }
 
 interface InquiriesTableProps {
@@ -72,7 +72,7 @@ export function InquiriesTable({
       id: "createdAt",
       header: "Date",
       cell: ({ row }) => (
-        <span className="text-[10px] text-navy/40">
+        <span className="text-[10px] text-[#1B3A5C]/40 tabular-nums">
           {new Date(row.original.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -81,7 +81,7 @@ export function InquiriesTable({
       id: "name",
       header: "Name",
       cell: ({ row }) => (
-        <span className="inline-flex items-center gap-2 font-medium text-navy text-xs">
+        <span className="inline-flex items-center gap-2 font-medium text-[#1B3A5C] text-xs">
           {isInquiryUnreadForAdmin(row.original) && (
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse" />
           )}
@@ -92,15 +92,15 @@ export function InquiriesTable({
     {
       id: "email",
       header: "Email",
-      cell: ({ row }) => <span className="text-navy/60 font-light text-xs">{row.original.email}</span>,
+      cell: ({ row }) => <span className="text-[#1B3A5C]/60 text-xs">{row.original.email}</span>,
     },
     {
       id: "status",
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-            STATUS_STYLES[row.original.status] || "bg-slate-50 text-slate-500 border-slate-200"
+          className={`inline-flex rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${
+            STATUS_STYLES[row.original.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10"
           }`}
         >
           {row.original.status.replace("_", " ")}
@@ -112,7 +112,7 @@ export function InquiriesTable({
       header: "",
       enableSorting: false,
       cell: ({ row }) => (
-        <Button asChild variant="ghost" className="hover:bg-gold/10 hover:text-gold rounded-lg h-8 px-2 transition-colors">
+        <Button asChild variant="ghost" className="text-[#1B3A5C]/40 hover:bg-[#C9A96E]/10 hover:text-[#C9A96E] rounded-lg h-8 px-2 transition-colors">
           <Link href={`/admin/inquiries/${row.original.id}`}>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>

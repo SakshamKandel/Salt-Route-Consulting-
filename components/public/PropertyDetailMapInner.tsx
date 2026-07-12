@@ -89,7 +89,7 @@ export default function PropertyDetailMapInner({ location, address, title }: Pro
       marker = L.marker(coords, { icon })
         .addTo(mapRef.current)
         .bindPopup(
-          `<div style="font-family:system-ui,sans-serif;min-width:170px;background:#FFFDF8;">
+          `<div style="font-family:system-ui,sans-serif;min-width:170px;background:#FFFAF3;">
             <p style="font-size:8px;text-transform:uppercase;letter-spacing:0.3em;color:#C9A96E;margin:0 0 5px;font-weight:700;">${location}</p>
             <p style="font-size:13px;font-weight:600;color:#1B3A5C;margin:0;line-height:1.4;">${title}</p>
           </div>`,

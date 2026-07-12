@@ -12,7 +12,7 @@ import type { RoomTypeData } from "@/components/public/property/types"
 import { formatNpr } from "@/lib/currency"
 
 const WHATSAPP_HREF =
-  "https://wa.me/9779765978384?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20enquire%20about%20a%20stay"
+  "https://wa.me/9779801300001?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20enquire%20about%20a%20stay"
 
 export function BrochureReservation({
   image,
@@ -54,15 +54,18 @@ export function BrochureReservation({
   if (!image) return null
 
   const guestCount = Math.max(maxGuests, 1)
-  const labelClass = "text-[9px] uppercase tracking-[0.25em] text-white/40"
+  const labelClass = "text-[10px] uppercase tracking-[0.25em] text-white/40"
+  // The page's ONE high-weight primary CTA (everything else stays a whisper).
+  const submitClass =
+    "col-span-full mt-6 inline-flex w-full sm:w-auto items-center justify-center gap-3 bg-gold px-10 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-charcoal transition-colors duration-300 hover:bg-gold-light"
   const fieldClass =
     "bg-transparent border-0 border-b border-white/25 focus:border-gold focus:outline-none text-white placeholder:text-white/30 px-0 py-2 font-sans text-[15px] font-light"
 
   return (
     <section id="reservation" className="relative bg-charcoal text-white">
-      <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Left — full-height image with price overlay */}
-        <div className="relative min-h-[380px] lg:min-h-[640px]">
+        <div className="relative min-h-[320px] lg:min-h-[560px]">
           <SafeImage
             src={image}
             alt="Reservation"
@@ -81,10 +84,10 @@ export function BrochureReservation({
         </div>
 
         {/* Right — enquiry form */}
-        <div className="px-6 md:px-14 py-16 lg:py-24 w-full max-w-xl">
+        <div className="px-6 md:px-14 lg:px-16 py-14 lg:py-20 w-full max-w-2xl">
           <FadeUp>
             <Eyebrow light>Reserve</Eyebrow>
-            <h2 className="mt-4 font-display text-3xl md:text-4xl uppercase tracking-wide text-white">
+            <h2 className="mt-4 font-display font-normal text-[clamp(2rem,3.5vw,2.75rem)] leading-[1.1] tracking-[-0.01em] text-white">
               Make A Reservation
             </h2>
             <GoldRule className="mt-6" />
@@ -137,7 +140,7 @@ export function BrochureReservation({
                   <span className={`${fieldClass} text-white/30`}>{roomTypes[0]?.name}</span>
                 </div>
               )}
-              <span className="col-span-full mt-2 inline-flex items-center gap-3 uppercase tracking-[0.3em] text-[11px] font-bold text-white/30">
+              <span className={submitClass}>
                 Request Availability
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
@@ -211,12 +214,9 @@ export function BrochureReservation({
                 </label>
               )}
 
-              <button
-                type="submit"
-                className="col-span-full mt-4 inline-flex items-center gap-3 uppercase tracking-[0.3em] text-[11px] font-bold text-white transition-colors hover:text-gold"
-              >
+              <button type="submit" className={submitClass}>
                 Request Availability
-                <ArrowRight className="h-3.5 w-3.5 text-gold" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </form>
           )}

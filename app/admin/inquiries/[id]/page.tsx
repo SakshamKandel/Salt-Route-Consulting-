@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, User, Phone, MessageSquare, Clock } from "lucide-react"
+import { ArrowLeft, User, Phone, MessageSquare, Clock, Check } from "lucide-react"
 import { InquiryReplyForm } from "./InquiryReplyForm"
 import { markInquiryReadAction } from "./actions"
 import { normalizeInquiryMessages } from "@/lib/inquiries"
+
+const STATUS_STYLES: Record<string, string> = {
+  NEW: "bg-rose-50 text-rose-600 border-rose-200/60",
+  IN_PROGRESS: "bg-amber-50 text-amber-600 border-amber-200/60",
+  RESPONDED: "bg-sky-50 text-sky-600 border-sky-200/60",
+  CLOSED: "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10",
+}
 
 export default async function AdminInquiryDetailPage({
   params,
@@ -26,102 +31,115 @@ export default async function AdminInquiryDetailPage({
 
   const messages = normalizeInquiryMessages(inquiry)
 
+  const card = "bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl"
+  const microLabel = "text-[10px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.2em]"
+
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-20">
+    <div className="space-y-6 max-w-5xl mx-auto pb-20">
       {/* ─── HEADER ─── */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/admin/inquiries"><ArrowLeft className="w-5 h-5" /></Link>
-          </Button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/inquiries"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-[#1B3A5C]/40 hover:text-[#1B3A5C] hover:bg-[#1B3A5C]/5 transition-colors shrink-0"
+            aria-label="Back to inquiries"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
           <div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-display text-navy">{inquiry.subject}</h2>
-              <Badge variant={inquiry.status === "NEW" ? "destructive" : inquiry.status === "CLOSED" ? "default" : "secondary"}>
-                {inquiry.status}
-              </Badge>
+            <p className="text-[9px] font-medium text-[#1B3A5C]/35 uppercase tracking-[0.35em] mb-1">Guest Relations</p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="font-display text-2xl md:text-3xl text-[#1B3A5C] tracking-wide">{inquiry.subject}</h1>
+              <span className={`inline-flex rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1 ${STATUS_STYLES[inquiry.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/60 border-[#1B3A5C]/10"}`}>
+                {inquiry.status.replace("_", " ")}
+              </span>
             </div>
-            <p className="text-slate-500 text-sm">Received {inquiry.createdAt.toLocaleString()}</p>
+            <p className="text-[13px] text-[#1B3A5C]/45 mt-1">Received {inquiry.createdAt.toLocaleString()}</p>
           </div>
         </div>
         <form action={async () => {
           "use server"
           await markInquiryReadAction(inquiry.id)
         }}>
-          <Button type="submit" variant="outline" size="sm">Mark read</Button>
+          <button
+            type="submit"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-[#1B3A5C]/15 bg-[#FFFAF3] text-[12px] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 transition-colors"
+          >
+            <Check className="h-3.5 w-3.5 text-[#1B3A5C]/35" /> Mark read
+          </button>
         </form>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ─── CONVERSATION THREAD ─── */}
-        <div className="lg:col-span-2 space-y-8">
-          <div className="space-y-6">
-            <h3 className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold flex items-center gap-2">
-              <MessageSquare className="w-3 h-3" /> Conversation History
+        <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-4">
+            <h3 className={`${microLabel} flex items-center gap-2`}>
+              <MessageSquare className="w-3 h-3 text-[#C9A96E]" /> Conversation History
             </h3>
 
             {messages.map((reply) => (
-              <div 
-                key={reply.id} 
-                className={`p-6 rounded-xl border shadow-sm ${
-                  reply.sender === "ADMIN" 
-                    ? "bg-slate-50 border-slate-200 ml-8 border-l-4 border-l-gold" 
-                    : "bg-white border-slate-200 border-l-4 border-l-blue-400"
+              <div
+                key={reply.id}
+                className={`p-5 rounded-2xl border ${
+                  reply.sender === "ADMIN"
+                    ? "bg-[#FBF9F4] border-[#1B3A5C]/8 ml-8 border-l-2 border-l-[#C9A96E]"
+                    : "bg-[#FFFAF3] border-[#1B3A5C]/8 border-l-2 border-l-sky-300"
                 }`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-[10px] uppercase tracking-widest font-bold ${
-                    reply.sender === "ADMIN" ? "text-gold" : "text-blue-500"
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-[9px] uppercase tracking-[0.2em] font-semibold ${
+                    reply.sender === "ADMIN" ? "text-[#C9A96E]" : "text-sky-600"
                   }`}>
                     {reply.sender === "ADMIN" ? "Salt Route Team" : reply.sender === "OWNER" ? "Property Owner" : inquiry.name}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-[#1B3A5C]/35 tabular-nums">
                     {new Date(reply.createdAt).toLocaleString()}
                   </span>
                 </div>
-                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{reply.body}</p>
+                <p className="text-[13px] text-[#1B3A5C]/75 whitespace-pre-wrap leading-relaxed">{reply.body}</p>
               </div>
             ))}
           </div>
 
           {/* Reply Form */}
-          <div className="bg-white border rounded-xl p-8 shadow-sm">
+          <div className={`${card} p-6`}>
             <InquiryReplyForm inquiry={{ id: inquiry.id, status: inquiry.status }} />
           </div>
         </div>
 
         {/* ─── SENDER INFO SIDEBAR ─── */}
         <div className="space-y-6">
-          <div className="bg-white border rounded-xl p-6 shadow-sm space-y-6 sticky top-24">
-            <h3 className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold flex items-center gap-2">
-              <User className="w-3 h-3" /> Sender Details
+          <div className={`${card} p-5 space-y-5 sticky top-24`}>
+            <h3 className={`${microLabel} flex items-center gap-2`}>
+              <User className="w-3 h-3 text-[#C9A96E]" /> Sender Details
             </h3>
-            
+
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Name</p>
-                <p className="font-medium text-navy">{inquiry.name}</p>
+                <p className="text-[10px] text-[#1B3A5C]/35 uppercase tracking-[0.15em] mb-1">Name</p>
+                <p className="text-[13px] font-medium text-[#1B3A5C]">{inquiry.name}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Email</p>
-                <a href={`mailto:${inquiry.email}`} className="text-blue-600 hover:underline text-sm break-all">{inquiry.email}</a>
+                <p className="text-[10px] text-[#1B3A5C]/35 uppercase tracking-[0.15em] mb-1">Email</p>
+                <a href={`mailto:${inquiry.email}`} className="text-[12px] text-[#1B3A5C]/70 hover:text-[#C9A96E] transition-colors break-all">{inquiry.email}</a>
               </div>
               {inquiry.phone && (
                 <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Phone</p>
-                  <a href={`tel:${inquiry.phone}`} className="text-blue-600 hover:underline text-sm flex items-center gap-2">
-                    <Phone className="w-3 h-3" /> {inquiry.phone}
+                  <p className="text-[10px] text-[#1B3A5C]/35 uppercase tracking-[0.15em] mb-1">Phone</p>
+                  <a href={`tel:${inquiry.phone}`} className="text-[12px] text-[#1B3A5C]/70 hover:text-[#C9A96E] transition-colors flex items-center gap-2">
+                    <Phone className="w-3 h-3 text-[#1B3A5C]/30" /> {inquiry.phone}
                   </a>
                 </div>
               )}
             </div>
 
-            <div className="pt-6 border-t">
-               <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-4">Quick Stats</p>
-               <div className="flex items-center gap-2 text-xs text-slate-600">
-                 <Clock className="w-3 h-3" /> 
-                 <span>Last activity: {new Date(inquiry.lastMessageAt).toLocaleString()}</span>
-               </div>
+            <div className="pt-5 border-t border-[#1B3A5C]/8">
+              <p className="text-[10px] text-[#1B3A5C]/35 uppercase tracking-[0.15em] mb-3">Activity</p>
+              <div className="flex items-center gap-2 text-[11px] text-[#1B3A5C]/55">
+                <Clock className="w-3 h-3 text-[#1B3A5C]/30" />
+                <span>Last activity: {new Date(inquiry.lastMessageAt).toLocaleString()}</span>
+              </div>
             </div>
           </div>
         </div>

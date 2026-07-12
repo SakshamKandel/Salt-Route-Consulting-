@@ -36,15 +36,17 @@ type UserRow = {
   createdAt: Date | string
 }
 
+const CHIP = "inline-flex items-center rounded-full text-[9px] font-semibold border uppercase tracking-[0.15em] px-2.5 py-1"
+
 const ROLE_STYLES: Record<string, string> = {
-  ADMIN: "bg-amber-50 text-amber-600 border-amber-200/50",
-  OWNER: "bg-violet-50 text-violet-600 border-violet-200/50",
-  GUEST: "bg-sky-50 text-sky-600 border-sky-200/50",
+  ADMIN: "bg-amber-50 text-amber-700 border-amber-200/60",
+  OWNER: "bg-[#1B3A5C]/5 text-[#1B3A5C]/70 border-[#1B3A5C]/10",
+  GUEST: "bg-sky-50 text-sky-600 border-sky-200/60",
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
-  SUSPENDED: "bg-rose-50 text-rose-500 border-rose-200/50",
+  ACTIVE: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+  SUSPENDED: "bg-rose-50 text-rose-500 border-rose-200/60",
 }
 
 interface UsersTableProps {
@@ -164,8 +166,8 @@ export function UsersTable({
       header: "Role",
       cell: ({ row }) => (
         <span
-          className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-            ROLE_STYLES[row.original.role] || "bg-slate-50 text-slate-500 border-slate-200"
+          className={`${CHIP} ${
+            ROLE_STYLES[row.original.role] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10"
           }`}
         >
           {row.original.role}
@@ -177,8 +179,8 @@ export function UsersTable({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-            STATUS_STYLES[row.original.status] || "bg-slate-50 text-slate-500 border-slate-200"
+          className={`${CHIP} ${
+            STATUS_STYLES[row.original.status] || "bg-[#1B3A5C]/5 text-[#1B3A5C]/50 border-[#1B3A5C]/10"
           }`}
         >
           {row.original.status}
@@ -206,7 +208,7 @@ export function UsersTable({
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-xl border-[#1B3A5C]/10 bg-[#FFFDF8] p-1.5 text-[#1B3A5C]">
+            <DropdownMenuContent align="end" className="rounded-xl border-[#1B3A5C]/10 bg-[#FFFAF3] p-1.5 text-[#1B3A5C]">
               <DropdownMenuLabel className="text-[10px] text-navy/30 uppercase tracking-widest font-semibold px-2.5 py-1.5">Manage</DropdownMenuLabel>
               <DropdownMenuItem className="rounded-lg text-xs font-light px-2.5 py-2 hover:bg-navy/5 cursor-pointer flex items-center gap-2" onClick={() => router.push(`/admin/users/${u.id}`)}>
                 <Eye className="w-3.5 h-3.5 opacity-60" /> View Profile

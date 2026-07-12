@@ -18,8 +18,8 @@ function PasswordField({
 }) {
   const [show, setShow] = useState(false)
   return (
-    <div className="space-y-2">
-      <label htmlFor={id} className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium block">
+    <div className="space-y-2.5">
+      <label htmlFor={id} className="text-[13px] uppercase tracking-[0.14em] text-[#1B3A5C]/70 font-medium block">
         {label}
       </label>
       <div className="relative">
@@ -29,12 +29,12 @@ function PasswordField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="••••••••"
-          className="w-full border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 pr-8 text-sm font-sans text-charcoal placeholder:text-charcoal/20 outline-none focus:border-charcoal transition-colors"
+          className="w-full rounded-lg border border-[#1B3A5C]/10 bg-[#FBF9F4] px-4 py-3 pr-11 text-[15px] text-[#1B3A5C] placeholder:text-[#1B3A5C]/40 outline-none focus:border-[#1B3A5C]/30 transition-colors"
         />
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 text-charcoal/30 hover:text-charcoal/60 transition-colors"
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#1B3A5C]/30 hover:text-[#1B3A5C]/60 transition-colors"
           tabIndex={-1}
         >
           {show ? <EyeOff className="w-4 h-4" strokeWidth={1.5} /> : <Eye className="w-4 h-4" strokeWidth={1.5} />}
@@ -76,49 +76,53 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="space-y-12 max-w-lg">
+    <div className="space-y-10 max-w-lg">
 
       {/* Header */}
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href="/account/profile"
-          className="inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-charcoal/30 hover:text-charcoal transition-colors duration-300"
+          className="inline-flex items-center gap-2 min-h-[40px] text-[13px] uppercase tracking-[0.16em] font-medium text-[#1B3A5C]/60 hover:text-[#1B3A5C] transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5 stroke-[1.3]" />
+          <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           Back to Profile
         </Link>
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-[1px] bg-charcoal/20" />
-          <h1 className="text-[11px] uppercase tracking-[0.3em] text-charcoal/50 font-medium">Security</h1>
+        <div>
+          <p className="text-[11px] font-medium text-[#C9A96E] uppercase tracking-[0.18em] mb-1.5">
+            Security
+          </p>
+          <h1 className="font-display text-3xl md:text-4xl text-[#1B3A5C] tracking-wide">Change Password</h1>
+          <p className="text-[13px] text-[#1B3A5C]/60 mt-2">
+            Choose a strong password to keep your account safe.
+          </p>
         </div>
-        <h2 className="font-display text-3xl text-charcoal tracking-wide">Change Password</h2>
       </div>
 
       {/* Form */}
-      <div className="bg-white border border-charcoal/5 p-8 md:p-12">
+      <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8 md:p-10">
         {status?.type === "success" && (
-          <div className="flex items-center gap-3 p-4 border border-charcoal/10 bg-charcoal/[0.02] text-charcoal/70 text-xs mb-8">
+          <div className="flex items-center gap-3 p-4 rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-600 text-[13px] mb-8">
             <Check className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             {status.text}
           </div>
         )}
         {status?.type === "error" && (
-          <div className="flex items-center gap-3 p-4 border border-red-200 bg-red-50 text-red-600 text-xs mb-8">
+          <div className="flex items-center gap-3 p-4 rounded-lg border border-rose-200/60 bg-rose-50 text-rose-600 text-[13px] mb-8">
             <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             {status.text}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-7">
           <PasswordField id="current" label="Current Password" value={current} onChange={setCurrent} />
           <PasswordField id="new" label="New Password (min. 8 characters)" value={newPw} onChange={setNewPw} />
           <PasswordField id="confirm" label="Confirm New Password" value={confirm} onChange={setConfirm} />
 
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={saving || !current || !newPw || !confirm}
-              className="bg-charcoal text-white px-10 py-4 text-[10px] uppercase tracking-[0.3em] hover:bg-charcoal/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 bg-[#1B3A5C] text-[#FFFAF3] rounded-lg text-[13px] font-medium hover:bg-[#2A4F7A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saving ? "Saving..." : "Update Password"}
             </button>
@@ -127,9 +131,9 @@ export default function ChangePasswordPage() {
       </div>
 
       {/* Note */}
-      <p className="text-[10.5px] text-charcoal/30 leading-relaxed font-light">
+      <p className="text-[13px] text-[#1B3A5C]/60 leading-relaxed">
         Forgotten your current password?{" "}
-        <Link href="/login" className="underline underline-offset-4 decoration-charcoal/15 hover:text-charcoal/60 transition-colors">
+        <Link href="/login" className="text-[#C9A96E] hover:text-[#1B3A5C] transition-colors">
           Sign out and use Forgot Password
         </Link>
         {" "}on the login page.

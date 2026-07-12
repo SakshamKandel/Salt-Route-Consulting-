@@ -46,18 +46,18 @@ export function CampaignActions({
   return (
     <div className="flex gap-2">
       {(campaign.status === "DRAFT" || campaign.status === "PAUSED") && (
-        <Button onClick={handleEnqueue} disabled={isPending} className="bg-navy text-cream">
+        <Button onClick={handleEnqueue} disabled={isPending} className="bg-[#1B3A5C] text-[#FFFAF3] hover:bg-[#2A4F7A] rounded-lg text-[12px] font-medium">
           <Send className="h-4 w-4 mr-2" />
           {campaign.status === "PAUSED" ? "Resume" : "Send Now"}
         </Button>
       )}
       {campaign.status === "SENDING" && (
-        <Button onClick={handlePause} disabled={isPending} variant="outline">
+        <Button onClick={handlePause} disabled={isPending} variant="outline" className="border-[#1B3A5C]/15 text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 rounded-lg text-[12px] font-medium">
           <Pause className="h-4 w-4 mr-2" /> Pause
         </Button>
       )}
       {(campaign.status === "DRAFT" || campaign.status === "PAUSED" || campaign.status === "QUEUED") && (
-        <Button onClick={handleCancel} disabled={isPending} variant="outline" className="text-red-600 border-red-200">
+        <Button onClick={handleCancel} disabled={isPending} variant="outline" className="text-[#B84040] border-rose-200/60 hover:bg-rose-50 rounded-lg text-[12px] font-medium">
           <StopCircle className="h-4 w-4 mr-2" /> Cancel
         </Button>
       )}
