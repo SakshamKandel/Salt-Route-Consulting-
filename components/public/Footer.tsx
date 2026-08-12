@@ -36,8 +36,8 @@ export function Footer() {
               <Image
                 src="/logo.png"
                 alt={`${siteConfig.brandName} Logo`}
-                width={187}
-                height={88}
+                width={768}
+                height={319}
                 className="h-auto w-32 md:w-36"
               />
             </Link>

@@ -9,7 +9,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
-  --font-script: var(--font-script);
+  --font-script: "Reforma 1969", "AXtManalBold Regular", Helvetica, Arial,
+    "Microsoft YaHei", "PingFang SC", "PingFang TC", "PingFang HK",
+    "Hiragino Sans", sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-display);
   
@@ -61,6 +63,12 @@
 }
 
 :root {
+  /* Accent display stack supplied by the client. Reforma / AXtManalBold are
+     used when installed or provided by the visitor's system, with broad
+     Latin and CJK fallbacks for consistent rendering. */
+  --font-accent: "Reforma 1969", "AXtManalBold Regular", Helvetica, Arial,
+    "Microsoft YaHei", "PingFang SC", "PingFang TC", "PingFang HK",
+    "Hiragino Sans", sans-serif;
   --background: #FFFAF3;
   --foreground: #1B3A5C;
   --card: #FFFAF3;
@@ -130,7 +138,8 @@
 
 @layer utilities {
   .font-script {
-    font-family: var(--font-script), cursive;
+    font-family: var(--font-accent);
+    font-weight: 400;
   }
   .marquee-track {
     display: inline-flex;

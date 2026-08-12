@@ -110,8 +110,8 @@ export function SiteLoader() {
         <Image
           src="/logo.png"
           alt=""
-          width={187}
-          height={88}
+          width={768}
+          height={319}
           priority
           className="h-auto w-28 sm:w-36"
         />
@@ -137,8 +137,8 @@ export function SiteLoader() {
           <Image
             src="/logo.png"
             alt=""
-            width={187}
-            height={88}
+            width={768}
+            height={319}
             priority
             className="h-auto w-28 sm:w-36"
             style={

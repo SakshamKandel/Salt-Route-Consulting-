@@ -19,6 +19,7 @@ const guestLinks = [
 const ownerLinks = [
   { href: "/", label: "Guest View" },
   { href: "#portfolio", label: "Portfolio" },
+  { href: "#owner-marketing", label: "Marketing" },
   { href: "#owner-enquiry", label: "Enquire" },
 ]
 
@@ -139,7 +140,7 @@ export function Nav() {
             ))}
           </div>
 
-          {/* Logo - Centered (intrinsic 187x88, sized via width + h-auto) */}
+          {/* Logo - Centered (intrinsic 768x319, sized via width + h-auto) */}
           <Link
             href={isOwnerSection ? "/for-owners" : "/"}
             onClick={(e) => {
@@ -156,8 +157,8 @@ export function Nav() {
             <Image
               src="/logo.png"
               alt="Salt Route Group"
-              width={187}
-              height={88}
+              width={768}
+              height={319}
               priority
               className="h-auto w-20 md:w-24"
             />

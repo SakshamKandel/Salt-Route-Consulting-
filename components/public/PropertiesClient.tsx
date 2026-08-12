@@ -128,7 +128,7 @@ export default function PropertiesClient({
             <p className="text-[11px] md:text-xs uppercase tracking-[0.28em] text-white/75 font-sans font-light mb-6">
               Tailored Stays Across Nepal
             </p>
-            <h1 className="font-script text-white leading-[1.4] tracking-normal text-[clamp(3rem,8vw,7.5rem)] pb-2 mb-6 md:mb-8">
+            <h1 className="font-script text-white leading-[1.02] tracking-[-0.045em] text-[clamp(3rem,8vw,7.5rem)] pb-2 mb-6 md:mb-8">
               The Collection
             </h1>
             <div className="w-16 h-px bg-white/40 mx-auto" />

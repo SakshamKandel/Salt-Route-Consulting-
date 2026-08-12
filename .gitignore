@@ -52,3 +52,5 @@ next-env.d.ts
 .env.production.local
 /skills
 .gstack/
+/.findex_db/
+/VIP Guest/

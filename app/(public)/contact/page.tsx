@@ -65,8 +65,8 @@ export default function ContactPage() {
             as="h1"
             lines={["Conversation."]}
             delay={0.35}
-            clipPad="1.5em"
-            className="font-script text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-normal leading-[2] pb-2 mb-6 md:mb-8"
+            clipPad="0.12em"
+            className="font-script text-4xl min-[360px]:text-5xl md:text-7xl lg:text-[8rem] text-white tracking-[-0.045em] leading-[1.02] pb-2 mb-6 md:mb-8"
           />
           <Reveal delay={0.65} y={16}>
             <div className="flex max-w-full items-center justify-center gap-3 text-white/40 sm:gap-6">

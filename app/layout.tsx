@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter, Niramit, Great_Vibes } from 'next/font/google'
+import { Playfair_Display, Inter, Niramit } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { SessionProvider } from "@/components/public/SessionProvider"
@@ -27,14 +27,6 @@ const niramit = Niramit({
   display: 'swap',
 })
 
-// Cursive accent for the public hero slogans. Great Vibes — flowing formal calligraphy.
-const greatVibes = Great_Vibes({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-script',
-  display: 'swap',
-})
-
 export const metadata: Metadata = {
   title: "Salt Route Corp",
   description: "Bespoke Consulting Services",
@@ -59,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${niramit.variable} ${greatVibes.variable} h-full antialiased`}
+      className={`${playfair.variable} ${inter.variable} ${niramit.variable} h-full antialiased`}
     >
       <head>{resourceHints}</head>
       <body className="font-sans bg-background text-foreground min-h-full flex flex-col">

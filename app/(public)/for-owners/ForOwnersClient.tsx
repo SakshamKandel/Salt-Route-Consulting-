@@ -82,6 +82,26 @@ const services = [
   },
 ]
 
+// ── Brand and market growth ───────────────────────────────────────────────
+const marketingCapabilities = [
+  {
+    title: "Positioning & Identity",
+    desc: "A clear guest promise, audience, voice, and visual direction rooted in the property itself.",
+  },
+  {
+    title: "Photography & Content",
+    desc: "Editorial photography, film, copy, and social content that let guests feel the stay before they arrive.",
+  },
+  {
+    title: "Digital Presence & Distribution",
+    desc: "A considered website and listing presence, search visibility, social channels, and the right partner platforms.",
+  },
+  {
+    title: "Campaigns & Performance",
+    desc: "Seasonal campaigns, pricing, offers, and transparent reporting that turn visibility into sustainable revenue.",
+  },
+]
+
 // ── Four steps into partnership ──────────────────────────────────────────────
 const steps = [
   {
@@ -390,7 +410,46 @@ export default function ForOwnersClient({
         </div>
       </section>
 
-      {/* ─── 5b · PHOTO BREATH — text-free full-bleed band ─── */}
+      {/* ─── 5b · MARKETING & BRAND GROWTH — asymmetric capability ledger ─── */}
+      <section id="owner-marketing" className="bg-sand py-14 md:py-20 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-x-16">
+            <Reveal className="lg:col-span-5 space-y-6">
+              <p className="type-eyebrow">Marketing &amp; Brand Growth</p>
+              <h2 className="type-h2">
+                Seen clearly.
+                <br />
+                Chosen for the right reasons.
+              </h2>
+              <p className="type-body max-w-md">
+                We shape how your property is presented, found, and remembered
+                &mdash; then carry that story across every channel with discipline.
+              </p>
+              <LuxuryLinkWithArrow href="#owner-enquiry" color="charcoal">
+                Discuss Your Property
+              </LuxuryLinkWithArrow>
+            </Reveal>
+
+            <Reveal
+              stagger={0.07}
+              className="lg:col-span-6 lg:col-start-7 border-t border-navy/15"
+            >
+              {marketingCapabilities.map((capability) => (
+                <Reveal.Item key={capability.title}>
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-y-2 md:gap-x-8 py-6 md:py-7 border-b border-navy/15">
+                    <h3 className="type-h3 md:col-span-2">{capability.title}</h3>
+                    <p className="type-body text-[13px] md:text-[14px] md:col-span-3">
+                      {capability.desc}
+                    </p>
+                  </div>
+                </Reveal.Item>
+              ))}
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 5c · PHOTO BREATH — text-free full-bleed band ─── */}
       <section className="relative h-[36vh] md:h-[48vh] w-full overflow-hidden bg-navy">
         <ParallaxImage speed={0.1} className="absolute inset-0">
           <Image

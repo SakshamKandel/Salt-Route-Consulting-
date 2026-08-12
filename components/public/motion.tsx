@@ -138,7 +138,7 @@ export function RevealText({
   className?: string
   delay?: number
   // Vertical padding (CSS length) added inside the line-mask clip box so
-  // fonts with tall ascenders/descenders (e.g. Great Vibes) aren't cropped.
+  // fonts with tall ascenders/descenders aren't cropped.
   // Negative margin cancels the padding so surrounding layout is unchanged.
   clipPad?: string
 }) {

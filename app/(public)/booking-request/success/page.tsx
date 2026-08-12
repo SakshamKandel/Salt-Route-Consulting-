@@ -34,7 +34,7 @@ export default async function BookingSuccessPage({
 
           {/* Title Area */}
           <div className="mb-6 md:mb-10">
-            <h1 className="font-script text-5xl md:text-6xl text-charcoal tracking-normal leading-[1.4] pb-2 mb-4">
+            <h1 className="font-script text-5xl md:text-6xl text-charcoal tracking-[-0.04em] leading-[1.02] pb-2 mb-4">
               Request <br/> <span className="italic text-charcoal/70">Confirmed.</span>
             </h1>
             <p className="font-sans text-xs md:text-sm tracking-[0.1em] text-charcoal/60 leading-relaxed max-w-md uppercase">

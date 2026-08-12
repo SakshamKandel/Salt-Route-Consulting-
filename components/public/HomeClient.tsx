@@ -236,37 +236,121 @@ function HeroSearch({ properties }: { properties: ComboboxProperty[] }) {
 
 // ─── PAGE ────────────────────────────────────────────────────────────────────
 
-// Guest reviews — verified content (Google & Tripadvisor). Copy is frozen.
-const REVIEWS = [
+type VipReview = {
+  id: string
+  dateLines: string[]
+  dateTime: string
+  title?: string
+  paragraphs: string[]
+  emphasizedParagraphs?: number[]
+  name: string
+  credentials: string[]
+  image: string
+  imageAlt: string
+  imageClassName: string
+}
+
+// Curated notes left by distinguished guests at Sunshine Villa. These are kept
+// separate from booking-linked ratings because they are dated guestbook entries
+// with their own attribution and imagery rather than scored platform reviews.
+const VIP_REVIEWS: VipReview[] = [
   {
-    name: "Evangelos Athanasiadis",
-    source: "Google",
-    rating: 5,
-    text: "What an unforgettable stay! Sunshine Villa was definitely the highlight of our trip to Nepal. Beautifully located in the nature, with outstanding rooms and the kindest staff out there. A stay you cannot miss in Nepal.",
+    id: "veronique-lorenzo",
+    dateLines: ["04/11/24"],
+    dateTime: "2024-11-04",
+    title: "A perfect weekend retreat!",
+    paragraphs: [
+      "Great base to explore the beautiful tea country. This is an area of Nepal that needs to be more publicised. The landscapes are amazing and well worth developing a network of trails — but Sunshine Villa has the right level of comfort and service to attract higher-end tourists, so necessary for Nepal’s economy.",
+      "A very pleasant surprise!",
+      "Many thanks for the warm hospitality —",
+    ],
+    name: "Véronique Lorenzo",
+    credentials: ["European Union", "Ambassador to Nepal"],
+    image: "/vip-reviews/veronique-lorenzo.jpg",
+    imageAlt: "Véronique Lorenzo standing before international flags",
+    imageClassName: "object-cover object-center",
   },
   {
-    name: "Dr. Kanchan Ghimire",
-    source: "Google",
-    rating: 5,
-    text: "We had an absolutely wonderful stay at Sunshine Villa, Fikkal! From the moment we arrived, we were welcomed with warm hospitality that made us feel right at home. The villa itself is beautifully maintained, offering a peaceful and serene escape.",
+    id: "asian-trekking",
+    dateLines: ["05/12/2024"],
+    dateTime: "2024-12-05",
+    paragraphs: [
+      "Bedankt voor de hartelijke ontvangst op deze prachtige, rustige, bloemrijke locatie",
+      "VILLA SUNSHINE.",
+      "Vriendelijk personeel en fijne maaltijden.",
+      "Leerrijke excursies.",
+      "Succes in de onderneming.",
+    ],
+    emphasizedParagraphs: [1],
+    name: "Noorweegse familie Dogghe",
+    credentials: ["“Asian Trekking”"],
+    image: "/vip-reviews/asian-trekking.jpg",
+    imageAlt: "An Asian Trekking mountaineer holding the company sign",
+    imageClassName: "object-cover object-center",
   },
   {
-    name: "adhishb2022",
-    source: "Tripadvisor",
-    rating: 5,
-    text: "Best food in Ilam hands down. Their Bhutanese cuisine was really good. The staff was really helpful from booking to check out, and was supportive throughout my stay. Overall I had an excellent experience. I highly recommend it to anyone visiting Ilam.",
+    id: "dean-jane-thompson",
+    dateLines: ["7 APRIL 2025"],
+    dateTime: "2025-04-07",
+    paragraphs: [
+      "SUNSHINE VILLA! A NEW FAVOURITE PLACE IN NEPAL. IN FACT, THE WORLD! BEAUTIFUL SETTING, SERENE ENVIRONMENT, AND AMAZING HOSPITALITY. WE’LL SPREAD THE WORD AND HOPE TO BE BACK SOON. THANK YOU FOR A GREAT STAY AND QUICK TOUR. WISHING YOU MUCH CONTINUED SUCCESS!",
+    ],
+    name: "Dean Jane Thompson",
+    credentials: ["U.S. Ambassador to Nepal", "U.S. Embassy Kathmandu"],
+    image: "/vip-reviews/dean-jane-thompson.jpg",
+    imageAlt: "Official portrait supplied with the Dean Jane Thompson review",
+    imageClassName: "object-contain object-center p-5 md:p-8",
   },
   {
-    name: "Digibrew India",
-    source: "Google",
-    rating: 5,
-    text: "Amazingly located far from the hustle of daily life. Extremely calm and serene property with a great view of the hills. The property is guarded by huge pine trees which adds to the overall feel of the place.",
+    id: "jane-thompson",
+    dateLines: ["7 April, 2025"],
+    dateTime: "2025-04-07",
+    paragraphs: [
+      "What a lovely place to stop and take in the peace and beauty of Ilam. We so enjoyed the gracious hospitality. Comfortable accommodations and detailed furnishings and artwork. The kitchen sent out fresh delicious food for every meal.",
+      "Thank you for a lovely retreat,",
+    ],
+    name: "Jane Thompson",
+    credentials: ["USA"],
+    image: "/vip-reviews/jane-thompson.png",
+    imageAlt: "Jane Thompson",
+    imageClassName: "object-cover object-[center_35%]",
   },
   {
-    name: "Ankit",
-    source: "Google",
-    rating: 4,
-    text: "The location is too good to pass up. Whether you're looking to explore the local sights or just want a scenic backdrop for your morning coffee, everything feels like it's right at your doorstep. It's rare to find a spot that is both central and serene.",
+    id: "imf-nepal",
+    dateLines: ["December 15, 2025"],
+    dateTime: "2025-12-15",
+    paragraphs: [
+      "Our stay here has been one of the best. The rooms are spacious with required amenities.",
+      "Apart from that, the staffs here are courteous, helpful and always there when needed. They do everything asked.",
+      "The food is good, fresh and healthy and the cooking staff can prepare most of the food asked. Their Bhutanese meal is tasty, different.",
+      "The ambience is out of this world, the service is top-notch, the locality is near to many local tourist areas.",
+      "Best wishes to the team for your future ventures.",
+    ],
+    name: "IMF Team (Nepal)",
+    credentials: [],
+    image: "/vip-reviews/imf-nepal.jpg",
+    imageAlt: "International Monetary Fund emblem",
+    imageClassName: "object-contain object-center p-7 md:p-10",
+  },
+  {
+    id: "swarnim-wagle",
+    dateLines: ["New Year 2081", "Baisakh 1", "April 13, 2024"],
+    dateTime: "2024-04-13",
+    paragraphs: [
+      "Amazing location, outstanding taste and vision to transform a rustic property into a pleasant, verdant fragment of calm charm.",
+      "Gracious and warm hospitality — this is exactly the model of what our hilltops across the country can become — a source of high-paying jobs and opportunities to stem the epic outflow of youth, revive local products and culture, and build prosperous, sustainable Nepali towns from places that folks fled decades ago in search of better lives.",
+      "A renaissance moment for Nepal!",
+    ],
+    emphasizedParagraphs: [2],
+    name: "Swarnim Wagle",
+    credentials: [
+      "Finance Minister of Nepal",
+      "Member of Parliament (Tanahu)",
+      "VP, Rastriya Swatantra Party",
+    ],
+    image: "/vip-reviews/swarnim-wagle.jpg",
+    imageAlt: "Dr Swarnim Wagle in a formal portrait",
+    imageClassName: "object-cover object-top",
   },
 ]
 
@@ -401,8 +485,9 @@ export default function HomeClient({
     }
   }, [featured])
 
-  const leadReview = REVIEWS[0]
-  const sideReviews = REVIEWS.slice(1)
+  const [activeVipReviewId, setActiveVipReviewId] = useState(VIP_REVIEWS[0].id)
+  const activeVipReview =
+    VIP_REVIEWS.find((review) => review.id === activeVipReviewId) ?? VIP_REVIEWS[0]
 
   return (
     <div className="bg-background relative overflow-x-hidden">
@@ -424,8 +509,8 @@ export default function HomeClient({
               as="h1"
               lines={["Stays with Soul"]}
               delay={0.35}
-              clipPad="1.5em"
-              className="font-script text-white leading-[2] tracking-normal text-[clamp(3rem,8vw,8rem)] pb-2 mb-6 md:mb-8"
+              clipPad="0.12em"
+              className="font-display uppercase text-white leading-[0.96] tracking-[0.08em] sm:tracking-[0.14em] text-[clamp(2.1rem,7vw,6.5rem)] pb-2 mb-6 md:mb-8"
             />
             <Reveal delay={0.65} y={16}>
               <div className="flex max-w-full items-center justify-center gap-3 text-white/70 sm:gap-6">
@@ -602,13 +687,13 @@ export default function HomeClient({
             <Reveal stagger={0.08} className="grid grid-cols-3 divide-x divide-navy/10">
               <Reveal.Item className="px-4 md:px-10 first:pl-0">
                 <p className="font-display font-normal text-navy leading-none tracking-[-0.02em] text-4xl md:text-6xl">
-                  4.7
+                  {String(VIP_REVIEWS.length).padStart(2, "0")}
                 </p>
                 <p className="font-sans uppercase text-navy/50 text-[10px] tracking-[0.2em] mt-3">
-                  Guest rating
+                  VIP guest notes
                 </p>
                 <p className="font-sans text-navy/40 text-[11px] mt-1">
-                  Google &amp; Tripadvisor
+                  Sunshine Villa
                 </p>
               </Reveal.Item>
               <Reveal.Item className="px-4 md:px-10">
@@ -959,67 +1044,136 @@ export default function HomeClient({
         </div>
       </section>
 
-      {/* ─── 15 · GUEST REVIEWS (lead quote + hairline-divided columns) ─── */}
-      <section className="bg-sand py-10 md:py-16 overflow-hidden cv-auto">
+      {/* ─── 15 · VIP REVIEWS (curated Sunshine Villa guestbook) ─── */}
+      <section
+        aria-labelledby="vip-reviews-heading"
+        className="bg-sand py-10 md:py-14 overflow-hidden cv-auto"
+      >
         <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-16 mb-6 md:mb-10">
-            <Reveal className="lg:col-span-5 space-y-5">
-              <p className="type-eyebrow">Guest Reviews</p>
-              <h2 className="type-h1">
-                Loved by
-                <br />
-                our guests.
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-5 lg:gap-x-16 mb-7 md:mb-9">
+            <Reveal className="lg:col-span-5 space-y-3">
+              <p className="type-eyebrow">Sunshine Villa Guestbook</p>
+              <h2 id="vip-reviews-heading" className="type-h2">
+                VIP Reviews
               </h2>
             </Reveal>
-            <Reveal delay={0.1} className="lg:col-span-6 lg:col-start-7 space-y-5 lg:pt-3">
-              <div className="flex items-center gap-4">
-                <span className="font-display text-5xl md:text-6xl text-navy leading-none">4.7</span>
-                <div className="space-y-1.5">
-                  <span className="block text-gold text-lg tracking-[0.15em] leading-none">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-navy/50 font-medium">out of 5</p>
-                </div>
-              </div>
-              <p className="type-body">
-                Real words from guests who have stayed with us — verified reviews from Google and Tripadvisor. Beautiful nature, outstanding rooms, and the kindest staff in Nepal.
+            <Reveal
+              delay={0.1}
+              className="lg:col-span-5 lg:col-start-8 lg:pt-2"
+            >
+              <p className="type-body text-[14px] max-w-lg">
+                Personal notes from distinguished guests who found warmth,
+                stillness, and a memorable welcome in the tea hills of Ilam.
               </p>
             </Reveal>
           </div>
 
-          {/* Lead quote */}
-          <Reveal className="max-w-4xl mb-8 md:mb-10">
+          <Reveal>
             <div
-              className="text-gold text-base tracking-[0.15em] leading-none mb-7"
-              aria-label={`${leadReview.rating} out of 5 stars`}
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-t border-l border-navy/15"
+              role="group"
+              aria-label="Choose a VIP guestbook entry"
             >
-              {"★".repeat(leadReview.rating)}
-            </div>
-            <blockquote className="font-display text-navy leading-[1.35] tracking-[-0.01em] text-xl md:text-[1.9rem]">
-              &ldquo;{leadReview.text}&rdquo;
-            </blockquote>
-            <p className="mt-7 text-[10px] uppercase tracking-[0.24em] text-navy/50 font-medium">
-              {leadReview.name} · via {leadReview.source}
-            </p>
-          </Reveal>
-
-          {/* Remaining reviews — two staggered hairline columns, no card chrome */}
-          <Reveal stagger={0.08} className="grid sm:grid-cols-2 gap-x-14 lg:gap-x-24 gap-y-8">
-            {sideReviews.map((review) => (
-              <Reveal.Item key={review.name}>
-                <div className="border-t border-navy/15 pt-8">
-                  <div
-                    className="text-gold text-sm tracking-[0.15em] leading-none mb-5"
-                    aria-label={`${review.rating} out of 5 stars`}
+              {VIP_REVIEWS.map((review, reviewIndex) => {
+                const active = review.id === activeVipReview.id
+                return (
+                  <button
+                    key={review.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setActiveVipReviewId(review.id)}
+                    className={`min-h-20 border-r border-b border-navy/15 px-4 py-3 text-left transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-gold ${
+                      active
+                        ? "bg-navy text-cream"
+                        : "bg-transparent text-navy hover:bg-white"
+                    }`}
                   >
-                    {"★".repeat(review.rating)}
-                    <span className="text-navy/15">{"★".repeat(5 - review.rating)}</span>
-                  </div>
-                  <p className="type-body text-[15px]">&ldquo;{review.text}&rdquo;</p>
-                  <p className="mt-6 text-[10px] uppercase tracking-[0.24em] text-navy/50 font-medium">
-                    {review.name} · via {review.source}
-                  </p>
+                    <span
+                      className={`block font-sans text-[9px] uppercase tracking-[0.2em] ${
+                        active ? "text-gold-light" : "text-gold-dark/80"
+                      }`}
+                    >
+                      {String(reviewIndex + 1).padStart(2, "0")} · {review.dateLines.at(-1)}
+                    </span>
+                    <span className="mt-2 block font-display text-sm leading-tight">
+                      {review.name}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <article
+              key={activeVipReview.id}
+              aria-live="polite"
+              aria-label={`Review by ${activeVipReview.name}`}
+              className="border-x border-b border-navy/15 bg-cream/45 p-5 md:p-8 lg:p-10"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-[12rem_minmax(0,1fr)] gap-7 md:gap-10 lg:gap-12 items-start">
+                <div className="relative aspect-[4/3] md:aspect-[4/5] overflow-hidden bg-white">
+                  <Image
+                    src={activeVipReview.image}
+                    alt={activeVipReview.imageAlt}
+                    fill
+                    sizes="(max-width: 767px) calc(100vw - 3rem), 192px"
+                    className={activeVipReview.imageClassName}
+                  />
                 </div>
-              </Reveal.Item>
-            ))}
+
+                <div className="min-w-0">
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <time
+                      dateTime={activeVipReview.dateTime}
+                      className="type-caption text-gold-dark/90"
+                    >
+                      {activeVipReview.dateLines.join(" · ")}
+                    </time>
+                    <p className="type-caption">
+                      Entry {String(VIP_REVIEWS.findIndex((review) => review.id === activeVipReview.id) + 1).padStart(2, "0")} of {String(VIP_REVIEWS.length).padStart(2, "0")}
+                    </p>
+                  </div>
+
+                  {activeVipReview.title && (
+                    <h3 className="font-display text-xl md:text-2xl leading-[1.2] text-navy mb-4">
+                      {activeVipReview.title}
+                    </h3>
+                  )}
+
+                  <blockquote className="space-y-3 border-l border-gold/45 pl-5 md:pl-7">
+                    {activeVipReview.paragraphs.map((paragraph, paragraphIndex) => (
+                      <p
+                        key={paragraph}
+                        className={
+                          activeVipReview.emphasizedParagraphs?.includes(paragraphIndex)
+                            ? "font-display text-lg md:text-xl leading-[1.4] text-navy"
+                            : "font-sans text-[14px] md:text-[15px] font-light leading-[1.7] text-navy/75"
+                        }
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                  </blockquote>
+
+                  <footer className="mt-5 flex flex-col gap-2 border-t border-navy/10 pt-4 sm:flex-row sm:items-end sm:justify-between">
+                    <p className="font-display text-lg text-navy">
+                      {activeVipReview.name}
+                    </p>
+                    {activeVipReview.credentials.length > 0 && (
+                      <div className="space-y-0.5 sm:text-right">
+                        {activeVipReview.credentials.map((credential) => (
+                          <p
+                            key={credential}
+                            className="text-[9px] uppercase tracking-[0.18em] text-navy/50 font-medium"
+                          >
+                            {credential}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </footer>
+                </div>
+              </div>
+            </article>
           </Reveal>
         </div>
       </section>

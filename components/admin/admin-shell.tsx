@@ -101,7 +101,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
         <div className="h-16 flex items-center justify-center px-3 border-b border-[#1B3A5C08] shrink-0 overflow-hidden">
           <Link href="/" className="flex items-center justify-center">
             {mounted && isCollapsed ? (
-              <span className="font-display text-sm font-bold text-[#1B3A5C] select-none">SR</span>
+              <span className="font-display text-sm font-bold text-[#1B3A5C] select-none">SRC</span>
             ) : (
               <img src="/logo.png" alt="Salt Route" className="h-9 object-contain" />
             )}

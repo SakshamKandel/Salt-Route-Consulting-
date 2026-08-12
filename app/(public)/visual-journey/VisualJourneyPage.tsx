@@ -369,7 +369,7 @@ export function VisualJourneyPage() {
             </p>
             <span className="block w-12 h-px bg-gold/55 mx-auto mb-10" aria-hidden />
             <h1
-              className="font-script text-white tracking-normal leading-[1.4] pb-2"
+              className="font-script text-white tracking-[-0.045em] leading-[1.02] pb-2"
               style={{ fontSize: "clamp(3rem, 8vw, 8rem)" }}
             >
               Tapestry

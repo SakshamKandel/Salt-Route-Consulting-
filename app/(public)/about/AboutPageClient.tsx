@@ -82,7 +82,7 @@ export default function AboutPageClient({ propertyCount }: Props) {
         <div className="relative z-10 text-center px-6 max-w-6xl">
           <Reveal>
             <p className="type-eyebrow text-white/80! mb-8">Connecting Local Roots</p>
-            <h1 className="font-script text-white! mb-4 md:mb-6 leading-[1.4] tracking-normal pb-2" style={{ fontSize: "clamp(3.5rem, 8vw, 8rem)" }}>
+            <h1 className="font-script text-white! mb-4 md:mb-6 leading-[1.02] tracking-[-0.045em] pb-2" style={{ fontSize: "clamp(3.5rem, 8vw, 8rem)" }}>
               To Global<br /><span className="italic text-gold/85">Routes.</span>
             </h1>
             <div className="flex items-center justify-center gap-8">
