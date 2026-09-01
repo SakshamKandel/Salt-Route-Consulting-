@@ -22,16 +22,16 @@ function HighlightsList({ highlights, title }: { highlights: string[]; title: st
   if (highlights.length === 0) return null
   return (
     <FadeUp delay={0.08} className="mt-8">
-      <p className="font-sans text-[10px] uppercase tracking-[0.24em] font-bold text-charcoal/45">
+      <p className="font-sans text-[10px] uppercase tracking-[0.24em] font-semibold text-gold">
         {title}
       </p>
-      <ul className="mt-3 border-b border-charcoal/10">
+      <ul className="mt-4 space-y-3">
         {highlights.map((text, i) => (
-          <li key={text} className="flex items-baseline gap-4 border-t border-charcoal/10 py-2.5">
-            <span className="font-display text-[13px] text-gold shrink-0">
+          <li key={text} className="flex items-start gap-4 py-1">
+            <span className="font-display text-sm text-gold font-semibold shrink-0">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <span className="font-sans text-[13px] font-light leading-relaxed text-charcoal/70">
+            <span className="font-sans text-xs sm:text-sm font-light leading-relaxed text-navy/75">
               {text}
             </span>
           </li>
@@ -64,14 +64,14 @@ export function BrochureStory({
   // ── Breath-band fallback (no accent image): quiet lead-scale passage. ──
   if (!accentImage) {
     return (
-      <section className="bg-cream py-14 md:py-20">
+      <section className="bg-sand py-20 md:py-28">
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           <FadeUp className="lg:col-span-7">
             <Eyebrow>The Narrative</Eyebrow>
             {text ? (
               <Prose
                 text={text}
-                className="mt-6 max-w-[42rem] font-display font-light text-xl md:text-2xl leading-[1.55] tracking-[-0.01em] text-charcoal/85"
+                className="mt-6 max-w-[42rem] font-display font-light text-xl md:text-2xl leading-[1.55] text-navy/85"
               />
             ) : null}
           </FadeUp>
@@ -86,38 +86,38 @@ export function BrochureStory({
   }
 
   return (
-    <section className="bg-cream py-10 md:py-16">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+    <section className="bg-sand py-20 md:py-28">
+      <div className="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         {/* Prose column at reading measure, highlights beneath. */}
-        <div className="order-2 lg:order-1 lg:col-span-7">
+        <div className="order-2 lg:order-1 lg:col-span-7 space-y-6">
           <FadeUp>
-            <Eyebrow>The Narrative</Eyebrow>
-            <h2 className="mt-3 font-display font-normal text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] tracking-[-0.01em] text-charcoal">
-              Our Story
+            <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+              The Sanctuary Story
+            </p>
+            <h2 className="font-display uppercase tracking-[0.16em] text-navy text-2xl sm:text-3xl lg:text-4xl font-normal leading-[1.25]">
+              Living In Stillness
             </h2>
-            <GoldRule className="mt-5" />
             {text ? (
               <Prose
                 text={text}
-                dropCap
-                className="mt-6 max-w-[40rem] font-sans text-[15px] leading-[1.85] font-light text-charcoal/70"
+                className="mt-6 max-w-[40rem] font-sans text-sm sm:text-base leading-[1.85] font-light text-navy/75"
               />
             ) : null}
           </FadeUp>
           <HighlightsList highlights={hi} title={kicker} />
         </div>
 
-        {/* Smaller contained portrait accent (3:4). */}
-        <div className="order-1 lg:order-2 lg:col-span-4 lg:col-start-9">
-          <BrochureCurtain className="relative aspect-[3/4] w-full">
+        {/* Smaller contained portrait accent (3:4) with clean shadow. */}
+        <div className="order-1 lg:order-2 lg:col-span-5">
+          <div className="relative aspect-[4/5] w-full overflow-hidden shadow-xl bg-beige">
             <SafeImage
               src={accentImage}
-              alt="Our story"
+              alt="Sanctuary Architecture"
               fill
-              sizes="(max-width:1024px) 100vw, 33vw"
+              sizes="(max-width:1024px) 100vw, 40vw"
               className="object-cover"
             />
-          </BrochureCurtain>
+          </div>
         </div>
       </div>
     </section>

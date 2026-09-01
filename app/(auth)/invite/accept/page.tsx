@@ -49,13 +49,11 @@ export default function AcceptInvitePage({
   })
 
   useEffect(() => {
-    if (!token) {
-      setTokenStatus("invalid")
-      setTokenError("Missing invitation token.")
-      return
-    }
+    if (!token) return
 
-    checkInviteTokenAction(token).then((res) => {
+    let cancelled = false
+    void checkInviteTokenAction(token).then((res) => {
+      if (cancelled) return
       if (res.error) {
         setTokenStatus("invalid")
         setTokenError(res.error)
@@ -63,9 +61,15 @@ export default function AcceptInvitePage({
         setTokenStatus("valid")
       }
     })
+    return () => {
+      cancelled = true
+    }
   }, [token])
 
-  if (tokenStatus === "loading") {
+  const resolvedTokenStatus = token ? tokenStatus : "invalid"
+  const resolvedTokenError = token ? tokenError : "Missing invitation token."
+
+  if (resolvedTokenStatus === "loading") {
     return (
       <div className="space-y-10 text-center">
         <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Checking...</h1>
@@ -74,11 +78,11 @@ export default function AcceptInvitePage({
     )
   }
 
-  if (tokenStatus === "invalid") {
+  if (resolvedTokenStatus === "invalid") {
     return (
       <div className="space-y-10 text-center">
         <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Invalid Link</h1>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-red-500/80 font-semibold">{tokenError}</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-red-500/80 font-semibold">{resolvedTokenError}</p>
       </div>
     )
   }

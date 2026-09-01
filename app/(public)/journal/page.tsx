@@ -1,7 +1,7 @@
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
 import { journalArticles } from "@/lib/journal"
-import { Reveal } from "@/components/public/motion"
+import { CompactHeading, CompactSection } from "@/components/public/Compact"
 
 export const metadata = {
   title: "Journal | Salt Route",
@@ -12,80 +12,48 @@ export default function JournalPage() {
   const [lead, ...rest] = journalArticles
 
   return (
-    <div className="bg-background text-navy min-h-screen">
-      {/* Header */}
-      <section className="px-6 md:px-12 lg:px-20 pt-24 md:pt-28 pb-10 md:pb-16">
-        <Reveal className="max-w-[90rem] mx-auto">
-          <p className="type-eyebrow mb-6">The Journal</p>
-          <h1 className="type-display max-w-3xl">Stories from Nepal.</h1>
-        </Reveal>
-      </section>
+    <div className="min-h-screen bg-background text-navy">
+      <CompactSection className="pb-7 sm:pb-8">
+        <CompactHeading
+          eyebrow="The journal"
+          title="Stories from Nepal."
+          copy="Notes on places, people, hospitality, and the slower journeys that connect them."
+        />
+      </CompactSection>
 
-      {/* Lead article */}
-      {lead && (
-        <section className="px-6 md:px-12 lg:px-20 pb-10 md:pb-16">
-          <Reveal className="max-w-[90rem] mx-auto">
-            <Link
-              href={`/journal/${lead.slug}`}
-              className="group grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center"
-            >
-              <div className="lg:col-span-7 relative aspect-[16/10] overflow-hidden bg-beige">
-                <Image
-                  src={lead.image}
-                  alt={lead.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className="object-cover transition-transform duration-700 ease-[var(--ease-out-luxe)] group-hover:scale-[1.03]"
-                />
-              </div>
-              <div className="lg:col-span-5 space-y-6">
-                <p className="type-caption text-gold/80!">{lead.category}</p>
-                <h2 className="type-h2 group-hover:text-gold transition-colors duration-500">
-                  {lead.title}
-                </h2>
-                <p className="type-body max-w-lg">{lead.excerpt}</p>
-                <div className="flex items-center gap-4 type-caption text-navy/50">
-                  <span>{lead.date}</span>
-                  <span className="w-6 h-px bg-navy/20" />
-                  <span>{lead.readTime}</span>
-                </div>
-              </div>
-            </Link>
-          </Reveal>
-        </section>
-      )}
+      {lead ? (
+        <CompactSection className="pt-0">
+          <Link href={`/journal/${lead.slug}`} className="grid items-center gap-7 lg:grid-cols-12 lg:gap-10">
+            <div className="relative aspect-[16/10] overflow-hidden bg-sand-dark lg:col-span-7">
+              <Image src={lead.image} alt={lead.title} fill priority sizes="(max-width: 1024px) 100vw, 58vw" className="object-cover" />
+            </div>
+            <div className="lg:col-span-5 lg:px-4">
+              <p className="font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{lead.category}</p>
+              <h2 className="mt-2 font-display text-[clamp(2rem,3.2vw,3.15rem)] leading-[1.08] text-navy">{lead.title}</h2>
+              <p className="mt-4 font-sans text-base font-light leading-7 text-navy/70">{lead.excerpt}</p>
+              <p className="mt-4 font-sans text-xs text-navy/50">{lead.date} · {lead.readTime}</p>
+            </div>
+          </Link>
+        </CompactSection>
+      ) : null}
 
-      {/* Remaining articles */}
-      <section className="px-6 md:px-12 lg:px-20 pb-10 md:pb-16">
-        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-10">
-          {rest.map((a, i) => (
-            <Reveal key={a.slug} delay={i * 0.08}>
-              <Link href={`/journal/${a.slug}`} className="group block">
-                <div className="relative aspect-[4/3] overflow-hidden bg-beige mb-6">
-                  <Image
-                    src={a.image}
-                    alt={a.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 45vw"
-                    className="object-cover transition-transform duration-700 ease-[var(--ease-out-luxe)] group-hover:scale-[1.04]"
-                  />
-                </div>
-                <p className="type-caption text-gold/80! mb-3">{a.category}</p>
-                <h3 className="type-h3 group-hover:text-gold transition-colors duration-500">
-                  {a.title}
-                </h3>
-                <p className="type-body mt-4 max-w-lg">{a.excerpt}</p>
-                <div className="flex items-center gap-4 type-caption text-navy/50 mt-5">
-                  <span>{a.date}</span>
-                  <span className="w-6 h-px bg-navy/20" />
-                  <span>{a.readTime}</span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      {rest.length ? (
+        <CompactSection className="bg-beige">
+          <div className="grid gap-x-7 gap-y-9 md:grid-cols-2 lg:grid-cols-3">
+            {rest.map((article) => (
+              <article key={article.slug}>
+                <Link href={`/journal/${article.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand-dark">
+                  <Image src={article.image} alt={article.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 hover:scale-[1.02]" />
+                </Link>
+                <p className="mt-4 font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{article.category}</p>
+                <h2 className="mt-1 font-display text-2xl leading-tight text-navy">{article.title}</h2>
+                <p className="mt-2 font-sans text-[15px] font-light leading-6 text-navy/68">{article.excerpt}</p>
+                <p className="mt-3 font-sans text-xs text-navy/50">{article.date} · {article.readTime}</p>
+              </article>
+            ))}
+          </div>
+        </CompactSection>
+      ) : null}
     </div>
   )
 }

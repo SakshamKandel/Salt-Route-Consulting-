@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { BookingRequestForm, type BookingRoomType } from "./booking-request-form"
-import { LuxuryLink } from "@/components/ui/luxury-link"
 import { formatNpr } from "@/lib/currency"
-import { Expand, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react"
+import { CompactContainer, CompactHeading, CompactSection } from "@/components/public/Compact"
 
 interface Props {
   property: {
@@ -44,214 +44,68 @@ export function BookingPageClient({
   isAuthenticated,
 }: Props) {
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState<string | null>(requestedRoomTypeId)
-
   const selectedRoom = useMemo(
-    () => roomTypes.find((rt) => rt.id === selectedRoomTypeId),
-    [roomTypes, selectedRoomTypeId]
+    () => roomTypes.find((room) => room.id === selectedRoomTypeId),
+    [roomTypes, selectedRoomTypeId],
   )
-
-  // Gallery for the currently selected room (or the property images as fallback).
-  const galleryImages = useMemo(() => {
-    const roomImgs = (selectedRoom?.images && selectedRoom.images.length > 0)
-      ? selectedRoom.images
-      : (selectedRoom?.imageUrl ? [selectedRoom.imageUrl] : [])
-    if (roomImgs.length > 0) return roomImgs
-    const propImgs = property.images.map((i) => i.url)
-    if (propImgs.length > 0) return propImgs
-    return heroImage ? [heroImage] : []
-  }, [selectedRoom, property.images, heroImage])
-
-  const [activeImage, setActiveImage] = useState(0)
-  // Reset to the first photo whenever the selected room changes.
-  useEffect(() => { setActiveImage(0) }, [selectedRoomTypeId])
-
-  const displayImage = galleryImages[activeImage] || heroImage
-  const displayLabel = selectedRoom?.name || property.title
-
-  // Lightbox state
-  const [lightbox, setLightbox] = useState<{ open: boolean; zoom: number }>({ open: false, zoom: 1 })
-
-  const openLightbox = useCallback(() => {
-    if (displayImage) setLightbox({ open: true, zoom: 1 })
-  }, [displayImage])
-
-  const closeLightbox = useCallback(() => {
-    setLightbox({ open: false, zoom: 1 })
-  }, [])
-
-  const stepImage = useCallback((dir: 1 | -1) => {
-    setActiveImage((i) => (galleryImages.length === 0 ? 0 : (i + dir + galleryImages.length) % galleryImages.length))
-    setLightbox((s) => ({ ...s, zoom: 1 }))
-  }, [galleryImages.length])
-
-  // Keyboard controls
-  useEffect(() => {
-    if (!lightbox.open) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeLightbox()
-      if (e.key === "ArrowLeft") stepImage(-1)
-      if (e.key === "ArrowRight") stepImage(1)
-    }
-    window.addEventListener("keydown", handler)
-    document.body.style.overflow = "hidden"
-    return () => {
-      window.removeEventListener("keydown", handler)
-      document.body.style.overflow = ""
-    }
-  }, [lightbox.open, closeLightbox, stepImage])
+  const roomImage = selectedRoom?.images?.[0] || selectedRoom?.imageUrl
+  const displayImage = roomImage || property.images[0]?.url || heroImage
 
   return (
-    <div className="min-h-screen bg-sand pt-24 pb-10 md:pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="mb-6 md:mb-8">
-          <LuxuryLink href={`/properties/${property.slug}`} className="inline-flex">
-            ← BACK TO PROPERTY
-          </LuxuryLink>
-        </div>
+    <div className="min-h-screen bg-background text-navy">
+      <CompactSection className="pb-7 sm:pb-8">
+        <Link href={`/properties/${property.slug}`} className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-navy/58 hover:text-navy">
+          Back to property
+        </Link>
+        <CompactHeading
+          eyebrow={property.location}
+          title={`Request ${property.title}`}
+          copy="Choose your room, dates, and guest details. The request is reviewed by our team before anything is confirmed."
+          className="mt-5"
+        />
+      </CompactSection>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-8 lg:gap-24 items-start">
-          {/* Left Column */}
-          <div className="min-w-0 space-y-6 md:space-y-8">
-            {/* Image with zoom + gallery */}
-            <div className="space-y-3">
-              <div className="group relative">
-                {displayImage && (
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <Image
-                      src={displayImage}
-                      alt={displayLabel}
-                      fill
-                      sizes="(min-width: 1024px) 50vw, 100vw"
-                      unoptimized={displayImage.includes("placehold.co")}
-                      className="object-cover transition-transform duration-700 ease-out-luxe group-hover:scale-[1.04]"
-                    />
-                    <button
-                      type="button"
-                      onClick={openLightbox}
-                      className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-charcoal font-bold flex items-center gap-2 hover:bg-white transition-colors sm:top-4 sm:right-4 sm:px-4 sm:tracking-[0.2em]"
-                    >
-                      <Expand className="w-3 h-3" /> Zoom
-                    </button>
-                    {galleryImages.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => stepImage(-1)}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-charcoal flex items-center justify-center transition-colors"
-                          aria-label="Previous photo"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => stepImage(1)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-charcoal flex items-center justify-center transition-colors"
-                          aria-label="Next photo"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                        <div className="absolute bottom-4 left-4 bg-black/55 backdrop-blur-sm text-white text-[10px] uppercase tracking-[0.2em] font-bold px-3 py-1.5">
-                          {activeImage + 1} / {galleryImages.length}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-                {!displayImage && (
-                  <div className="aspect-[4/3] w-full bg-charcoal/5 flex items-center justify-center">
-                    <p className="text-xs uppercase tracking-[0.3em] text-charcoal/30">No Image</p>
-                  </div>
-                )}
+      <CompactContainer>
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-10">
+          <div>
+            {displayImage ? (
+              <div className="relative aspect-[4/3] overflow-hidden bg-sand-dark">
+                <Image
+                  src={displayImage}
+                  alt={selectedRoom?.name || property.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                />
               </div>
+            ) : null}
 
-              {/* Thumbnails */}
-              {galleryImages.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {galleryImages.map((url, i) => (
-                    <button
-                      key={url + i}
-                      type="button"
-                      onClick={() => setActiveImage(i)}
-                      className={`relative h-16 w-24 shrink-0 overflow-hidden transition-opacity ${i === activeImage ? "ring-1 ring-charcoal" : "opacity-60 hover:opacity-100"}`}
-                    >
-                      <Image src={url} alt="" fill sizes="96px" className="object-cover" unoptimized={url.includes("placehold.co")} />
-                    </button>
-                  ))}
+            <div className="py-6">
+              {selectedRoom ? (
+                <div className="mb-4">
+                  <p className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/50">Selected room</p>
+                  <p className="mt-1 font-display text-2xl text-navy">{selectedRoom.name}</p>
+                  <p className="mt-1 font-sans text-sm text-navy/64">{formatNpr(selectedRoom.pricePerNight)} per night</p>
                 </div>
-              )}
-            </div>
-
-            {/* Room indicator */}
-            {selectedRoom && (
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[10px] uppercase tracking-[0.16em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
-                  Selected Room
-                </span>
-                <span className="w-6 h-[1px] bg-gold/40" />
-                <span className="font-display text-sm text-charcoal uppercase tracking-wide">
-                  {selectedRoom.name}
-                </span>
-                <span className="text-charcoal/40 font-sans text-xs">
-                  {formatNpr(selectedRoom.pricePerNight)}/night
-                </span>
-              </div>
-            )}
-
-            <div className="space-y-6">
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-charcoal">{property.title}</h1>
-              <p className="text-[10px] tracking-[0.14em] uppercase font-sans text-charcoal/50 sm:tracking-[0.2em]">
-                {property.location}
+              ) : null}
+              <p className="font-sans text-base font-light leading-7 text-navy/70">{property.description}</p>
+              <p className="mt-4 font-sans text-sm text-navy/60">
+                {property.bedrooms} bedrooms · {property.bathrooms} bathrooms · up to {property.maxGuests} guests
               </p>
-
-              <div className="w-12 h-[1px] bg-charcoal/20" />
-
-              <p className="text-charcoal/70 text-sm leading-loose font-sans max-w-2xl">
-                {property.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-6 pt-6 sm:flex sm:flex-wrap sm:gap-8">
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Bedrooms</span>
-                  <span className="font-display text-xl text-charcoal">{property.bedrooms}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Bathrooms</span>
-                  <span className="font-display text-xl text-charcoal">{property.bathrooms}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-charcoal/50 mb-1 sm:tracking-[0.24em]">Capacity</span>
-                  <span className="font-display text-xl text-charcoal">Up to {property.maxGuests}</span>
-                </div>
+              <div className="mt-6 bg-sand p-5">
+                <h2 className="font-display text-2xl text-navy">What happens next</h2>
+                <ol className="mt-3 space-y-2 font-sans text-sm font-light leading-6 text-navy/68">
+                  <li>1. Your request is reviewed by the Salt Route concierge team.</li>
+                  <li>2. Property and room availability are verified.</li>
+                  <li>3. You receive confirmation and the next steps by email.</li>
+                  <li>4. No charge is applied through this request form.</li>
+                </ol>
               </div>
-            </div>
-
-            <div className="border-t border-charcoal/10 pt-6 space-y-4 sm:pt-8">
-              <h3 className="text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.24em] font-sans font-semibold text-charcoal/60">
-                Concierge Process
-              </h3>
-              <ul className="space-y-3 font-sans text-xs tracking-wide text-charcoal/60 leading-relaxed">
-                <li className="flex gap-3">
-                  <span className="text-charcoal/30 font-display italic">01</span>
-                  <span>Your request is reviewed by our dedicated concierge team.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-charcoal/30 font-display italic">02</span>
-                  <span>We will verify property availability within 24 hours.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-charcoal/30 font-display italic">03</span>
-                  <span>You will receive an exclusive confirmation dossier via email once approved.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-charcoal/30 font-display italic">04</span>
-                  <span>No charges are applied until your itinerary is finalized and confirmed.</span>
-                </li>
-              </ul>
             </div>
           </div>
 
-          {/* Right Column: Form */}
-          <div className="w-full min-w-0 lg:w-[480px] lg:sticky lg:top-32">
+          <aside className="bg-beige p-5 sm:p-6 lg:sticky lg:top-24">
             <BookingRequestForm
               propertyId={property.id}
               pricePerNight={Number(property.pricePerNight)}
@@ -265,88 +119,10 @@ export function BookingPageClient({
               initialPhone={currentUserPhone || requestedPhone}
               onRoomTypeChange={setSelectedRoomTypeId}
             />
-          </div>
+          </aside>
         </div>
-      </div>
-
-      {/* Lightbox */}
-      {lightbox.open && displayImage && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-          onClick={closeLightbox}
-        >
-          {/* Toolbar */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-            <div className="min-w-0 pr-4 text-white text-[10px] uppercase tracking-[0.12em] font-sans sm:text-xs sm:tracking-[0.3em]">
-              {selectedRoom?.name || property.title}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setLightbox((s) => ({ ...s, zoom: Math.max(1, s.zoom - 0.5) }))
-                }}
-                disabled={lightbox.zoom <= 1}
-                className="bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white rounded-full p-2.5 transition-all"
-                aria-label="Zoom out"
-              >
-                <ZoomOut className="w-5 h-5" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setLightbox((s) => ({ ...s, zoom: Math.min(4, s.zoom + 0.5) }))
-                }}
-                disabled={lightbox.zoom >= 4}
-                className="bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white rounded-full p-2.5 transition-all"
-                aria-label="Zoom in"
-              >
-                <ZoomIn className="w-5 h-5" />
-              </button>
-              <span className="text-white/60 text-xs font-mono w-12 text-center">
-                {Math.round(lightbox.zoom * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  closeLightbox()
-                }}
-                className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition-all"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          <div
-            className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 md:p-16 overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              className="relative transition-transform duration-200 ease-out"
-              style={{
-                transform: `scale(${lightbox.zoom})`,
-                cursor: lightbox.zoom > 1 ? "grab" : "zoom-in",
-              }}
-              onClick={() => {
-                setLightbox((s) => ({ ...s, zoom: s.zoom === 1 ? 2 : 1 }))
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={displayImage}
-                alt={displayLabel}
-                className="max-w-[90vw] max-h-[80vh] w-auto h-auto object-contain select-none"
-                draggable={false}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      </CompactContainer>
+      <div className="h-10 sm:h-12" />
     </div>
   )
 }

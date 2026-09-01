@@ -54,15 +54,15 @@ export function BrochureReservation({
   if (!image) return null
 
   const guestCount = Math.max(maxGuests, 1)
-  const labelClass = "text-[10px] uppercase tracking-[0.25em] text-white/40"
+  const labelClass = "text-[10px] uppercase tracking-[0.24em] font-semibold text-gold"
   // The page's ONE high-weight primary CTA (everything else stays a whisper).
   const submitClass =
-    "col-span-full mt-6 inline-flex w-full sm:w-auto items-center justify-center gap-3 bg-gold px-10 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-charcoal transition-colors duration-300 hover:bg-gold-light"
+    "col-span-full mt-6 inline-flex w-full sm:w-auto items-center justify-center gap-3 bg-gold px-10 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-navy transition-all duration-300 hover:bg-gold-light"
   const fieldClass =
-    "bg-transparent border-0 border-b border-white/25 focus:border-gold focus:outline-none text-white placeholder:text-white/30 px-0 py-2 font-sans text-[15px] font-light"
+    "bg-transparent border-0 border-b border-white/20 focus:border-gold focus:outline-none text-cream placeholder:text-white/30 px-0 py-2 font-sans text-sm font-light"
 
   return (
-    <section id="reservation" className="relative bg-charcoal text-white">
+    <section id="reservation" className="relative bg-navy-dark text-white overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Left — full-height image with price overlay */}
         <div className="relative min-h-[320px] lg:min-h-[560px]">
@@ -73,12 +73,14 @@ export function BrochureReservation({
             sizes="(max-width:1024px) 100vw, 50vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-navy-dark/40 to-transparent" />
           <div className="absolute bottom-0 left-0 p-8 md:p-12">
-            <Eyebrow light>Starting From</Eyebrow>
-            <p className="mt-3 font-display text-4xl text-white">
+            <p className="text-[10px] uppercase tracking-[0.24em] text-gold font-semibold">
+              Starting From
+            </p>
+            <p className="mt-3 font-display text-4xl text-cream">
               {formatNpr(startingPrice)}
-              <span className="ml-2 font-sans text-sm font-light text-white/60">/ night</span>
+              <span className="ml-2 font-sans text-sm font-light text-cream/60">/ night</span>
             </p>
           </div>
         </div>
@@ -86,12 +88,13 @@ export function BrochureReservation({
         {/* Right — enquiry form */}
         <div className="px-6 md:px-14 lg:px-16 py-14 lg:py-20 w-full max-w-2xl">
           <FadeUp>
-            <Eyebrow light>Reserve</Eyebrow>
-            <h2 className="mt-4 font-display font-normal text-[clamp(2rem,3.5vw,2.75rem)] leading-[1.1] tracking-[-0.01em] text-white">
-              Make A Reservation
+            <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+              Reserve Your Stay
+            </p>
+            <h2 className="font-display uppercase tracking-[0.16em] text-cream text-2xl sm:text-3xl md:text-4xl font-normal leading-[1.2]">
+              Make a Reservation
             </h2>
-            <GoldRule className="mt-6" />
-            <p className="mt-6 font-sans text-[14px] font-light leading-relaxed text-white/60">
+            <p className="mt-4 font-sans text-xs sm:text-sm font-light leading-relaxed text-cream/70">
               Tell us your dates and we&apos;ll personally confirm availability — no payment is taken now.
             </p>
           </FadeUp>

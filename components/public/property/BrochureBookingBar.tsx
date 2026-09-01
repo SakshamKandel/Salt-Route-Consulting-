@@ -37,59 +37,55 @@ export function BrochureBookingBar({
   const guestOptions = Array.from({ length: Math.max(maxGuests, 1) }, (_, i) => i + 1)
 
   return (
-    <section className="relative z-10 -mt-14 md:-mt-16 w-full px-5 sm:px-6 md:px-12">
-      <div className="max-w-screen-xl mx-auto bg-cream border border-charcoal/10 border-t-gold/60 px-6 md:px-10 py-6 md:py-7">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-4 md:gap-8 items-end">
-          <label className="block space-y-2">
-            <span className={FIELD_LABEL}>Check In</span>
+    <section className="relative z-10 -mt-12 md:-mt-14 w-full px-4 sm:px-6 md:px-12">
+      <div className="max-w-screen-xl mx-auto bg-white/95 backdrop-blur-md shadow-2xl p-6 md:p-8">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4 md:gap-8 items-end">
+          <label className="block space-y-1.5 cursor-pointer">
+            <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-navy/50">Check In</span>
             <input
               type="date"
               min={today}
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className={FIELD_CONTROL}
+              className="bg-transparent border-0 border-b border-navy/20 focus:border-gold focus:outline-none px-0 py-1.5 text-xs sm:text-sm text-navy font-medium w-full min-w-0"
             />
           </label>
 
-          <label className="block space-y-2">
-            <span className={FIELD_LABEL}>Check Out</span>
+          <label className="block space-y-1.5 cursor-pointer">
+            <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-navy/50">Check Out</span>
             <input
               type="date"
               min={checkIn || today}
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className={FIELD_CONTROL}
+              className="bg-transparent border-0 border-b border-navy/20 focus:border-gold focus:outline-none px-0 py-1.5 text-xs sm:text-sm text-navy font-medium w-full min-w-0"
             />
           </label>
 
-          <label className="block space-y-2">
-            <span className={FIELD_LABEL}>Guests</span>
+          <label className="block space-y-1.5 cursor-pointer">
+            <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-navy/50">Guests</span>
             <select
               value={guests}
               onChange={(e) => setGuests(Number(e.target.value))}
-              className={FIELD_CONTROL}
+              className="bg-transparent border-0 border-b border-navy/20 focus:border-gold focus:outline-none px-0 py-1.5 text-xs sm:text-sm text-navy font-medium w-full min-w-0 cursor-pointer"
             >
               {guestOptions.map((n) => (
                 <option key={n} value={n}>
-                  {n + (n === 1 ? " Adult" : " Adults")}
+                  {n + (n === 1 ? " Guest" : " Guests")}
                 </option>
               ))}
             </select>
           </label>
 
-          <div className="group space-y-2 w-full sm:w-auto">
+          <div className="w-full">
             <button
               type="button"
               onClick={onSearch}
-              className="inline-flex w-full items-center justify-between gap-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.18em] text-charcoal sm:w-auto sm:justify-start sm:tracking-[0.28em]"
+              className="w-full bg-navy text-cream hover:bg-gold hover:text-navy py-3 px-6 text-xs uppercase tracking-[0.22em] font-medium transition-all duration-300 flex items-center justify-center gap-2"
             >
-              Check Availability
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <span>Check Availability</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            {/* Left-grow gold underline over a resting hairline. */}
-            <div className="relative h-px w-full sm:w-44 bg-charcoal/15 overflow-hidden">
-              <span className="absolute inset-0 origin-left scale-x-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-x-100" />
-            </div>
           </div>
         </div>
       </div>

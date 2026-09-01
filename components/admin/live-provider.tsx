@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react"
+import { createContext, useContext, useEffect, useRef, useState } from "react"
 import type { AdminEvent } from "@/lib/realtime/publisher"
 
 interface LiveContextValue {
@@ -24,46 +24,50 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
   const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const retryDelay = useRef(1000)
 
-  const connect = useCallback(() => {
-    if (esRef.current) esRef.current.close()
+  useEffect(() => {
+    let disposed = false
 
-    const es = new EventSource("/api/admin/events")
-    esRef.current = es
+    function connect() {
+      if (disposed) return
+      esRef.current?.close()
 
-    es.onmessage = (e) => {
-      try {
-        const event: AdminEvent = JSON.parse(e.data)
-        if (event.type === "connected") return
-        setLastEvent(event)
-        if (event.type.endsWith(".created")) {
-          setCounters((prev) => ({
-            ...prev,
-            [event.type]: (prev[event.type] ?? 0) + 1,
-          }))
+      const es = new EventSource("/api/admin/events")
+      esRef.current = es
+
+      es.onmessage = (e) => {
+        try {
+          const event: AdminEvent = JSON.parse(e.data)
+          if (event.type === "connected") return
+          setLastEvent(event)
+          if (event.type.endsWith(".created")) {
+            setCounters((prev) => ({
+              ...prev,
+              [event.type]: (prev[event.type] ?? 0) + 1,
+            }))
+          }
+          retryDelay.current = 1000
+        } catch {
+          // non-JSON keep-alive comment
         }
-        retryDelay.current = 1000
-      } catch {
-        // non-JSON keep-alive comment
+      }
+
+      es.onerror = () => {
+        es.close()
+        esRef.current = null
+        retryRef.current = setTimeout(() => {
+          retryDelay.current = Math.min(retryDelay.current * 2, 30000)
+          connect()
+        }, retryDelay.current)
       }
     }
 
-    es.onerror = () => {
-      es.close()
-      esRef.current = null
-      retryRef.current = setTimeout(() => {
-        retryDelay.current = Math.min(retryDelay.current * 2, 30000)
-        connect()
-      }, retryDelay.current)
-    }
-  }, [])
-
-  useEffect(() => {
     connect()
     return () => {
+      disposed = true
       esRef.current?.close()
       if (retryRef.current) clearTimeout(retryRef.current)
     }
-  }, [connect])
+  }, [])
 
   return (
     <LiveContext.Provider value={{ lastEvent, counters }}>

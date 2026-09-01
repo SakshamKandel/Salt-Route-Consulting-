@@ -314,7 +314,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
           <div key={i} className={`flex gap-3 max-w-[88%] ${m.role === "user" ? "ml-auto flex-row-reverse" : ""}`}>
             {/* Avatar */}
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1 ${m.role === "bot" ? "bg-[#1B3A5C]" : "bg-[#C9A96E] text-white"}`}>
-              {m.role === "bot" ? <img src="/logo.png" alt="AI" className="w-5 h-5 object-contain" /> : <User className="w-4 h-4" />}
+              {m.role === "bot" ? <img src="/brand/logo.png" alt="AI" className="w-5 h-5 object-contain" /> : <User className="w-4 h-4" />}
             </div>
             {/* Message Bubble */}
             <div className={`flex flex-col gap-1.5 ${m.role === "user" ? "items-end" : ""}`}>
@@ -332,7 +332,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
         {(typing || loading) && (
           <div className="flex gap-3 max-w-[88%]">
             <div className="w-8 h-8 rounded-full bg-[#1B3A5C] shadow-sm flex items-center justify-center shrink-0 mt-1">
-              <img src="/logo.png" alt="AI" className="w-5 h-5 object-contain" />
+              <img src="/brand/logo.png" alt="AI" className="w-5 h-5 object-contain" />
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider pl-1">Salt Route AI</span>

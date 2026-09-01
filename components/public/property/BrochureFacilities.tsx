@@ -62,40 +62,41 @@ export function BrochureFacilities({
   ]
 
   return (
-    <section className="bg-sand py-10 md:py-16">
+    <section className="bg-sand py-20 md:py-28">
       <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-        {/* Header row — eyebrow + title over a hairline. */}
-        <FadeUp className="border-b border-charcoal/10 pb-5">
-          <Eyebrow>The Experience</Eyebrow>
-          <h2 className="mt-3 font-display font-normal text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] tracking-[-0.01em] text-charcoal">
-            Facilities & Services
+        {/* Header row */}
+        <FadeUp className="mb-12">
+          <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+            The Experience
+          </p>
+          <h2 className="font-display uppercase tracking-[0.16em] text-navy text-2xl sm:text-3xl md:text-4xl font-normal">
+            Facilities and Services
           </h2>
         </FadeUp>
 
-        {/* Hairline columns — one per group, divided vertically on md+. */}
+        {/* Clean columns — one per group */}
         <div
-          className={`mt-8 grid grid-cols-1 gap-10 md:gap-0 ${
+          className={`grid grid-cols-1 gap-10 sm:grid-cols-2 ${
             COLS[groups.length] ?? "md:grid-cols-3"
-          } md:divide-x md:divide-charcoal/10`}
+          } gap-8 lg:gap-12`}
         >
           {groups.map((group, gi) => (
             <FadeUp
               key={group.key}
               delay={gi * 0.06}
-              className={`md:px-8 ${gi === 0 ? "md:pl-0" : ""} ${
-                gi === groups.length - 1 ? "md:pr-0" : ""
-              }`}
+              className="bg-white p-8 shadow-sm"
             >
-              <p className="font-sans text-[10px] uppercase tracking-[0.24em] font-bold text-charcoal/45">
+              <p className="font-sans text-[10px] uppercase tracking-[0.24em] font-semibold text-gold mb-6">
                 {group.label}
               </p>
-              <ul className="mt-3">
+              <ul className="space-y-3">
                 {group.items.map((item) => (
                   <li
                     key={item}
-                    className="border-b border-charcoal/10 py-2.5 font-sans text-[13px] font-light leading-relaxed text-charcoal/70"
+                    className="flex items-center gap-3 font-sans text-xs sm:text-sm font-light text-navy/80"
                   >
-                    {item}
+                    <span className="w-1.5 h-1.5 rounded-full bg-gold shrink-0" />
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>

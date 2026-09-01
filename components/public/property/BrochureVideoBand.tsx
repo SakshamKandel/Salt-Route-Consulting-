@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useReducedMotion } from "framer-motion"
-import { Eyebrow, SafeImage, usePreview } from "@/components/public/property/primitives"
+import { SafeImage, usePreview } from "@/components/public/property/primitives"
 
 export function BrochureVideoBand({
   videoUrl,
@@ -30,8 +30,11 @@ export function BrochureVideoBand({
   // Respect the Save-Data hint the same way as reduced motion.
   useEffect(() => {
     if (preview) return
-    const conn = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
-    if (conn?.saveData) setSaveData(true)
+    const frame = window.requestAnimationFrame(() => {
+      const conn = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
+      if (conn?.saveData) setSaveData(true)
+    })
+    return () => window.cancelAnimationFrame(frame)
   }, [preview])
 
   const noAutoplay = !!reduce || saveData
@@ -93,9 +96,11 @@ export function BrochureVideoBand({
           />
         )}
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-8 md:p-12">
-          <Eyebrow light>Film</Eyebrow>
-          <h2 className="mt-4 font-display font-normal text-3xl md:text-5xl leading-[1.1] tracking-[-0.01em] text-white">
+        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+          <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+            Sanctuary Film
+          </p>
+          <h2 className="font-display uppercase tracking-[0.16em] text-2xl sm:text-3xl md:text-5xl leading-[1.1] text-cream">
             {title}
           </h2>
         </div>

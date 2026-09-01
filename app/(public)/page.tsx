@@ -13,7 +13,6 @@ export default async function HomePage() {
         where: { status: "ACTIVE" },
         include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
         orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-        take: 4,
       })
       .catch((err) => {
         console.error("[home] featured fetch failed:", err)

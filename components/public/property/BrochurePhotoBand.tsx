@@ -38,14 +38,14 @@ export function BrochurePhotoBand({
       </div>
 
       {hasMore && (
-        <div className="border-b border-charcoal/10 px-5 sm:px-6 md:px-12">
-          <div className="max-w-screen-xl mx-auto flex justify-end py-3">
+        <div className="bg-sand px-5 sm:px-6 md:px-12">
+          <div className="max-w-screen-xl mx-auto flex justify-end py-4">
             <button
               type="button"
               onClick={onViewAll}
-              className="inline-flex items-center gap-2 uppercase tracking-[0.18em] sm:tracking-[0.24em] text-[10px] font-bold text-charcoal transition-colors hover:text-gold"
+              className="inline-flex items-center gap-2 uppercase tracking-[0.2em] text-[10px] font-semibold text-navy hover:text-gold transition-colors"
             >
-              View All Photos
+              View Full Gallery ({images.length} Photographs)
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
           </div>

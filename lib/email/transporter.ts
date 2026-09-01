@@ -23,8 +23,8 @@ let _transporter: ReturnType<typeof nodemailer.createTransport> | null = null
 export const transporter = new Proxy({} as ReturnType<typeof nodemailer.createTransport>, {
   get(_target, prop) {
     if (!_transporter) _transporter = makeTransporter()
-    const value = (_transporter as never)[prop as never]
-    return typeof value === 'function' ? (value as Function).bind(_transporter) : value
+    const value: unknown = Reflect.get(_transporter, prop)
+    return typeof value === 'function' ? value.bind(_transporter) : value
   },
 })
 

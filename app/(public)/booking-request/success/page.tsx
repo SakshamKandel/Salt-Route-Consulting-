@@ -1,111 +1,45 @@
-import { ArrowRight, Check } from "lucide-react"
 import Link from "next/link"
-import { siteConfig } from "@/lib/site.config"
+import { CompactContainer } from "@/components/public/Compact"
 
 export default async function BookingSuccessPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const resolvedParams = await searchParams
-  const code = resolvedParams.code as string | undefined
+  const params = await searchParams
+  const code = typeof params.code === "string" ? params.code : "SLT-PENDING"
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 pb-4 pt-24 sm:px-8 sm:pb-8 sm:pt-28 bg-beige selection:bg-navy selection:text-cream">
-      <div className="max-w-3xl w-full bg-cream border border-navy relative">
-        
-        {/* Top thick black bar */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-charcoal" />
+    <div className="min-h-[72vh] bg-background py-10 text-navy sm:py-14">
+      <CompactContainer>
+        <div className="mx-auto max-w-3xl bg-sand p-6 sm:p-9">
+          <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-gold-dark">Request received</p>
+          <h1 className="mt-3 font-display text-[clamp(2.5rem,4.8vw,4.5rem)] leading-[1.04] tracking-[-0.02em] text-navy">Your stay request is with our team.</h1>
+          <p className="mt-4 max-w-2xl font-sans text-base font-light leading-7 text-navy/70">
+            We are reviewing the property, room, and dates. You will receive the next steps by email after availability is confirmed.
+          </p>
 
-        <div className="p-8 sm:p-16">
-          {/* Header */}
-          <div className="flex justify-between items-start mb-6 md:mb-8 border-b border-charcoal pb-8">
-            <div className="flex flex-col">
-              <span className="font-display text-2xl tracking-widest uppercase text-charcoal leading-none">{siteConfig.name}</span>
-            </div>
-            <div className="text-right flex flex-col items-end">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal">Status</span>
-              <div className="flex items-center gap-2 mt-2 border border-charcoal px-3 py-1 bg-charcoal text-white">
-                <Check className="w-3 h-3" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Received</span>
-              </div>
-            </div>
+          <div className="mt-7 bg-white p-5 sm:p-6">
+            <p className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/50">Booking reference</p>
+            <p className="mt-2 break-all font-display text-3xl tracking-[0.08em] text-navy">{code}</p>
+            <p className="mt-3 font-sans text-sm font-light leading-6 text-navy/62">Keep this reference for future messages about the request.</p>
           </div>
 
-          {/* Title Area */}
-          <div className="mb-6 md:mb-10">
-            <h1 className="font-script text-5xl md:text-6xl text-charcoal tracking-[-0.04em] leading-[1.02] pb-2 mb-4">
-              Request <br/> <span className="italic text-charcoal/70">Confirmed.</span>
-            </h1>
-            <p className="font-sans text-xs md:text-sm tracking-[0.1em] text-charcoal/60 leading-relaxed max-w-md uppercase">
-              Your journey begins here. Our team is currently reviewing your exclusive request and will formalize your itinerary shortly.
-            </p>
+          <div className="mt-6">
+            <h2 className="font-display text-2xl text-navy">What happens next</h2>
+            <ol className="mt-3 space-y-2 font-sans text-sm font-light leading-6 text-navy/68">
+              <li>1. The request is reviewed by the Salt Route team.</li>
+              <li>2. Availability is confirmed with the property.</li>
+              <li>3. A concierge contacts you with confirmation and next steps.</li>
+            </ol>
           </div>
 
-          {/* Reference Folio */}
-          <div className="border border-charcoal bg-white mb-6 md:mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="p-8 border-b md:border-b-0 md:border-r border-charcoal flex flex-col justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-2">Folio Reference</p>
-                  <p className="font-display text-3xl text-charcoal tracking-[0.18em]">
-                    {code || "SLT-PENDING"}
-                  </p>
-                </div>
-                <div className="mt-8">
-                  <p className="text-[10px] text-charcoal/50 font-sans uppercase tracking-wider leading-relaxed">
-                    Please quote this reference number in all future correspondence regarding this specific arrangement.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-8 flex flex-col justify-center bg-beige">
-                <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-bold text-charcoal/40 mb-6">Next Steps Protocol</p>
-                <ul className="space-y-4">
-                  {[
-                    "Executive review by curation team",
-                    "Confirmation dossier sent within 24H",
-                    "Dedicated concierge assigned"
-                  ].map((step, i) => (
-                    <li key={i} className="flex items-start gap-4 text-xs text-charcoal/80 font-sans tracking-wide uppercase">
-                      <span className="text-[10px] text-gold font-bold mt-0.5">0{i+1}</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <Link 
-              href="/account/bookings" 
-              className="w-full sm:w-auto bg-charcoal text-white border border-charcoal text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-white hover:text-charcoal transition-all duration-500 ease-out text-center font-bold"
-            >
-              View Itinerary
-            </Link>
-            
-            {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER && (
-              <Link 
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-                className="w-full sm:w-auto border border-charcoal text-charcoal bg-transparent text-[10px] uppercase tracking-[0.3em] px-10 py-5 hover:bg-beige transition-all duration-500 ease-out text-center font-bold"
-              >
-                Message Concierge
-              </Link>
-            )}
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <Link href="/account/bookings" className="inline-flex min-h-11 items-center justify-center bg-navy px-6 font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-cream hover:bg-navy-dark">View bookings</Link>
+            <Link href="/contact" className="inline-flex min-h-11 items-center justify-center bg-camel px-6 font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-white hover:bg-camel-dark">Contact concierge</Link>
           </div>
         </div>
-        
-        {/* Footer Bar */}
-        <div className="bg-charcoal text-white p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-white/50">{siteConfig.brandName} © {new Date().getFullYear()}</span>
-          <Link href="/contact" className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/70 hover:text-gold transition-all">
-            <span>Contact Support</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </div>
+      </CompactContainer>
     </div>
   )
 }

@@ -25,14 +25,23 @@
   --color-charcoal: #1B3A5C;
   --color-charcoal-light: #2A4F7A;
 
-  /* Accent: Warm Gold */
+  /* Accent: Warm Gold & Camel (Sanctuary Palette) */
   --color-gold: #C9A96E;
   --color-gold-light: #DBCBAA;
   --color-gold-dark: #A88B4A;
+  --color-camel: #B29668;
+  --color-camel-dark: #967A4E;
+  --color-camel-light: #CBB48B;
+  --color-bronze: #8C733E;
+  --color-earth-dark: #1C231F;
+  --color-forest-deep: #13221B;
+  --color-teal-sanctuary: #1F3D3D;
+  --color-teal-deep: #132E30;
 
   /* Neutral: Cream & Warm Beige */
-  --color-sand: #FBF9F4;
-  --color-sand-dark: #F0EBE0;
+  --color-sand: #F7F4EE;
+  --color-sand-dark: #EFE9DC;
+  --color-sand-light: #FAF7F2;
   --color-cream: #FFFAF3;
   --color-bone: #F9F7F2;
   --color-beige: #F5F1E8;
@@ -105,6 +114,7 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-wide font-normal;
+    font-feature-settings: "dlig" 0, "swsh" 0, "cswh" 0;
   }
 }
 
@@ -155,7 +165,7 @@
     to { transform: scale(var(--kb-scale, 1.06)); }
   }
   .luxury-title {
-    @apply font-display text-4xl md:text-6xl lg:text-[5.5rem] leading-[1.05] tracking-[-0.01em] text-navy;
+    @apply font-display text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-[-0.01em] text-navy;
   }
   .luxury-subtitle {
     @apply font-sans text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-navy/60;
@@ -164,10 +174,10 @@
     @apply font-sans text-base md:text-lg leading-[1.8] text-navy/70 font-light;
   }
   .grand-title {
-    @apply font-display text-5xl md:text-7xl lg:text-[6.5rem] tracking-[0.05em] uppercase leading-none text-navy;
+    @apply font-display text-4xl md:text-5xl lg:text-[3.75rem] tracking-[0.04em] uppercase leading-[1.05] text-navy;
   }
   .gold-rule {
-    @apply w-12 h-px bg-gold/50 mx-auto;
+    display: none;
   }
   .image-wrapper {
     @apply relative overflow-hidden bg-sand;
@@ -178,21 +188,30 @@
   .btn-luxury-solid {
     @apply bg-navy text-cream border border-navy text-[10px] uppercase tracking-[0.3em] px-8 py-4 hover:bg-cream hover:text-navy transition-all duration-700 ease-out inline-flex items-center justify-center;
   }
+  .btn-sanctuary-gold {
+    @apply bg-camel text-white text-[11px] uppercase tracking-[0.24em] font-medium px-8 py-3.5 hover:bg-camel-dark transition-all duration-500 inline-flex items-center justify-center;
+  }
+  .btn-sanctuary-outline {
+    @apply border border-camel text-camel text-[11px] uppercase tracking-[0.24em] font-medium px-8 py-3.5 hover:bg-camel hover:text-white transition-all duration-500 inline-flex items-center justify-center;
+  }
+  .font-sanctuary-title {
+    @apply font-display uppercase tracking-[0.14em] text-earth-dark;
+  }
 
   /* ── Type ladder (the missing middle) ───────────────────────────────
      One display moment per page; section heads sparingly. Inverse-tracking
      law: big type tightens, small type loosens (≤0.3em cap). */
   .type-display {
     @apply font-display font-normal text-navy leading-[1.02] tracking-[-0.02em];
-    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
   }
   .type-h1 {
     @apply font-display font-normal text-navy leading-[1.05] tracking-[-0.02em];
-    font-size: clamp(2.75rem, 6vw, 5rem);
+    font-size: clamp(2.4rem, 4.5vw, 4rem);
   }
   .type-h2 {
     @apply font-display font-normal text-navy leading-[1.1] tracking-[-0.01em];
-    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-size: clamp(2rem, 3.2vw, 3rem);
   }
   .type-h3 {
     @apply font-display font-normal text-navy leading-[1.2] tracking-[-0.01em] text-[1.375rem] md:text-[1.625rem];

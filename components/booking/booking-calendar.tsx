@@ -22,7 +22,10 @@ export function BookingCalendar({ propertyId, date, setDate, roomTypeId, availab
 
   // Follow the selection (e.g. dates prefilled from the property page).
   React.useEffect(() => {
-    if (date?.from) setMonth(date.from)
+    if (!date?.from) return
+    const selectedMonth = date.from
+    const frame = window.requestAnimationFrame(() => setMonth(selectedMonth))
+    return () => window.cancelAnimationFrame(frame)
   }, [date?.from])
 
   React.useEffect(() => {

@@ -18,18 +18,19 @@ export function BrochureFullGallery({
   if (!images || images.length === 0) return null
 
   return (
-    <section id="full-gallery" className="py-10 md:py-16 bg-white">
+    <section id="full-gallery" className="py-20 md:py-28 bg-white">
       <div
         className="max-w-screen-xl mx-auto px-6 md:px-12"
         aria-label={`Photographs of ${title}`}
       >
-        <SectionHeading
-          eyebrow="Gallery"
-          title="Photographs"
-          align="left"
-          variant="editorial"
-          className="mb-8"
-        />
+        <div className="mb-12">
+          <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+            Visual Odyssey
+          </p>
+          <h2 className="font-display uppercase tracking-[0.16em] text-navy text-2xl sm:text-3xl md:text-4xl font-normal">
+            Sanctuary Photographs
+          </h2>
+        </div>
         <PropertyGallery images={images} layout="masonry" />
       </div>
     </section>

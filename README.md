@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Salt Route
 
-## Getting Started
+Salt Route is a full-stack hospitality platform for curated stays in Nepal. It combines the public marketing and booking experience with guest, property-owner, and administrator portals.
 
-First, run the development server:
+## What is included
+
+- Public property discovery, maps, availability, wishlists, enquiries, and booking requests
+- Guest account, booking, review, message, and notification flows
+- Owner property, booking, reporting, profile, and message workflows
+- Admin operations for properties, bookings, owners, guests, reviews, campaigns, reporting, and settings
+- Transactional email templates and an optional Redis-backed campaign worker
+- Optional Groq/OpenRouter features for the concierge and admin content tools
+
+## Technology
+
+- Next.js 16 and React 19
+- TypeScript and Tailwind CSS 4
+- PostgreSQL with Prisma 7
+- NextAuth 5
+- Cloudinary, Nodemailer, BullMQ, and Redis
+- Vitest and Playwright
+
+## Requirements
+
+- Node.js 20.9 or newer
+- pnpm 10
+- PostgreSQL
+- SMTP credentials for production email
+- Cloudinary for media uploads
+- Redis only when background campaign processing is enabled
+
+## Local setup
+
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Copy `.env.example` to `.env.local` and replace the placeholders. Never commit `.env.local` or send production credentials with the source code.
+
+3. Generate the Prisma client and apply the committed migrations:
+
+   ```bash
+   pnpm db:generate
+   pnpm db:migrate
+   ```
+
+4. Start the application:
+
+   ```bash
+   pnpm dev
+   ```
+
+   The site is available at [http://localhost:3000](http://localhost:3000).
+
+5. If email campaigns use Redis, start the worker in a separate process:
+
+   ```bash
+   pnpm worker
+   ```
+
+## Quality checks
+
+Run the complete local verification suite:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm check
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+End-to-end tests require the configured Playwright environment:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm test:e2e
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```text
+app/             Next.js routes, layouts, API endpoints, and server actions
+components/      Public, guest, owner, admin, booking, shared, and UI components
+emails/          Transactional and campaign email templates
+lib/             Domain services, integrations, validation, security, and utilities
+prisma/          Database schema and committed migrations
+public/
+  brand/         Brand assets
+  images/
+    marketing/   Public marketing imagery
+    testimonials/Guest and partner testimonial imagery
+scripts/         Runtime worker entry points
+__tests__/       Unit and regression tests
+e2e/             Playwright browser tests
+types/           Shared TypeScript declarations
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Production deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Provision PostgreSQL and set all required environment variables from `.env.example` in the hosting platform.
+2. Run `pnpm db:migrate` against the production database before the new application version receives traffic.
+3. Build with `pnpm build` and run with `pnpm start`.
+4. Deploy `pnpm worker` as a separate long-running process when Redis-backed campaigns are enabled.
+5. Confirm the authentication callback URL, Cloudinary upload settings, SMTP sender, and public site URL use the production domain.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The AI keys are optional. The application keeps its core booking and portal flows when they are unset, while AI-assisted concierge and copy features are unavailable.

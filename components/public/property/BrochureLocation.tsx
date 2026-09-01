@@ -42,65 +42,65 @@ export function BrochureLocation({
     : ""
 
   return (
-    <section id="location" className="py-10 md:py-16 bg-white overflow-hidden">
-      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12">
-        <SectionHeading
-          eyebrow="Find Us"
-          title="Location"
-          align="left"
-          variant="editorial"
-          className="mb-8"
-        />
+    <section id="location" className="py-20 md:py-28 bg-white overflow-hidden">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 mb-12">
+        <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
+          Sanctuary Geography
+        </p>
+        <h2 className="font-display uppercase tracking-[0.16em] text-navy text-2xl sm:text-3xl md:text-4xl font-normal">
+          Location and Access
+        </h2>
       </div>
 
-      <div className="lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:gap-14 items-start">
-        {/* Left — the dominant map panel, bleeding to the viewport edge. */}
-        <FadeUp>
-          <div className="relative w-full h-[320px] sm:h-[360px] md:h-[420px] overflow-hidden">
+      <div className="max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* Left — Map Card */}
+        <div className="lg:col-span-7">
+          <div className="relative w-full h-[360px] sm:h-[420px] md:h-[460px] overflow-hidden shadow-lg bg-sand">
             <PropertyDetailMap location={location} address={address} title={location} />
           </div>
-        </FadeUp>
+        </div>
 
         {/* Right — address, neighbourhood, getting here, host note. */}
-        <FadeUp
-          delay={0.1}
-          className="mt-8 lg:mt-0 space-y-6 px-5 sm:px-6 md:px-12 lg:px-0 lg:pr-12"
-        >
+        <div className="lg:col-span-5 space-y-6">
           <div className="flex items-start gap-4">
-            <MapPin className="w-5 h-5 text-gold shrink-0 mt-1" strokeWidth={1.5} />
+            <MapPin className="w-5 h-5 text-gold-dark shrink-0 mt-1" strokeWidth={1.5} />
             <div className="space-y-1">
-              <p className="font-display text-xl text-charcoal">{location}</p>
+              <p className="font-display text-xl text-navy">{location}</p>
               {address ? (
-                <p className="font-sans text-[14px] text-charcoal/55">{address}</p>
+                <p className="font-sans text-xs sm:text-sm text-navy/60 font-light">{address}</p>
               ) : null}
             </div>
           </div>
 
-          {/* Neighbourhood — a hairline definition row under a tiny kicker. */}
+          {/* Neighbourhood */}
           {neighborhood ? (
-            <div className="border-t border-charcoal/10 pt-4">
-              <Eyebrow>The Neighbourhood</Eyebrow>
-              <p className="mt-3 font-sans text-[14px] leading-relaxed font-light text-charcoal/60 whitespace-pre-line">
+            <div className="pt-2">
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] font-semibold text-gold mb-2">
+                The Neighbourhood
+              </p>
+              <p className="font-sans text-xs sm:text-sm leading-relaxed font-light text-navy/75 whitespace-pre-line">
                 {neighborhood}
               </p>
             </div>
           ) : null}
 
-          {/* Getting here — compact hairline travel-leg rows. */}
+          {/* Getting here */}
           {legs.length > 0 ? (
-            <div id="getting-here" className="border-t border-charcoal/10 pt-4">
-              <Eyebrow>Getting Here</Eyebrow>
-              <ul className="mt-2">
+            <div id="getting-here" className="pt-2">
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] font-semibold text-gold mb-2">
+                Getting Here
+              </p>
+              <ul className="space-y-2.5">
                 {legs.map((leg, i) => (
                   <li
                     key={`${leg.time}-${leg.from}-${i}`}
-                    className="flex items-baseline gap-4 border-b border-charcoal/10 py-2.5"
+                    className="flex items-baseline gap-3 py-1 text-xs sm:text-sm"
                   >
-                    <Plane className="w-3.5 h-3.5 self-center text-gold shrink-0" strokeWidth={1.5} />
-                    <span className="font-display text-[15px] text-charcoal shrink-0">
+                    <Plane className="w-3.5 h-3.5 text-gold-dark shrink-0" strokeWidth={1.5} />
+                    <span className="font-display text-navy font-medium">
                       {leg.time}
                     </span>
-                    <span className="font-sans text-[13px] text-charcoal/55">
+                    <span className="font-sans text-navy/65 font-light">
                       {leg.from}
                       {leg.distance ? ` · ${leg.distance}` : ""}
                     </span>
@@ -110,16 +110,17 @@ export function BrochureLocation({
             </div>
           ) : null}
 
+          {/* Host Note */}
           {hostNote ? (
-            <figure className="space-y-4 border-t border-charcoal/10 pt-4">
-              <div className="flex items-start gap-4">
+            <figure className="bg-sand p-6 space-y-4 shadow-sm">
+              <div className="flex items-start gap-3">
                 <Quote className="w-4 h-4 text-gold shrink-0 mt-1" strokeWidth={1.5} />
-                <blockquote className="italic font-sans text-[14px] leading-relaxed text-charcoal/70 whitespace-pre-line">
-                  {hostNote}
+                <blockquote className="italic font-serif text-xs sm:text-sm leading-relaxed text-navy/80 whitespace-pre-line">
+                  &ldquo;{hostNote}&rdquo;
                 </blockquote>
               </div>
               {owner ? (
-                <figcaption className="flex items-center gap-3 pl-9">
+                <figcaption className="flex items-center gap-3 pl-7">
                   {owner.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -130,12 +131,12 @@ export function BrochureLocation({
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <span className="w-10 h-10 rounded-full bg-charcoal/5 flex items-center justify-center font-display text-[13px] text-charcoal/60">
-                      {ownerInitials || "·"}
+                    <span className="w-10 h-10 rounded-full bg-navy/10 flex items-center justify-center font-display text-xs text-navy font-semibold">
+                      {ownerInitials || "SR"}
                     </span>
                   )}
                   {ownerName ? (
-                    <span className="font-sans text-[13px] tracking-wide text-charcoal/70">
+                    <span className="font-sans text-xs uppercase tracking-wide text-navy/70 font-semibold">
                       {ownerName}
                     </span>
                   ) : null}
@@ -143,7 +144,7 @@ export function BrochureLocation({
               ) : null}
             </figure>
           ) : null}
-        </FadeUp>
+        </div>
       </div>
     </section>
   )

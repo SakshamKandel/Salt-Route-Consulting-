@@ -247,7 +247,7 @@ export const VISUAL_JOURNEY_TILES: VisualJourneyTile[] = [
     gallery: [
       u("1545389336-cf090694435e"),
       u("1566554273541-37a9ca77b91f"),
-      "/luxury_nepalese_interior_details_1777124245155.png",
+      "/images/marketing/nepalese-interior-details.png",
     ],
   },
   {

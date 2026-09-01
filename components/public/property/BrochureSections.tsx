@@ -32,19 +32,20 @@ function eyebrowOf(entry: Entry) {
 function SectionText({ entry, dark = false }: { entry: Entry; dark?: boolean }) {
   return (
     <FadeUp>
-      <Eyebrow light={dark}>{eyebrowOf(entry)}</Eyebrow>
+      <p className="text-[10px] uppercase tracking-[0.24em] font-semibold text-gold mb-2">
+        {eyebrowOf(entry)}
+      </p>
       <h2
-        className={`mt-3 font-display font-normal text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.12] tracking-[-0.01em] ${
-          dark ? "text-white" : "text-charcoal"
+        className={`mt-2 font-display uppercase tracking-[0.14em] font-normal text-2xl sm:text-3xl lg:text-4xl leading-[1.25] ${
+          dark ? "text-cream" : "text-navy"
         }`}
       >
         {entry.section.title}
       </h2>
-      <GoldRule className="mt-5" />
       <Prose
         text={entry.section.body}
-        className={`mt-5 max-w-[38rem] font-sans text-[15px] leading-loose font-light ${
-          dark ? "text-white/65" : "text-charcoal/60"
+        className={`mt-4 max-w-[38rem] font-sans text-xs sm:text-sm md:text-base leading-relaxed font-light ${
+          dark ? "text-cream/75" : "text-navy/75"
         }`}
       />
     </FadeUp>
@@ -79,24 +80,26 @@ export function BrochureSections({
   return (
     <>
       {groups.map((group) => {
-        // ── Quiet typographic band for imageless sections (never a stub). ──
+        // ── Quiet typographic band for imageless sections. ──
         if (group.kind === "text") {
           return (
             <section
               key={group.entries[0].section.id}
-              className="bg-sand py-10 md:py-16"
+              className="bg-sand py-16 md:py-24"
             >
               <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-                <div className="max-w-[42rem] lg:ml-[8.333%] border-l border-gold/60 pl-6 md:pl-10 space-y-8 md:space-y-10">
+                <div className="max-w-[42rem] space-y-8 md:space-y-10">
                   {group.entries.map((entry) => (
                     <FadeUp key={entry.section.id}>
-                      <Eyebrow>{eyebrowOf(entry)}</Eyebrow>
-                      <h2 className="mt-3 font-display font-normal text-[clamp(1.625rem,3vw,2.5rem)] leading-[1.15] tracking-[-0.01em] text-charcoal">
+                      <p className="text-[10px] uppercase tracking-[0.24em] font-semibold text-gold mb-2">
+                        {eyebrowOf(entry)}
+                      </p>
+                      <h2 className="mt-2 font-display uppercase tracking-[0.14em] font-normal text-2xl sm:text-3xl lg:text-4xl leading-[1.25] text-navy">
                         {entry.section.title}
                       </h2>
                       <Prose
                         text={entry.section.body}
-                        className="mt-5 font-sans text-[15px] leading-loose font-light text-charcoal/60"
+                        className="mt-4 font-sans text-xs sm:text-sm md:text-base leading-relaxed font-light text-navy/75"
                       />
                     </FadeUp>
                   ))}

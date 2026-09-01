@@ -87,16 +87,30 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
       }
     ).addTo(map)
 
-    // Subtle enhancement instead of heavy sepia/brightness
+    // Subtle enhancement for rich contrast
     const tilePaneEl = map.getPane("tilePane")
     if (tilePaneEl instanceof HTMLElement) {
       tilePaneEl.style.filter = "saturate(1.1) contrast(1.05)"
     }
 
     L.control.zoom({ position: "bottomright" }).addTo(map)
-    map.fitBounds([[26.347, 80.058], [30.447, 88.201]])
+    map.fitBounds([[26.5, 80.0], [30.4, 88.2]], { padding: [20, 20] })
+
+    // Invalidate size on container resize and initial render
+    const resizeTimer = setTimeout(() => {
+      map.invalidateSize()
+    }, 150)
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize()
+    })
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
 
     return () => {
+      clearTimeout(resizeTimer)
+      resizeObserver.disconnect()
       map.remove()
       mapRef.current = null
       markersRef.current = []
@@ -104,8 +118,6 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
   }, [])
 
   // 2. Fetch coordinates from the API AFTER the map is mounted.
-  //    This decouples Nominatim geocoding latency from page load —
-  //    the page renders instantly and markers appear when ready.
   useEffect(() => {
     if (properties.length === 0) return
     let cancelled = false
@@ -127,7 +139,7 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
     return () => { cancelled = true }
   }, [properties])
 
-  // 3. Place markers once coordinates arrive.
+  // 3. Place markers once coordinates arrive and fit bounds snugly.
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
@@ -158,33 +170,41 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
       const hoverIcon = L.divIcon({
         className: "",
         html: buildMarkerHtml(i, true),
-        iconSize: [38, 38],
-        iconAnchor: [19, 19],
-        popupAnchor: [0, -24],
+        iconSize: [42, 42],
+        iconAnchor: [21, 21],
+        popupAnchor: [0, -26],
       })
 
       const marker = L.marker([lat, lng], { icon: defaultIcon })
         .addTo(map)
         .bindPopup(buildPopupHtml(p), { maxWidth: 260, className: "src-popup" })
 
-      marker.on("mouseover", () => marker.setIcon(hoverIcon))
-      marker.on("mouseout",  () => marker.setIcon(defaultIcon))
+      marker.on("mouseover", () => {
+        marker.setIcon(hoverIcon)
+        marker.setZIndexOffset(1000)
+      })
+      marker.on("mouseout", () => {
+        marker.setIcon(defaultIcon)
+        marker.setZIndexOffset(0)
+      })
 
       newMarkers.push(marker)
     })
 
     markersRef.current = newMarkers
 
+    map.invalidateSize()
+
     if (geocoded.length === 1) {
       const coords = coordsMap.get(geocoded[0].id)
       const lat = coords?.lat ?? geocoded[0].latitude!
       const lng = coords?.lng ?? geocoded[0].longitude!
-      map.setView([lat, lng], 14)
-    } else {
+      map.setView([lat, lng], 13)
+    } else if (geocoded.length > 1) {
       const group = L.featureGroup(newMarkers)
-      map.fitBounds(group.getBounds().pad(0.4))
+      map.fitBounds(group.getBounds().pad(0.18), { maxZoom: 10, animate: true })
     }
   }, [properties, coordsMap])
 
-  return <div ref={containerRef} className="w-full h-full" />
+  return <div ref={containerRef} className="w-full h-full min-h-[400px]" />
 }

@@ -47,15 +47,15 @@ export function SiteLoader() {
   const reduce = useReducedMotion()
 
   useEffect(() => {
+    if (!visible) return
     try {
       if (sessionStorage.getItem(SEEN_KEY) === "1") {
-        setVisible(false)
-        return
+        const skipTimer = window.setTimeout(() => setVisible(false), 0)
+        return () => window.clearTimeout(skipTimer)
       }
     } catch {
       /* sessionStorage may be unavailable (private mode) — non-fatal */
     }
-    if (!visible) return
     const start = performance.now()
     let hidden = false
 
@@ -108,7 +108,7 @@ export function SiteLoader() {
       >
         <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
         <Image
-          src="/logo.png"
+          src="/brand/logo.png"
           alt=""
           width={768}
           height={319}
@@ -135,7 +135,7 @@ export function SiteLoader() {
               global reduced-motion backstop also freezes this CSS animation. */}
           <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
           <Image
-            src="/logo.png"
+            src="/brand/logo.png"
             alt=""
             width={768}
             height={319}

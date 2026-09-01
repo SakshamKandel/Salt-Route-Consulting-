@@ -99,13 +99,13 @@ export function BrochureHero({
       <div className="absolute inset-0 flex items-end">
         <div className="w-full max-w-screen-xl mx-auto px-5 sm:px-6 md:px-12 pb-20 md:pb-28 text-white">
           <Rise still={still} delay={0.2}>
-            <p className="mb-4 flex items-center gap-2.5 text-[10px] uppercase tracking-[0.24em] text-white/75">
-              <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <p className="mb-4 flex items-center gap-2.5 text-[10px] uppercase tracking-[0.28em] text-gold font-semibold">
+              <MapPin className="h-3.5 w-3.5 text-gold shrink-0" strokeWidth={1.5} />
               <span className="min-w-0">{location}</span>
             </p>
           </Rise>
 
-          <h1 className="font-display font-normal text-[clamp(2.5rem,5vw,4rem)] tracking-[-0.02em] leading-[1.05]">
+          <h1 className="font-display uppercase font-normal text-[clamp(2.2rem,5vw,4.2rem)] tracking-[0.16em] sm:tracking-[0.22em] leading-[1.08] text-cream drop-shadow-md">
             {still ? (
               title
             ) : (
@@ -124,7 +124,7 @@ export function BrochureHero({
 
           {tagline ? (
             <Rise still={still} delay={0.6}>
-              <p className="mt-4 max-w-2xl font-sans font-light text-white/80 text-base md:text-lg">
+              <p className="mt-4 max-w-2xl font-sans font-light text-cream/90 text-sm sm:text-base md:text-lg leading-relaxed">
                 {tagline}
               </p>
             </Rise>

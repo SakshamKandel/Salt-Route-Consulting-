@@ -72,7 +72,18 @@ export default function PropertyDetailMapInner({ location, address, title }: Pro
     }
 
     L.control.zoom({ position: "bottomright" }).addTo(map)
-    map.fitBounds(NEPAL_BOUNDS)
+    map.fitBounds(NEPAL_BOUNDS, { padding: [10, 10] })
+
+    const resizeTimer = setTimeout(() => {
+      map.invalidateSize()
+    }, 150)
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize()
+    })
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
 
     const icon = L.divIcon({
       className: "",
@@ -86,6 +97,7 @@ export default function PropertyDetailMapInner({ location, address, title }: Pro
     const query = address ? `${address}, ${location}, Nepal` : `${location}, Nepal`
     geocodeQuery(query).then((coords) => {
       if (!coords || !mapRef.current) return
+      mapRef.current.invalidateSize()
       marker = L.marker(coords, { icon })
         .addTo(mapRef.current)
         .bindPopup(
@@ -95,15 +107,17 @@ export default function PropertyDetailMapInner({ location, address, title }: Pro
           </div>`,
           { maxWidth: 230, className: "src-popup" }
         )
-      mapRef.current.flyTo(coords, 15, { animate: true, duration: 1.6 })
+      mapRef.current.flyTo(coords, 14, { animate: true, duration: 1.6 })
     })
 
     return () => {
+      clearTimeout(resizeTimer)
+      resizeObserver.disconnect()
       marker?.remove()
       map.remove()
       mapRef.current = null
     }
   }, [location, address, title])
 
-  return <div ref={containerRef} className="w-full h-full" />
+  return <div ref={containerRef} className="w-full h-full min-h-[360px]" />
 }

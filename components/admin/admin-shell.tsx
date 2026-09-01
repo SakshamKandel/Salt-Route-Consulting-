@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import { Bell, Settings, Menu, X, PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react"
 import { SidebarNav } from "./sidebar-nav"
@@ -14,21 +14,32 @@ type Props = {
   children: React.ReactNode
 }
 
-export function AdminShell({ userName, userImage, userInitial, unreadNotifications, children }: Props) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
+const subscribeToHydration = () => () => {}
 
-  useEffect(() => {
-    setMounted(true)
-    const stored = localStorage.getItem("admin-sidebar-collapsed")
-    if (stored === "true") setIsCollapsed(true)
-  }, [])
+function useHydrated() {
+  return useSyncExternalStore(subscribeToHydration, () => true, () => false)
+}
+
+export function AdminShell({ userName, userImage, userInitial, unreadNotifications, children }: Props) {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false
+    try {
+      return localStorage.getItem("admin-sidebar-collapsed") === "true"
+    } catch {
+      return false
+    }
+  })
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const mounted = useHydrated()
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => {
       const next = !prev
-      localStorage.setItem("admin-sidebar-collapsed", String(next))
+      try {
+        localStorage.setItem("admin-sidebar-collapsed", String(next))
+      } catch {
+        // Storage can be unavailable in locked-down browser contexts.
+      }
       return next
     })
   }
@@ -54,7 +65,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#1B3A5C08] shrink-0">
           <Link href="/" onClick={closeDrawer}>
-            <img src="/logo.png" alt="Salt Route" className="h-9 object-contain" />
+            <img src="/brand/logo.png" alt="Salt Route" className="h-9 object-contain" />
           </Link>
           <button
             onClick={closeDrawer}
@@ -103,7 +114,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
             {mounted && isCollapsed ? (
               <span className="font-display text-sm font-bold text-[#1B3A5C] select-none">SRC</span>
             ) : (
-              <img src="/logo.png" alt="Salt Route" className="h-9 object-contain" />
+              <img src="/brand/logo.png" alt="Salt Route" className="h-9 object-contain" />
             )}
           </Link>
         </div>
