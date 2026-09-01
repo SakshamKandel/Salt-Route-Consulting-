@@ -17,20 +17,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
-  // 10.10 — Secure cookie configuration
-  cookies: {
-    sessionToken: {
-      name: process.env.NODE_ENV === "production"
-        ? "__Secure-authjs.session-token"
-        : "authjs.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -46,38 +32,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         const parsedCredentials = loginSchema.safeParse(credentials)
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data
-          
-          const user = await prisma.user.findUnique({
-            where: { email: email.toLowerCase() }
-          })
-          
-          if (!user || !user.hashedPassword) return null
-          
-          if (!user.emailVerified) {
-            throw new Error("EMAIL_NOT_VERIFIED")
-          }
+        if (!parsedCredentials.success) return null
 
-          if (user.status !== "ACTIVE") {
-            throw new Error("USER_SUSPENDED")
-          }
+        const { email, password } = parsedCredentials.data
+        
+        const user = await prisma.user.findUnique({
+          where: { email: email.toLowerCase() }
+        })
+        
+        if (!user || !user.hashedPassword) return null
+        
+        if (!user.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED")
+        }
 
-          // Check if user is suspended (no emailVerified + manually flagged)
-          // You can extend this with a `status` field if needed
+        if (user.status !== "ACTIVE") {
+          throw new Error("USER_SUSPENDED")
+        }
 
-          const passwordsMatch = await compare(password, user.hashedPassword)
+        const passwordsMatch = await compare(password, user.hashedPassword)
 
-          if (passwordsMatch) {
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: user.role,
-              image: user.image,
-            }
+        if (passwordsMatch) {
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            image: user.image,
           }
         }
+
         return null
       }
     })
@@ -85,24 +69,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user, account }) {
-      console.log("Sign in attempt:", { email: user.email, provider: account?.provider })
+      if (account?.provider === "google" && user.email) {
+        const existing = await prisma.user.findUnique({
+          where: { email: user.email.toLowerCase() },
+          select: { status: true },
+        })
+        if (existing && existing.status !== "ACTIVE") {
+          return false
+        }
+      }
       return true
     },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string
-        session.user.role = normalizeRole(token.role)
-        session.user.image = token.image as string | null
-      }
-      return session
-    },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
         token.role = normalizeRole(user.role)
         token.image = user.image
       }
+      if (trigger === "update" && session?.name) {
+        token.name = session.name
+      }
       return token
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string
+        session.user.role = normalizeRole(token.role)
+        session.user.image = (token.image as string | null) ?? null
+      }
+      return session
     },
   },
   debug: process.env.NODE_ENV === "development",

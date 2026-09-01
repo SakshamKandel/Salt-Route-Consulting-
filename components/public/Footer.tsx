@@ -40,11 +40,11 @@ export function Footer() {
           <div>
             <Link href="/" className="inline-block">
               <Image
-                src="/brand/logo.png"
+                src="/brand/logo-light.png"
                 alt={siteConfig.brandName}
                 width={768}
                 height={319}
-                className="h-auto w-24 brightness-0 invert"
+                className="h-auto w-24 object-contain"
               />
             </Link>
             <p className="mt-4 max-w-sm font-sans text-sm font-light leading-6 text-cream/72">

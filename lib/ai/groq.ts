@@ -7,7 +7,7 @@ import "server-only"
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string }
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile"
+const GROQ_MODEL = process.env.GROQ_MODEL || "groq/compound-mini"
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct"

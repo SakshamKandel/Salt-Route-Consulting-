@@ -2,7 +2,7 @@
 
 import { signIn } from "@/auth"
 import { prisma } from "@/lib/db"
-import { hash } from "bcryptjs"
+import { compare, hash } from "bcryptjs"
 import { AuthError } from "next-auth"
 import {
   signupSchema,
@@ -32,7 +32,7 @@ async function getIp(): Promise<string> {
 }
 
 // ─── LOGIN ──────────────────────────────────────────────────
-export async function loginAction(data: LoginInput) {
+export async function loginAction(data: LoginInput): Promise<{ error?: string; success?: boolean; role?: "ADMIN" | "OWNER" | "GUEST" }> {
   try {
     const validated = loginSchema.parse(data)
     const ip = await getIp()
@@ -43,23 +43,57 @@ export async function loginAction(data: LoginInput) {
       return { error: "Too many login attempts. Please wait 15 minutes." }
     }
 
+    const email = validated.email.toLowerCase().trim()
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        hashedPassword: true,
+        emailVerified: true,
+        status: true,
+      },
+    })
+
+    if (!user || !user.hashedPassword) {
+      return { error: "Invalid email or password." }
+    }
+
+    const passwordsMatch = await compare(validated.password, user.hashedPassword)
+    if (!passwordsMatch) {
+      return { error: "Invalid email or password." }
+    }
+
+    if (!user.emailVerified) {
+      return { error: "Please verify your email address before logging in." }
+    }
+
+    if (user.status !== "ACTIVE") {
+      return { error: "Your account has been suspended. Please contact support." }
+    }
+
     await signIn("credentials", {
-      email: validated.email,
+      email,
       password: validated.password,
       redirect: false,
     })
 
-    return { success: true }
-  } catch (error) {
-    if (error instanceof AuthError) {
-      // Check for custom error message from authorize
-      if (error.cause?.err?.message === "EMAIL_NOT_VERIFIED") {
-        return { error: "Please verify your email address before logging in." }
-      }
-      if (error.cause?.err?.message === "USER_SUSPENDED") {
-        return { error: "Your account has been suspended. Please contact support." }
-      }
+    // Audit log
+    createAuditLog({
+      action: "LOGIN",
+      entity: "USER",
+      entityId: user.id,
+      ipAddress: ip,
+      userId: user.id,
+    }).catch(console.error)
 
+    return { success: true, role: user.role }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error
+    }
+    if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
           return { error: "Invalid email or password." }

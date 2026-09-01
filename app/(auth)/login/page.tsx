@@ -35,7 +35,7 @@ function LoginForm() {
       setError(res.error)
       setIsPending(false)
     } else {
-      const role = await fetchSessionRole()
+      const role = res?.role ?? (await fetchSessionRole())
       const callbackUrl = getSafeCallback(searchParams.get("callbackUrl"))
       window.location.assign(getDestination(role, callbackUrl))
     }

@@ -1,6 +1,15 @@
 import type { NextAuthConfig } from 'next-auth'
 
+type AppRole = "ADMIN" | "OWNER" | "GUEST"
+
+function normalizeRole(role: unknown): AppRole {
+  return role === "ADMIN" || role === "OWNER" || role === "GUEST" ? role : "GUEST"
+}
+
 export const authConfig = {
+  trustHost: true,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',
     error: '/login',
@@ -44,7 +53,8 @@ export const authConfig = {
     jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
-        token.role = user.role
+        token.role = normalizeRole(user.role)
+        token.image = user.image
       }
       if (trigger === "update" && session?.name) {
         token.name = session.name
@@ -54,7 +64,8 @@ export const authConfig = {
     session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as 'ADMIN' | 'OWNER' | 'GUEST'
+        session.user.role = normalizeRole(token.role)
+        session.user.image = token.image as string | null
       }
       return session
     },
