@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Trash2, Star, ArrowUp, ArrowDown, Film, Image as ImageIcon, Monitor } from "lucide-react"
+import { Trash2, Star, ArrowUp, ArrowDown, Film, Image as ImageIcon, Monitor, Loader2 } from "lucide-react"
 import {
   addPropertyImageAction,
   deletePropertyImageAction,
@@ -31,6 +32,7 @@ export function ImageManager({
   propertyId: string
   initial: PropertyImage[]
 }) {
+  const router = useRouter()
   const [images, setImages] = useState<PropertyImage[]>(
     [...initial].sort((a, b) => a.order - b.order)
   )
@@ -44,27 +46,16 @@ export function ImageManager({
 
   const handleAddMedia = async (item: UploadedMedia) => {
     setPending("upload")
-    await addPropertyImageAction(propertyId, item.url, item.publicId, item.alt ?? undefined)
+    const res = await addPropertyImageAction(propertyId, item.url, item.publicId, item.alt ?? undefined)
 
-    setImages((prev) => {
-      const uploadedIsVideo = isVideoUrl(item.url)
-      const hasImage = prev.some((img) => !isVideoUrl(img.url))
-
-      return [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          url: item.url,
-          publicId: item.publicId,
-          alt: item.alt || null,
-          order: prev.length,
-          isPrimary: !uploadedIsVideo && !hasImage,
-          isBanner: false,
-        },
-      ]
-    })
+    if (res?.error) {
+      showMsg("error", res.error)
+    } else if (res?.image) {
+      setImages((prev) => [...prev, res.image])
+      showMsg("success", "Media added successfully.")
+      router.refresh()
+    }
     setPending(null)
-    showMsg("success", "Media added successfully.")
   }
 
   const handleDelete = async (imageId: string) => {
@@ -85,6 +76,7 @@ export function ImageManager({
         return filtered
       })
       showMsg("success", "Media deleted.")
+      router.refresh()
     }
     setPending(null)
   }
@@ -99,6 +91,7 @@ export function ImageManager({
         prev.map((img) => ({ ...img, isPrimary: img.id === imageId }))
       )
       showMsg("success", "Thumbnail updated.")
+      router.refresh()
     }
     setPending(null)
   }
@@ -109,10 +102,15 @@ export function ImageManager({
     if (res?.error) {
       showMsg("error", res.error)
     } else {
+      const isNowBanner = res?.isBanner !== false
       setImages((prev) =>
-        prev.map((img) => ({ ...img, isBanner: img.id === imageId }))
+        prev.map((img) => ({
+          ...img,
+          isBanner: img.id === imageId ? isNowBanner : false,
+        }))
       )
-      showMsg("success", "Banner image updated.")
+      showMsg("success", isNowBanner ? "Banner image updated." : "Banner image cleared.")
+      router.refresh()
     }
     setPending(null)
   }
@@ -128,6 +126,7 @@ export function ImageManager({
 
     setPending("reorder")
     await reorderImagesAction(propertyId, reordered.map((img) => img.id))
+    router.refresh()
     setPending(null)
   }
 
@@ -238,26 +237,34 @@ export function ImageManager({
                           : "border-[#1B3A5C]/15 text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:border-[#1B3A5C]/30 hover:bg-transparent"
                       }`}
                       onClick={() => handleSetPrimary(img.id)}
-                      disabled={img.isPrimary || pending === img.id + "-primary"}
+                      disabled={pending === img.id + "-primary"}
                       title="Used on property listing cards"
                     >
-                      <Star className={`w-3.5 h-3.5 mr-1.5 ${img.isPrimary ? "fill-current" : ""}`} />
+                      {pending === img.id + "-primary" ? (
+                        <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                      ) : (
+                        <Star className={`w-3.5 h-3.5 mr-1.5 ${img.isPrimary ? "fill-current" : ""}`} />
+                      )}
                       {img.isPrimary ? "Thumbnail" : "Make Thumbnail"}
                     </Button>
                     <Button
                       type="button"
                       variant={img.isBanner ? "default" : "outline"}
                       size="sm"
-                      className={`h-8 text-xs rounded-lg ${
+                      className={`h-8 text-xs rounded-lg transition-all ${
                         img.isBanner
-                          ? "bg-[#C9A96E] text-[#1B3A5C] hover:bg-[#C9A96E]/85"
+                          ? "bg-[#C9A96E] text-[#1B3A5C] hover:bg-[#b89556] font-semibold"
                           : "border-[#C9A96E]/40 text-[#C9A96E] hover:bg-[#C9A96E]/10 hover:text-[#1B3A5C] hover:border-[#C9A96E]/60"
                       }`}
                       onClick={() => handleSetBanner(img.id)}
-                      disabled={img.isBanner || pending === img.id + "-banner"}
-                      title="Used as the large hero image on the property detail page"
+                      disabled={pending === img.id + "-banner"}
+                      title={img.isBanner ? "Click to clear banner status" : "Set as large hero banner on the property detail page"}
                     >
-                      <Monitor className={`w-3.5 h-3.5 mr-1.5 ${img.isBanner ? "fill-current" : ""}`} />
+                      {pending === img.id + "-banner" ? (
+                        <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                      ) : (
+                        <Monitor className={`w-3.5 h-3.5 mr-1.5 ${img.isBanner ? "fill-current" : ""}`} />
+                      )}
                       {img.isBanner ? "Banner" : "Make Banner"}
                     </Button>
                   </div>

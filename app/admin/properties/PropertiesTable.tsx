@@ -33,6 +33,7 @@ type PropertyRow = {
   location: string
   status: string
   pricePerNight: number
+  hidePrice?: boolean
   createdAt: Date | string
 }
 
@@ -124,7 +125,14 @@ export function PropertiesTable({
       id: "pricePerNight",
       header: "Price/Night",
       cell: ({ row }) => (
-        <span className="font-semibold text-[#1B3A5C]/80 text-xs tabular-nums">{formatNpr(row.original.pricePerNight)}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="font-semibold text-[#1B3A5C]/80 text-xs tabular-nums">{formatNpr(row.original.pricePerNight)}</span>
+          {row.original.hidePrice && (
+            <span className="inline-flex text-[9px] font-medium text-[#C9A96E] uppercase tracking-wider">
+              Quote on Request
+            </span>
+          )}
+        </div>
       ),
     },
     {

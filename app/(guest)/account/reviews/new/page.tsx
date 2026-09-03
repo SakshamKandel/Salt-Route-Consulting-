@@ -1,5 +1,9 @@
 "use client"
-import { useState, use } from "react"
+
+export const dynamic = "force-dynamic"
+
+import { useState, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -18,13 +22,9 @@ const schema = z.object({
   images: z.array(z.object({ url: z.string(), publicId: z.string().optional() })).optional(),
 })
 
-export default function NewReviewPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const resolvedParams = use(searchParams)
-  const bookingId = (resolvedParams.bookingId || resolvedParams.booking) as string | undefined
+function NewReviewContent() {
+  const searchParams = useSearchParams()
+  const bookingId = (searchParams.get("bookingId") || searchParams.get("booking")) as string | undefined
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -211,5 +211,19 @@ export default function NewReviewPage({
         </Form>
       </div>
     </div>
+  )
+}
+
+export default function NewReviewPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-2xl mx-auto bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-8 sm:p-12 text-center">
+          <p className="text-xs text-[#1B3A5C]/50">Loading review form...</p>
+        </div>
+      }
+    >
+      <NewReviewContent />
+    </Suspense>
   )
 }

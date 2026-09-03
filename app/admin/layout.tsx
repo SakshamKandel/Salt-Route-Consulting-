@@ -6,6 +6,8 @@ import { ToastListener } from "@/components/admin/toast-listener"
 import { CommandPalette } from "@/components/admin/command-palette"
 import { AdminShell } from "@/components/admin/admin-shell"
 
+export const dynamic = "force-dynamic"
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session?.user || session.user.role !== "ADMIN") redirect("/login")

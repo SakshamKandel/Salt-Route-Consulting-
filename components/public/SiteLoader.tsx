@@ -108,12 +108,12 @@ export function SiteLoader() {
       >
         <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
         <Image
-          src="/brand/logo.png"
-          alt=""
-          width={768}
-          height={319}
+          src="/brand/Logo.png"
+          alt="Salt Route Group"
+          width={960}
+          height={399}
           priority
-          className="h-auto w-28 sm:w-36"
+          className="h-12 sm:h-14 w-auto object-contain"
         />
       </div>
     ) : null
@@ -135,12 +135,12 @@ export function SiteLoader() {
               global reduced-motion backstop also freezes this CSS animation. */}
           <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
           <Image
-            src="/brand/logo.png"
-            alt=""
-            width={768}
-            height={319}
+            src="/brand/Logo.png"
+            alt="Salt Route Group"
+            width={960}
+            height={399}
             priority
-            className="h-auto w-28 sm:w-36"
+            className="h-12 sm:h-14 w-auto object-contain"
             style={
               reduce
                 ? undefined

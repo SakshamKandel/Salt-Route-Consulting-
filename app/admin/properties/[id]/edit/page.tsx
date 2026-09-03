@@ -21,8 +21,9 @@ export default async function EditPropertyPage({
       },
     }),
     prisma.user.findMany({
-      where: { role: "OWNER" },
-      select: { id: true, name: true, email: true }
+      where: { role: { in: ["OWNER", "ADMIN"] }, status: "ACTIVE" },
+      select: { id: true, name: true, email: true, role: true },
+      orderBy: [{ role: "asc" }, { name: "asc" }],
     }),
     prisma.property.findMany({
       where: { location: { not: "" } },
@@ -64,6 +65,7 @@ export default async function EditPropertyPage({
       body: s.body,
       imageUrl: s.imageUrl,
     })),
+    experiences: (property.experiences as unknown as { id?: string; title: string; description: string; imageUrl?: string | null }[] | null) ?? [],
   }
 
   return (

@@ -340,37 +340,43 @@ export function MediaUploader({
         onChange={(e) => handleFiles(e.target.files)}
       />
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      {/* Stacked by design: this uploader is dropped into narrow two-column
+          grids inside the property form, where a single un-shrinkable button
+          row would push the whole card wider than its column. */}
+      <div className="flex flex-col gap-2">
         <Button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           variant="outline"
-          className="border-navy/20 text-navy"
+          className="w-full border-navy/20 text-navy sm:w-auto sm:self-start"
         >
           {uploading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {videoProgress
-                ? `${videoProgress.phase === "compress" ? "Compressing" : "Uploading"} video ${videoProgress.pct}%`
-                : progress
-                  ? `Uploading ${progress.done} / ${progress.total}`
-                  : "Uploading..."}
+              <span className="truncate">
+                {videoProgress
+                  ? `${videoProgress.phase === "compress" ? "Compressing" : "Uploading"} video ${videoProgress.pct}%`
+                  : progress
+                    ? `Uploading ${progress.done} / ${progress.total}`
+                    : "Uploading..."}
+              </span>
             </>
           ) : (
             <>
-              <Icon className="w-4 h-4 mr-2" />
-              {buttonLabel}
+              <Icon className="w-4 h-4 mr-2 shrink-0" />
+              <span className="truncate">{buttonLabel}</span>
             </>
           )}
         </Button>
 
-        <div className="flex flex-1 gap-2">
+        <div className="flex flex-col gap-2 min-w-0 sm:flex-row">
           <Input
             value={pasteUrl}
             onChange={(e) => setPasteUrl(e.target.value)}
             placeholder="or paste an image URL"
             disabled={uploading}
+            className="min-w-0 flex-1"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault()
@@ -383,7 +389,7 @@ export function MediaUploader({
             onClick={handlePasteAdd}
             disabled={uploading}
             variant="outline"
-            className="border-navy/20 text-navy shrink-0"
+            className="border-navy/20 text-navy shrink-0 justify-center"
           >
             <LinkIcon className="w-4 h-4 mr-2" />
             Add URL

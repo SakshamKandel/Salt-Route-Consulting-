@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { CompactHeading, CompactSection } from "./Compact"
+import { Reveal } from "./motion"
 
 export type LegalItem = { id: string; title: string; body: ReactNode }
 
@@ -21,7 +22,9 @@ export function LegalShell({
       <CompactSection>
         <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:gap-12">
           <div className="lg:sticky lg:top-24 lg:self-start">
-            <CompactHeading eyebrow={eyebrow} title={title} />
+            <Reveal as="div">
+              <CompactHeading eyebrow={eyebrow} title={title} />
+            </Reveal>
             <p className="mt-4 font-sans text-[11px] uppercase tracking-[0.12em] text-navy/50">
               Last updated: {updated}
             </p>
@@ -36,17 +39,23 @@ export function LegalShell({
 
           <article>
             {summary ? (
-              <div className="mb-5 bg-beige p-5 sm:p-6">
+              <Reveal as="div" className="mb-5 bg-beige p-5 sm:p-6">
                 <p className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/50">Summary</p>
                 <div className="mt-2 font-sans text-base font-light leading-7 text-navy/70">{summary}</div>
-              </div>
+              </Reveal>
             ) : null}
             <div className="space-y-4">
-              {items.map((item) => (
-                <section key={item.id} id={item.id} className="scroll-mt-24 bg-sand p-5 sm:p-6">
+              {items.map((item, index) => (
+                <Reveal
+                  as="section"
+                  key={item.id}
+                  id={item.id}
+                  delay={index * 0.05}
+                  className="scroll-mt-24 bg-sand p-5 sm:p-6"
+                >
                   <h2 className="font-display text-2xl leading-tight text-navy">{item.title}</h2>
                   <div className="mt-3 font-sans text-base font-light leading-7 text-navy/68">{item.body}</div>
-                </section>
+                </Reveal>
               ))}
             </div>
           </article>

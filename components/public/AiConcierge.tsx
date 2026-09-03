@@ -13,10 +13,10 @@ const GREETING =
   "Namaste! I'm the Salt Route concierge. Ask me anything about our stays, locations, or planning your trip — and whenever you're ready to book, I'll connect you with our team."
 
 const WHATSAPP_HREF =
-  "https://wa.me/9779801300001?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20know%20more"
+  "https://wa.me/9779700013336?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20know%20more"
 
 const ERROR_REPLY =
-  "Apologies — I had a little trouble just now. Our team would love to help directly on WhatsApp at +977 9801300001."
+  "Apologies — I had a little trouble just now. Our team would love to help directly on WhatsApp at +977 9700013336."
 
 const PLACEHOLDERS = [
   "How else can I help?",

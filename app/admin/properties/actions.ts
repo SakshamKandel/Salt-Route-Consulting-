@@ -19,11 +19,27 @@ const roomTypeDraftSchema = z.object({
   name: z.string().trim().min(1).max(120),
   totalUnits: z.number().int().min(1).max(10000),
   pricePerNight: z.number().positive(),
+  hidePrice: z.boolean().optional().default(false),
   maxGuests: z.number().int().min(1).max(50),
   bedrooms: z.number().int().min(0).max(50),
   bathrooms: z.number().int().min(0).max(50),
   imageUrl: z.string().url().optional().or(z.literal("")),
   images: z.array(z.string().url()).max(20).optional(),
+})
+
+const experienceDraftSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().trim().min(1, "Experience title is required").max(120),
+  description: z.string().trim().min(1, "Experience description is required").max(1000),
+  imageUrl: z.string().url().optional().or(z.literal("")).nullable(),
+})
+
+const storySectionDraftSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().trim().min(1).max(160),
+  subtitle: z.string().trim().max(160).optional(),
+  body: z.string().trim().min(1).max(5000),
+  imageUrl: z.string().url().optional(),
 })
 
 const propertySchema = z.object({
@@ -37,6 +53,7 @@ const propertySchema = z.object({
   bathrooms: z.number().min(0),
   maxGuests: z.number().min(1),
   pricePerNight: z.number().min(0),
+  hidePrice: z.boolean().optional().default(false),
   totalUnits: z.number().int().min(1).max(10000).default(1),
   checkInTime: z.string().max(40).optional(),
   checkOutTime: z.string().max(40).optional(),
@@ -61,11 +78,15 @@ const propertySchema = z.object({
         url: z.string().url(),
         publicId: z.string().min(1),
         alt: z.string().optional().nullable(),
+        isPrimary: z.boolean().optional(),
+        isBanner: z.boolean().optional(),
       })
     )
     .optional(),
   roomTypes: z.array(roomTypeDraftSchema).max(50).optional(),
   removedRoomTypeIds: z.array(z.string()).max(100).optional(),
+  sections: z.array(storySectionDraftSchema).max(20).optional(),
+  experiences: z.array(experienceDraftSchema).max(20).optional(),
 })
 
 function uniqueList(items: string[]) {
@@ -97,6 +118,8 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
       gettingHere,
       roomTypes,
       removedRoomTypeIds = [],
+      sections,
+      experiences,
       ...basePropertyData
     } = validated
     const propertyData = {
@@ -116,6 +139,7 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
       whatToExpect: uniqueList(whatToExpect),
       stayDetails: stayDetails.length > 0 ? stayDetails : undefined,
       gettingHere: gettingHere.length > 0 ? gettingHere : undefined,
+      experiences: experiences && experiences.length > 0 ? (experiences as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
       featureIcons: await assignFeatureIcons([
         ...uniqueList(highlights),
         ...uniqueList(amenities),
@@ -149,12 +173,21 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
                 images: {
                   create: media.map((item, index) => {
                     const isVideo = item.url.includes("/video/upload/")
+                    const hasExplicitPrimary = media.some((m) => m.isPrimary)
+                    const hasExplicitBanner = media.some((m) => m.isBanner)
+                    const firstImgIdx = media.findIndex((m) => !m.url.includes("/video/upload/"))
+
                     return {
                       url: item.url,
                       publicId: item.publicId,
                       alt: item.alt || null,
                       order: existingMediaCount + index,
-                      isPrimary: !isVideo && existingImageCount === 0 && index === firstNewImageIndex,
+                      isPrimary: hasExplicitPrimary
+                        ? Boolean(item.isPrimary)
+                        : !isVideo && existingImageCount === 0 && index === firstNewImageIndex,
+                      isBanner: hasExplicitBanner
+                        ? Boolean(item.isBanner)
+                        : !isVideo && existingImageCount === 0 && index === firstNewImageIndex,
                     }
                   }),
                 },
@@ -171,23 +204,40 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
         userId: session.user.id,
       })
 
+      if (propertyData.slug) {
+        revalidatePath(`/properties/${propertyData.slug}`)
+      }
       revalidatePath(`/admin/properties/${id}`)
+      revalidatePath(`/admin/properties/${id}/images`)
+      revalidatePath("/admin/dashboard")
+      revalidatePath("/properties")
+      revalidatePath("/")
     } else {
+      const firstImgIdx = media.findIndex((m) => !m.url.includes("/video/upload/"))
+      const hasExplicitPrimary = media.some((m) => m.isPrimary)
+      const hasExplicitBanner = media.some((m) => m.isBanner)
+
       const newProperty = await prisma.property.create({
         data: {
           ...propertyData,
           ...(media.length > 0
             ? {
                 images: {
-                  create: media.map((item, index) => ({
-                    url: item.url,
-                    publicId: item.publicId,
-                    alt: item.alt || null,
-                    order: index,
-                    isPrimary:
-                      !item.url.includes("/video/upload/") &&
-                      index === media.findIndex((mediaItem) => !mediaItem.url.includes("/video/upload/")),
-                  })),
+                  create: media.map((item, index) => {
+                    const isVideo = item.url.includes("/video/upload/")
+                    return {
+                      url: item.url,
+                      publicId: item.publicId,
+                      alt: item.alt || null,
+                      order: index,
+                      isPrimary: hasExplicitPrimary
+                        ? Boolean(item.isPrimary)
+                        : !isVideo && index === firstImgIdx,
+                      isBanner: hasExplicitBanner
+                        ? Boolean(item.isBanner)
+                        : !isVideo && index === firstImgIdx,
+                    }
+                  }),
                 },
               }
             : {}),
@@ -202,6 +252,15 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
         details: { title: propertyData.title, status: propertyData.status },
         userId: session.user.id,
       })
+
+      if (propertyData.slug) {
+        revalidatePath(`/properties/${propertyData.slug}`)
+      }
+      revalidatePath(`/admin/properties/${newProperty.id}`)
+      revalidatePath(`/admin/properties/${newProperty.id}/images`)
+      revalidatePath("/admin/dashboard")
+      revalidatePath("/properties")
+      revalidatePath("/")
     }
 
     // ── Room types & inventory sync (inline editor) ──
@@ -228,6 +287,7 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
           name: rt.name,
           totalUnits: rt.totalUnits,
           pricePerNight: rt.pricePerNight,
+          hidePrice: Boolean(rt.hidePrice),
           maxGuests: rt.maxGuests,
           bedrooms: rt.bedrooms,
           bathrooms: rt.bathrooms,
@@ -264,6 +324,37 @@ export async function upsertPropertyAction(data: z.input<typeof propertySchema>,
           where: { id },
           data: { totalUnits: activeTypes.reduce((sum, t) => sum + t.totalUnits, 0) },
         })
+      }
+    }
+
+    // Keep the image-and-text story chapters in sync with the same form that
+    // powers the live preview. Existing IDs are updated, removed rows are
+    // deleted, and new AI/manual chapters are inserted in display order.
+    if (sections) {
+      const retainedIds = sections.flatMap((section) => section.id ? [section.id] : [])
+      await prisma.propertySection.deleteMany({
+        where: {
+          propertyId: id,
+          ...(retainedIds.length ? { id: { notIn: retainedIds } } : {}),
+        },
+      })
+
+      for (const [index, section] of sections.entries()) {
+        const sectionData = {
+          title: section.title,
+          subtitle: section.subtitle?.trim() || null,
+          body: section.body,
+          imageUrl: section.imageUrl || null,
+          order: index,
+        }
+        if (section.id) {
+          await prisma.propertySection.updateMany({
+            where: { id: section.id, propertyId: id },
+            data: sectionData,
+          })
+        } else {
+          await prisma.propertySection.create({ data: { ...sectionData, propertyId: id } })
+        }
       }
     }
 

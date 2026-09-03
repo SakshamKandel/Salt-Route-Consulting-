@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   BarChart2, Home, Calendar, MessageSquare,
-  FileText, Users, Send, Mail, Settings, Building2,
+  FileText, Users, Send, Mail, Settings, Building2, Quote,
 } from "lucide-react"
 
 const NAV_GROUPS = [
@@ -20,8 +20,9 @@ const NAV_GROUPS = [
   {
     label: "Manage",
     items: [
-      { name: "Reviews",     href: "/admin/reviews",     icon: FileText },
-      { name: "Users",       href: "/admin/users",       icon: Users    },
+      { name: "Reviews",     href: "/admin/reviews",       icon: FileText },
+      { name: "Guestbook",   href: "/admin/testimonials",  icon: Quote    },
+      { name: "Users",       href: "/admin/users",         icon: Users    },
       { name: "Owners",      href: "/admin/owners",      icon: Users    },
     ],
   },

@@ -42,8 +42,8 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
       >
         {/* Drawer header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#1B3A5C]/8 shrink-0">
-          <Link href="/" onClick={closeDrawer}>
-            <Image src="/brand/logo.png" alt="Salt Route" width={768} height={319} className="h-auto w-20 object-contain" />
+          <Link href="/" onClick={closeDrawer} className="flex items-center">
+            <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
           </Link>
           <button
             onClick={closeDrawer}
@@ -88,8 +88,8 @@ export function OwnerShell({ userName, userImage, userInitials, firstName, unrea
       <aside className="w-[240px] flex-col hidden md:flex shrink-0 bg-[#FFFAF3] border-r border-[#1B3A5C]/8 overflow-hidden">
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-[#1B3A5C]/8 shrink-0">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/brand/logo.png" alt="Salt Route" width={768} height={319} className="h-auto w-20 object-contain" />
+          <Link href="/" className="flex items-center">
+            <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
           </Link>
         </div>
 

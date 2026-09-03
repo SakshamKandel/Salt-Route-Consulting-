@@ -1,6 +1,9 @@
 "use client"
 
-import { useState, use } from "react"
+export const dynamic = "force-dynamic"
+
+import { useState, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { resetPasswordSchema, ResetPasswordInput } from "@/lib/validations"
@@ -11,14 +14,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 
-export default function ResetPasswordPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const resolvedParams = use(searchParams)
-  const token = resolvedParams.token as string | undefined
-  const email = resolvedParams.email as string | undefined
+function ResetPasswordContent() {
+  const searchParams = useSearchParams()
+  const token = searchParams.get("token") || undefined
+  const email = searchParams.get("email") || undefined
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -114,5 +113,20 @@ export default function ResetPasswordPage({
         </Form>
       )}
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-10 text-center">
+          <h1 className="text-2xl font-display text-charcoal uppercase tracking-widest">Checking...</h1>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">Verifying your reset link.</p>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   )
 }

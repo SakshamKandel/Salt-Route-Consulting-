@@ -1,7 +1,10 @@
+"use client"
+
 import Image, { type StaticImageData } from "next/image"
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
+import { Reveal, ParallaxImage } from "./motion"
 
 type MediaSource = string | StaticImageData
 
@@ -29,9 +32,9 @@ export function CompactSection({
   id?: string
 }) {
   return (
-    <section id={id} className={cn("py-10 sm:py-12 lg:py-14", className)}>
+    <Reveal as="section" id={id} className={cn("py-16 sm:py-20 lg:py-28", className)}>
       <CompactContainer>{children}</CompactContainer>
-    </section>
+    </Reveal>
   )
 }
 
@@ -49,27 +52,29 @@ export function CompactHeading({
   className?: string
 }) {
   return (
-    <header
-      className={cn(
-        "max-w-3xl",
-        align === "center" && "mx-auto text-center",
-        className,
-      )}
-    >
-      {eyebrow ? (
-        <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-navy/55">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h2 className="font-display text-[clamp(2rem,3.4vw,3.25rem)] leading-[1.08] tracking-[-0.015em] text-navy">
-        {title}
-      </h2>
-      {copy ? (
-        <p className="mt-4 max-w-2xl font-sans text-base font-light leading-7 text-navy/72 sm:text-[17px]">
-          {copy}
-        </p>
-      ) : null}
-    </header>
+    <Reveal as="div">
+      <header
+        className={cn(
+          "max-w-3xl",
+          align === "center" && "mx-auto text-center",
+          className,
+        )}
+      >
+        {eyebrow ? (
+          <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-navy/55">
+            {eyebrow}
+          </p>
+        ) : null}
+        <h2 className="font-display text-[clamp(2rem,3.4vw,3.25rem)] leading-[1.08] tracking-[-0.015em] text-navy">
+          {title}
+        </h2>
+        {copy ? (
+          <p className="mt-4 max-w-2xl font-sans text-base font-light leading-7 text-navy/72 sm:text-[17px]">
+            {copy}
+          </p>
+        ) : null}
+      </header>
+    </Reveal>
   )
 }
 
@@ -164,11 +169,13 @@ export function CompactImageText({
 }) {
   return (
     <div className="grid items-center gap-7 lg:grid-cols-12 lg:gap-10">
-      <div
+      {/* Image drifts against scroll for a whisper of parallax. */}
+      <ParallaxImage
         className={cn(
-          "relative aspect-[16/10] overflow-hidden bg-sand-dark lg:col-span-7",
+          "aspect-[16/10] bg-sand-dark lg:col-span-7",
           imageSide === "right" && "lg:order-2",
         )}
+        speed={0.08}
       >
         <Image
           src={image}
@@ -177,8 +184,11 @@ export function CompactImageText({
           sizes="(max-width: 1024px) 100vw, 58vw"
           className={cn("object-cover", imageClassName)}
         />
-      </div>
-      <div className={cn("lg:col-span-5 lg:px-4", imageSide === "right" && "lg:order-1")}>
+      </ParallaxImage>
+      <Reveal
+        as="div"
+        className={cn("lg:col-span-5 lg:px-4", imageSide === "right" && "lg:order-1")}
+      >
         {eyebrow ? (
           <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-navy/55">
             {eyebrow}
@@ -196,7 +206,7 @@ export function CompactImageText({
             {action}
           </CompactButton>
         ) : null}
-      </div>
+      </Reveal>
     </div>
   )
 }

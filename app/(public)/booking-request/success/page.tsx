@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { CompactContainer } from "@/components/public/Compact"
 
 export default async function BookingSuccessPage({
@@ -12,8 +13,18 @@ export default async function BookingSuccessPage({
   return (
     <div className="min-h-[72vh] bg-background py-10 text-navy sm:py-14">
       <CompactContainer>
-        <div className="mx-auto max-w-3xl bg-sand p-6 sm:p-9">
-          <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-gold-dark">Request received</p>
+        <div className="mx-auto max-w-3xl bg-sand p-6 sm:p-9 border border-navy/8">
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-gold-dark">Request received</p>
+            <Image
+              src="/brand/Logo.png"
+              alt="Salt Route"
+              width={960}
+              height={399}
+              priority
+              className="h-8 w-auto object-contain"
+            />
+          </div>
           <h1 className="mt-3 font-display text-[clamp(2.5rem,4.8vw,4.5rem)] leading-[1.04] tracking-[-0.02em] text-navy">Your stay request is with our team.</h1>
           <p className="mt-4 max-w-2xl font-sans text-base font-light leading-7 text-navy/70">
             We are reviewing the property, room, and dates. You will receive the next steps by email after availability is confirmed.

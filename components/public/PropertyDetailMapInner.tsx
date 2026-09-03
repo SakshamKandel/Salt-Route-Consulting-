@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import "leaflet/dist/leaflet.css"
 import L from "leaflet"
+import "leaflet/dist/leaflet.css"
+import { getNepalLocationCoordinates } from "@/lib/nepal-locations"
 
 type Props = {
   location: string
@@ -10,36 +11,45 @@ type Props = {
   title: string
 }
 
-const NEPAL_BOUNDS: [[number, number], [number, number]] = [[26.347, 80.058], [30.447, 88.201]]
-
-async function geocodeQuery(query: string): Promise<[number, number] | null> {
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`
-    const res = await fetch(url, {
-      headers: { "User-Agent": "SaltRouteConsulting/1.0 (connect@saltroutecorp.com)" },
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    if (!Array.isArray(data) || data.length === 0) return null
-    return [Number(data[0].lat), Number(data[0].lon)]
-  } catch {
-    return null
-  }
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
 }
 
-const MARKER_HTML = `
-  <div style="
-    width:46px;height:46px;
-    background:#1B3A5C;
-    border-radius:50%;
-    border:3px solid #C9A96E;
-    box-shadow:0 4px 20px rgba(27,58,92,0.35),0 0 0 8px rgba(201,169,110,0.14);
-    display:flex;align-items:center;justify-content:center;
-  ">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="#C9A96E">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-    </svg>
-  </div>`
+function addLuxuryTiles(map: L.Map) {
+  let fallbackLayer: L.TileLayer | null = null
+  let usingFallback = false
+  const primary = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      subdomains: "abc",
+      maxZoom: 19,
+      crossOrigin: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    },
+  ).addTo(map)
+
+  primary.once("tileerror", () => {
+    if (usingFallback || !map.getContainer().isConnected) return
+    usingFallback = true
+    primary.remove()
+    fallbackLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+      subdomains: "abc",
+      maxZoom: 19,
+      crossOrigin: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles style by <a href="https://www.hotosm.org/">HOT</a>',
+    }).addTo(map)
+  })
+
+  return () => {
+    primary.remove()
+    fallbackLayer?.remove()
+  }
+}
 
 export default function PropertyDetailMapInner({ location, address, title }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -47,77 +57,63 @@ export default function PropertyDetailMapInner({ location, address, title }: Pro
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
-
+    const [latitude, longitude] = getNepalLocationCoordinates(location, address)
+    const fallback = latitude === 28.2 && longitude === 84
     const map = L.map(containerRef.current, {
+      center: [latitude, longitude],
+      zoom: fallback ? 7 : 12.5,
       zoomControl: false,
       scrollWheelZoom: false,
       dragging: true,
+      preferCanvas: true,
+      attributionControl: true,
     })
     mapRef.current = map
-
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#1B3A5C;opacity:0.6">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" style="color:#1B3A5C;opacity:0.6">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 19,
-      }
-    ).addTo(map)
-
-    // Enhanced contrast and saturation for clarity
-    const tilePaneEl = map.getPane("tilePane")
-    if (tilePaneEl instanceof HTMLElement) {
-      tilePaneEl.style.filter = "saturate(1.1) contrast(1.05)"
-    }
-
+    const removeTiles = addLuxuryTiles(map)
+    const tilePane = map.getPane("tilePane")
+    if (tilePane) tilePane.classList.add("src-luxury-map-tiles")
     L.control.zoom({ position: "bottomright" }).addTo(map)
-    map.fitBounds(NEPAL_BOUNDS, { padding: [10, 10] })
 
-    const resizeTimer = setTimeout(() => {
-      map.invalidateSize()
-    }, 150)
-
-    const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize()
+    const marker = L.marker([latitude, longitude], {
+      riseOnHover: true,
+      icon: L.divIcon({
+        className: "src-map-marker-shell",
+        html: `<button type="button" class="src-map-pin src-map-pin--property" aria-label="${escapeHtml(title)}">
+          <span aria-hidden="true"></span><small>${escapeHtml(location)}</small>
+        </button>`,
+        iconSize: [50, 50],
+        iconAnchor: [25, 25],
+        popupAnchor: [0, -30],
+      }),
     })
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
-    }
+      .addTo(map)
+      .bindPopup(
+        `<article class="src-map-card src-map-card--detail"><div><small>Salt Route stay</small><strong>${escapeHtml(title)}</strong>${address ? `<span>${escapeHtml(address)}</span>` : ""}</div></article>`,
+        { className: "src-popup", maxWidth: 280 },
+      )
 
-    const icon = L.divIcon({
-      className: "",
-      html: MARKER_HTML,
-      iconSize: [46, 46],
-      iconAnchor: [23, 23],
-    })
-
-    let marker: L.Marker | null = null
-
-    const query = address ? `${address}, ${location}, Nepal` : `${location}, Nepal`
-    geocodeQuery(query).then((coords) => {
-      if (!coords || !mapRef.current) return
-      mapRef.current.invalidateSize()
-      marker = L.marker(coords, { icon })
-        .addTo(mapRef.current)
-        .bindPopup(
-          `<div style="font-family:system-ui,sans-serif;min-width:170px;background:#FFFAF3;">
-            <p style="font-size:8px;text-transform:uppercase;letter-spacing:0.3em;color:#C9A96E;margin:0 0 5px;font-weight:700;">${location}</p>
-            <p style="font-size:13px;font-weight:600;color:#1B3A5C;margin:0;line-height:1.4;">${title}</p>
-          </div>`,
-          { maxWidth: 230, className: "src-popup" }
-        )
-      mapRef.current.flyTo(coords, 14, { animate: true, duration: 1.6 })
-    })
+    const resize = () => map.invalidateSize({ animate: false })
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(containerRef.current)
+    const resizeTimer = window.setTimeout(resize, 100)
 
     return () => {
-      clearTimeout(resizeTimer)
+      window.clearTimeout(resizeTimer)
       resizeObserver.disconnect()
-      marker?.remove()
+      marker.remove()
+      removeTiles()
       map.remove()
       mapRef.current = null
     }
-  }, [location, address, title])
+  }, [address, location, title])
 
-  return <div ref={containerRef} className="w-full h-full min-h-[360px]" />
+  return (
+    <div className="relative h-full min-h-[380px] w-full bg-[#EEE8DC]">
+      <div ref={containerRef} className="h-full min-h-[380px] w-full" aria-label={`Map showing ${title} in ${location}`} />
+      <div className="pointer-events-none absolute left-5 top-5 z-[500] bg-navy/94 px-5 py-4 text-cream shadow-xl backdrop-blur-sm">
+        <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-gold">In Nepal</p>
+        <p className="mt-1 font-display text-lg">{location}</p>
+      </div>
+    </div>
+  )
 }

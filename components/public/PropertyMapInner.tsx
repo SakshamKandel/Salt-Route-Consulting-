@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import "leaflet/dist/leaflet.css"
+import { useEffect, useMemo, useRef } from "react"
+import { useRouter } from "next/navigation"
 import L from "leaflet"
+import "leaflet/dist/leaflet.css"
 import { formatNpr } from "@/lib/currency"
+import { getNepalLocationCoordinates } from "@/lib/nepal-locations"
 
 export type MapProperty = {
   id: string
@@ -11,200 +13,168 @@ export type MapProperty = {
   slug: string
   location: string
   pricePerNight?: number
-  // Coordinates are optional — the page renders without them and
-  // PropertyMapInner fetches them from /api/properties/map-coords after mount.
+  hidePrice?: boolean
   latitude?: number
   longitude?: number
   imageUrl?: string
 }
 
-function buildMarkerHtml(index: number, highlighted: boolean) {
-  const bg = highlighted ? "#C9A96E" : "#1B3A5C"
-  const color = highlighted ? "#1B3A5C" : "#FAF8F4"
-  const ring = highlighted ? "rgba(201,169,110,0.35)" : "rgba(27,58,92,0.18)"
-  return `
-    <div style="
-      width:38px;height:38px;
-      background:${bg};
-      border-radius:50%;
-      border:2px solid ${color === "#FAF8F4" ? "rgba(250,248,244,0.9)" : "rgba(27,58,92,0.5)"};
-      box-shadow:0 2px 12px rgba(27,58,92,0.25),0 0 0 6px ${ring};
-      display:flex;align-items:center;justify-content:center;
-      font-family:system-ui,sans-serif;
-      font-size:12px;font-weight:700;
-      color:${color};
-      cursor:pointer;
-      transition:all 0.25s;
-    ">${index + 1}</div>`
+type PositionedProperty = MapProperty & { latitude: number; longitude: number }
+
+const NEPAL_BOUNDS: [[number, number], [number, number]] = [
+  [26.4, 80],
+  [30.45, 88.2],
+]
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
 }
 
-function buildPopupHtml(p: MapProperty) {
-  const price = p.pricePerNight ? `${formatNpr(p.pricePerNight)} / night` : ""
-  const img = p.imageUrl
-    ? `<div style="height:128px;overflow:hidden;margin:-16px -20px 16px;border-bottom:1px solid rgba(201,169,110,0.2);">
-         <img src="${p.imageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
-       </div>`
-    : ""
-  return `
-    <div style="min-width:220px;font-family:system-ui,sans-serif;background:#FFFAF3;">
-      ${img}
-      <div style="padding:${img ? "0" : "2px 0"} 0 4px;">
-        <p style="font-size:8px;text-transform:uppercase;letter-spacing:0.3em;color:#C9A96E;margin:0 0 5px;font-weight:700;">${p.location}</p>
-        <h3 style="font-size:14px;font-weight:600;color:#1B3A5C;margin:0 0 ${price ? "4px" : "14px"};line-height:1.35;">${p.title}</h3>
-        ${price ? `<p style="font-size:11px;color:#1B3A5C;opacity:0.45;margin:0 0 14px;font-weight:500;">${price}</p>` : ""}
-        <a href="/properties/${p.slug}"
-           style="display:inline-flex;align-items:center;gap:6px;background:#1B3A5C;color:#FAF8F4;font-size:8px;text-transform:uppercase;letter-spacing:0.28em;padding:9px 18px;text-decoration:none;font-weight:700;"
-        >View Estate <span style="color:#C9A96E;font-size:11px;">&rarr;</span></a>
-      </div>
-    </div>`
+function markerHtml(index: number, location: string) {
+  return `<button type="button" class="src-map-pin" aria-label="View ${escapeHtml(location)}">
+    <span>${String(index + 1).padStart(2, "0")}</span>
+    <small>${escapeHtml(location)}</small>
+  </button>`
+}
+
+function previewHtml(property: PositionedProperty) {
+  const image = property.imageUrl ? `<img src="${escapeHtml(property.imageUrl)}" alt="" />` : ""
+  const price = property.hidePrice
+    ? "Tailored quote"
+    : property.pricePerNight
+      ? `From ${formatNpr(property.pricePerNight)} / night`
+      : "Discover the stay"
+
+  return `<article class="src-map-card">
+    ${image}
+    <div>
+      <small>${escapeHtml(property.location)}</small>
+      <strong>${escapeHtml(property.title)}</strong>
+      <span>${escapeHtml(price)}</span>
+    </div>
+  </article>`
+}
+
+function addLuxuryTiles(map: L.Map) {
+  let fallbackLayer: L.TileLayer | null = null
+  let usingFallback = false
+  const primary = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      subdomains: "abc",
+      maxZoom: 19,
+      crossOrigin: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    },
+  ).addTo(map)
+
+  primary.once("tileerror", () => {
+    if (usingFallback || !map.getContainer().isConnected) return
+    usingFallback = true
+    primary.remove()
+    fallbackLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+      subdomains: "abc",
+      maxZoom: 19,
+      crossOrigin: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles style by <a href="https://www.hotosm.org/">HOT</a>',
+    }).addTo(map)
+  })
+
+  return () => {
+    primary.remove()
+    fallbackLayer?.remove()
+  }
 }
 
 export default function PropertyMapInner({ properties }: { properties: MapProperty[] }) {
+  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
-  const markersRef = useRef<L.Marker[]>([])
-  // Coordinates fetched from /api/properties/map-coords after mount.
-  const [coordsMap, setCoordsMap] = useState<Map<string, { lat: number; lng: number }>>(new Map())
+  const positioned = useMemo<PositionedProperty[]>(
+    () =>
+      properties.map((property) => {
+        const fallback = getNepalLocationCoordinates(property.location)
+        return {
+          ...property,
+          latitude: property.latitude ?? fallback[0],
+          longitude: property.longitude ?? fallback[1],
+        }
+      }),
+    [properties],
+  )
 
-  // 1. Initialize the Leaflet map immediately (tiles load right away).
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
-
     const map = L.map(containerRef.current, {
       zoomControl: false,
-      scrollWheelZoom: true,
+      scrollWheelZoom: false,
       dragging: true,
+      preferCanvas: true,
+      attributionControl: true,
     })
     mapRef.current = map
-
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#1B3A5C;opacity:0.6">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" style="color:#1B3A5C;opacity:0.6">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 19,
-      }
-    ).addTo(map)
-
-    // Subtle enhancement for rich contrast
-    const tilePaneEl = map.getPane("tilePane")
-    if (tilePaneEl instanceof HTMLElement) {
-      tilePaneEl.style.filter = "saturate(1.1) contrast(1.05)"
-    }
-
+    const removeTiles = addLuxuryTiles(map)
+    const tilePane = map.getPane("tilePane")
+    if (tilePane) tilePane.classList.add("src-luxury-map-tiles")
     L.control.zoom({ position: "bottomright" }).addTo(map)
-    map.fitBounds([[26.5, 80.0], [30.4, 88.2]], { padding: [20, 20] })
 
-    // Invalidate size on container resize and initial render
-    const resizeTimer = setTimeout(() => {
-      map.invalidateSize()
-    }, 150)
-
-    const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize()
+    const markers = positioned.map((property, index) => {
+      const icon = L.divIcon({
+        className: "src-map-marker-shell",
+        html: markerHtml(index, property.location),
+        iconSize: [44, 44],
+        iconAnchor: [22, 22],
+        tooltipAnchor: [0, -24],
+      })
+      const marker = L.marker([property.latitude, property.longitude], { icon, riseOnHover: true })
+        .addTo(map)
+        .bindTooltip(previewHtml(property), {
+          direction: "top",
+          className: "src-map-preview",
+          opacity: 1,
+          offset: [0, -12],
+        })
+      marker.on("click", () => router.push(`/properties/${property.slug}`))
+      return marker
     })
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
+
+    if (markers.length === 1) {
+      map.setView([positioned[0].latitude, positioned[0].longitude], 11.5)
+    } else if (markers.length > 1) {
+      map.fitBounds(L.featureGroup(markers).getBounds().pad(0.2), { padding: [64, 64], maxZoom: 10 })
+    } else {
+      map.fitBounds(NEPAL_BOUNDS, { padding: [28, 28] })
     }
+
+    const resize = () => map.invalidateSize({ animate: false })
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(containerRef.current)
+    const resizeTimer = window.setTimeout(resize, 100)
 
     return () => {
-      clearTimeout(resizeTimer)
+      window.clearTimeout(resizeTimer)
       resizeObserver.disconnect()
+      removeTiles()
       map.remove()
       mapRef.current = null
-      markersRef.current = []
     }
-  }, [])
+  }, [positioned, router])
 
-  // 2. Fetch coordinates from the API AFTER the map is mounted.
-  useEffect(() => {
-    if (properties.length === 0) return
-    let cancelled = false
-
-    fetch("/api/properties/map-coords")
-      .then((res) => res.json())
-      .then((data: { id: string; latitude: number; longitude: number }[]) => {
-        if (cancelled) return
-        const map = new Map<string, { lat: number; lng: number }>()
-        for (const item of data) {
-          map.set(item.id, { lat: item.latitude, lng: item.longitude })
-        }
-        setCoordsMap(map)
-      })
-      .catch(() => {
-        // Non-fatal — map just won't have markers, tiles still show.
-      })
-
-    return () => { cancelled = true }
-  }, [properties])
-
-  // 3. Place markers once coordinates arrive and fit bounds snugly.
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
-
-    markersRef.current.forEach((m) => m.remove())
-    markersRef.current = []
-
-    // Only place markers for properties that have coordinates.
-    const geocoded = properties.filter(
-      (p) => coordsMap.has(p.id) || (p.latitude != null && p.longitude != null),
-    )
-    if (geocoded.length === 0) return
-
-    const newMarkers: L.Marker[] = []
-
-    geocoded.forEach((p, i) => {
-      const coords = coordsMap.get(p.id)
-      const lat = coords?.lat ?? p.latitude!
-      const lng = coords?.lng ?? p.longitude!
-
-      const defaultIcon = L.divIcon({
-        className: "",
-        html: buildMarkerHtml(i, false),
-        iconSize: [38, 38],
-        iconAnchor: [19, 19],
-        popupAnchor: [0, -24],
-      })
-      const hoverIcon = L.divIcon({
-        className: "",
-        html: buildMarkerHtml(i, true),
-        iconSize: [42, 42],
-        iconAnchor: [21, 21],
-        popupAnchor: [0, -26],
-      })
-
-      const marker = L.marker([lat, lng], { icon: defaultIcon })
-        .addTo(map)
-        .bindPopup(buildPopupHtml(p), { maxWidth: 260, className: "src-popup" })
-
-      marker.on("mouseover", () => {
-        marker.setIcon(hoverIcon)
-        marker.setZIndexOffset(1000)
-      })
-      marker.on("mouseout", () => {
-        marker.setIcon(defaultIcon)
-        marker.setZIndexOffset(0)
-      })
-
-      newMarkers.push(marker)
-    })
-
-    markersRef.current = newMarkers
-
-    map.invalidateSize()
-
-    if (geocoded.length === 1) {
-      const coords = coordsMap.get(geocoded[0].id)
-      const lat = coords?.lat ?? geocoded[0].latitude!
-      const lng = coords?.lng ?? geocoded[0].longitude!
-      map.setView([lat, lng], 13)
-    } else if (geocoded.length > 1) {
-      const group = L.featureGroup(newMarkers)
-      map.fitBounds(group.getBounds().pad(0.18), { maxZoom: 10, animate: true })
-    }
-  }, [properties, coordsMap])
-
-  return <div ref={containerRef} className="w-full h-full min-h-[400px]" />
+  return (
+    <div className="relative h-full min-h-[420px] w-full bg-[#EEE8DC]">
+      <div ref={containerRef} className="h-full min-h-[420px] w-full" aria-label="Map of Salt Route properties across Nepal" />
+      <div className="pointer-events-none absolute left-5 top-5 z-[500] max-w-[240px] bg-navy/94 px-5 py-4 text-cream shadow-xl backdrop-blur-sm">
+        <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-gold">Salt Route collection</p>
+        <p className="mt-1 font-display text-lg">{positioned.length} places across Nepal</p>
+      </div>
+      <p className="pointer-events-none absolute bottom-5 left-5 z-[500] bg-cream/90 px-3 py-2 text-[8px] font-semibold uppercase tracking-[0.18em] text-navy/60 backdrop-blur-sm">
+        Drag to explore · click a marker to view
+      </p>
+    </div>
+  )
 }

@@ -4,6 +4,8 @@ import { getUnreadNotificationCount } from "@/lib/notifications"
 import { Footer } from "@/components/public/Footer"
 import { GuestAccountShell } from "@/components/guest/guest-account-shell"
 
+export const dynamic = "force-dynamic"
+
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
 

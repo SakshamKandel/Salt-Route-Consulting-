@@ -89,6 +89,7 @@ export const propertySchema = z.object({
   location: z.string().min(2, 'Location is required').max(200),
   address: z.string().max(300).optional(),
   pricePerNight: z.number().positive('Price must be positive').max(100000),
+  hidePrice: z.boolean().optional(),
   maxGuests: z.number().int().min(1).max(50),
   bedrooms: z.number().int().min(0).max(50),
   bathrooms: z.number().int().min(0).max(50),

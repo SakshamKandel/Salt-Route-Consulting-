@@ -7,7 +7,9 @@
 // Brochure* stack keeps its own preview-gated helpers in property/primitives.tsx.
 
 import {
+  animate,
   motion,
+  useInView,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -15,7 +17,7 @@ import {
   type Variants,
 } from "framer-motion"
 import Image, { type ImageProps } from "next/image"
-import { useRef, type ReactNode, type ElementType } from "react"
+import { useEffect, useRef, useState, type ReactNode, type ElementType } from "react"
 import { twMerge } from "tailwind-merge"
 
 /** Luxury easing curves (mirror the --ease-* tokens in globals.css). */
@@ -51,6 +53,7 @@ export function Reveal({
   delay = 0,
   y = 24,
   stagger,
+  id,
 }: {
   children: ReactNode
   as?: MotionTagName
@@ -58,13 +61,14 @@ export function Reveal({
   delay?: number
   y?: number
   stagger?: number
+  id?: string
 }) {
   const reduce = useReducedMotion()
   const MotionTag = MOTION[as]
 
   if (reduce) {
     const Tag = as as ElementType
-    return <Tag className={className}>{children}</Tag>
+    return <Tag id={id} className={className}>{children}</Tag>
   }
 
   if (stagger) {
@@ -74,6 +78,7 @@ export function Reveal({
     }
     return (
       <MotionTag
+        id={id}
         className={className}
         variants={container}
         initial="hidden"
@@ -87,6 +92,7 @@ export function Reveal({
 
   return (
     <MotionTag
+      id={id}
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -308,6 +314,51 @@ export function KenBurns({
         {children}
       </div>
     </div>
+  )
+}
+
+/**
+ * Counts up to `value` the first time it scrolls into view. Numbers land on the
+ * final value immediately when the user prefers reduced motion.
+ */
+export function CountUp({
+  value,
+  decimals = 0,
+  prefix = "",
+  suffix = "",
+  className,
+}: {
+  value: number
+  decimals?: number
+  prefix?: string
+  suffix?: string
+  className?: string
+}) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" })
+  const reduce = useReducedMotion()
+  // Tracks 0 → 1 animation progress rather than the number itself, so no
+  // setState happens synchronously inside the effect.
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    if (!inView || reduce) return
+    const controls = animate(0, 1, {
+      duration: 1.6,
+      ease: EASE.outLuxe,
+      onUpdate: setProgress,
+    })
+    return () => controls.stop()
+  }, [inView, reduce])
+
+  const shown = reduce ? value : value * progress
+
+  return (
+    <span ref={ref} className={twMerge("tabular-nums", className)}>
+      {prefix}
+      {shown.toFixed(decimals)}
+      {suffix}
+    </span>
   )
 }
 

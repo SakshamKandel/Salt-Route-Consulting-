@@ -4,6 +4,11 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { SessionProvider } from "@/components/public/SessionProvider"
 
+// SessionProvider (next-auth/react) uses useContext which crashes during
+// Next.js static SSR prerendering. force-dynamic tells Next.js to treat
+// this layout segment as dynamic, preventing the _global-error SSR crash.
+export const dynamic = "force-dynamic"
+
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-display',
@@ -40,6 +45,8 @@ const resourceHints = (
     <link rel="dns-prefetch" href="https://res.cloudinary.com" />
     <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://images.pexels.com" crossOrigin="anonymous" />
+    <link rel="dns-prefetch" href="https://images.pexels.com" />
   </>
 )
 

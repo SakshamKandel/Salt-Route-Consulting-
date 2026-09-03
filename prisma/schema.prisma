@@ -86,6 +86,7 @@ model Property {
   location      String
   address       String?
   pricePerNight Decimal           @db.Decimal(10, 2)
+  hidePrice     Boolean           @default(false)
   maxGuests     Int               @default(2)
   bedrooms      Int               @default(1)
   bathrooms     Int               @default(1)
@@ -102,6 +103,7 @@ model Property {
   stayDetails   Json?
   gettingHere   Json?
   featureIcons  Json?
+  experiences   Json?
   totalUnits    Int               @default(1)
   checkInTime   String?
   checkOutTime  String?
@@ -132,6 +134,7 @@ model RoomType {
   description   String?
   totalUnits    Int           @default(1)
   pricePerNight Decimal       @db.Decimal(10, 2)
+  hidePrice     Boolean       @default(false)
   maxGuests     Int           @default(2)
   bedrooms      Int           @default(1)
   bathrooms     Int           @default(1)
@@ -270,6 +273,33 @@ model ReviewImage {
 
   @@index([reviewId])
   @@map("review_images")
+}
+
+/// Curated guestbook / testimonial shown on public marketing pages.
+/// Deliberately stores NO guest photography — the editorial design presents
+/// words only, which reads as more private and more dignified.
+model Testimonial {
+  id        String          @id @default(cuid())
+  quote     String
+  name      String
+  role      String?
+  source    String?
+  kind      TestimonialKind @default(VERIFIED)
+  rating    Int             @default(5)
+  location  String?
+  featured  Boolean         @default(false)
+  published Boolean         @default(true)
+  order     Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([published, kind, order])
+  @@map("testimonials")
+}
+
+enum TestimonialKind {
+  DIPLOMATIC
+  VERIFIED
 }
 
 model Wishlist {

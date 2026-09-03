@@ -14,17 +14,31 @@ function firstSentence(text: string, max = 180) {
 }
 
 export default async function ForOwnersPage() {
-  const properties = await prisma.property
-    .findMany({
-      where: { status: "ACTIVE" },
-      include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      take: 12,
-    })
-    .catch((err) => {
-      console.error("[for-owners] property fetch failed:", err)
-      return []
-    })
+  const [properties, propertyCount, ownerVoice] = await Promise.all([
+    prisma.property
+      .findMany({
+        where: { status: "ACTIVE" },
+        include: { images: { orderBy: [{ isPrimary: "desc" }, { order: "asc" }], take: 1 } },
+        orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+        take: 12,
+      })
+      .catch((err) => {
+        console.error("[for-owners] property fetch failed:", err)
+        return []
+      }),
+
+    prisma.property
+      .count({ where: { status: "ACTIVE" } })
+      .catch(() => 0),
+
+    // A single distinguished voice to close the argument.
+    prisma.testimonial
+      .findFirst({
+        where: { published: true, featured: true },
+        orderBy: { order: "asc" },
+      })
+      .catch(() => null),
+  ])
 
   const portfolio: ForOwnersPortfolioItem[] = properties.map((p) => ({
     slug: p.slug,
@@ -38,6 +52,15 @@ export default async function ForOwnersPage() {
     featured: p.featured,
   }))
 
+  const regions = new Set(
+    properties.map((p) => p.location?.split(",").pop()?.trim()).filter(Boolean),
+  )
+
+  const stats = {
+    properties: propertyCount || portfolio.length,
+    regions: regions.size || 3,
+  }
+
   const contact = {
     siteName: siteConfig.name,
     email: siteConfig.contact.email,
@@ -46,5 +69,16 @@ export default async function ForOwnersPage() {
     address: siteConfig.contact.address,
   }
 
-  return <ForOwnersClient portfolio={portfolio} contact={contact} />
+  return (
+    <ForOwnersClient
+      portfolio={portfolio}
+      contact={contact}
+      stats={stats}
+      ownerVoice={
+        ownerVoice
+          ? { quote: ownerVoice.quote, name: ownerVoice.name, role: ownerVoice.role }
+          : null
+      }
+    />
+  )
 }

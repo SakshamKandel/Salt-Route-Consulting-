@@ -9,7 +9,7 @@ test.describe("Auth flow", () => {
 
   test("signup page loads", async ({ page }) => {
     await page.goto("/signup")
-    await expect(page.locator("h1, h2")).toContainText(/sign\s*up|create\s*account/i)
+    await expect(page.locator("h1, h2")).toContainText(/sign\s*up|create\s*an?\s*account/i)
   })
 
   test("forgot password page loads", async ({ page }) => {
@@ -57,10 +57,12 @@ test.describe("Auth flow", () => {
     const emailInput = page.locator('input[type="email"]').first()
     await emailInput.fill("nonexistent@example.com")
     await page.locator('button[type="submit"]').click()
-    // Should always show the same message (no email enumeration)
+    // Should always show the same message (no email enumeration).
+    // Generous timeout: in dev the server action may wait for Turbopack
+    // to compile while parallel tests hit other routes.
     await expect(
       page.locator("text=/If an account exists|reset link/i").first()
-    ).toBeVisible({ timeout: 5000 })
+    ).toBeVisible({ timeout: 20000 })
   })
 })
 
@@ -77,16 +79,20 @@ test.describe("Public pages", () => {
       if (msg.type() === "error") errors.push(msg.text())
     })
     await page.goto("/")
-    await page.waitForLoadState("networkidle")
+    // Use "load" instead of "networkidle": the dev server keeps an HMR
+    // websocket open and the hero video loops, so networkidle is flaky.
+    await page.waitForLoadState("load")
+    await page.waitForTimeout(1000)
     expect(errors.filter((e) => !e.includes("favicon"))).toHaveLength(0)
   })
 
   test("booking request page loads", async ({ page }) => {
     await page.goto("/booking-request")
-    // Either loads or redirects to login if auth required
+    // Either loads, or redirects: /login when auth is required,
+    // /properties when no ?property= param is given (by design).
     const url = page.url()
     const isOnPage = url.includes("/booking-request")
-    const isRedirected = url.includes("/login")
+    const isRedirected = url.includes("/login") || url.includes("/properties")
     expect(isOnPage || isRedirected).toBe(true)
   })
 })

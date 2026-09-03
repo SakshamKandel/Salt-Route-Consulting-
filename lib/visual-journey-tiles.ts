@@ -242,11 +242,11 @@ export const VISUAL_JOURNEY_TILES: VisualJourneyTile[] = [
       { label: "Natural Retreats", body: "Rejuvenate in natural hot springs hidden away in lush mountain valleys." },
     ],
     cta: "Let us tailor a retreat that balances exploration with profound personal restoration.",
-    // No client-supplied URLs for this tile yet — using existing placeholders. Swap when ready.
-    cover: u("1545389336-cf090694435e"),
+    // Pexels: traditional life in Dolpo · rural Himalayan village · mountain community.
+    cover: p(30347999),
     gallery: [
-      u("1545389336-cf090694435e"),
-      u("1566554273541-37a9ca77b91f"),
+      p(30347999),
+      p(29848737),
       p(3757055),
     ],
   },

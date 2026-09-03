@@ -1,13 +1,36 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import type { PropertyDetail } from "./property/types"
+import { useLenis } from "lenis/react"
+import {
+  ArrowRight,
+  ArrowLeft,
+  ArrowUpRight,
+  Bath,
+  BedDouble,
+  Check,
+  ChevronDown,
+  Clock3,
+  Eye,
+  MapPin,
+  Maximize2,
+  Play,
+  Star,
+  Users,
+  Compass,
+  Sparkles,
+} from "lucide-react"
+import { ParallaxImage } from "./motion"
 import { WishlistButton } from "@/app/(public)/properties/[slug]/WishlistButton"
-import { PropertyDetailMap } from "@/components/public/PropertyDetailMap"
-import { PropertyReviewForm } from "@/components/public/PropertyReviewForm"
+import { PropertyDetailMap } from "./PropertyDetailMap"
+import { RoomGalleryLightbox } from "./property/RoomGalleryLightbox"
+import { BrochureReservation } from "./property/BrochureReservation"
+import { BrochureSections } from "./property/BrochureSections"
+import { BrochureVideoBand } from "./property/BrochureVideoBand"
+import type { PropertyDetail, RoomGalleryState } from "./property/types"
 import {
   getBannerImageUrl,
   getImageMedia,
@@ -17,25 +40,66 @@ import {
 } from "@/lib/property-media"
 import { toDateOnlyString } from "@/lib/booking-dates"
 import { formatNpr } from "@/lib/currency"
-import {
-  CompactButton,
-  CompactContainer,
-  CompactHeading,
-  CompactImageText,
-  CompactSection,
-} from "@/components/public/Compact"
 import fallbackImage from "@/public/images/marketing/himalayan-retreat-exterior.png"
 
+export type RelatedProperty = {
+  id: string
+  title: string
+  slug: string
+  location: string
+  pricePerNight: number
+  hidePrice?: boolean
+  image: string | null
+}
+
 export type { PropertyDetail } from "./property/types"
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">
+      {children}
+    </p>
+  )
+}
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-1" aria-label={`${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={`h-3.5 w-3.5 ${index < rating ? "fill-gold text-gold" : "text-navy/15"}`}
+        />
+      ))}
+    </div>
+  )
+}
+
+const experienceNotes = [
+  "A slow, place-led encounter arranged around the season, weather, and your own pace.",
+  "Private access and local knowledge turn a beautiful setting into a meaningful memory.",
+  "Thoughtfully hosted, never over-programmed, with time left to simply be in the landscape.",
+]
+
+function CarouselControls({ target, label }: { target: React.RefObject<HTMLDivElement | null>; label: string }) {
+  function move(direction: -1 | 1) {
+    target.current?.scrollBy({ left: direction * Math.min(target.current.clientWidth * 0.82, 760), behavior: "smooth" })
+  }
+  return (
+    <div className="flex items-center gap-2" aria-label={`${label} carousel controls`}>
+      <button type="button" onClick={() => move(-1)} aria-label={`Previous ${label}`} className="grid h-10 w-10 place-items-center border border-navy/15 transition-colors hover:border-gold-dark hover:text-gold-dark"><ArrowLeft className="h-4 w-4" /></button>
+      <button type="button" onClick={() => move(1)} aria-label={`Next ${label}`} className="grid h-10 w-10 place-items-center border border-navy/15 transition-colors hover:border-gold-dark hover:text-gold-dark"><ArrowRight className="h-4 w-4" /></button>
+    </div>
+  )
+}
 
 export default function PropertyDetailClient({
   property,
   wishlistItem,
   isOwnerView = false,
-  isAuthenticated = false,
-  eligibleBookingId = null,
   previewMode = false,
   initialPhone = null,
+  relatedProperties = [],
 }: {
   property: PropertyDetail
   wishlistItem: boolean
@@ -44,277 +108,594 @@ export default function PropertyDetailClient({
   eligibleBookingId?: string | null
   previewMode?: boolean
   initialPhone?: string | null
+  relatedProperties?: RelatedProperty[]
 }) {
   const router = useRouter()
+  const lenis = useLenis()
   const images = getImageMedia(property.images)
-  const heroImage = getBannerImageUrl(property.images) || images[0]?.url || fallbackImage
-  const videoMedia = property.images.find((item) => isVideoUrl(item.url))
-  const videoUrl = videoMedia ? getOptimizedVideoUrl(videoMedia.url) : undefined
-  const videoPoster = videoMedia ? getVideoPosterUrl(videoMedia.url) : null
+  const heroImage =
+    getBannerImageUrl(property.images) ||
+    images[0]?.url ||
+    (typeof fallbackImage === "string" ? fallbackImage : fallbackImage.src)
+  const accentImage = images.find((image) => image.url !== heroImage)?.url || heroImage
   const roomTypes = property.roomTypes ?? []
   const sections = property.sections ?? []
   const reviews = property.reviews ?? []
+  const videoMedia = property.images.find((item) => isVideoUrl(item.url))
+  const videoUrl = videoMedia ? getOptimizedVideoUrl(videoMedia.url) : null
+  const videoPoster = videoMedia ? getVideoPosterUrl(videoMedia.url) : null
   const today = useMemo(() => toDateOnlyString(new Date()), [])
   const [checkIn, setCheckIn] = useState("")
   const [checkOut, setCheckOut] = useState("")
   const [guests, setGuests] = useState(2)
-  const [roomTypeId, setRoomTypeId] = useState(roomTypes[0]?.id ?? "")
   const [phone, setPhone] = useState(initialPhone ?? "")
+  const [roomTypeId, setRoomTypeId] = useState(roomTypes[0]?.id ?? "")
+  const [roomGallery, setRoomGallery] = useState<RoomGalleryState | null>(null)
+  const roomCarousel = useRef<HTMLDivElement>(null)
+  const experienceCarousel = useRef<HTMLDivElement>(null)
+  const galleryCarousel = useRef<HTMLDivElement>(null)
+  const relatedCarousel = useRef<HTMLDivElement>(null)
+
   const startingPrice = roomTypes.length
     ? Math.min(...roomTypes.map((room) => room.pricePerNight))
     : property.pricePerNight
-  const averageRating = reviews.length
-    ? (reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)
-    : null
 
-  function goToBooking() {
+  const experiences = useMemo(() => {
+    if (property.experiences && property.experiences.length > 0) {
+      return property.experiences
+    }
+    const source = [...(property.whatToExpect ?? []), ...(property.services ?? []), ...property.highlights]
+    return Array.from(new Set(source)).slice(0, 4).map((title, i) => ({
+      id: `fallback-exp-${i}`,
+      title,
+      description: experienceNotes[i] || experienceNotes[0],
+      imageUrl: null,
+    }))
+  }, [property.experiences, property.highlights, property.services, property.whatToExpect])
+
+  const faqs = [
+    {
+      question: "What time are check-in and check-out?",
+      answer: `Check-in is from ${property.checkInTime || "2:00 PM"} and check-out is by ${property.checkOutTime || "11:00 AM"}. Tell our concierge if your journey needs different timing.`,
+    },
+    {
+      question: `How do I get to ${property.title}?`,
+      answer: property.gettingHere?.length
+        ? property.gettingHere.map((leg) => `${leg.from}: approximately ${leg.time}${leg.distance ? ` (${leg.distance})` : ""}`).join(" ")
+        : `Our concierge will arrange the most comfortable route to ${property.location} and can coordinate private transfers on request.`,
+    },
+    {
+      question: "Is the property suitable for families and private groups?",
+      answer: `Yes. The residence welcomes up to ${property.maxGuests} guests. We will recommend the best room arrangement after learning the ages and needs of your party.`,
+    },
+    {
+      question: "What is included in the stay?",
+      answer: (property.services?.length ? property.services : property.amenities)
+        .slice(0, 6)
+        .join(", ") || "A personally hosted stay with the essential comforts of the residence.",
+    },
+    {
+      question: "How does booking confirmation work?",
+      answer: "Send your preferred dates and room choice. The Salt Route concierge checks availability with the property and replies with a complete confirmation before any payment is requested.",
+    },
+  ]
+
+  function handleReserve(customRoomId?: string) {
     if (previewMode) return
     const query = new URLSearchParams({ property: property.id })
-    if (roomTypeId) query.set("room", roomTypeId)
+    const chosenRoom = customRoomId || roomTypeId
+    if (chosenRoom) query.set("room", chosenRoom)
     if (checkIn) query.set("checkIn", checkIn)
     if (checkOut) query.set("checkOut", checkOut)
-    if (guests > 0) query.set("guests", String(guests))
+    if (guests) query.set("guests", String(guests))
     if (phone.trim()) query.set("phone", phone.trim())
     router.push(`/booking-request?${query.toString()}`)
   }
 
-  const facts = property.stayDetails?.length
-    ? property.stayDetails
-    : [
-        { label: "Bedrooms", value: String(property.bedrooms) },
-        { label: "Bathrooms", value: String(property.bathrooms) },
-        { label: "Guests", value: `Up to ${property.maxGuests}` },
-        { label: "Stay", value: property.propertyType || "Private property" },
-      ]
+  function selectRoom(roomId: string) {
+    setRoomTypeId(roomId)
+    requestAnimationFrame(scrollToBooking)
+  }
 
-  const storyImage = images.find((image) => image.url !== heroImage)?.url || heroImage
-  const gallery = images.filter((image) => image.url !== heroImage).slice(0, 6)
-  const facilityGroups: { title: string; values: string[] }[] = [
-    { title: "Highlights", values: property.whatToExpect ?? [] },
-    { title: "Services", values: property.services ?? [] },
-    { title: "Amenities", values: property.amenities },
-  ].filter((group) => group.values.length > 0)
-  const fieldClass =
-    "mt-2 min-h-11 w-full border border-navy/14 bg-white px-3 py-2.5 font-sans text-sm text-navy outline-none focus:border-navy"
+  function scrollToBooking() {
+    const target = document.getElementById("booking")
+    if (!target) return
+    if (lenis) {
+      lenis.scrollTo(target, { offset: -72, duration: 1.05 })
+    } else {
+      const top = target.getBoundingClientRect().top + window.scrollY - 72
+      window.scrollTo({ top, behavior: "smooth" })
+    }
+  }
+
+  const mapQuery = encodeURIComponent([property.address, property.location, "Nepal"].filter(Boolean).join(", "))
 
   return (
-    <div className={`bg-background text-navy ${previewMode ? "" : "min-h-screen"}`}>
-      <section className="relative min-h-[520px] overflow-hidden sm:min-h-[640px]">
-        <Image src={heroImage} alt={property.title} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-black/38" />
-        <CompactContainer className="relative flex min-h-[520px] items-end pb-8 text-cream sm:min-h-[640px] sm:pb-11">
-          <div className="w-full max-w-3xl">
-            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-cream/80">
-              {property.propertyType || "Salt Route stay"} · {property.location}
-            </p>
-            <h1 className="mt-3 font-display text-[clamp(2.75rem,5.5vw,5.5rem)] leading-[.98] tracking-[-0.02em]">{property.title}</h1>
-            {property.tagline ? <p className="mt-4 max-w-xl font-sans text-base font-light leading-7 text-cream/88 sm:text-lg">{property.tagline}</p> : null}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              {isOwnerView ? (
-                <CompactButton href={`/owner/properties/${property.id}`}>Manage property</CompactButton>
-              ) : (
-                <button type="button" onClick={() => document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" })} className="min-h-11 bg-camel px-6 font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-white hover:bg-camel-dark">
-                  Request this stay
-                </button>
-              )}
-              {!previewMode && !isOwnerView ? <WishlistButton propertyId={property.id} initialWishlisted={wishlistItem} /> : null}
-            </div>
-          </div>
-        </CompactContainer>
-      </section>
-
-      {!isOwnerView ? (
-        <CompactContainer className="py-5">
-          <form
-            onSubmit={(event) => {
-              event.preventDefault()
-              goToBooking()
-            }}
-            className="grid gap-4 bg-sand px-5 py-5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_.7fr_auto] lg:items-end"
-          >
-            <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Check in<input type="date" min={today} value={checkIn} onChange={(event) => setCheckIn(event.target.value)} className={fieldClass} /></label>
-            <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Check out<input type="date" min={checkIn || today} value={checkOut} onChange={(event) => setCheckOut(event.target.value)} className={fieldClass} /></label>
-            <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Guests<input type="number" min={1} max={property.maxGuests} value={guests} onChange={(event) => setGuests(Math.max(1, Math.min(property.maxGuests, Number(event.target.value) || 1)))} className={fieldClass} /></label>
-            <button type="submit" className="min-h-11 bg-navy px-6 font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-cream hover:bg-navy-dark">Check stay</button>
-          </form>
-        </CompactContainer>
-      ) : null}
-
-      <CompactSection className="pt-5 sm:pt-7">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {facts.slice(0, 4).map((fact) => (
-            <div key={fact.label} className="bg-beige p-5">
-              <p className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/50">{fact.label}</p>
-              <p className="mt-1 font-display text-2xl text-navy">{fact.value}</p>
-            </div>
-          ))}
+    <div className="min-h-screen bg-background text-navy selection:bg-gold selection:text-navy">
+      {previewMode ? (
+        <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-gold px-5 py-2.5 text-navy">
+          <Eye className="h-3.5 w-3.5" />
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em]">
+            Draft preview · not publicly visible
+          </span>
         </div>
-      </CompactSection>
+      ) : null}
 
-      <CompactSection className="bg-beige">
-        <CompactImageText
-          image={storyImage}
-          alt={`${property.title} story`}
-          eyebrow="The property"
-          title={property.highlightsTitle || "A stay shaped by its setting."}
-          copy={property.story || property.description}
-        >
-          {property.highlights.length ? (
-            <ul className="mt-5 grid gap-2 font-sans text-sm font-light leading-6 text-navy/68 sm:grid-cols-2">
-              {property.highlights.slice(0, 6).map((item) => <li key={item}>{item}</li>)}
-            </ul>
+      <section className="relative flex min-h-[560px] items-center justify-center overflow-hidden sm:min-h-[640px] lg:min-h-[700px]">
+        <ParallaxImage className="absolute inset-0" speed={0.07}>
+          <Image src={heroImage} alt={property.title} fill priority sizes="100vw" className="object-cover" />
+        </ParallaxImage>
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/35 via-navy-dark/20 to-navy-dark/70" />
+        <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
+          <p className="mb-5 flex items-center justify-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-[0.26em] text-cream/80">
+            <MapPin className="h-3.5 w-3.5 text-gold" />
+            {property.location}
+          </p>
+          <h1 className="font-display text-[clamp(2.6rem,6vw,5.8rem)] leading-[0.98] tracking-[-0.02em] text-cream">
+            {property.title}
+          </h1>
+          {property.tagline ? (
+            <p className="mx-auto mt-6 max-w-2xl font-sans text-base font-light leading-7 text-cream/85 sm:text-lg">
+              {property.tagline}
+            </p>
           ) : null}
-        </CompactImageText>
-      </CompactSection>
-
-      {sections.map((section, index) => (
-        <CompactSection key={section.id}>
-          {section.imageUrl ? (
-            <CompactImageText
-              image={section.imageUrl}
-              alt={section.title}
-              eyebrow={section.subtitle || undefined}
-              title={section.title}
-              copy={section.body}
-              imageSide={index % 2 === 0 ? "left" : "right"}
-            />
-          ) : (
-            <div className="max-w-3xl">
-              {section.subtitle ? <p className="font-sans text-[11px] uppercase tracking-[0.14em] text-navy/52">{section.subtitle}</p> : null}
-              <h2 className="mt-2 font-display text-3xl text-navy">{section.title}</h2>
-              <p className="mt-3 font-sans text-base font-light leading-7 text-navy/70">{section.body}</p>
-            </div>
-          )}
-        </CompactSection>
-      ))}
-
-      {gallery.length ? (
-        <CompactSection>
-          <CompactHeading eyebrow="Gallery" title="A closer look at the stay." />
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {gallery.map((image) => (
-              <div key={image.id} className="relative aspect-[4/3] overflow-hidden bg-sand-dark">
-                <Image src={image.url} alt={image.alt || property.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
-              </div>
-            ))}
-          </div>
-        </CompactSection>
-      ) : null}
-
-      {roomTypes.length ? (
-        <CompactSection className="bg-sand" id="rooms">
-          <CompactHeading
-            eyebrow="Rooms and residences"
-            title="Choose the space that suits your stay."
-            copy={`Rates start from ${formatNpr(startingPrice)} per night.`}
-          />
-          <div className="mt-7 grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {roomTypes.map((room) => {
-              const image = room.images?.[0] || room.imageUrl || heroImage
-              return (
-                <article key={room.id}>
-                  <div className="relative aspect-[4/3] overflow-hidden bg-sand-dark"><Image src={image} alt={room.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" /></div>
-                  <p className="mt-4 font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{room.classType}</p>
-                  <h3 className="mt-1 font-display text-2xl text-navy">{room.name}</h3>
-                  {room.description ? <p className="mt-2 font-sans text-[15px] font-light leading-6 text-navy/68">{room.description}</p> : null}
-                  <p className="mt-3 font-sans text-sm text-navy/62">{formatNpr(room.pricePerNight)} per night · up to {room.maxGuests} guests</p>
-                  {!isOwnerView ? (
-                    <button type="button" onClick={() => { setRoomTypeId(room.id); document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" }) }} className="mt-4 bg-camel px-5 py-3 font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-white hover:bg-camel-dark">Choose room</button>
-                  ) : null}
-                </article>
-              )
-            })}
-          </div>
-        </CompactSection>
-      ) : null}
-
-      {(property.whatToExpect?.length || property.services?.length || property.amenities.length) ? (
-        <CompactSection>
-          <CompactHeading eyebrow="At the property" title={property.amenitiesTitle || "What to expect during your stay."} />
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {facilityGroups.map((group) => (
-              <div key={group.title} className="bg-beige p-5">
-                <h3 className="font-display text-2xl text-navy">{group.title}</h3>
-                <ul className="mt-3 space-y-1.5 font-sans text-sm font-light leading-6 text-navy/68">
-                  {group.values.slice(0, 12).map((value) => <li key={value}>{value}</li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </CompactSection>
-      ) : null}
-
-      {videoUrl ? (
-        <CompactSection className="bg-beige" id="virtual-tour">
-          <CompactHeading eyebrow="Film" title={`Experience ${property.title}.`} />
-          <video controls playsInline poster={videoPoster || undefined} className="mt-6 aspect-video w-full bg-navy object-cover">
-            <source src={videoUrl} />
-          </video>
-        </CompactSection>
-      ) : null}
-
-      <CompactSection>
-        <div className="grid gap-7 lg:grid-cols-12 lg:gap-10">
-          <div className="h-[340px] overflow-hidden bg-sand-dark lg:col-span-7 sm:h-[420px]">
-            <PropertyDetailMap location={property.location} address={property.address} title={property.title} />
-          </div>
-          <div className="lg:col-span-5 lg:px-4">
-            <p className="font-sans text-[11px] uppercase tracking-[0.14em] text-navy/52">Location</p>
-            <h2 className="mt-2 font-display text-3xl text-navy">{property.location}</h2>
-            {property.address ? <p className="mt-3 font-sans text-base font-light leading-7 text-navy/70">{property.address}</p> : null}
-            {property.neighborhood ? <p className="mt-3 font-sans text-base font-light leading-7 text-navy/70">{property.neighborhood}</p> : null}
-            {property.gettingHere?.length ? (
-              <ul className="mt-5 space-y-2 font-sans text-sm text-navy/65">{property.gettingHere.map((row) => <li key={`${row.time}-${row.from}`}>{row.time} from {row.from}{row.distance ? ` · ${row.distance}` : ""}</li>)}</ul>
+          <div className="mt-8 flex items-center justify-center gap-5">
+            {videoUrl ? (
+              <a href="#film" className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
+                <Play className="h-3.5 w-3.5" /> Watch the film
+              </a>
+            ) : null}
+            {!isOwnerView && !previewMode ? (
+              <WishlistButton propertyId={property.id} initialWishlisted={wishlistItem} />
+            ) : null}
+            {isOwnerView ? (
+              <Link href={`/owner/properties/${property.id}`} className="border border-cream/50 px-5 py-3 font-sans text-[10px] uppercase tracking-[0.18em]">
+                Owner details
+              </Link>
             ) : null}
           </div>
         </div>
-      </CompactSection>
-
-      <CompactSection className="bg-sand">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <CompactHeading eyebrow="Guest reviews" title={averageRating ? `${averageRating} from recent guests.` : "Reflections from recent guests."} />
-          <p className="font-sans text-sm text-navy/55">{property._count?.reviews ?? reviews.length} reviews</p>
-        </div>
-        {reviews.length ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {reviews.slice(0, 6).map((review) => (
-              <figure key={review.id} className="bg-white p-5">
-                <p className="font-sans text-sm text-gold-dark">{review.rating} / 5</p>
-                <blockquote className="mt-2 font-display text-xl leading-7 text-navy">“{review.comment}”</blockquote>
-                <figcaption className="mt-3 font-sans text-xs text-navy/54">{review.guest.name || "Salt Route guest"}</figcaption>
-              </figure>
-            ))}
-          </div>
-        ) : null}
-        {!isOwnerView ? (
-          <div className="mt-7 bg-beige p-5 sm:p-6"><PropertyReviewForm eligibleBookingId={eligibleBookingId} isAuthenticated={isAuthenticated} propertySlug={property.slug} /></div>
-        ) : null}
-      </CompactSection>
+      </section>
 
       {!isOwnerView ? (
-        <CompactSection id="reservation">
-          <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-12">
-            <CompactHeading
-              eyebrow="Request the stay"
-              title="Choose the details and continue."
-              copy={`Rates start from ${formatNpr(startingPrice)} per night. The next page confirms availability and collects the full request.`}
-            />
-            <form
-              onSubmit={(event) => { event.preventDefault(); goToBooking() }}
-              className="grid gap-5 bg-beige p-5 sm:grid-cols-2 sm:p-6"
-            >
-              {roomTypes.length ? (
-                <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55 sm:col-span-2">Room or residence<select value={roomTypeId} onChange={(event) => setRoomTypeId(event.target.value)} className={fieldClass}>{roomTypes.map((room) => <option key={room.id} value={room.id}>{room.name} · {formatNpr(room.pricePerNight)}</option>)}</select></label>
-              ) : null}
-              <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Check in<input type="date" min={today} value={checkIn} onChange={(event) => setCheckIn(event.target.value)} className={fieldClass} /></label>
-              <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Check out<input type="date" min={checkIn || today} value={checkOut} onChange={(event) => setCheckOut(event.target.value)} className={fieldClass} /></label>
-              <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Guests<input type="number" min={1} max={property.maxGuests} value={guests} onChange={(event) => setGuests(Math.max(1, Math.min(property.maxGuests, Number(event.target.value) || 1)))} className={fieldClass} /></label>
-              <label className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Phone<input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className={fieldClass} /></label>
-              <button type="submit" disabled={previewMode} className="min-h-12 bg-navy px-6 font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-cream hover:bg-navy-dark disabled:opacity-50 sm:col-span-2">Continue to booking request</button>
-            </form>
-          </div>
-        </CompactSection>
+        <section className="relative z-20 bg-cream text-navy">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              handleReserve()
+            }}
+            className="mx-auto grid max-w-[1180px] gap-4 px-5 py-5 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_1fr_.65fr_auto] lg:items-end"
+          >
+            <div>
+              <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.18em] text-navy/45">
+                {property.hidePrice ? "Rates" : "From"}
+              </span>
+              <p className="mt-1 font-display text-2xl">
+                {property.hidePrice ? (
+                  <span className="text-xl text-gold-dark">Request a Quote</span>
+                ) : (
+                  <>
+                    {formatNpr(startingPrice)}{" "}
+                    <span className="font-sans text-xs text-navy/45">/ night</span>
+                  </>
+                )}
+              </p>
+            </div>
+            <label>
+              <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.18em] text-navy/45">Check in</span>
+              <input type="date" min={today} value={checkIn} onChange={(event) => setCheckIn(event.target.value)} className="mt-1 h-10 w-full border-b border-navy/20 bg-transparent font-sans text-sm outline-none focus:border-gold-dark" />
+            </label>
+            <label>
+              <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.18em] text-navy/45">Check out</span>
+              <input type="date" min={checkIn || today} value={checkOut} onChange={(event) => setCheckOut(event.target.value)} className="mt-1 h-10 w-full border-b border-navy/20 bg-transparent font-sans text-sm outline-none focus:border-gold-dark" />
+            </label>
+            <label>
+              <span className="font-sans text-[9px] font-semibold uppercase tracking-[0.18em] text-navy/45">Guests</span>
+              <input type="number" min={1} max={property.maxGuests} value={guests} onChange={(event) => setGuests(Math.max(1, Math.min(property.maxGuests, Number(event.target.value) || 1)))} className="mt-1 h-10 w-full border-b border-navy/20 bg-transparent font-sans text-sm outline-none focus:border-gold-dark" />
+            </label>
+            <button type="submit" className="h-11 bg-gold px-7 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-navy transition-colors hover:bg-gold-light">
+              Book now
+            </button>
+          </form>
+        </section>
       ) : null}
+
+      <section id="overview" className="bg-background py-20 sm:py-24 lg:py-32">
+        <div className="mx-auto grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-20">
+          <div>
+            <Eyebrow>The residence</Eyebrow>
+            <h2 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.8vw,3.5rem)] leading-[1.08]">
+              {property.story ? "Stay close to the character of the place." : `A private address in ${property.location}.`}
+            </h2>
+            <p className="mt-7 whitespace-pre-line font-sans text-[15px] font-light leading-8 text-navy/68 sm:text-base">
+              {property.story || property.description}
+            </p>
+            <div className="mt-9 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-navy/10 pt-7 sm:grid-cols-4">
+              {[
+                [property.bedrooms, "Bedrooms"],
+                [property.bathrooms, "Bathrooms"],
+                [property.maxGuests, "Guests"],
+                [property.propertyType || "Private", "Style"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <p className="font-display text-2xl text-gold-dark">{value}</p>
+                  <p className="mt-1 font-sans text-[9px] uppercase tracking-[0.18em] text-navy/45">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <ParallaxImage className="aspect-[4/3]" speed={0.06}>
+            <Image src={accentImage} alt={property.title} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+          </ParallaxImage>
+        </div>
+      </section>
+
+      {roomTypes.length > 0 ? (
+        <>
+          <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden">
+            <ParallaxImage className="absolute inset-0" speed={0.08}>
+              <Image src={roomTypes[0].imageUrl || accentImage} alt="Accommodation" fill sizes="100vw" className="object-cover" />
+            </ParallaxImage>
+            <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/55 via-navy-dark/72 to-navy-dark/80" />
+            <div className="relative z-10 max-w-3xl px-6 text-center text-cream [text-shadow:0_2px_22px_rgb(5_21_35_/_0.45)]">
+              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">Private stays</p>
+              <h2 className="mt-4 font-display text-[clamp(2.5rem,5vw,4.8rem)] text-cream">Accommodation</h2>
+              <p className="mx-auto mt-5 max-w-2xl font-sans text-sm font-light leading-7 text-cream/80">
+                Thoughtful rooms and suites designed around quiet comfort, restorative sleep, and the landscape beyond.
+              </p>
+              <a href="#rooms" className="mt-8 inline-flex border border-cream/60 px-7 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-cream transition-colors hover:bg-cream hover:text-navy">
+                View the rooms
+              </a>
+            </div>
+          </section>
+
+          <section id="rooms" className="scroll-mt-24 bg-white py-20 lg:py-28">
+            <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
+              <div className="mb-12 flex items-end justify-between gap-6">
+                <div>
+                  <Eyebrow>Rooms & suites</Eyebrow>
+                  <h2 className="mt-3 font-display text-4xl">Choose your stay</h2>
+                </div>
+                <CarouselControls target={roomCarousel} label="rooms" />
+              </div>
+              <div ref={roomCarousel} className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {roomTypes.map((room) => {
+                  const roomImages = room.images?.filter(Boolean) ?? []
+                  const image = room.imageUrl || roomImages[0] || accentImage
+                  return (
+                    <article key={room.id} className="min-w-[88%] snap-start border border-navy/10 bg-background sm:min-w-[62%] lg:min-w-[46%]">
+                      <button
+                        type="button"
+                        onClick={() => roomImages.length && setRoomGallery({ images: roomImages, active: 0, name: room.name })}
+                        className="group relative block aspect-[16/10] w-full overflow-hidden text-left"
+                        disabled={!roomImages.length || previewMode}
+                        aria-label={`View ${room.name} photos`}
+                      >
+                        <Image src={image} alt={room.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                        {roomImages.length ? <span className="absolute bottom-4 right-4 bg-navy/85 px-3 py-2 font-sans text-[9px] uppercase tracking-[0.16em] text-cream"><Maximize2 className="mr-1.5 inline h-3 w-3" />{roomImages.length} photos</span> : null}
+                      </button>
+                      <div className="p-6 sm:p-7">
+                        <div className="flex items-start justify-between gap-5">
+                          <div>
+                            <p className="font-sans text-[9px] uppercase tracking-[0.2em] text-gold">{room.classType}</p>
+                            <h3 className="mt-2 font-display text-2xl">{room.name}</h3>
+                          </div>
+                          {property.hidePrice || room.hidePrice ? (
+                            <p className="shrink-0 font-display text-sm text-gold-dark font-medium">Request a Quote</p>
+                          ) : (
+                            <p className="shrink-0 font-display text-lg text-gold">{formatNpr(room.pricePerNight)}</p>
+                          )}
+                        </div>
+                        {room.description ? <p className="mt-4 font-sans text-sm font-light leading-6 text-navy/62">{room.description}</p> : null}
+                        <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-navy/10 pt-5 font-sans text-[10px] uppercase tracking-[0.12em] text-navy/50">
+                          <span><Users className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.maxGuests} guests</span>
+                          <span><BedDouble className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.bedrooms} bed</span>
+                          <span><Bath className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.bathrooms} bath</span>
+                        </div>
+                        {!isOwnerView ? (
+                          <button type="button" onClick={() => selectRoom(room.id)} className="mt-6 inline-flex items-center gap-2 border border-navy/20 px-5 py-3 font-sans text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors hover:border-gold-dark hover:text-gold-dark">
+                            Select room <ArrowRight className="h-3.5 w-3.5" />
+                          </button>
+                        ) : null}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        </>
+      ) : null}
+
+      <BrochureSections sections={sections} />
+
+      {experiences.length > 0 ? (
+        <section id="experiences" className="bg-background py-20 lg:py-28">
+          <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
+            <div className="flex items-end justify-between gap-6">
+              <div>
+                <Eyebrow>At the property</Eyebrow>
+                <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,4rem)]">Discover experiences</h2>
+              </div>
+              <CarouselControls target={experienceCarousel} label="experiences" />
+            </div>
+            <div
+              ref={experienceCarousel}
+              className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {experiences.map((experience, index) => {
+                const hasImage = Boolean(experience.imageUrl)
+                const numberStr = String(index + 1).padStart(2, "0")
+
+                if (hasImage) {
+                  // ─── PHOTO PRESENTATION ("if person adds the photo it greates") ───
+                  return (
+                    <article
+                      key={experience.id || `${experience.title}-${index}`}
+                      className="group min-w-[86%] snap-start sm:min-w-[48%] lg:min-w-[32%] flex flex-col"
+                    >
+                      <div className="relative aspect-[4/5] overflow-hidden rounded-xs bg-[#1B3A5C]/5 shadow-sm">
+                        <Image
+                          src={experience.imageUrl!}
+                          alt={experience.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-40" />
+                        <span className="absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[9px] font-semibold uppercase tracking-[0.2em] text-[#1B3A5C] shadow-xs">
+                          Experience {numberStr}
+                        </span>
+                      </div>
+                      <div className="pt-5 flex flex-col flex-1">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gold-dark">
+                          Curated Encounter
+                        </p>
+                        <h3 className="mt-2 font-display text-2xl text-navy transition-colors group-hover:text-gold-dark">
+                          {experience.title}
+                        </h3>
+                        <p className="mt-3 font-sans text-sm font-light leading-6 text-navy/68 line-clamp-4">
+                          {experience.description}
+                        </p>
+                      </div>
+                    </article>
+                  )
+                }
+
+                // ─── ARCHITECTURAL LUXURY TYPOGRAPHIC PRESENTATION ("if not make different way of portraying") ───
+                return (
+                  <article
+                    key={experience.id || `${experience.title}-${index}`}
+                    className="group min-w-[86%] snap-start sm:min-w-[48%] lg:min-w-[32%] relative flex flex-col justify-between overflow-hidden rounded-xs border border-[#C9A96E]/30 bg-gradient-to-b from-[#FAF8F5] to-[#F3EFEA] p-7 sm:p-9 transition-all duration-500 hover:border-[#C9A96E]/70 hover:shadow-xl hover:-translate-y-1"
+                  >
+                    {/* Decorative watermark numeral */}
+                    <span className="pointer-events-none absolute -right-3 -top-6 select-none font-display text-[7.5rem] font-bold leading-none text-[#C9A96E]/10 transition-colors duration-500 group-hover:text-[#C9A96E]/20">
+                      {numberStr}
+                    </span>
+
+                    <div>
+                      {/* Top luxury badge & monogram motif */}
+                      <div className="flex items-center justify-between gap-3 border-b border-[#1B3A5C]/8 pb-5">
+                        <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.24em] text-gold-dark">
+                          <Sparkles className="h-3 w-3 text-gold" />
+                          Experience {numberStr}
+                        </span>
+                        <span className="font-serif text-xs italic tracking-widest text-navy/40">
+                          Salt Route
+                        </span>
+                      </div>
+
+                      {/* Title & Gold hairline divider */}
+                      <div className="mt-7 space-y-3">
+                        <h3 className="font-display text-2xl sm:text-[1.65rem] leading-snug text-navy transition-colors group-hover:text-gold-dark">
+                          {experience.title}
+                        </h3>
+                        <div className="h-[2px] w-10 bg-gold/70 transition-all duration-500 group-hover:w-16" />
+                      </div>
+
+                      {/* Narrative description */}
+                      <p className="mt-5 font-sans text-sm font-light leading-7 text-navy/75">
+                        {experience.description}
+                      </p>
+                    </div>
+
+                    {/* Bottom footer badge */}
+                    <div className="mt-8 flex items-center justify-between border-t border-[#1B3A5C]/8 pt-5 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/50">
+                      <span className="flex items-center gap-1.5">
+                        <Compass className="h-3.5 w-3.5 text-gold" />
+                        Private Arrangement
+                      </span>
+                      <span className="text-gold-dark transition-transform duration-300 group-hover:translate-x-1">
+                        Inquire →
+                      </span>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="bg-navy py-20 text-cream lg:py-28">
+        <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">The rhythm of your stay</p>
+            <h2 className="mt-4 font-display text-[clamp(2.2rem,4vw,4rem)]">A day with room to unfold.</h2>
+            <p className="mt-5 font-sans text-sm font-light leading-7 text-cream/68">No fixed itinerary. These are simply the moments the setting invites—from the first quiet light to an evening gathered around the table.</p>
+          </div>
+          <div className="mt-12 grid gap-px bg-cream/15 md:grid-cols-3">
+            {[
+              ["Morning", "Wake slowly", "Tea, mountain air, and breakfast made around what is freshest nearby."],
+              ["Afternoon", "Follow your curiosity", "Walk, meet a local maker, rest in the garden, or let the concierge shape an unhurried outing."],
+              ["Evening", "Return to the table", "A private meal, stories from the region, and the particular stillness that arrives after dark."],
+            ].map(([time, title, copy]) => <article key={time} className="bg-navy px-7 py-9"><p className="text-[9px] uppercase tracking-[0.2em] text-gold">{time}</p><h3 className="mt-3 font-display text-2xl">{title}</h3><p className="mt-3 text-sm font-light leading-7 text-cream/62">{copy}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-navy/8 bg-beige py-20 lg:py-24">
+        <div className="mx-auto grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[.7fr_1.3fr]">
+          <div>
+            <Eyebrow>At a glance</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl">Comfort, simply considered.</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-3">
+            {[...property.amenities, ...(property.services ?? [])].slice(0, 12).map((item) => (
+              <div key={item} className="flex items-start gap-2 border-b border-navy/10 pb-4 font-sans text-sm font-light text-navy/68">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-dark" /> {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {images.length > 2 ? (
+        <section className="py-20 lg:py-28">
+          <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
+            <div className="mb-10 flex items-end justify-between gap-8">
+              <div>
+                <Eyebrow>Visual journal</Eyebrow>
+                <h2 className="mt-3 font-display text-4xl">A closer look</h2>
+              </div>
+              <div className="flex items-center gap-5"><span className="hidden font-sans text-[9px] uppercase tracking-[0.18em] text-navy/40 sm:inline">{images.length} photographs</span><CarouselControls target={galleryCarousel} label="gallery" /></div>
+            </div>
+            <div ref={galleryCarousel} className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {images.slice(0, 4).map((image, index) => (
+                <button key={image.id} type="button" disabled={previewMode} onClick={() => setRoomGallery({ images: images.map((item) => item.url), active: index, name: property.title })} className="relative aspect-[4/3] min-w-[88%] snap-start overflow-hidden sm:min-w-[62%] lg:min-w-[52%]">
+                  <Image src={image.url} alt={image.alt || property.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 hover:scale-[1.02]" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {videoUrl ? (
+        <BrochureVideoBand videoUrl={videoUrl} videoPoster={videoPoster} title={property.title} />
+      ) : null}
+
+      <section className="border-y border-navy/8 bg-white py-20 lg:py-28">
+        <div className="mx-auto grid max-w-[1180px] gap-10 px-5 sm:px-8 lg:grid-cols-[1.25fr_.75fr] lg:items-stretch">
+          <div className="min-h-[380px] overflow-hidden">
+            <PropertyDetailMap location={property.location} address={property.address} title={property.title} />
+          </div>
+          <div className="flex flex-col justify-center border border-navy/10 bg-beige p-7 sm:p-9">
+            <Eyebrow>Location & access</Eyebrow>
+            <h2 className="mt-4 font-display text-3xl">{property.location}</h2>
+            {property.address ? <p className="mt-3 font-sans text-sm font-light leading-6 text-navy/55">{property.address}</p> : null}
+            {property.gettingHere?.length ? (
+              <div className="mt-7 space-y-5">
+                {property.gettingHere.map((leg) => (
+                  <div key={`${leg.from}-${leg.time}`} className="flex gap-3 border-t border-navy/10 pt-4">
+                    <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                    <div>
+                      <p className="font-display text-lg">{leg.time}</p>
+                      <p className="mt-1 font-sans text-xs text-navy/50">{leg.from}{leg.distance ? ` · ${leg.distance}` : ""}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+              <a href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`} target="_blank" rel="noreferrer" className="mt-8 inline-flex w-fit items-center gap-2 border-b border-gold-dark pb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-dark">
+              Open directions <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {reviews.length > 0 ? (
+        <section className="bg-beige py-20 lg:py-28">
+          <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+            <div className="mb-10">
+              <Eyebrow>Guest reflections</Eyebrow>
+              <h2 className="mt-3 font-display text-4xl">After the stay</h2>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {reviews.slice(0, 3).map((review) => (
+                <figure key={review.id} className="border border-navy/8 border-t-gold-dark bg-white p-7">
+                  <Stars rating={review.rating} />
+                  <blockquote className="mt-5 font-display text-lg italic leading-7 text-navy/82">“{review.comment}”</blockquote>
+                  <figcaption className="mt-6 border-t border-navy/10 pt-4 font-sans text-xs text-navy/50">{review.guest.name || "Verified guest"}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="border-t border-navy/10 bg-background py-20 lg:py-28">
+        <div className="mx-auto max-w-[980px] px-5 sm:px-8">
+          <Eyebrow>Before you arrive</Eyebrow>
+          <h2 className="mt-3 font-display text-4xl">Frequently asked questions</h2>
+          <div className="mt-10 border-t border-navy/10">
+            {faqs.map((faq, index) => (
+              <details key={faq.question} className="group border-b border-navy/10" open={index === 0}>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-sans text-sm text-navy/82">
+                  {faq.question}
+                  <ChevronDown className="h-4 w-4 shrink-0 text-gold transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="max-w-3xl pb-6 pr-10 font-sans text-sm font-light leading-7 text-navy/58">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {relatedProperties.length > 0 ? (
+        <section className="bg-cream py-20 text-navy lg:py-24">
+          <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+            <div className="mb-10 flex items-end justify-between gap-6">
+              <div>
+                <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-dark">Continue exploring</p>
+                <h2 className="mt-3 font-display text-4xl">More Salt Route stays</h2>
+              </div>
+              <div className="flex items-center gap-4"><Link href="/properties" className="hidden font-sans text-[10px] font-semibold uppercase tracking-[0.18em] sm:inline-flex">View all</Link><CarouselControls target={relatedCarousel} label="related properties" /></div>
+            </div>
+            <div ref={relatedCarousel} className="flex snap-x snap-mandatory gap-7 overflow-x-auto pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {relatedProperties.map((item) => (
+                <article key={item.id} className="min-w-[84%] snap-start sm:min-w-[48%] lg:min-w-[31.5%]">
+                  <Link href={`/properties/${item.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand">
+                    <Image src={item.image || heroImage} alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 hover:scale-[1.03]" />
+                  </Link>
+                  <p className="mt-5 font-sans text-[9px] uppercase tracking-[0.18em] text-gold-dark">{item.location}</p>
+                  <h3 className="mt-2 font-display text-2xl"><Link href={`/properties/${item.slug}`}>{item.title}</Link></h3>
+                  {item.hidePrice ? (
+                    <p className="mt-2 font-sans text-xs text-gold-dark font-medium">Request a Quote</p>
+                  ) : (
+                    <p className="mt-2 font-sans text-xs text-navy/50">From {formatNpr(item.pricePerNight)} / night</p>
+                  )}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {!isOwnerView ? (
+        <BrochureReservation
+          image={accentImage}
+          startingPrice={startingPrice}
+          roomTypes={roomTypes}
+          maxGuests={property.maxGuests}
+          today={today}
+          resPhone={phone}
+          setResPhone={setPhone}
+          guests={guests}
+          setGuests={setGuests}
+          checkIn={checkIn}
+          setCheckIn={setCheckIn}
+          checkOut={checkOut}
+          setCheckOut={setCheckOut}
+          roomTypeId={roomTypeId}
+          setRoomTypeId={setRoomTypeId}
+          onSubmit={() => handleReserve()}
+          previewMode={previewMode}
+          hidePrice={Boolean(property.hidePrice)}
+        />
+      ) : null}
+
+      <RoomGalleryLightbox roomGallery={roomGallery} setRoomGallery={setRoomGallery} />
     </div>
   )
 }

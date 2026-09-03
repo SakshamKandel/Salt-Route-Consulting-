@@ -1,14 +1,6 @@
 "use client"
 
-// ── Brochure: full-bleed film / virtual-tour band ───────────────────────────
-// Lazy editorial video band. The poster renders immediately (next/image); the
-// video element only mounts — and its bytes only download — once the band is
-// about a viewport away (IntersectionObserver, fired once). Reduced-motion and
-// Save-Data get the poster with tap-to-play controls instead of autoplay. The
-// admin live preview renders the poster only, with no <video> element at all.
-
-import { useEffect, useRef, useState } from "react"
-import { useReducedMotion } from "framer-motion"
+import { useEffect, useRef } from "react"
 import { SafeImage, usePreview } from "@/components/public/property/primitives"
 
 export function BrochureVideoBand({
@@ -21,86 +13,63 @@ export function BrochureVideoBand({
   title: string
 }) {
   const preview = usePreview()
-  const reduce = useReducedMotion()
-  const [saveData, setSaveData] = useState(false)
-  const [near, setNear] = useState(false)
-  const sectionRef = useRef<HTMLElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
-  // Respect the Save-Data hint the same way as reduced motion.
   useEffect(() => {
-    if (preview) return
-    const frame = window.requestAnimationFrame(() => {
-      const conn = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
-      if (conn?.saveData) setSaveData(true)
+    if (preview || !videoRef.current) return
+    const video = videoRef.current
+    video.muted = true
+    video.defaultMuted = true
+    void video.play().catch(() => {
+      // The poster remains visible if a browser still blocks muted autoplay.
     })
-    return () => window.cancelAnimationFrame(frame)
   }, [preview])
-
-  const noAutoplay = !!reduce || saveData
-
-  // Attach the source only when the band is ~1 viewport away (fired once).
-  useEffect(() => {
-    if (preview || noAutoplay || near || !videoUrl) return
-    const el = sectionRef.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setNear(true)
-          io.disconnect()
-        }
-      },
-      { rootMargin: "100% 0px" },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [preview, noAutoplay, near, videoUrl])
-
-  // Start the quiet loop once the source is attached (iOS: muted+playsInline).
-  useEffect(() => {
-    if (near && videoRef.current) {
-      videoRef.current.play().catch(() => {})
-    }
-  }, [near])
 
   if (!videoUrl) return null
 
-  const showVideo = !preview && (near || noAutoplay)
-
   return (
-    <section id="virtual-tour" ref={sectionRef} className="relative w-full bg-charcoal">
-      <div className="relative aspect-video md:aspect-[21/9]">
+    <section
+      id="film"
+      aria-label={`${title} film`}
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-black"
+    >
+      <div className="relative h-[58svh] min-h-[420px] max-h-[820px] w-full sm:h-[68svh] lg:h-[72svh]">
         {videoPoster ? (
           <SafeImage
             src={videoPoster}
-            alt={`${title} film`}
+            alt=""
             fill
             sizes="100vw"
-            className="object-cover"
+            className="object-cover object-center"
           />
         ) : null}
 
-        {showVideo && (
+        {!preview ? (
           <video
             ref={videoRef}
             src={videoUrl}
             poster={videoPoster ?? undefined}
-            preload="none"
-            className="absolute inset-0 h-full w-full object-cover"
+            autoPlay
             loop
             muted
             playsInline
-            controls
-            controlsList="nodownload"
+            preload="metadata"
+            disablePictureInPicture
+            controlsList="nodownload noplaybackrate noremoteplayback"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_48%]"
+            onCanPlay={(event) => void event.currentTarget.play().catch(() => {})}
           />
-        )}
+        ) : null}
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/70 via-transparent to-transparent">
-          <p className="text-[10px] uppercase tracking-[0.26em] text-gold font-semibold mb-2">
-            Sanctuary Film
-          </p>
-          <h2 className="font-display uppercase tracking-[0.16em] text-2xl sm:text-3xl md:text-5xl leading-[1.1] text-cream">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,15,25,.2)_0%,transparent_36%,rgba(5,15,25,.72)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-2 bg-black/90 sm:h-3" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2 bg-black/90 sm:h-3" />
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[1320px] px-6 pb-12 text-cream sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-gold">A film from the property</p>
+          <h2 className="mt-3 max-w-3xl font-display text-[clamp(2rem,4vw,4.5rem)] leading-[1.02]">
             {title}
           </h2>
         </div>

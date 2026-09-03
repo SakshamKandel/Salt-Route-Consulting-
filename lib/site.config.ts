@@ -30,19 +30,19 @@ export const siteConfig = {
     fromEmail: process.env.SMTP_FROM ?? `"Salt Route Corp" <connect@saltroutecorp.com>`,
     /** Fallback admin notification recipient if no admin users in DB */
     adminEmail: process.env.ADMIN_EMAIL ?? "connect@saltroutecorp.com",
-    phone: process.env.CONTACT_PHONE ?? "+977 9801300001",
-    phoneHref: process.env.CONTACT_PHONE_HREF ?? "tel:+9779801300001",
-    address: process.env.CONTACT_ADDRESS ?? "P8FW+78R, Kathmandu 44600, Nepal",
-    addressFull: process.env.CONTACT_ADDRESS_FULL ?? "Salt Route Group HQ, P8FW+78R, Kathmandu 44600, Nepal",
+    phone: process.env.CONTACT_PHONE ?? "+977 9700013336",
+    phoneHref: process.env.CONTACT_PHONE_HREF ?? "tel:+9779700013336",
+    address: process.env.CONTACT_ADDRESS ?? "Chabahil, Kathmandu, Nepal",
+    addressFull: process.env.CONTACT_ADDRESS_FULL ?? "Salt Route Group HQ, Chabahil, Kathmandu, Nepal",
     /** Google Maps or embed URL for the office location */
-    mapUrl: process.env.CONTACT_MAP_URL ?? "https://maps.google.com/?q=P8FW%2B78R,Kathmandu+44600,Nepal",
+    mapUrl: process.env.CONTACT_MAP_URL ?? "https://maps.google.com/?q=Chabahil,Kathmandu,Nepal",
   },
 
   /** Social media links — override via .env or set to "" to hide */
   social: {
     instagram: process.env.SOCIAL_INSTAGRAM ?? "",
     facebook: process.env.SOCIAL_FACEBOOK ?? "",
-    whatsapp: process.env.SOCIAL_WHATSAPP ?? "https://wa.me/9779801300001",
+    whatsapp: process.env.SOCIAL_WHATSAPP ?? "https://wa.me/9779700013336",
   },
 
   /** Currency configuration */

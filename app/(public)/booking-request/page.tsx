@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
 import { BookingPageClient } from "@/components/booking/BookingPageClient"
@@ -56,6 +56,7 @@ export default async function BookingRequestPage({
         bathrooms: property.bathrooms,
         maxGuests: property.maxGuests,
         pricePerNight: Number(property.pricePerNight),
+        hidePrice: property.hidePrice,
         images: property.images.map((img) => ({ url: img.url, alt: img.alt })),
       }}
       roomTypes={property.roomTypes.map((rt) => ({
@@ -64,6 +65,7 @@ export default async function BookingRequestPage({
         classType: rt.classType,
         description: rt.description,
         pricePerNight: Number(rt.pricePerNight),
+        hidePrice: rt.hidePrice,
         maxGuests: rt.maxGuests,
         totalUnits: rt.totalUnits,
         bedType: rt.bedType,

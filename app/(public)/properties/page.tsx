@@ -49,9 +49,8 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       select: { title: true, slug: true, location: true },
       orderBy: [{ featured: "desc" }, { title: "asc" }],
     }),
-    // Map property metadata — coordinates are fetched client-side via
-    // /api/properties/map-coords AFTER the page renders, so Nominatim
-    // geocoding latency never blocks the page load.
+    // Map property metadata. The client resolves known Nepal locations
+    // locally, so rendering never waits on a geocoding API.
     prisma.property.findMany({
       where: { status: "ACTIVE" },
       select: {
@@ -60,6 +59,7 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
         slug: true,
         location: true,
         pricePerNight: true,
+        hidePrice: true,
         images: {
           orderBy: [{ isPrimary: "desc" }, { order: "asc" }],
           select: { url: true },
@@ -85,6 +85,7 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       bathrooms: true,
       maxGuests: true,
       pricePerNight: true,
+      hidePrice: true,
       highlights: true,
       amenities: true,
       images: {
@@ -113,15 +114,14 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       return city ? [city] : []
     }),
     knownProperties: propertyList,
-    // Return map property metadata WITHOUT coordinates. The PropertyMap
-    // component fetches coordinates from /api/properties/map-coords after
-    // mounting, so the page renders instantly.
+    // Return map property metadata without external geocoding coordinates.
     mapProperties: mapProperties.map((p) => ({
       id: p.id,
       title: p.title,
       slug: p.slug,
       location: p.location,
       pricePerNight: Number(p.pricePerNight),
+      hidePrice: p.hidePrice,
       imageUrl: p.images[0]?.url ?? undefined,
     })),
   }

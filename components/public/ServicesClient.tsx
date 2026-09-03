@@ -1,5 +1,8 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { Reveal } from "@/components/public/motion"
 import {
   CompactButton,
   CompactContainer,
@@ -8,6 +11,7 @@ import {
   CompactMediaCard,
   CompactSection,
 } from "@/components/public/Compact"
+import { MapPin } from "lucide-react"
 import imgRetreat from "@/public/images/marketing/himalayan-retreat-exterior.png"
 import imgDining from "@/public/images/marketing/private-himalayan-dining.png"
 import imgInterior from "@/public/images/marketing/nepalese-interior-details.png"
@@ -25,24 +29,24 @@ const services = [
   {
     image: imgRetreat,
     alt: "A private Himalayan retreat",
-    title: "Tailored property stays",
-    copy: "Distinctive homes chosen for their setting, story, privacy, and warmth of welcome.",
+    title: "Tailored Sanctuary Stays",
+    copy: "Distinctive private residences and boutique retreats chosen for their mountain setting, architectural narrative, seclusion, and genuine warmth of welcome.",
     href: "/properties",
-    action: "Browse stays",
+    action: "Browse Stays",
   },
   {
     image: imgOffice,
     alt: "The Salt Route travel planning team",
-    title: "Personal travel planning",
-    copy: "Complete journeys arranged around Nepal's landscapes, cultures, and communities.",
+    title: "Private Itinerary Design",
+    copy: "Seamless bespoke journeys orchestrated around Nepal's magnificent landscapes, living monastic traditions, private aviation, and secluded valleys.",
     href: "/contact",
-    action: "Plan a journey",
+    action: "Plan a Journey",
   },
   {
     image: imgInterior,
     alt: "Nepalese craft and interior details",
-    title: "Cultural journeys",
-    copy: "Community-rooted experiences that share Nepal's heritage with honesty and depth.",
+    title: "Cultural Immersion & Craft",
+    copy: "Intimate heritage experiences, master artisan encounters, private temple rituals, and curated culinary expeditions with renowned local hosts.",
     href: "/contact",
     action: "Enquire",
   },
@@ -50,98 +54,145 @@ const services = [
 
 export function ServicesClient({ latestProperties }: { latestProperties: CollageProperty[] }) {
   return (
-    <div className="bg-background text-navy">
-      <section className="relative min-h-[500px] overflow-hidden sm:min-h-[580px]">
-        <Image src={imgDining} alt="A private dining experience in Nepal" fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-black/34" />
-        <CompactContainer className="relative flex min-h-[500px] items-end pb-9 text-cream sm:min-h-[580px] sm:pb-12">
-          <div className="max-w-2xl">
-            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-cream/80">Salt Route experiences</p>
-            <h1 className="mt-3 font-display text-[clamp(2.75rem,5vw,5rem)] leading-[1] tracking-[-0.02em]">Journeys made personal.</h1>
-            <p className="mt-4 max-w-xl font-sans text-base font-light leading-7 text-cream/88 sm:text-lg">
-              Stay, food, culture, nature, and movement brought together around how you want to experience Nepal.
+    <div className="bg-background text-navy overflow-hidden">
+      {/* ─── HERO ─── */}
+      <section className="relative min-h-[540px] sm:min-h-[620px] lg:min-h-[700px] flex items-end overflow-hidden">
+        <Image
+          src={imgDining}
+          alt="A private dining experience in Nepal"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/30" />
+        <CompactContainer className="relative z-10 pb-16 sm:pb-20 lg:pb-24 text-cream">
+          <Reveal className="max-w-3xl">
+            <h1 className="font-display text-[clamp(2.75rem,5.5vw,5.5rem)] leading-[0.98] tracking-[-0.02em]">
+              Journeys made personal.
+            </h1>
+            <p className="mt-5 max-w-2xl font-sans text-base font-light leading-relaxed text-cream/90 sm:text-lg">
+              Sanctuary stays, private culinary moments, high-altitude exploration, and cultural encounters brought together around how you desire to experience Nepal.
             </p>
-            <CompactButton href="/contact" className="mt-6">Plan your journey</CompactButton>
-          </div>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <CompactButton href="/contact" className="min-h-12 px-8">
+                Plan Your Journey
+              </CompactButton>
+              <CompactButton href="/properties" tone="text" className="text-cream hover:text-gold text-xs uppercase tracking-[0.16em]">
+                View All Stays →
+              </CompactButton>
+            </div>
+          </Reveal>
         </CompactContainer>
       </section>
 
-      <CompactSection>
-        <CompactHeading
-          eyebrow="What we arrange"
-          title="Everything you need, without unnecessary complexity."
-          copy="Choose a stay or let us connect the details into one considered journey."
-        />
-        <div className="mt-7 grid gap-7 md:grid-cols-3">
-          {services.map((service) => <CompactMediaCard key={service.title} {...service} />)}
-        </div>
+      {/* ─── SERVICES GRID ─── */}
+      <CompactSection className="py-20 lg:py-28">
+        <Reveal>
+          <CompactHeading
+            eyebrow="What We Arrange"
+            title="Every detail orchestrated with quiet precision."
+            copy="Choose an individual sanctuary or let our private concierge weave your stay into an unforgettable Himalayan journey."
+          />
+        </Reveal>
+        <Reveal stagger={0.1} className="mt-12 grid gap-8 md:grid-cols-3">
+          {services.map((service) => (
+            <Reveal.Item key={service.title}>
+              <CompactMediaCard key={service.title} {...service} />
+            </Reveal.Item>
+          ))}
+        </Reveal>
       </CompactSection>
 
-      <CompactSection className="bg-beige">
-        <CompactImageText
-          image={imgVilla}
-          alt="A Salt Route private residence"
-          eyebrow="Private travel care"
-          title="From arrival to departure, handled with quiet attention."
-          copy="We coordinate road journeys, domestic flights, local hosts, dining, guides, and the small details that make movement through Nepal feel easy."
-          href="/contact"
-          action="Request a journey"
-        />
+      {/* ─── PRIVATE TRAVEL CARE ─── */}
+      <CompactSection className="bg-beige py-20 lg:py-28 border-y border-navy/6">
+        <Reveal>
+          <CompactImageText
+            image={imgVilla}
+            alt="A Salt Route private residence"
+            eyebrow="White-Glove Hospitality"
+            title="From arrival to departure, handled with discreet attention."
+            copy="We coordinate helicopter transfers, luxury 4x4 mountain journeys, dedicated culinary masters, private trekking guides, and luggage care so your exploration of Nepal is effortless."
+            href="/contact"
+            action="Request a Private Itinerary"
+          />
+        </Reveal>
       </CompactSection>
 
+      {/* ─── FEATURED PROPERTIES ─── */}
       {latestProperties.length ? (
-        <CompactSection>
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <CompactSection className="py-20 lg:py-28">
+          <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between mb-12">
             <CompactHeading
-              eyebrow="The stay"
-              title="Begin with a place that feels right."
-              copy="A few current properties from the Salt Route collection."
+              eyebrow="The Collection"
+              title="Begin with a sanctuary that resonates."
+              copy="A selection of handpicked private properties currently available across Nepal."
             />
-            <CompactButton href="/properties" tone="text">View all stays</CompactButton>
-          </div>
-          <div className="mt-7 grid gap-7 md:grid-cols-3">
+            <CompactButton href="/properties" tone="text" className="font-medium tracking-[0.16em]">
+              View All Sanctuaries →
+            </CompactButton>
+          </Reveal>
+          <Reveal stagger={0.1} className="grid gap-8 md:grid-cols-3">
             {latestProperties.map((property) => (
-              <article key={property.slug}>
-                <Link href={`/properties/${property.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand-dark">
-                  <Image
-                    src={property.imageUrl || imgRetreat}
-                    alt={property.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 hover:scale-[1.02]"
-                  />
-                </Link>
-                <p className="mt-4 font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{property.location}</p>
-                <h2 className="mt-1 font-display text-2xl leading-tight text-navy">{property.title}</h2>
-              </article>
+              <Reveal.Item key={property.slug}>
+                <article className="group flex flex-col h-full bg-white border border-navy/8 hover:border-gold/40 transition-all duration-300">
+                  <Link
+                    href={`/properties/${property.slug}`}
+                    className="relative block aspect-[4/3] overflow-hidden bg-sand-dark"
+                  >
+                    <Image
+                      src={property.imageUrl || imgRetreat}
+                      alt={property.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </Link>
+                  <div className="p-6">
+                    <p className="flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.16em] text-navy/55 font-medium">
+                      <MapPin className="w-3 h-3 text-gold-dark" />
+                      {property.location}
+                    </p>
+                    <h2 className="mt-2 font-display text-2xl leading-tight text-navy group-hover:text-gold-dark transition-colors">
+                      <Link href={`/properties/${property.slug}`}>{property.title}</Link>
+                    </h2>
+                  </div>
+                </article>
+              </Reveal.Item>
             ))}
-          </div>
+          </Reveal>
         </CompactSection>
       ) : null}
 
-      <CompactSection className="bg-sand">
-        <CompactImageText
-          image={imgOffice}
-          alt="Salt Route hospitality consulting"
-          eyebrow="For owners"
-          title="Property guidance grounded in guest experience."
-          copy="We support positioning, opening, daily hospitality, brand storytelling, and sustainable development for distinctive properties."
-          href="/for-owners"
-          action="Explore owner services"
-          imageSide="right"
-        />
+      {/* ─── FOR OWNERS CONSULTING ─── */}
+      <CompactSection className="bg-sand py-20 lg:py-28 border-y border-navy/6">
+        <Reveal>
+          <CompactImageText
+            image={imgOffice}
+            alt="Salt Route hospitality consulting"
+            eyebrow="Hospitality Advisory"
+            title="Property guidance grounded in real guest excellence."
+            copy="We support pre-opening strategy, architectural alignment, operational standard operating procedures, brand identity, and long-term asset positioning for luxury property owners across the Himalayan region."
+            href="/for-owners"
+            action="Explore Owner Advisory"
+            imageSide="right"
+          />
+        </Reveal>
       </CompactSection>
 
-      <CompactSection>
-        <CompactImageText
-          image={imgInterior}
-          alt="Details of a Salt Route stay"
-          eyebrow="Start a conversation"
-          title="Tell us what you would like the journey to feel like."
-          copy="Share your dates, interests, and pace. Our team will shape the stay and the route around you."
-          href="/contact"
-          action="Contact us"
-        />
+      {/* ─── CONTACT CALL TO ACTION ─── */}
+      <CompactSection className="py-20 lg:py-28">
+        <Reveal>
+          <CompactImageText
+            image={imgInterior}
+            alt="Details of a Salt Route stay"
+            eyebrow="Begin Your Conversation"
+            title="Tell us what you would like your journey to feel like."
+            copy="Share your preferred dates, party size, and passions. Our private concierge team will shape an itinerary and sanctuary stay exclusively around you."
+            href="/contact"
+            action="Contact Concierge"
+          />
+        </Reveal>
       </CompactSection>
     </div>
   )

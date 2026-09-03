@@ -1,18 +1,16 @@
 "use client"
 
-// ── Brochure: reservation (dark closing band) ───────────────────────────────
-// Editorial closing section: a full-height image with a price overlay on the
-// left and an underline-only enquiry form on the right. No cards, borders, or
-// shadows — the only ornament is the gold hairline. A WhatsApp shortcut sits
-// beneath the form for guests who would rather talk to the team directly.
+// ── Brochure: reservation ───────────────────────────────────────────────────
+// A calm image-and-form close to the property story. The request continues to
+// the existing booking workflow, where live availability is checked and saved.
 
-import { ArrowRight, MessageCircle } from "lucide-react"
-import { SafeImage, FadeUp, Eyebrow, GoldRule } from "@/components/public/property/primitives"
+import { ArrowRight, CalendarDays, MessageCircle, ShieldCheck, Users } from "lucide-react"
+import { SafeImage, FadeUp } from "@/components/public/property/primitives"
 import type { RoomTypeData } from "@/components/public/property/types"
 import { formatNpr } from "@/lib/currency"
 
 const WHATSAPP_HREF =
-  "https://wa.me/9779801300001?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20enquire%20about%20a%20stay"
+  "https://wa.me/9779700013336?text=Hi%20Salt%20Route%2C%20I%27d%20like%20to%20enquire%20about%20a%20stay"
 
 export function BrochureReservation({
   image,
@@ -32,6 +30,7 @@ export function BrochureReservation({
   setRoomTypeId,
   onSubmit,
   previewMode,
+  hidePrice,
 }: {
   image: string
   startingPrice: number
@@ -50,6 +49,7 @@ export function BrochureReservation({
   setRoomTypeId: (v: string) => void
   onSubmit: () => void
   previewMode: boolean
+  hidePrice?: boolean
 }) {
   if (!image) return null
 
@@ -57,18 +57,19 @@ export function BrochureReservation({
   const labelClass = "text-[10px] uppercase tracking-[0.24em] font-semibold text-gold"
   // The page's ONE high-weight primary CTA (everything else stays a whisper).
   const submitClass =
-    "col-span-full mt-6 inline-flex w-full sm:w-auto items-center justify-center gap-3 bg-gold px-10 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-navy transition-all duration-300 hover:bg-gold-light"
+    "col-span-full mt-2 inline-flex w-full items-center justify-center gap-3 bg-gold px-10 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-navy transition-all duration-300 hover:bg-gold-light disabled:opacity-50"
   const fieldClass =
-    "bg-transparent border-0 border-b border-white/20 focus:border-gold focus:outline-none text-cream placeholder:text-white/30 px-0 py-2 font-sans text-sm font-light"
+    "mt-2 min-h-12 w-full border-0 bg-white/8 px-4 py-3 font-sans text-sm font-light text-cream outline-none transition-colors placeholder:text-white/30 focus:bg-white/12 focus:ring-1 focus:ring-gold/70"
 
   return (
-    <section id="reservation" className="relative bg-navy-dark text-white overflow-hidden">
+    <section id="booking" className="relative scroll-mt-20 overflow-hidden bg-navy-dark text-white">
+      <span id="reservation" className="absolute -top-20" aria-hidden="true" />
       <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Left — full-height image with price overlay */}
         <div className="relative min-h-[320px] lg:min-h-[560px]">
           <SafeImage
             src={image}
-            alt="Reservation"
+            alt={`Plan a stay at this property`}
             fill
             sizes="(max-width:1024px) 100vw, 50vw"
             className="object-cover"
@@ -76,12 +77,18 @@ export function BrochureReservation({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-navy-dark/40 to-transparent" />
           <div className="absolute bottom-0 left-0 p-8 md:p-12">
             <p className="text-[10px] uppercase tracking-[0.24em] text-gold font-semibold">
-              Starting From
+              {hidePrice ? "Rates" : "Starting From"}
             </p>
-            <p className="mt-3 font-display text-4xl text-cream">
-              {formatNpr(startingPrice)}
-              <span className="ml-2 font-sans text-sm font-light text-cream/60">/ night</span>
-            </p>
+            {hidePrice ? (
+              <p className="mt-3 font-display text-3xl text-cream">
+                Request a Quote
+              </p>
+            ) : (
+              <p className="mt-3 font-display text-4xl text-cream">
+                {formatNpr(startingPrice)}
+                <span className="ml-2 font-sans text-sm font-light text-cream/60">/ night</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -95,12 +102,24 @@ export function BrochureReservation({
               Make a Reservation
             </h2>
             <p className="mt-4 font-sans text-xs sm:text-sm font-light leading-relaxed text-cream/70">
-              Tell us your dates and we&apos;ll personally confirm availability — no payment is taken now.
+              Share your preferred dates and room. A Salt Route concierge checks live availability, confirms the details, and helps with transfers or special arrangements.
             </p>
+            <div className="mt-7 grid grid-cols-3 gap-4 text-cream/65">
+              {[
+                [CalendarDays, "Choose dates"],
+                [Users, "Add your party"],
+                [ShieldCheck, "Confirm with us"],
+              ].map(([Icon, text]) => (
+                <div key={text as string} className="flex flex-col gap-2 text-[10px] leading-4">
+                  <Icon className="h-4 w-4 text-gold" />
+                  <span>{text as string}</span>
+                </div>
+              ))}
+            </div>
           </FadeUp>
 
           {roomTypes.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
+            <div className="mt-8 flex flex-wrap gap-2">
               {roomTypes.map((rt) => {
                 const active = rt.id === roomTypeId
                 return (
@@ -108,15 +127,15 @@ export function BrochureReservation({
                     key={rt.id}
                     type="button"
                     onClick={() => setRoomTypeId(rt.id)}
-                    className={`pb-1 text-left transition-colors ${
+                    className={`px-4 py-3 text-left transition-colors ${
                       active
-                        ? "text-gold border-b border-gold"
-                        : "text-white/55 border-b border-transparent hover:text-white"
+                        ? "bg-gold text-navy"
+                        : "bg-white/7 text-white/58 hover:bg-white/11 hover:text-white"
                     }`}
                   >
                     <span className="block font-display text-[13px] uppercase tracking-wide">{rt.name}</span>
-                    <span className="block font-sans text-[11px] font-light text-white/40">
-                      {formatNpr(rt.pricePerNight)}
+                    <span className={`block font-sans text-[11px] font-light ${active ? "text-navy/60" : "text-white/40"}`}>
+                      {hidePrice || rt.hidePrice ? "Request Quote" : formatNpr(rt.pricePerNight)}
                     </span>
                   </button>
                 )
@@ -154,7 +173,7 @@ export function BrochureReservation({
                 e.preventDefault()
                 onSubmit()
               }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7 mt-8"
+              className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2"
             >
               <label className="flex flex-col">
                 <span className={labelClass}>Phone</span>
@@ -210,22 +229,22 @@ export function BrochureReservation({
                   >
                     {roomTypes.map((rt) => (
                       <option key={rt.id} value={rt.id} className="bg-charcoal text-white">
-                        {rt.name} — {formatNpr(rt.pricePerNight)}
+                        {rt.name}{hidePrice || rt.hidePrice ? "" : ` — ${formatNpr(rt.pricePerNight)}`}
                       </option>
                     ))}
                   </select>
                 </label>
               )}
 
-              <button type="submit" className={submitClass}>
-                Request Availability
+              <button type="submit" disabled={previewMode} className={submitClass}>
+                {hidePrice ? "Request a Quote" : "Request Availability"}
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </form>
           )}
 
           {/* WhatsApp shortcut */}
-          <div className="mt-10 pt-6 border-t border-white/10">
+          <div className="mt-8">
             <a
               href={WHATSAPP_HREF}
               target="_blank"

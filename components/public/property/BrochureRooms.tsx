@@ -23,12 +23,14 @@ export function BrochureRooms({
   roomTypes,
   isOwnerView,
   previewMode,
+  hidePrice,
   onOpenRoomGallery,
   onReserve,
 }: {
   roomTypes: RoomTypeData[]
   isOwnerView: boolean
   previewMode: boolean
+  hidePrice?: boolean
   onOpenRoomGallery: (g: RoomGalleryState) => void
   onReserve: (roomId: string) => void
 }) {
@@ -129,17 +131,23 @@ export function BrochureRooms({
 
                     <div className="pt-6 mt-6">
                       <div className="flex items-center justify-between gap-4">
-                        <p className="font-display text-lg text-navy">
-                          {formatNpr(rt.pricePerNight)}
-                          <span className="text-[10px] font-sans text-navy/50"> / night</span>
-                        </p>
+                        {hidePrice || rt.hidePrice ? (
+                          <p className="font-display text-sm text-gold font-medium">
+                            Request a Quote
+                          </p>
+                        ) : (
+                          <p className="font-display text-lg text-navy">
+                            {formatNpr(rt.pricePerNight)}
+                            <span className="text-[10px] font-sans text-navy/50"> / night</span>
+                          </p>
+                        )}
                         {!isOwnerView && (
                           <button
                             type="button"
                             onClick={() => onReserve(rt.id)}
                             className="inline-flex items-center gap-1.5 bg-navy text-cream hover:bg-gold hover:text-navy px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] font-medium transition-colors"
                           >
-                            Reserve
+                            {hidePrice || rt.hidePrice ? "Request Quote" : "Reserve"}
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         )}

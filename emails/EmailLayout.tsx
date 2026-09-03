@@ -1,4 +1,4 @@
-import { Html, Head, Body, Container, Section, Text, Hr, Preview, Link as EmailLink } from '@react-email/components'
+import { Html, Head, Body, Container, Section, Text, Hr, Preview, Link as EmailLink, Img } from '@react-email/components'
 import * as React from 'react'
 
 export const CHARCOAL = '#1B3A5C'
@@ -98,11 +98,15 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
         {preview && <Preview>{preview}</Preview>}
         <Container style={{ maxWidth: '520px', margin: '0 auto', padding: '0 20px' }}>
 
-          {/* Minimal Editorial Header */}
-          <Section style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <Text style={{ fontFamily: serif, fontSize: '18px', fontWeight: '300', color: CHARCOAL, letterSpacing: '0.4em', textTransform: 'uppercase', margin: '0', lineHeight: '1' }}>
-              Salt Route
-            </Text>
+          {/* Minimal Editorial Header with Logo */}
+          <Section style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <Img
+              src="https://saltroutecorp.com/brand/Logo.png"
+              alt="Salt Route"
+              width="130"
+              height="54"
+              style={{ margin: '0 auto', display: 'block', maxWidth: '130px', height: 'auto' }}
+            />
           </Section>
 
           {/* Core Content */}

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Sparkles, Send, Check, RotateCcw, X, Bot, User, ChevronRight, Wand2, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import { Sparkles, Send, Check, RotateCcw, X, User, ChevronRight, Clock3, MessageSquareText } from "lucide-react"
 import { LottieAnimation } from "@/components/ui/lottie-animation"
 import srgAnimation from "@/lib/animations/srg.json"
 
@@ -58,13 +58,25 @@ const QUESTIONS: Question[] = [
   },
   {
     key: "capacity",
-    question: "Almost done! What's the total guest capacity of the entire property? Any special setup like event spaces or group bookings?",
+    question: "What's the total guest capacity of the entire property? Any special setup like event spaces or group bookings?",
     placeholder: "e.g. Max 16 guests, perfect for groups and retreats...",
     example: "Up to 16 guests across 6 rooms. We also have a common dining hall that seats 20 for group meals and workshops.",
   },
+  {
+    key: "practical",
+    question: "Now the practical basics: roughly how much per night in NPR, how many rooms or units in total, how many bedrooms and bathrooms, and your usual check-in and check-out times?",
+    placeholder: "e.g. NPR 12,000/night, 6 rooms, 6 bedrooms, 6 bathrooms, check-in 2 PM, check-out 11 AM...",
+    example: "Around NPR 12,000 per night. We have 6 rooms with 6 bedrooms and 6 bathrooms. Check-in is 2:00 PM and check-out is 11:00 AM.",
+  },
+  {
+    key: "rules",
+    question: "Last one! Any house rules guests should know? For example quiet hours, smoking, pets, or events.",
+    placeholder: "e.g. No smoking indoors, quiet after 10 PM, pets by request...",
+    example: "No smoking indoors. Quiet hours after 10:00 PM. Pets are welcome by prior request. No large events without approval.",
+  },
 ]
 
-type GeneratedFields = {
+export type GeneratedFields = {
   title?: string
   slug?: string
   propertyType?: string
@@ -73,6 +85,14 @@ type GeneratedFields = {
   story?: string
   neighborhood?: string
   hostNote?: string
+  location?: string
+  address?: string
+  pricePerNight?: number
+  totalUnits?: number
+  bedrooms?: number
+  bathrooms?: number
+  checkInTime?: string
+  checkOutTime?: string
   highlights?: string[]
   amenities?: string[]
   services?: string[]
@@ -90,6 +110,11 @@ type GeneratedFields = {
     bedrooms: number
     bathrooms: number
   }[]
+  sections?: {
+    title: string
+    subtitle?: string
+    body: string
+  }[]
 }
 
 type Message = {
@@ -99,10 +124,22 @@ type Message = {
 
 interface Props {
   onApply: (fields: GeneratedFields) => void
+  knownLocations?: string[]
+  availableFeatures?: { id: string; name: string; iconKey: string }[]
+  guided?: boolean
 }
 
-export function PropertyAiAssistant({ onApply }: Props) {
+export function PropertyAiAssistant({
+  onApply,
+  knownLocations = [],
+  availableFeatures = [],
+  guided = true,
+}: Props) {
   const [open, setOpen] = useState(false)
+  const [mode, setMode] = useState<"quick" | "guided">("quick")
+  const [brief, setBrief] = useState("")
+  const [quickError, setQuickError] = useState<string | null>(null)
+  const [applied, setApplied] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: "Hi there! I'm Salt Route AI, your property creation assistant. Think of me as your personal copywriter — I'll interview you about your property, then craft a stunning listing that makes guests want to book immediately. Just answer naturally below and I'll take care of the rest. Ready when you are!" },
   ])
@@ -111,7 +148,6 @@ export function PropertyAiAssistant({ onApply }: Props) {
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const [generated, setGenerated] = useState<GeneratedFields | null>(null)
-  const [groqStatus, setGroqStatus] = useState<"checking" | "connected" | "missing">("checking")
   const [typing, setTyping] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -119,16 +155,6 @@ export function PropertyAiAssistant({ onApply }: Props) {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
   }, [messages, generated, typing])
-
-  useEffect(() => {
-    fetch("/api/admin/ai/insights")
-      .then((r) => {
-        if (r.status === 503) setGroqStatus("missing")
-        else if (r.ok) setGroqStatus("connected")
-        else setGroqStatus("missing")
-      })
-      .catch(() => setGroqStatus("missing"))
-  }, [])
 
   // Auto-focus input after any bot message or when opening
   useEffect(() => {
@@ -163,7 +189,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
       if (!res.ok) throw new Error(data.error || "AI reply failed")
       setTyping(false)
       setMessages((prev) => [...prev, { role: "bot", text: data.reply }])
-    } catch (e) {
+    } catch {
       setTyping(false)
       setMessages((prev) => [...prev, { role: "bot", text: "Thanks for that! Let me keep going." }])
     }
@@ -184,7 +210,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
 
     if (nextStep >= QUESTIONS.length) {
       await askAiReply(text)
-      setMessages((prev) => [...prev, { role: "bot", text: "Perfect — I now have everything I need. Let me craft your property listing. I'll write the title, description, story, highlights, amenities, services, house rules, and more. This will take just a few seconds…" }])
+      setMessages((prev) => [...prev,         { role: "bot", text: "Perfect — I now have everything I need. Let me craft your property listing. I'll write the title, description, story, highlights, amenities, services, house rules, and fill in your location, pricing, rooms, and check-in times. This will take just a few seconds…" }])
       generateAll(nextAnswers)
     } else {
       await askAiReply(text)
@@ -214,24 +240,42 @@ export function PropertyAiAssistant({ onApply }: Props) {
     }, 200)
   }
 
-  async function generateAll(finalAnswers: Record<string, string>) {
+  async function generateAll(finalAnswers: Record<string, string>, applyImmediately = false) {
     setLoading(true)
+    setQuickError(null)
     try {
+      const controller = new AbortController()
+      const timeout = window.setTimeout(() => controller.abort(), 120_000)
       const res = await fetch("/api/admin/ai/property-compose", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: finalAnswers }),
+        body: JSON.stringify({
+          answers: finalAnswers,
+          knownLocations,
+          featureNames: availableFeatures.map((f) => f.name),
+        }),
+        signal: controller.signal,
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed")
+      window.clearTimeout(timeout)
+      const data = await res.json().catch(() => null) as { error?: string; fields?: GeneratedFields } | null
+      if (!res.ok) throw new Error(data?.error || `AI request failed (${res.status})`)
+      if (!data?.fields) throw new Error("AI returned an incomplete draft. Please try again.")
       setGenerated(data.fields)
+      if (applyImmediately) {
+        onApply(data.fields)
+        setApplied(true)
+      }
       setMessages((prev) => [
         ...prev,
-        { role: "bot", text: "All done! I've written your complete property listing. Here's what I created — a title, tagline, description, the story of your place, neighborhood notes, highlights, amenities, services, what guests can expect, and even house rules." },
+        { role: "bot", text: "All done! I've written your complete property listing — title, tagline, description, the story of your place, neighborhood notes, highlights, amenities, services, house rules, plus your location, base rate, room types, and check-in and check-out times." },
         { role: "bot", text: "Scroll down to review the preview. If you like it, click 'Apply to Form' and I'll fill in all the fields below automatically. You can still edit anything afterwards!" },
       ])
     } catch (e) {
-      setMessages((prev) => [...prev, { role: "bot", text: `Sorry, I couldn't generate the content: ${e instanceof Error ? e.message : "Unknown error"}` }])
+      const message = e instanceof DOMException && e.name === "AbortError"
+        ? "The draft took too long. Your notes are still here, so you can try again."
+        : e instanceof Error ? e.message : "AI could not create the draft"
+      setQuickError(message)
+      setMessages((prev) => [...prev, { role: "bot", text: `Sorry, I couldn't generate the content: ${message}` }])
     } finally {
       setLoading(false)
     }
@@ -240,6 +284,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
   function handleApply() {
     if (generated) {
       onApply(generated)
+      setApplied(true)
       setMessages((prev) => [...prev, { role: "bot", text: "Done! I've filled in all the form fields below. Feel free to tweak anything — change titles, add more amenities, or adjust the story. When you're ready, just hit 'Create Property' at the bottom of the page." }])
     }
   }
@@ -249,6 +294,9 @@ export function PropertyAiAssistant({ onApply }: Props) {
     setAnswers({})
     setStep(0)
     setGenerated(null)
+    setApplied(false)
+    setQuickError(null)
+    setBrief("")
     setInput("")
     setTimeout(() => inputRef.current?.focus(), 100)
   }
@@ -259,9 +307,6 @@ export function PropertyAiAssistant({ onApply }: Props) {
         type="button"
         onClick={() => {
           setOpen(true)
-          if (messages.length === 1 && step === 0) {
-            setTimeout(() => askNextQuestion(), 300)
-          }
         }}
         className="w-full group relative flex items-center justify-between bg-gradient-to-r from-[#1B3A5C] to-slate-800 p-1 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-[#1B3A5C]/20"
       >
@@ -271,7 +316,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
           </div>
           <div className="text-left">
             <h3 className="text-[14px] font-semibold text-white tracking-wide">Salt Route AI</h3>
-            <p className="text-[12px] text-white/70 mt-0.5 font-light">Generate your entire property listing in seconds</p>
+            <p className="text-[12px] text-white/70 mt-0.5 font-light">Paste one simple brief. AI fills the complete listing.</p>
           </div>
         </div>
         <div className="pr-5">
@@ -308,13 +353,82 @@ export function PropertyAiAssistant({ onApply }: Props) {
         </div>
       </div>
 
+      {guided ? (
+        <div className="grid grid-cols-2 border-b border-slate-100 bg-white p-1.5">
+          <button
+            type="button"
+            onClick={() => setMode("quick")}
+            className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors ${mode === "quick" ? "bg-[#1B3A5C] text-white" : "text-slate-500 hover:bg-slate-50"}`}
+          >
+            <Sparkles className="h-3.5 w-3.5" /> Quick draft
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("guided")
+              if (messages.length === 1 && step === 0) setTimeout(() => askNextQuestion(), 150)
+            }}
+            className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors ${mode === "guided" ? "bg-[#1B3A5C] text-white" : "text-slate-500 hover:bg-slate-50"}`}
+          >
+            <MessageSquareText className="h-3.5 w-3.5" /> Guided interview
+          </button>
+        </div>
+      ) : null}
+
       {/* Chat Area */}
-      <div ref={scrollRef} className="h-[450px] overflow-y-auto px-6 py-6 space-y-6 bg-[#F8FAFC]">
+      {mode === "quick" ? (
+        <div className="bg-[#F8FAFC] p-5 sm:p-6">
+          <div className="grid gap-6 lg:grid-cols-[1fr_180px]">
+            <div>
+              <label htmlFor="property-ai-brief" className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Tell us what you know
+              </label>
+              <textarea
+                id="property-ai-brief"
+                value={brief}
+                onChange={(event) => setBrief(event.target.value)}
+                rows={7}
+                maxLength={120000}
+                placeholder="Example: A 6-room Newari heritage house in Patan with a courtyard, rooftop breakfast, NPR 8,500 rooms, airport pickup, check-in at 2 PM, and quiet hours after 10 PM. Guests love the carved timber details and walkable old city."
+                className="mt-2 w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm leading-6 text-slate-800 shadow-inner outline-none transition focus:border-[#C9A96E] focus:ring-2 focus:ring-[#C9A96E]/15"
+                disabled={loading}
+              />
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-[11px] text-slate-500">
+                  <p className="flex items-center gap-1.5">
+                    <Clock3 className="h-3.5 w-3.5 text-[#C9A96E]" /> Paste short notes or a full document. AI organises long paragraphs and removes repetition.
+                  </p>
+                  <p className="mt-1 tabular-nums text-slate-400">{brief.length.toLocaleString()} / 120,000 characters</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => generateAll({ brief: brief.trim() }, true)}
+                  disabled={brief.trim().length < 20 || loading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#1B3A5C] px-5 text-xs font-semibold text-white transition-colors hover:bg-[#2A4F7A] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                >
+                  <Sparkles className={`h-4 w-4 text-[#C9A96E] ${loading ? "animate-pulse" : ""}`} />
+                  {loading ? "Building your draft…" : "Create & fill draft"}
+                </button>
+              </div>
+              {quickError ? <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">{quickError}</p> : null}
+            </div>
+            <div className="rounded-2xl bg-[#1B3A5C] p-4 text-white">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C9A96E]">AI prepares</p>
+              <ul className="mt-3 space-y-2.5 text-xs font-light text-white/75">
+                {["Guest-ready copy", "Rates & capacity", "Room categories", "Amenities & rules", "Nepal-aware tone"].map((item) => (
+                  <li key={item} className="flex gap-2"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#C9A96E]" />{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ) : (
+      <div ref={scrollRef} data-lenis-prevent className="h-[450px] overflow-y-auto px-6 py-6 space-y-6 bg-[#F8FAFC]">
         {messages.map((m, i) => (
           <div key={i} className={`flex gap-3 max-w-[88%] ${m.role === "user" ? "ml-auto flex-row-reverse" : ""}`}>
             {/* Avatar */}
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1 ${m.role === "bot" ? "bg-[#1B3A5C]" : "bg-[#C9A96E] text-white"}`}>
-              {m.role === "bot" ? <img src="/brand/logo.png" alt="AI" className="w-5 h-5 object-contain" /> : <User className="w-4 h-4" />}
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1 p-1 ${m.role === "bot" ? "bg-[#1B3A5C]" : "bg-[#C9A96E] text-white"}`}>
+              {m.role === "bot" ? <Image src="/brand/logo.png" alt="AI" width={24} height={24} className="h-auto w-6 object-contain" /> : <User className="w-4 h-4" />}
             </div>
             {/* Message Bubble */}
             <div className={`flex flex-col gap-1.5 ${m.role === "user" ? "items-end" : ""}`}>
@@ -331,8 +445,8 @@ export function PropertyAiAssistant({ onApply }: Props) {
         {/* Typing Indicator */}
         {(typing || loading) && (
           <div className="flex gap-3 max-w-[88%]">
-            <div className="w-8 h-8 rounded-full bg-[#1B3A5C] shadow-sm flex items-center justify-center shrink-0 mt-1">
-              <img src="/brand/logo.png" alt="AI" className="w-5 h-5 object-contain" />
+            <div className="w-8 h-8 rounded-full bg-[#1B3A5C] shadow-sm flex items-center justify-center shrink-0 mt-1 p-1">
+              <Image src="/brand/logo.png" alt="AI" width={24} height={24} className="h-auto w-6 object-contain" />
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider pl-1">Salt Route AI</span>
@@ -344,6 +458,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
           </div>
         )}
       </div>
+      )}
 
       {/* Generated Preview */}
       {generated && (
@@ -354,7 +469,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
               <p className="text-xs text-slate-500 mt-0.5">Review the generated content below. You can edit it directly in the form later.</p>
             </div>
             <button type="button" onClick={handleApply} className="shrink-0 inline-flex items-center justify-center gap-2 bg-[#1B3A5C] text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#1B3A5C]/90 transition-colors shadow-sm">
-              <Check className="w-4 h-4" /> Apply to Form
+              <Check className="w-4 h-4" /> {applied ? "Applied to form" : "Apply to form"}
             </button>
           </div>
           
@@ -362,10 +477,28 @@ export function PropertyAiAssistant({ onApply }: Props) {
             {generated.title && <PreviewRow label="Title" value={generated.title} />}
             {generated.tagline && <PreviewRow label="Tagline" value={generated.tagline} />}
             {generated.propertyType && <PreviewRow label="Property Type" value={generated.propertyType} />}
+            {generated.location && <PreviewRow label="Location" value={generated.location} />}
+            {generated.address && <PreviewRow label="Address" value={generated.address} />}
+            {typeof generated.pricePerNight === "number" && generated.pricePerNight > 0 && (
+              <PreviewRow label="Base Rate / Night" value={`NPR ${generated.pricePerNight.toLocaleString("en-US")}`} />
+            )}
+            {typeof generated.totalUnits === "number" && (
+              <PreviewRow label="Total Units" value={String(generated.totalUnits)} />
+            )}
+            {typeof generated.bedrooms === "number" && <PreviewRow label="Bedrooms" value={String(generated.bedrooms)} />}
+            {typeof generated.bathrooms === "number" && <PreviewRow label="Bathrooms" value={String(generated.bathrooms)} />}
+            {typeof generated.maxGuests === "number" && <PreviewRow label="Max Guests" value={String(generated.maxGuests)} />}
+            {(generated.checkInTime || generated.checkOutTime) && (
+              <PreviewRow
+                label="Check-in / Check-out"
+                value={[generated.checkInTime, generated.checkOutTime].filter(Boolean).join(" / ")}
+              />
+            )}
             {generated.highlights && generated.highlights.length > 0 && <PreviewRow label="Highlights" value={generated.highlights.join(" · ")} />}
             {generated.amenities && generated.amenities.length > 0 && <PreviewRow label="Amenities" value={generated.amenities.join(" · ")} />}
             {generated.services && generated.services.length > 0 && <PreviewRow label="Services" value={generated.services.join(" · ")} />}
             {generated.whatToExpect && generated.whatToExpect.length > 0 && <PreviewRow label="What to Expect" value={generated.whatToExpect.join(" · ")} />}
+            {generated.rules && generated.rules.length > 0 && <PreviewRow label="House Rules" value={generated.rules.join(" · ")} />}
           </div>
           {generated.description && (
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
@@ -377,7 +510,7 @@ export function PropertyAiAssistant({ onApply }: Props) {
       )}
 
       {/* Progress & Input Area */}
-      {!isDone && (
+      {mode === "guided" && !isDone && (
         <div className="bg-white border-t border-slate-100 p-5">
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="flex items-center gap-3">

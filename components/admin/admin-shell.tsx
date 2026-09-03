@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Bell, Settings, Menu, X, PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react"
 import { SidebarNav } from "./sidebar-nav"
 import { signOutToLogin } from "@/lib/auth-actions"
@@ -64,8 +65,8 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
         style={{ transform: isDrawerOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)" }}
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#1B3A5C08] shrink-0">
-          <Link href="/" onClick={closeDrawer}>
-            <img src="/brand/logo.png" alt="Salt Route" className="h-9 object-contain" />
+          <Link href="/" onClick={closeDrawer} className="flex items-center">
+            <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
           </Link>
           <button
             onClick={closeDrawer}
@@ -112,9 +113,9 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
         <div className="h-16 flex items-center justify-center px-3 border-b border-[#1B3A5C08] shrink-0 overflow-hidden">
           <Link href="/" className="flex items-center justify-center">
             {mounted && isCollapsed ? (
-              <span className="font-display text-sm font-bold text-[#1B3A5C] select-none">SRC</span>
+              <Image src="/brand/Logo.png" alt="SRC" width={960} height={399} priority className="h-6 w-auto object-contain" />
             ) : (
-              <img src="/brand/logo.png" alt="Salt Route" className="h-9 object-contain" />
+              <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
             )}
           </Link>
         </div>

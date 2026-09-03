@@ -40,11 +40,11 @@ export default async function AdminPropertiesPage({
     take: pagination.take,
     select: {
       id: true, title: true, location: true,
-      status: true, pricePerNight: true, createdAt: true,
+      status: true, pricePerNight: true, hidePrice: true, createdAt: true,
     },
   })
 
-  const rows = properties.map((p) => ({ ...p, pricePerNight: Number(p.pricePerNight) }))
+  const rows = properties.map((p) => ({ ...p, pricePerNight: Number(p.pricePerNight), hidePrice: p.hidePrice }))
 
   const tabs = [
     { label: "All",      value: "ALL"      },

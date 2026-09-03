@@ -1,4 +1,5 @@
 import { CompactButton, CompactHeading, CompactSection } from "@/components/public/Compact"
+import { Reveal } from "@/components/public/motion"
 
 const FAQ_GROUPS = [
   {
@@ -38,30 +39,32 @@ export default function FaqPage() {
     <div className="min-h-screen bg-background text-navy">
       <CompactSection>
         <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr] lg:gap-12">
-          <div>
+          <Reveal as="div">
             <CompactHeading
               eyebrow="Stays and enquiries"
               title="Common questions."
               copy="Useful details before you reserve. If your question is not covered, speak directly with our team."
             />
             <CompactButton href="/contact" className="mt-6">Contact us</CompactButton>
-          </div>
+          </Reveal>
 
           <div className="space-y-8">
-            {FAQ_GROUPS.map((group) => (
-              <section key={group.label}>
+            {FAQ_GROUPS.map((group, groupIndex) => (
+              <Reveal as="section" key={group.label} delay={0.1 + groupIndex * 0.08}>
                 <h2 className="font-display text-2xl text-navy">{group.label}</h2>
                 <div className="mt-4 space-y-3">
-                  {group.items.map((item) => (
-                    <details key={item.q} className="group bg-sand px-5 py-4 sm:px-6">
-                      <summary className="cursor-pointer list-none pr-7 font-display text-xl leading-7 text-navy marker:content-none">
-                        {item.q}
-                      </summary>
-                      <p className="mt-3 max-w-2xl font-sans text-[15px] font-light leading-6 text-navy/70">{item.a}</p>
-                    </details>
+                  {group.items.map((item, itemIndex) => (
+                    <Reveal key={item.q} as="div" delay={itemIndex * 0.06}>
+                      <details className="group bg-sand px-5 py-4 sm:px-6">
+                        <summary className="cursor-pointer list-none pr-7 font-display text-xl leading-7 text-navy marker:content-none">
+                          {item.q}
+                        </summary>
+                        <p className="mt-3 max-w-2xl font-sans text-[15px] font-light leading-6 text-navy/70">{item.a}</p>
+                      </details>
+                    </Reveal>
                   ))}
                 </div>
-              </section>
+              </Reveal>
             ))}
           </div>
         </div>

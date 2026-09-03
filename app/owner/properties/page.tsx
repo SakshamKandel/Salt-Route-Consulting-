@@ -6,7 +6,7 @@ import Image from "next/image"
 import { getPrimaryImageUrl } from "@/lib/property-media"
 import { getPagination, parsePage } from "@/lib/pagination"
 import { PaginationControls } from "@/components/shared/pagination-controls"
-import { Bath, BedDouble, ChevronRight, Home, MapPin, Star, Users } from "lucide-react"
+import { Bath, BedDouble, ChevronRight, Home, MapPin, Plus, Star, Users } from "lucide-react"
 
 const PROPERTY_STATUS_CHIP: Record<string, string> = {
   ACTIVE:    "bg-emerald-50 text-emerald-600 border-emerald-200/60",
@@ -76,16 +76,35 @@ export default async function OwnerPropertiesPage({
             Open any property to review its gallery, amenities, reviews, stay value, and update requests.
           </p>
         </div>
-        <p className="text-[11px] text-[#1B3A5C]/40 tabular-nums shrink-0">
-          {total} propert{total === 1 ? "y" : "ies"}
-        </p>
+        <div className="flex shrink-0 items-center gap-4">
+          <p className="text-[11px] text-[#1B3A5C]/40 tabular-nums">
+            {total} propert{total === 1 ? "y" : "ies"}
+          </p>
+          <Link
+            href="/owner/properties/new"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#1B3A5C] px-4 py-2.5 text-[12px] font-medium text-[#FFFAF3] transition-colors hover:bg-[#2A4F7A]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add property
+          </Link>
+        </div>
       </div>
 
       {properties.length === 0 ? (
         <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-2xl py-16 text-center">
           <Home className="h-6 w-6 text-[#1B3A5C]/15 mx-auto mb-3" />
-          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No active properties yet</p>
-          <p className="text-[11px] text-[#1B3A5C]/25 mt-1">Contact Salt Route to prepare your first property for guests</p>
+          <p className="text-[13px] text-[#1B3A5C]/35 font-medium">No properties yet</p>
+          <p className="text-[11px] text-[#1B3A5C]/25 mt-1 max-w-sm mx-auto">
+            Add your first residence and our team will review, photograph, and publish it to the
+            Salt Route collection.
+          </p>
+          <Link
+            href="/owner/properties/new"
+            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#1B3A5C] px-5 py-2.5 text-[12px] font-medium text-[#FFFAF3] transition-colors hover:bg-[#2A4F7A]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add your first property
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState, useCallback } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DateRange } from "react-day-picker"
 import { BookingCalendar } from "./booking-calendar"
@@ -20,6 +20,7 @@ export type BookingRoomType = {
   classType: string
   description?: string | null
   pricePerNight: number
+  hidePrice?: boolean
   maxGuests: number
   totalUnits: number
   bedType?: string | null
@@ -31,6 +32,7 @@ export type BookingRoomType = {
 interface Props {
   propertyId: string;
   pricePerNight: number;
+  hidePrice?: boolean;
   maxGuests: number;
   roomTypes?: BookingRoomType[];
   initialRoomTypeId?: string | null;
@@ -73,6 +75,7 @@ function formatClassLabel(classType: string) {
 export function BookingRequestForm({
   propertyId,
   pricePerNight,
+  hidePrice = false,
   maxGuests,
   roomTypes = [],
   initialRoomTypeId = null,
@@ -103,6 +106,7 @@ export function BookingRequestForm({
   const draftKey = useMemo(() => `salt-route:booking-draft:${propertyId}`, [propertyId])
 
   const selectedRoomType = roomTypes.find((rt) => rt.id === roomTypeId)
+  const isQuoteOnly = hidePrice || Boolean(selectedRoomType?.hidePrice)
   const effectivePrice = selectedRoomType ? selectedRoomType.pricePerNight : pricePerNight
   const perUnitMaxGuests = selectedRoomType ? selectedRoomType.maxGuests : maxGuests
 
@@ -124,18 +128,15 @@ export function BookingRequestForm({
     return Math.max(1, maxUnitsForRange(availability, roomTypeId, date?.from, date?.to))
   }, [availability, roomTypeId, date?.from, date?.to, selectedRoomType])
 
-  // Clamp the chosen units whenever availability/room/dates change.
-  useEffect(() => {
-    setUnits((u) => Math.min(Math.max(1, u), maxUnits))
-  }, [maxUnits])
-
-  const effectiveMaxGuests = perUnitMaxGuests * units
+  const selectedUnits = Math.min(Math.max(1, units), maxUnits)
+  const effectiveMaxGuests = perUnitMaxGuests * selectedUnits
+  const selectedGuests = Math.min(Math.max(1, guests), effectiveMaxGuests)
 
   const numberOfNights = date?.from && date?.to
     ? Math.ceil((date.to.getTime() - date.from.getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const totalPrice = numberOfNights > 0 ? numberOfNights * effectivePrice * units : 0;
+  const totalPrice = numberOfNights > 0 ? numberOfNights * effectivePrice * selectedUnits : 0;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -180,28 +181,23 @@ export function BookingRequestForm({
       checkIn: date?.from?.toISOString(),
       checkOut: date?.to?.toISOString(),
       roomTypeId,
-      guests,
+      guests: selectedGuests,
       phone,
       notes,
     }
 
-    const hasDraft = Boolean(draft.checkIn || draft.checkOut || phone || notes || guests !== 1)
+    const hasDraft = Boolean(draft.checkIn || draft.checkOut || phone || notes || selectedGuests !== 1)
     if (hasDraft) {
       window.localStorage.setItem(draftKey, JSON.stringify(draft))
     } else {
       window.localStorage.removeItem(draftKey)
     }
-  }, [date?.from, date?.to, draftKey, draftReady, guests, notes, phone, roomTypeId])
+  }, [date?.from, date?.to, draftKey, draftReady, notes, phone, roomTypeId, selectedGuests])
 
   // Notify parent of room type selection changes
   useEffect(() => {
     onRoomTypeChange?.(roomTypeId)
   }, [roomTypeId, onRoomTypeChange])
-
-  // Keep guest count within the selected room class's capacity.
-  useEffect(() => {
-    setGuests((g) => Math.min(g, effectiveMaxGuests))
-  }, [effectiveMaxGuests])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -234,11 +230,11 @@ export function BookingRequestForm({
         body: JSON.stringify({
           propertyId,
           roomTypeId,
-          units,
+          units: selectedUnits,
           // Send plain calendar dates — timezone-proof.
           checkIn: toDateOnlyString(date.from),
           checkOut: toDateOnlyString(date.to),
-          guests,
+          guests: selectedGuests,
           phone: phone.trim(),
           notes,
           website,
@@ -266,7 +262,7 @@ export function BookingRequestForm({
   }
 
   // Custom luxury input class
-  const inputClass = "rounded-none border-0 border-b border-charcoal/20 bg-transparent px-0 py-3 text-sm focus-visible:border-charcoal focus-visible:ring-0 placeholder:text-charcoal/30 font-sans"
+  const inputClass = "rounded-none border-0 border-b border-navy/20 bg-transparent px-0 py-3 text-sm text-navy focus-visible:border-gold focus-visible:ring-0 placeholder:text-navy/30 font-sans"
 
   const hasRoomTypes = roomTypes.length > 0
   const stepOffset = hasRoomTypes ? 1 : 0
@@ -276,11 +272,18 @@ export function BookingRequestForm({
   const unitNoun = selectedRoomType ? selectedRoomType.name : "Unit"
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-sand border-t border-charcoal/15 p-5 sm:p-8 md:p-12">
-      <div className="mb-8 border-b border-charcoal/10 pb-6 md:mb-10 md:pb-8">
+    <div className="w-full bg-sand border border-navy/10 p-5 sm:p-6">
+      <div className="mb-7 border-b border-navy/10 pb-5">
         <h2 className="type-h3 mb-3">Reserve Your Stay</h2>
-        <p className="font-sans font-medium uppercase text-charcoal/60 text-[11px] tracking-[0.12em] sm:tracking-[0.2em]">
-          {formatNpr(effectivePrice)} <span className="lowercase text-[10px] tracking-normal">/ night</span>
+        <p className="font-sans font-medium uppercase text-navy/60 text-[11px] tracking-[0.12em] sm:tracking-[0.2em]">
+          {isQuoteOnly ? (
+            <span className="text-gold-dark font-semibold tracking-wider">Request a Quote</span>
+          ) : (
+            <>
+              {formatNpr(effectivePrice)}{" "}
+              <span className="lowercase text-[10px] tracking-normal">/ night</span>
+            </>
+          )}
         </p>
         {selectedRoomType && (
           <p className="mt-2 text-[10px] uppercase tracking-[0.16em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
@@ -305,19 +308,20 @@ export function BookingRequestForm({
         {/* Room class selection */}
         {hasRoomTypes && (
           <div className="flex flex-col gap-4">
-            <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
               01. Select Your Stay
             </Label>
-            <div className="border-y border-charcoal/10 divide-y divide-charcoal/10">
+            <div className="border-y border-navy/10 divide-y divide-navy/10">
               {roomTypes.map((rt) => {
                 const selected = rt.id === roomTypeId
+                const roomIsQuote = hidePrice || Boolean(rt.hidePrice)
                 return (
                   <button
                     key={rt.id}
                     type="button"
                     onClick={() => setRoomTypeId(rt.id)}
                     className={`w-full text-left border-l-2 transition-colors duration-300 ${
-                      selected ? "border-l-charcoal bg-sand-dark/60" : "border-l-transparent hover:bg-charcoal/[0.03]"
+                      selected ? "border-l-navy bg-sand-dark/60" : "border-l-transparent hover:bg-navy/[0.03]"
                     }`}
                   >
                     <div className="p-4">
@@ -326,20 +330,24 @@ export function BookingRequestForm({
                           <p className="text-[10px] uppercase tracking-[0.14em] text-gold-dark font-sans font-medium sm:tracking-[0.24em]">
                             {formatClassLabel(rt.classType)}
                           </p>
-                          <p className="font-display text-base text-charcoal uppercase tracking-wide">{rt.name}</p>
-                          <div className="flex items-center gap-4 pt-1 text-[10px] text-charcoal/50 font-sans flex-wrap">
+                          <p className="font-display text-base text-navy uppercase tracking-wide">{rt.name}</p>
+                          <div className="flex items-center gap-4 pt-1 text-[10px] text-navy/50 font-sans flex-wrap">
                             <span className="flex items-center gap-1.5"><Users className="w-3 h-3" strokeWidth={1.5} /> {rt.maxGuests} guests</span>
                             <span className="flex items-center gap-1.5"><BedDouble className="w-3 h-3" strokeWidth={1.5} /> {rt.totalUnits} {rt.totalUnits === 1 ? "unit" : "units"}</span>
                             {rt.sizeSqm ? <span>{rt.sizeSqm} m²</span> : null}
                           </div>
                           {rt.bedType && (
-                            <p className="text-[10px] text-charcoal/40 font-sans pt-0.5">{rt.bedType}</p>
+                            <p className="text-[10px] text-navy/40 font-sans pt-0.5">{rt.bedType}</p>
                           )}
                         </div>
                         <div className="text-right shrink-0 space-y-2 max-w-[42%]">
-                          <p className="font-display text-base text-charcoal whitespace-nowrap">{formatNpr(rt.pricePerNight)}</p>
+                          {roomIsQuote ? (
+                            <p className="font-display text-xs text-gold-dark whitespace-nowrap font-medium uppercase tracking-wider">Request Quote</p>
+                          ) : (
+                            <p className="font-display text-base text-navy whitespace-nowrap">{formatNpr(rt.pricePerNight)}</p>
+                          )}
                           <div className={`ml-auto h-5 w-5 border flex items-center justify-center transition-colors ${
-                            selected ? "bg-charcoal border-charcoal" : "border-charcoal/20"
+                            selected ? "bg-navy border-navy" : "border-navy/20"
                           }`}>
                             {selected && <Check className="w-3 h-3 text-white" strokeWidth={2.5} />}
                           </div>
@@ -355,7 +363,7 @@ export function BookingRequestForm({
 
         {/* Dates */}
         <div className="flex flex-col gap-4">
-          <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+          <Label className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
             {String(stepOffset + 1).padStart(2, "0")}. Dates
           </Label>
           <div className="pt-1">
@@ -364,7 +372,7 @@ export function BookingRequestForm({
         </div>
 
         {!isAuthenticated && (
-          <div className="border-y border-charcoal/10 py-4 text-xs text-charcoal/70 font-sans text-center tracking-wide">
+          <div className="border-y border-navy/10 py-4 text-xs text-navy/70 font-sans text-center tracking-wide">
             Select dates and details. You will be asked to sign in before confirming.
           </div>
         )}
@@ -372,19 +380,19 @@ export function BookingRequestForm({
         {/* Units / how many of this room type */}
         {showUnits && (
           <div className="flex flex-col gap-1">
-            <Label htmlFor="units" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
-              {String(stepOffset + 2).padStart(2, "0")}. How many {unitNoun}{units === 1 ? "" : "s"}?
+            <Label htmlFor="units" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
+              {String(stepOffset + 2).padStart(2, "0")}. How many {unitNoun}{selectedUnits === 1 ? "" : "s"}?
             </Label>
             <NumberInput
               id="units"
               min={1}
               max={maxUnits}
-              value={units}
+              value={selectedUnits}
               onChange={setUnits}
               className={inputClass}
-              buttonClassName="text-charcoal/40 hover:text-charcoal hover:bg-charcoal/5"
+              buttonClassName="text-navy/40 hover:text-navy hover:bg-navy/5"
             />
-            <p className="text-[10px] text-charcoal/40 font-sans pt-1 flex items-center gap-1.5">
+            <p className="text-[10px] text-navy/40 font-sans pt-1 flex items-center gap-1.5">
               <DoorOpen className="w-3 h-3" />
               {date?.from && date?.to
                 ? `${maxUnits} ${maxUnits === 1 ? "unit" : "units"} available for these dates`
@@ -395,23 +403,23 @@ export function BookingRequestForm({
 
         {/* Guests */}
         <div className="flex flex-col gap-1">
-            <Label htmlFor="guests" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="guests" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
             {String(stepOffset + 2 + u).padStart(2, "0")}. Guests (Max {effectiveMaxGuests})
           </Label>
           <NumberInput
             id="guests"
             min={1}
             max={effectiveMaxGuests}
-            value={guests}
+            value={selectedGuests}
             onChange={setGuests}
             className={inputClass}
-            buttonClassName="text-charcoal/40 hover:text-charcoal hover:bg-charcoal/5"
+            buttonClassName="text-navy/40 hover:text-navy hover:bg-navy/5"
           />
         </div>
 
         {/* Phone */}
         <div className="flex flex-col gap-1">
-            <Label htmlFor="phone" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="phone" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
             {String(stepOffset + 3 + u).padStart(2, "0")}. Contact Number
           </Label>
           <Input
@@ -427,7 +435,7 @@ export function BookingRequestForm({
 
         {/* Notes */}
         <div className="flex flex-col gap-1">
-            <Label htmlFor="notes" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-charcoal/60">
+            <Label htmlFor="notes" className="text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.2em] font-sans font-semibold text-navy/60">
             {String(stepOffset + 4 + u).padStart(2, "0")}. Special Requests
           </Label>
           <Textarea
@@ -441,21 +449,30 @@ export function BookingRequestForm({
 
         {/* Summary */}
         {numberOfNights > 0 && (
-          <div className="pt-8 border-t border-charcoal/10 space-y-4">
+          <div className="pt-8 border-t border-navy/10 space-y-4">
             {selectedRoomType && (
-              <div className="flex flex-col gap-1 text-charcoal/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
+              <div className="flex flex-col gap-1 text-navy/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
                 <span>Stay</span>
-                <span>{units > 1 ? `${units} × ` : ""}{selectedRoomType.name}</span>
+                <span>{selectedUnits > 1 ? `${selectedUnits} × ` : ""}{selectedRoomType.name}</span>
               </div>
             )}
-            <div className="flex flex-col gap-1 text-charcoal/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
-              <span>{formatNpr(effectivePrice)} × {numberOfNights} {numberOfNights === 1 ? "night" : "nights"}{units > 1 ? ` × ${units} units` : ""}</span>
-              <span>{formatNpr(totalPrice)}</span>
-            </div>
-            <div className="flex flex-col gap-1 font-display text-xl text-charcoal pt-4 border-t border-charcoal/10 min-[420px]:flex-row min-[420px]:justify-between">
-              <span>Estimated Total</span>
-              <span>{formatNpr(totalPrice)}</span>
-            </div>
+            {isQuoteOnly ? (
+              <div className="flex flex-col gap-1 font-display text-xl text-navy pt-4 border-t border-navy/10 min-[420px]:flex-row min-[420px]:justify-between items-center">
+                <span>Estimated Total</span>
+                <span className="text-gold-dark font-sans text-xs font-semibold uppercase tracking-wider">Quote on Request</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1 text-navy/60 font-sans text-xs uppercase tracking-[0.12em] min-[420px]:flex-row min-[420px]:justify-between sm:tracking-widest">
+                  <span>{formatNpr(effectivePrice)} × {numberOfNights} {numberOfNights === 1 ? "night" : "nights"}{selectedUnits > 1 ? ` × ${selectedUnits} units` : ""}</span>
+                  <span>{formatNpr(totalPrice)}</span>
+                </div>
+                <div className="flex flex-col gap-1 font-display text-xl text-navy pt-4 border-t border-navy/10 min-[420px]:flex-row min-[420px]:justify-between">
+                  <span>Estimated Total</span>
+                  <span>{formatNpr(totalPrice)}</span>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -478,7 +495,9 @@ export function BookingRequestForm({
                 ? "Sending Request..."
                 : "Taking You There..."
               : isAuthenticated
-              ? "Request Booking"
+              ? isQuoteOnly
+                ? "Submit Quote Request"
+                : "Request Booking"
               : "Sign in to Request"}
           </LuxuryButton>
         </div>

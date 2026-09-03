@@ -8,7 +8,9 @@ import { formatNpr } from "@/lib/currency"
 import { getPrimaryImageUrl, type PropertyMediaLike } from "@/lib/property-media"
 import { LocationCombobox, type ComboboxProperty } from "@/components/public/LocationCombobox"
 import { PropertyMap, type MapProperty } from "@/components/public/PropertyMap"
+import { Reveal } from "@/components/public/motion"
 import { CompactButton, CompactContainer, CompactHeading, CompactSection } from "@/components/public/Compact"
+import { MapPin } from "lucide-react"
 import fallbackImage from "@/public/images/marketing/himalayan-retreat-exterior.png"
 
 type PropertyListItem = {
@@ -21,6 +23,7 @@ type PropertyListItem = {
   bathrooms: number
   maxGuests: number
   pricePerNight?: number
+  hidePrice?: boolean
   highlights: string[]
   amenities: string[]
   images: PropertyMediaLike[]
@@ -194,40 +197,51 @@ export default function PropertiesClient({
         </div>
 
         {properties.length ? (
-          <div className="mt-6 grid gap-x-7 gap-y-9 md:grid-cols-2 lg:grid-cols-3">
+          <Reveal stagger={0.08} className="mt-8 grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
             {properties.map((property) => {
               const image = getPrimaryImageUrl(property.images) || fallbackImage
               return (
-                <article key={property.id}>
-                  <Link href={`/properties/${property.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand-dark">
-                    <Image
-                      src={image}
-                      alt={property.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 hover:scale-[1.02]"
-                    />
-                  </Link>
-                  <div className="pt-4">
-                    <p className="font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{property.location}</p>
-                    <h3 className="mt-1 font-display text-2xl leading-tight text-navy">{property.title}</h3>
-                    <p className="mt-2 line-clamp-2 font-sans text-[15px] font-light leading-6 text-navy/68">{property.description}</p>
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 font-sans text-sm text-navy/64">
-                      <span>{property.bedrooms} bedrooms · up to {property.maxGuests} guests</span>
-                      {property.pricePerNight ? <span>From {formatNpr(property.pricePerNight)}</span> : null}
+                <Reveal.Item key={property.id}>
+                  <article className="group flex flex-col h-full bg-white border border-navy/8 hover:border-gold/40 transition-all duration-300 shadow-sm hover:shadow-lg">
+                    <Link href={`/properties/${property.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand-dark">
+                      <Image
+                        src={image}
+                        alt={property.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </Link>
+                    <div className="p-6 flex flex-col flex-1">
+                      <p className="flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.16em] text-navy/55 font-medium">
+                        <MapPin className="w-3 h-3 text-gold-dark" />
+                        {property.location}
+                      </p>
+                      <h3 className="mt-2 font-display text-2xl leading-tight text-navy group-hover:text-gold-dark transition-colors">
+                        <Link href={`/properties/${property.slug}`}>{property.title}</Link>
+                      </h3>
+                      <p className="mt-2 line-clamp-2 font-sans text-sm font-light leading-relaxed text-navy/70">{property.description}</p>
+                      <div className="mt-auto pt-4 border-t border-navy/8 flex flex-wrap items-center justify-between gap-3 font-sans text-xs text-navy/65">
+                        <span>{property.bedrooms} beds · up to {property.maxGuests} guests</span>
+                        {property.hidePrice ? (
+                          <span className="font-medium text-gold-dark">Request a Quote</span>
+                        ) : property.pricePerNight ? (
+                          <span className="font-semibold text-navy">From {formatNpr(property.pricePerNight)}</span>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </article>
+                  </article>
+                </Reveal.Item>
               )
             })}
-          </div>
+          </Reveal>
         ) : (
-          <div className="bg-sand px-6 py-10 sm:px-8">
+          <div className="bg-sand px-6 py-12 sm:px-8 mt-6">
             <h3 className="font-display text-2xl text-navy">No stays match those details.</h3>
-            <p className="mt-2 max-w-xl font-sans text-base font-light leading-7 text-navy/68">
+            <p className="mt-2 max-w-xl font-sans text-base font-light leading-relaxed text-navy/70">
               Try a different destination or adjust the dates and number of guests.
             </p>
-            <CompactButton href="/properties" className="mt-5">View all stays</CompactButton>
+            <CompactButton href="/properties" className="mt-6">View all stays</CompactButton>
           </div>
         )}
 

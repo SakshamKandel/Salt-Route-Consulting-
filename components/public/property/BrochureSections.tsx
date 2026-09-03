@@ -81,6 +81,9 @@ export function BrochureSections({
     <>
       {groups.map((group) => {
         // ── Quiet typographic band for imageless sections. ──
+        // Laid out as an editorial spread (eyebrow + title left, body right)
+        // with a gold hairline and chapter numeral, so imageless stories read
+        // as a deliberate full-width chapter instead of a bare text strip.
         if (group.kind === "text") {
           return (
             <section
@@ -88,19 +91,30 @@ export function BrochureSections({
               className="bg-sand py-16 md:py-24"
             >
               <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-                <div className="max-w-[42rem] space-y-8 md:space-y-10">
+                <div className="space-y-14 md:space-y-20">
                   {group.entries.map((entry) => (
                     <FadeUp key={entry.section.id}>
-                      <p className="text-[10px] uppercase tracking-[0.24em] font-semibold text-gold mb-2">
-                        {eyebrowOf(entry)}
-                      </p>
-                      <h2 className="mt-2 font-display uppercase tracking-[0.14em] font-normal text-2xl sm:text-3xl lg:text-4xl leading-[1.25] text-navy">
-                        {entry.section.title}
-                      </h2>
-                      <Prose
-                        text={entry.section.body}
-                        className="mt-4 font-sans text-xs sm:text-sm md:text-base leading-relaxed font-light text-navy/75"
-                      />
+                      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+                        {/* Left: chapter marker + eyebrow + title */}
+                        <div className="lg:col-span-5">
+                          <p className="font-display text-[3.5rem] leading-none text-navy/10 select-none">
+                            {String(entry.chapterNo).padStart(2, "0")}
+                          </p>
+                          <Eyebrow className="mt-4">{eyebrowOf(entry)}</Eyebrow>
+                          <h2 className="mt-3 font-display uppercase tracking-[0.14em] font-normal text-2xl sm:text-3xl lg:text-4xl leading-[1.25] text-navy">
+                            {entry.section.title}
+                          </h2>
+                          <GoldRule className="mt-6" />
+                        </div>
+
+                        {/* Right: body prose */}
+                        <div className="lg:col-span-7 lg:pt-4">
+                          <Prose
+                            text={entry.section.body}
+                            className="max-w-[38rem] font-sans text-xs sm:text-sm md:text-base leading-relaxed font-light text-navy/75"
+                          />
+                        </div>
+                      </div>
                     </FadeUp>
                   ))}
                 </div>

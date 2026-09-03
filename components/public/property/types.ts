@@ -18,6 +18,13 @@ export type SectionData = {
   imageUrl?: string | null
 }
 
+export type CuratedExperience = {
+  id?: string
+  title: string
+  description: string
+  imageUrl?: string | null
+}
+
 export type RoomTypeData = {
   id: string
   name: string
@@ -25,6 +32,7 @@ export type RoomTypeData = {
   description?: string | null
   totalUnits: number
   pricePerNight: number
+  hidePrice?: boolean | null
   maxGuests: number
   bedrooms: number
   bathrooms: number
@@ -48,6 +56,9 @@ export type PropertyDetail = {
   id: string
   title: string
   slug: string
+  /** Only populated for owner/admin surfaces — the public page never renders it. */
+  status?: string
+  featured?: boolean
   propertyType?: string | null
   description: string
   tagline?: string | null
@@ -60,6 +71,7 @@ export type PropertyDetail = {
   bedrooms: number
   bathrooms: number
   pricePerNight: number
+  hidePrice?: boolean | null
   totalUnits?: number
   checkInTime?: string | null
   checkOutTime?: string | null
@@ -77,6 +89,7 @@ export type PropertyDetail = {
   owner?: { name: string | null; image: string | null }
   roomTypes?: RoomTypeData[]
   sections?: SectionData[]
+  experiences?: CuratedExperience[] | null
   reviews?: ReviewData[]
   _count?: { reviews: number }
 }

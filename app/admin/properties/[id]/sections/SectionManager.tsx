@@ -139,19 +139,41 @@ export function SectionManager({
             <Textarea id="sec-body" value={form.body} onChange={(e) => set("body", e.target.value)} placeholder="Write the story for this section. Blank lines create new paragraphs." className="mt-1 min-h-[160px]" />
           </div>
 
-          <div className="space-y-2">
-            <Label>Section Image (optional)</Label>
-            {form.imageUrl ? (
-              <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={form.imageUrl} alt="Section" className="h-28 w-44 object-cover rounded-lg border" />
-                <Button variant="outline" size="sm" onClick={() => set("imageUrl", "")} className="rounded-lg border-[#1B3A5C]/15 text-[#1B3A5C]/60 text-[12px] font-medium hover:text-[#B84040] hover:border-[#B84040]/30 bg-transparent">
-                  <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Remove
-                </Button>
+          <div className="space-y-3">
+            <div>
+              <Label>Section Image</Label>
+              <p className="mt-1 text-[11px] leading-5 text-[#1B3A5C]/45">
+                Choose a photograph from your device for this section. Landscape images work best.
+              </p>
+            </div>
+            <div className="grid gap-4 rounded-xl border border-[#1B3A5C]/10 bg-[#FBF9F4] p-4 md:grid-cols-[220px_1fr] md:items-center">
+              <div className="flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg border border-[#1B3A5C]/8 bg-white">
+                {form.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={form.imageUrl} alt="Section preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="text-center text-[#1B3A5C]/25">
+                    <ImageIcon className="mx-auto h-6 w-6" />
+                    <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.18em]">No image selected</p>
+                  </div>
+                )}
               </div>
-            ) : (
-              <MediaUploader onAdd={(item: UploadedMedia) => set("imageUrl", item.url)} kind="image" maxFiles={1} />
-            )}
+              <div className="space-y-3">
+                <MediaUploader
+                  onAdd={(item: UploadedMedia) => set("imageUrl", item.url)}
+                  multiple={false}
+                  maxFiles={1}
+                  kind="image"
+                  label={form.imageUrl ? "Replace section image" : "Choose section image"}
+                  folder={`properties/${propertyId}/sections`}
+                />
+                {form.imageUrl ? (
+                  <Button variant="outline" size="sm" type="button" onClick={() => set("imageUrl", "")} className="rounded-lg border-[#1B3A5C]/15 bg-transparent text-[12px] font-medium text-[#1B3A5C]/60 hover:border-[#B84040]/30 hover:text-[#B84040]">
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Remove image
+                  </Button>
+                ) : null}
+              </div>
+            </div>
           </div>
 
           <Button onClick={handleSave} disabled={pending === "save" || !form.title.trim() || form.body.trim().length < 10} className="w-full rounded-lg bg-[#1B3A5C] text-[#FFFAF3] text-[12px] font-medium hover:bg-[#2A4F7A]">

@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { CancelBookingButton } from "./CancelBookingButton"
 import { ArrowLeft, Calendar, Users, MapPin, Star, Hash } from "lucide-react"
 import { BOOKING_STATUS_LABELS, canReviewBooking } from "@/lib/booking-lifecycle"
@@ -104,9 +105,22 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {/* ─── PRICING ─── */}
+      {/* ─── PRICING & INVOICE SUMMARY ─── */}
       <div className="bg-[#FFFAF3] border border-[#1B3A5C]/8 rounded-xl p-6 sm:p-8">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-[#1B3A5C]/55 font-medium mb-6">Stay Summary</p>
+        <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-[#1B3A5C]/8">
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.25em] text-[#1B3A5C]/40 font-medium">Reservation Invoice</p>
+            <h2 className="font-display text-lg text-[#1B3A5C] tracking-wide mt-0.5">Stay Summary</h2>
+          </div>
+          <Image
+            src="/brand/Logo.png"
+            alt="Salt Route"
+            width={960}
+            height={399}
+            priority
+            className="h-7 w-auto object-contain"
+          />
+        </div>
         <div className="space-y-4">
           <div className="flex justify-between text-[14px] text-[#1B3A5C]/65">
             <span>{nights} night{nights > 1 ? "s" : ""} x {formatNpr(Number(booking.totalPrice) / nights)}</span>
