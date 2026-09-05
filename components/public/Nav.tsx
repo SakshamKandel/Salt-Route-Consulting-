@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, ChevronDown, Compass, House } from "lucide-react"
+import styles from "./site-chrome.module.css"
 import { LanguageSwitcher } from "./LanguageSwitcher"
 import type {
   NavCategory,
@@ -228,16 +229,16 @@ function toCategories(data: NavCategory[] | undefined, fallback: NavCategoryNode
 function withLiveData(items: NavItem[], payload: NavPayload | null): NavItem[] {
   if (!payload) return items
 
-  const sections: NavSectionData[] = [
-    payload.destinations,
-    payload.experiences,
-    payload.story,
-    payload.journal,
-    payload.owners,
-  ]
+  const sections: Record<string, NavSectionData> = {
+    "/properties": payload.destinations,
+    "/services": payload.experiences,
+    "/about": payload.story,
+    "/journal": payload.journal,
+    "/for-owners": payload.owners,
+  }
 
-  return items.map((item, index) => {
-    const section = sections[index]
+  return items.map((item) => {
+    const section = sections[item.href]
     if (!section) return item
     return {
       ...item,
@@ -248,12 +249,24 @@ function withLiveData(items: NavItem[], payload: NavPayload | null): NavItem[] {
 }
 
 export function Nav() {
+  const headerRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
   const { data: session, status } = useSession()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [hoveredPreview, setHoveredPreview] = useState<Showcase | null>(null)
   const [payload, setPayload] = useState<NavPayload | null>(null)
+
+  useEffect(() => {
+    function closeOutside(event: PointerEvent) {
+      if (!headerRef.current?.contains(event.target as Node)) {
+        setActiveMenu(null)
+        setHoveredPreview(null)
+      }
+    }
+    document.addEventListener("pointerdown", closeOutside)
+    return () => document.removeEventListener("pointerdown", closeOutside)
+  }, [])
 
   // The header is rendered by the persistent public layout, so this runs once
   // per full page load. Failures are silent: the static editorial tree above
@@ -332,19 +345,20 @@ export function Nav() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[10000] h-[72px] border-b bg-navy text-cream transition-colors duration-300 ${
-          activeItem ? "border-gold/30" : "border-cream/12"
-        }`}
-        onMouseLeave={closeMenu}
+        ref={headerRef}
+        className={styles.header}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) closeMenu()
+        }}
       >
-        <div className="mx-auto flex h-full max-w-[94rem] items-center justify-between px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto flex h-full max-w-[94rem] items-center justify-between px-4 sm:px-6 xl:px-7">
           {/* Mobile hamburger button */}
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
-            className="flex h-11 w-16 items-center justify-start lg:hidden cursor-pointer"
+            className="flex h-11 w-16 items-center justify-start xl:hidden cursor-pointer"
           >
             <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-cream">
               {mobileOpen ? "Close" : "Menu"}
@@ -352,16 +366,12 @@ export function Nav() {
           </button>
 
           {/* Left primary links */}
-          <nav className="hidden h-full items-stretch gap-1 lg:flex" aria-label="Primary navigation">
+          <nav className="hidden h-full items-stretch gap-1 xl:flex" aria-label="Primary navigation">
             {links.slice(0, 3).map((item) => (
               <NavTrigger
                 key={item.label}
                 item={item}
                 active={activeMenu === item.label}
-                onActivate={() => {
-                  setActiveMenu(item.label)
-                  setHoveredPreview(null)
-                }}
                 onClick={() => handleToggleMenu(item.label)}
               />
             ))}
@@ -373,28 +383,17 @@ export function Nav() {
             className="absolute left-1/2 flex -translate-x-1/2 items-center justify-center py-2"
             aria-label="Salt Route Group home"
           >
-            <Image
-              src="/brand/logo-light.png"
-              alt="Salt Route Group"
-              width={960}
-              height={399}
-              priority
-              className="h-9 w-auto object-contain transition-transform duration-500 hover:scale-[1.03] sm:h-10"
-            />
+            <Image src="/brand/Logo.png" alt="Salt Route Group" width={960} height={399} priority className={styles.navLogo} />
           </Link>
 
           {/* Right secondary links & actions */}
           <div className="flex h-full items-center gap-4 lg:gap-6">
-            <nav className="hidden h-full items-stretch gap-1 lg:flex" aria-label="Secondary navigation">
+            <nav className="hidden h-full items-stretch gap-1 xl:flex" aria-label="Secondary navigation">
               {links.slice(3).map((item) => (
                 <NavTrigger
                   key={item.label}
                   item={item}
                   active={activeMenu === item.label}
-                  onActivate={() => {
-                    setActiveMenu(item.label)
-                    setHoveredPreview(null)
-                  }}
                   onClick={() => handleToggleMenu(item.label)}
                 />
               ))}
@@ -414,7 +413,7 @@ export function Nav() {
             {/* Reserve CTA button */}
             <Link
               href={ownerSection ? "/for-owners#owner-enquiry" : reserveHref}
-              className="group inline-flex min-h-[38px] items-center gap-2 rounded-full bg-gold px-5 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-navy-dark shadow-sm transition-all duration-300 hover:bg-gold-light hover:shadow-md"
+              className={styles.reserve}
             >
               <span>{ownerSection ? "Enquire" : "Reserve"}</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -431,10 +430,11 @@ export function Nav() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-x-0 top-full hidden px-4 sm:px-6 lg:px-8 xl:px-12 lg:block"
+              className="absolute inset-x-0 top-full hidden px-4 sm:px-6 xl:block"
             >
               {/* Deep navy pavilion card */}
-              <div className="mx-auto max-w-[1380px] overflow-hidden rounded-b-2xl border-x border-b border-cream/12 bg-navy bg-gradient-to-b from-navy-light via-navy to-navy-dark shadow-[0_32px_75px_-10px_rgba(16,41,67,0.55)] backdrop-blur-md">
+              <div className={styles.panel} data-lenis-prevent>
+                <div className={styles.panelIntro}><p>{activeItem.label}</p><Link href={activeItem.href} onClick={closeMenu}>Explore all <ArrowRight size={14} /></Link></div>
                 <div className="grid grid-cols-1 gap-10 p-8 lg:grid-cols-[330px_1fr] lg:p-10 xl:grid-cols-[370px_1fr] xl:gap-14 xl:p-12">
                   {/* Left Column: Featured Landscape Photography & Storytelling Card */}
                   <div className="flex flex-col justify-between">
@@ -551,7 +551,7 @@ export function Nav() {
 
       {/* ── MOBILE SLIDEOUT MENU ──────────────────────────────────── */}
       {mobileOpen ? (
-        <div data-lenis-prevent className="fixed inset-0 z-[9999] overflow-y-auto bg-navy px-6 pb-14 pt-24 text-cream lg:hidden">
+        <div data-lenis-prevent className={`${styles.mobileMenu} fixed inset-0 z-[9999] overflow-y-auto px-6 pb-14 pt-24 text-cream xl:hidden`}>
           <div className="mx-auto max-w-xl">
             <div className="mb-7 flex items-center gap-3 border-b border-cream/12 pb-5 text-cream/60">
               <Compass className="h-4 w-4 text-gold" />
@@ -564,7 +564,7 @@ export function Nav() {
               {links.map((item) => (
                 <div
                   key={item.href}
-                  className="overflow-hidden rounded-xl border border-cream/12 bg-navy-light p-5 text-cream shadow-sm"
+                  className="overflow-hidden border-b border-cream/20 py-5 text-cream"
                 >
                   <Link
                     href={item.href}
@@ -619,20 +619,16 @@ export function Nav() {
 function NavTrigger({
   item,
   active,
-  onActivate,
   onClick,
 }: {
   item: NavItem
   active: boolean
-  onActivate: () => void
   onClick: () => void
 }) {
   return (
     <button
       type="button"
-      onMouseEnter={onActivate}
       onClick={onClick}
-      onFocus={onActivate}
       aria-expanded={active}
       className={`relative flex h-full items-center gap-1.5 px-3.5 font-sans text-[10.5px] font-semibold uppercase tracking-[0.18em] transition-colors duration-200 cursor-pointer ${
         active ? "text-cream" : "text-cream/68 hover:text-cream"

@@ -1,49 +1,36 @@
 import Image from "next/image"
 import Link from "next/link"
 import { siteConfig } from "@/lib/site.config"
-import { CompactContainer } from "./Compact"
+import styles from "./site-chrome.module.css"
 
-const links = [
-  ["Properties", "/properties"],
-  ["Experiences", "/services"],
-  ["Our Story", "/about"],
-  ["For Owners", "/for-owners"],
-  ["Contact", "/contact"],
-] as const
+const links = [["Properties", "/properties"], ["Experiences", "/services"], ["Our story", "/about"], ["Journal", "/journal"], ["For owners", "/for-owners"], ["Contact", "/contact"]] as const
 
 export function Footer() {
   return (
-    <footer className="border-t border-cream/12 bg-navy text-cream">
-      <CompactContainer>
-        <div className="flex flex-col gap-9 py-11 md:flex-row md:items-center md:justify-between">
-          <Link href="/" aria-label={`${siteConfig.brandName} home`} className="inline-block self-start md:self-auto">
-            <Image
-              src="/brand/logo-light.png"
-              alt={siteConfig.brandName}
-              width={960}
-              height={399}
-              className="h-10 sm:h-11 w-auto object-contain hover:opacity-90 transition-opacity"
-            />
-          </Link>
-          <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap gap-x-7 gap-y-3">
-              {links.map(([label, href]) => (
-                <li key={href}>
-                  <Link href={href} className="font-sans text-[11px] uppercase tracking-[0.16em] text-cream/68 transition-colors hover:text-gold">{label}</Link>
-                </li>
-              ))}
-            </ul>
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerMain}>
+          <div className={styles.footerBrand}>
+            <Link href="/" aria-label={`${siteConfig.brandName} home`}>
+              <Image src="/brand/Logo.png" alt={siteConfig.brandName} width={960} height={399} className={styles.footerLogo} />
+            </Link>
+            <p>Distinctive stays.<br />A personal connection to Nepal.</p>
+          </div>
+          <nav aria-label="Footer navigation" className={styles.footerNav}>
+            {links.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           </nav>
-        </div>
-        <div className="flex flex-col gap-3 border-t border-cream/12 py-6 font-sans text-[11px] text-cream/46 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {siteConfig.brandName} · {siteConfig.contact.address}</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-cream">{siteConfig.contact.email}</a>
-            <a href={siteConfig.contact.phoneHref} className="hover:text-cream">{siteConfig.contact.phone}</a>
-            <Link href="/privacy" className="hover:text-cream">Privacy</Link>
+          <div className={styles.footerContact}>
+            <p>Speak with Salt Route</p>
+            <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
+            <a href={siteConfig.contact.phoneHref}>{siteConfig.contact.phone}</a>
+            <address>{siteConfig.contact.address}</address>
           </div>
         </div>
-      </CompactContainer>
+        <div className={styles.legal}>
+          <p>© {new Date().getFullYear()} {siteConfig.brandName}</p>
+          <nav aria-label="Legal"><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/refund-policy">Refund policy</Link></nav>
+        </div>
+      </div>
     </footer>
   )
 }

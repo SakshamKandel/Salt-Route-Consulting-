@@ -20,8 +20,6 @@ import {
   Play,
   Star,
   Users,
-  Compass,
-  Sparkles,
 } from "lucide-react"
 import { ParallaxImage } from "./motion"
 import { WishlistButton } from "@/app/(public)/properties/[slug]/WishlistButton"
@@ -75,12 +73,6 @@ function Stars({ rating }: { rating: number }) {
   )
 }
 
-const experienceNotes = [
-  "A slow, place-led encounter arranged around the season, weather, and your own pace.",
-  "Private access and local knowledge turn a beautiful setting into a meaningful memory.",
-  "Thoughtfully hosted, never over-programmed, with time left to simply be in the landscape.",
-]
-
 function CarouselControls({ target, label }: { target: React.RefObject<HTMLDivElement | null>; label: string }) {
   function move(direction: -1 | 1) {
     target.current?.scrollBy({ left: direction * Math.min(target.current.clientWidth * 0.82, 760), behavior: "smooth" })
@@ -132,7 +124,6 @@ export default function PropertyDetailClient({
   const [roomTypeId, setRoomTypeId] = useState(roomTypes[0]?.id ?? "")
   const [roomGallery, setRoomGallery] = useState<RoomGalleryState | null>(null)
   const roomCarousel = useRef<HTMLDivElement>(null)
-  const experienceCarousel = useRef<HTMLDivElement>(null)
   const galleryCarousel = useRef<HTMLDivElement>(null)
   const relatedCarousel = useRef<HTMLDivElement>(null)
 
@@ -140,18 +131,11 @@ export default function PropertyDetailClient({
     ? Math.min(...roomTypes.map((room) => room.pricePerNight))
     : property.pricePerNight
 
-  const experiences = useMemo(() => {
-    if (property.experiences && property.experiences.length > 0) {
-      return property.experiences
-    }
-    const source = [...(property.whatToExpect ?? []), ...(property.services ?? []), ...property.highlights]
-    return Array.from(new Set(source)).slice(0, 4).map((title, i) => ({
-      id: `fallback-exp-${i}`,
-      title,
-      description: experienceNotes[i] || experienceNotes[0],
-      imageUrl: null,
-    }))
-  }, [property.experiences, property.highlights, property.services, property.whatToExpect])
+  const facilityGroups = [
+    { title: "Highlights", values: property.whatToExpect?.length ? property.whatToExpect : property.highlights },
+    { title: "Services", values: property.services ?? [] },
+    { title: "Amenities", values: property.amenities },
+  ].filter((group) => group.values.length > 0)
 
   const faqs = [
     {
@@ -409,110 +393,32 @@ export default function PropertyDetailClient({
 
       <BrochureSections sections={sections} />
 
-      {experiences.length > 0 ? (
-        <section id="experiences" className="bg-background py-20 lg:py-28">
-          <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
-            <div className="flex items-end justify-between gap-6">
-              <div>
-                <Eyebrow>At the property</Eyebrow>
-                <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,4rem)]">Discover experiences</h2>
-              </div>
-              <CarouselControls target={experienceCarousel} label="experiences" />
+      {facilityGroups.length > 0 || property.experiences?.length ? (
+        <section id="experiences" className="scroll-mt-24 bg-background py-14 sm:py-20">
+          <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+            <Eyebrow>At the property</Eyebrow>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl">{property.amenitiesTitle || "What to expect during your stay."}</h2>
+            <div className="mt-7 grid gap-4 md:grid-cols-3">
+              {facilityGroups.map((group) => (
+                <div key={group.title} className="bg-beige p-5 sm:p-6">
+                  <h3 className="font-display text-2xl">{group.title}</h3>
+                  <ul className="mt-4 space-y-2 font-sans text-sm font-light leading-6 text-navy/75">
+                    {group.values.slice(0, 12).map((value) => <li key={value}>{value}</li>)}
+                  </ul>
+                </div>
+              ))}
             </div>
-            <div
-              ref={experienceCarousel}
-              className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {experiences.map((experience, index) => {
-                const hasImage = Boolean(experience.imageUrl)
-                const numberStr = String(index + 1).padStart(2, "0")
-
-                if (hasImage) {
-                  // ─── PHOTO PRESENTATION ("if person adds the photo it greates") ───
-                  return (
-                    <article
-                      key={experience.id || `${experience.title}-${index}`}
-                      className="group min-w-[86%] snap-start sm:min-w-[48%] lg:min-w-[32%] flex flex-col"
-                    >
-                      <div className="relative aspect-[4/5] overflow-hidden rounded-xs bg-[#1B3A5C]/5 shadow-sm">
-                        <Image
-                          src={experience.imageUrl!}
-                          alt={experience.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-40" />
-                        <span className="absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[9px] font-semibold uppercase tracking-[0.2em] text-[#1B3A5C] shadow-xs">
-                          Experience {numberStr}
-                        </span>
-                      </div>
-                      <div className="pt-5 flex flex-col flex-1">
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gold-dark">
-                          Curated Encounter
-                        </p>
-                        <h3 className="mt-2 font-display text-2xl text-navy transition-colors group-hover:text-gold-dark">
-                          {experience.title}
-                        </h3>
-                        <p className="mt-3 font-sans text-sm font-light leading-6 text-navy/68 line-clamp-4">
-                          {experience.description}
-                        </p>
-                      </div>
-                    </article>
-                  )
-                }
-
-                // ─── ARCHITECTURAL LUXURY TYPOGRAPHIC PRESENTATION ("if not make different way of portraying") ───
-                return (
-                  <article
-                    key={experience.id || `${experience.title}-${index}`}
-                    className="group min-w-[86%] snap-start sm:min-w-[48%] lg:min-w-[32%] relative flex flex-col justify-between overflow-hidden rounded-xs border border-[#C9A96E]/30 bg-gradient-to-b from-[#FAF8F5] to-[#F3EFEA] p-7 sm:p-9 transition-all duration-500 hover:border-[#C9A96E]/70 hover:shadow-xl hover:-translate-y-1"
-                  >
-                    {/* Decorative watermark numeral */}
-                    <span className="pointer-events-none absolute -right-3 -top-6 select-none font-display text-[7.5rem] font-bold leading-none text-[#C9A96E]/10 transition-colors duration-500 group-hover:text-[#C9A96E]/20">
-                      {numberStr}
-                    </span>
-
-                    <div>
-                      {/* Top luxury badge & monogram motif */}
-                      <div className="flex items-center justify-between gap-3 border-b border-[#1B3A5C]/8 pb-5">
-                        <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.24em] text-gold-dark">
-                          <Sparkles className="h-3 w-3 text-gold" />
-                          Experience {numberStr}
-                        </span>
-                        <span className="font-serif text-xs italic tracking-widest text-navy/40">
-                          Salt Route
-                        </span>
-                      </div>
-
-                      {/* Title & Gold hairline divider */}
-                      <div className="mt-7 space-y-3">
-                        <h3 className="font-display text-2xl sm:text-[1.65rem] leading-snug text-navy transition-colors group-hover:text-gold-dark">
-                          {experience.title}
-                        </h3>
-                        <div className="h-[2px] w-10 bg-gold/70 transition-all duration-500 group-hover:w-16" />
-                      </div>
-
-                      {/* Narrative description */}
-                      <p className="mt-5 font-sans text-sm font-light leading-7 text-navy/75">
-                        {experience.description}
-                      </p>
-                    </div>
-
-                    {/* Bottom footer badge */}
-                    <div className="mt-8 flex items-center justify-between border-t border-[#1B3A5C]/8 pt-5 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/50">
-                      <span className="flex items-center gap-1.5">
-                        <Compass className="h-3.5 w-3.5 text-gold" />
-                        Private Arrangement
-                      </span>
-                      <span className="text-gold-dark transition-transform duration-300 group-hover:translate-x-1">
-                        Inquire →
-                      </span>
-                    </div>
+            {!!property.experiences?.length && (
+              <div className="mt-10 grid gap-8 md:grid-cols-2">
+                {property.experiences.map((experience, index) => (
+                  <article key={experience.id || `${experience.title}-${index}`}>
+                    {experience.imageUrl && <div className="relative mb-5 aspect-[3/2] overflow-hidden"><Image src={experience.imageUrl} alt={experience.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>}
+                    <h3 className="font-display text-2xl">{experience.title}</h3>
+                    <p className="mt-3 max-w-prose text-sm leading-7 text-navy/75">{experience.description}</p>
                   </article>
-                )
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       ) : null}
