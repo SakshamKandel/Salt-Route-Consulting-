@@ -92,6 +92,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ reply })
   } catch (error) {
-    return safeErrorResponse(error, "POST /api/ai/concierge")
+    console.error("[Concierge] Error:", error)
+    return NextResponse.json({ reply: WHATSAPP_FALLBACK })
   }
 }

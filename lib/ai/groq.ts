@@ -6,11 +6,27 @@ import "server-only"
 
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string }
 
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-const GROQ_MODEL = process.env.GROQ_MODEL || "groq/compound-mini"
+function cleanEnv(val?: string): string {
+  if (!val) return ""
+  return val.trim().replace(/^["']|["']$/g, "").trim()
+}
 
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct"
+
+function getGroqModel(): string {
+  const custom = cleanEnv(process.env.GROQ_MODEL)
+  // Auto-correct common model mismatches (e.g. deprecated or unavailable models on current Groq tier)
+  if (!custom || custom === "llama-3.3-70b-versatile" || custom === "llama3-70b-8192") {
+    return "groq/compound-mini"
+  }
+  return custom
+}
+
+function getOpenRouterModel(): string {
+  const custom = cleanEnv(process.env.OPENROUTER_MODEL)
+  return custom || "meta-llama/llama-3.3-70b-instruct"
+}
 
 type GroqOptions = {
   model?: string
@@ -30,25 +46,28 @@ type Provider = {
 
 /** True when ANY AI provider is configured (Groq primary or OpenRouter fallback). */
 export function isGroqConfigured() {
-  return Boolean(process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY)
+  return Boolean(cleanEnv(process.env.GROQ_API_KEY) || cleanEnv(process.env.OPENROUTER_API_KEY))
 }
 
 /** Ordered provider list: Groq first, OpenRouter as fallback. */
 function providers(): Provider[] {
   const list: Provider[] = []
-  if (process.env.GROQ_API_KEY) {
-    list.push({ name: "groq", url: GROQ_URL, key: process.env.GROQ_API_KEY, model: GROQ_MODEL })
+  const groqKey = cleanEnv(process.env.GROQ_API_KEY)
+  const openRouterKey = cleanEnv(process.env.OPENROUTER_API_KEY)
+
+  if (groqKey) {
+    list.push({ name: "groq", url: GROQ_URL, key: groqKey, model: getGroqModel() })
   }
-  if (process.env.OPENROUTER_API_KEY) {
+  if (openRouterKey) {
     list.push({
       name: "openrouter",
       url: OPENROUTER_URL,
-      key: process.env.OPENROUTER_API_KEY,
-      model: OPENROUTER_MODEL,
+      key: openRouterKey,
+      model: getOpenRouterModel(),
       // Recommended attribution headers for OpenRouter.
       extraHeaders: {
-        "HTTP-Referer": process.env.SITE_URL || "https://saltroutegroup.com",
-        "X-Title": process.env.SITE_NAME || "Salt Route",
+        "HTTP-Referer": cleanEnv(process.env.SITE_URL) || "https://saltroutegroup.com",
+        "X-Title": cleanEnv(process.env.SITE_NAME) || "Salt Route",
       },
     })
   }
@@ -66,7 +85,7 @@ async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOpti
       ...(p.extraHeaders ?? {}),
     },
     body: JSON.stringify({
-      model: opts.model || p.model,
+      model: cleanEnv(opts.model) || p.model,
       messages,
       temperature: opts.temperature ?? 0.7,
       max_tokens: opts.maxTokens ?? 800,
