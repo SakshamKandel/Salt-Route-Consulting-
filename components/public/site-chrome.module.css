@@ -1,40 +1,51 @@
-.header { position: fixed; inset: 0 0 auto; z-index: 10000; height: 72px; color: #fffaf3; background: #142e46; border-bottom: 1px solid #c9a96e45; }
-.navLogo { height: 40px; width: auto; object-fit: contain; }
-.reserve { display: inline-flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 20px; border: 1px solid #dbcbaa; background: transparent; color: #fffaf3; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .16em; white-space: nowrap; transition: background .2s, color .2s; }
-.reserve:hover { background: #dbcbaa; color: #142e46; }
-.reserve:active { transform: translateY(1px); }
-.panel { max-width: 1320px; margin: 0 auto; max-height: calc(100dvh - 85px); overflow-y: auto; border: 1px solid #c9a96e35; border-top: 0; background: #142e46; }
-.panelIntro { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 23px 32px; border-bottom: 1px solid #fffaf320; }
-.panelIntro p { font-family: var(--font-display); font-size: 25px; }
-.panelIntro a { display: flex; align-items: center; gap: 12px; font-size: 10px; color: #dbcbaa; letter-spacing: .12em; text-transform: uppercase; }
-.mobileMenu { background: #142e46; }
-.footer { background: #142e46; color: #fffaf3; border-top: 1px solid #c9a96e45; }
-.footerInner { max-width: 1400px; margin: auto; padding: 0 5vw; }
-.footerMain { display: grid; grid-template-columns: 1.25fr 1fr 1.1fr; align-items: start; gap: 64px; padding: 56px 0 48px; }
-.footerLogo { width: 126px; height: auto; }
-.footerBrand p { margin-top: 22px; font-family: var(--font-display); font-size: 23px; line-height: 1.45; }
-.footerNav { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; padding-top: 7px; }
-.footerNav a { font-size: 12px; color: #fffaf3d1; }
-.footerContact { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; font-size: 12px; color: #fffaf3d1; }
-.footerContact > p { color: #dbcbaa; font-size: 13px; margin-bottom: 4px; }
-.footerContact address { font-style: normal; color: #fffaf3ad; line-height: 1.6; }
-.footer a { transition: color .2s; }
-.footer a:hover { color: #dbcbaa; }
-.legal { display: flex; justify-content: space-between; gap: 24px; padding: 23px 0 28px; border-top: 1px solid #fffaf326; font-size: 11px; color: #fffaf3b3; }
-.legal nav { display: flex; flex-wrap: wrap; gap: 24px; }
-.header :is(a,button):focus-visible, .mobileMenu :is(a,button):focus-visible, .footer a:focus-visible { outline: 2px solid #dbcbaa; outline-offset: 5px; }
-@media(max-width: 900px) { .footerMain { grid-template-columns: 1fr 1fr; gap: 35px; } .footerBrand { grid-column: 1 / -1; display: flex; align-items: center; gap: 30px; } .footerBrand p { margin: 0; } }
-@media(max-width: 600px) {
-  .navLogo { height: 34px; }
-  .reserve { min-height: 38px; padding-inline: 13px; font-size: 9px; }
-  .reserve svg { display: none; }
-  .footerInner { padding-inline: 24px; }
-  .footerMain { padding: 36px 0; gap: 30px; }
-  .footerBrand { display: block; }
-  .footerBrand p { margin-top: 18px; font-size: 22px; }
-  .footerLogo { width: 105px; }
-  .footerNav { gap: 20px 25px; grid-column: 1 / -1; }
-  .footerContact { grid-column: 1 / -1; }
-  .legal { flex-direction: column; gap: 17px; }
+/* Layers: header 40; native modal dialog in browser top layer. */
+.header{position:fixed;inset:0 0 auto;z-index:40;color:var(--color-cream);transition:background .3s,color .3s}
+.headerInner,.menuTop{height:104px;max-width:1440px;margin:auto;padding:0 6%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.headerSolid{background:var(--color-cream);color:var(--color-navy);}
+.menuTrigger{display:flex;align-items:center;gap:13px;justify-self:start;min-height:48px;cursor:pointer}
+.menuTrigger span,.enquire,.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.logoLink{display:block;width:122px;grid-column:2}.logoLink img{width:100%;height:auto}
+.enquire{justify-self:end;padding:13px 22px;border:1px solid currentColor;transition:background .2s,color .2s}
+.enquire:hover{background:var(--color-gold);border-color:var(--color-gold);color:var(--color-navy)}
+.menu{position:fixed;inset:0;margin:0;width:100%;max-width:none;height:100dvh;max-height:none;border:0;background:var(--color-navy);color:var(--color-cream);padding:0;overflow-y:auto}
+.menu::backdrop{background:transparent}
+.menu::before{content:"";position:absolute;inset:0;min-height:100%;background:url('/brand/menu-weave.svg') right center/auto 115% no-repeat;pointer-events:none}
+.menuTop,.menuContent,.menuLegal{position:relative}
+.menu[open]{display:flex;flex-direction:column}
+.menuTop{width:100%;flex-shrink:0;margin:0 auto}
+.close{width:48px;height:48px;background:var(--color-cream);color:var(--color-navy);border-radius:50%;display:grid;place-items:center;cursor:pointer}
+.menuContent{width:min(1160px,84%);margin:auto;display:grid;grid-template-columns:2.2fr 1fr;gap:9%;padding:70px 0}
+.menuLinks{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.menuLinks>div{display:flex;flex-direction:column;gap:26px}
+.menuLinks a{font-family:var(--font-display);font-size:clamp(28px,3.3vw,49px);font-weight:400;letter-spacing:-.025em;line-height:1.3;transition:color .2s;white-space:nowrap}
+.menuLinks a:hover,.menuLinks a[aria-current]{color:var(--color-gold)}
+.menuContact{font-size:14px;line-height:1.9;padding-top:8px;color:#fffaf3c9}
+.menuContact address{font-style:normal;margin-top:12px}
+.label{color:var(--color-cream);font-weight:500;margin-bottom:12px}
+.menuContact .label:not(:first-child){margin-top:34px}
+.menuAccount{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-top:35px}
+.menuAccount>a{border-bottom:1px solid #fff5}
+.menuLegal{text-align:center;font-size:12px;padding:28px;color:#fffaf399}
+.footer{background:var(--color-sand-dark);color:var(--color-navy);padding:85px 0 55px}
+.footerInner{max-width:1160px;margin:auto;padding:0 30px}
+.footerMain{display:grid;grid-template-columns:1.25fr .7fr .7fr 1.35fr;gap:45px}
+.footerBrand img{width:140px;height:auto;margin:0 0 24px}.footerBrand p{font-size:13px;line-height:1.9;opacity:.75}
+.footerNav{display:flex;flex-direction:column;align-items:start;gap:13px;font-family:var(--font-display);font-size:17px}
+.footerNav a:hover,.footerContact a:hover{color:var(--color-gold-dark)}
+.footerContact{font-size:12px;line-height:1.8}.footerContact h3{font-size:17px;margin:0 0 12px}.footerContact h3:not(:first-child){margin-top:25px}.footerContact a{display:block}.footerContact address{font-style:normal}
+.legal{display:flex;justify-content:space-between;gap:25px;margin-top:55px;padding-top:25px;;font-size:11px;opacity:.75}.legal nav{display:flex;gap:22px}
+@media(max-width:900px){.menuContent{grid-template-columns:1fr;gap:45px}.menuContact{display:grid;grid-template-columns:1fr 1fr;column-gap:30px}.menuContact .label:not(:first-child){margin-top:15px}.menuContact address{margin:0}.menuLinks a{font-size:36px}.footerMain{grid-template-columns:1fr 1fr}.footerBrand{grid-column:1/-1}}
+@media(max-width:600px){.headerInner,.menuTop{height:82px;padding:0 22px}.logoLink{width:100px}.menuTrigger span{display:none}.enquire{padding:11px 9px;font-size:8px;letter-spacing:.08em}.menuContent{width:calc(100% - 48px);padding:35px 0}.menuLinks{gap:24px}.menuLinks a{font-size:clamp(22px,6vw,30px);white-space:normal}.menuLinks>div{gap:24px}.menuContact{display:block;font-size:13px}.menuContact .label{margin-top:22px!important}.menuLegal{font-size:10px}.footer{padding:58px 0 30px}.footerMain{gap:35px 25px}.footerContact{grid-column:1/-1}.legal{flex-direction:column;margin-top:35px}.close{width:44px;height:44px}}
+@media(prefers-reduced-motion:no-preference){
+  .menu[open]{animation:menu-down .85s cubic-bezier(.65,0,.35,1) both}
+  .menu[open].menuClosing{animation:menu-up .65s cubic-bezier(.65,0,.35,1) both}
+  .menu[open]:not(.menuClosing) .menuLinks>div>a{animation:menu-link-in .55s ease-out both;animation-delay:.24s}
+  .menu[open]:not(.menuClosing) .menuLinks>div>a:nth-child(2){animation-delay:.30s}
+  .menu[open]:not(.menuClosing) .menuLinks>div>a:nth-child(3){animation-delay:.36s}
+  .menu[open]:not(.menuClosing) .menuLinks>div>a:nth-child(4){animation-delay:.42s}
+  .menuContact{animation:menu-link-in .65s .35s ease-out both}
+  @keyframes menu-down{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+  @keyframes menu-up{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+  @keyframes menu-link-in{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
 }
-@media(prefers-reduced-motion: reduce) { .header *, .footer * { transition: none !important; animation: none !important; } }
+@media(prefers-reduced-motion:reduce){.menu,.menu *{animation:none!important;transition:none!important}}

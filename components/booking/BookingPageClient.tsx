@@ -61,9 +61,9 @@ export function BookingPageClient({
   const displayImage = roomImage || property.images[0]?.url || heroImage
 
   return (
-    <div className="bg-background text-navy">
+    <div className="editorial-booking bg-background text-navy">
       {/* ─── Cinematic parallax hero ─── */}
-      <section className="relative flex min-h-[440px] items-center justify-center overflow-hidden sm:min-h-[560px]">
+      <section className="editorial-page-hero relative flex min-h-[440px] items-center justify-center overflow-hidden sm:min-h-[560px]">
         {displayImage ? (
           <ParallaxImage className="absolute inset-0 z-0" speed={0.12}>
             <Image
@@ -92,7 +92,7 @@ export function BookingPageClient({
 
       {/* ─── Light content section ─── */}
       <CompactContainer className="py-12 sm:py-16">
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-12">
+        <div className="grid items-start gap-16 lg:grid-cols-[1fr_1.2fr]">
           {/* Left: property details */}
           <div>
             <Link

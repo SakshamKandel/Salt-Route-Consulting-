@@ -11,7 +11,6 @@ import {
   ArrowUpRight,
   Bath,
   BedDouble,
-  Check,
   ChevronDown,
   Clock3,
   Eye,
@@ -38,7 +37,7 @@ import {
 } from "@/lib/property-media"
 import { toDateOnlyString } from "@/lib/booking-dates"
 import { formatNpr } from "@/lib/currency"
-import fallbackImage from "@/public/images/marketing/himalayan-retreat-exterior.png"
+import fallbackImage from "@/public/images/marketing/nepal-residence.jpg"
 
 export type RelatedProperty = {
   id: string
@@ -195,7 +194,7 @@ export default function PropertyDetailClient({
   const mapQuery = encodeURIComponent([property.address, property.location, "Nepal"].filter(Boolean).join(", "))
 
   return (
-    <div className="min-h-screen bg-background text-navy selection:bg-gold selection:text-navy">
+    <div className="editorial-property min-h-screen bg-background text-navy selection:bg-gold selection:text-navy">
       {previewMode ? (
         <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-gold px-5 py-2.5 text-navy">
           <Eye className="h-3.5 w-3.5" />
@@ -205,7 +204,7 @@ export default function PropertyDetailClient({
         </div>
       ) : null}
 
-      <section className="relative flex min-h-[560px] items-center justify-center overflow-hidden sm:min-h-[640px] lg:min-h-[700px]">
+      <section className="editorial-page-hero relative flex min-h-[560px] items-center justify-center overflow-hidden sm:min-h-[640px] lg:min-h-[700px]">
         <ParallaxImage className="absolute inset-0" speed={0.07}>
           <Image src={heroImage} alt={property.title} fill priority sizes="100vw" className="object-cover" />
         </ParallaxImage>
@@ -294,7 +293,7 @@ export default function PropertyDetailClient({
             <p className="mt-7 whitespace-pre-line font-sans text-[15px] font-light leading-8 text-navy/68 sm:text-base">
               {property.story || property.description}
             </p>
-            <div className="mt-9 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-navy/10 pt-7 sm:grid-cols-4">
+            <div className="mt-9 grid grid-cols-2 gap-x-8 gap-y-6  pt-7 sm:grid-cols-4">
               {[
                 [property.bedrooms, "Bedrooms"],
                 [property.bathrooms, "Bathrooms"],
@@ -314,40 +313,44 @@ export default function PropertyDetailClient({
         </div>
       </section>
 
+      {images.length > 0 ? (
+        <section className="py-20 lg:py-28">
+          <div className="mx-auto max-w-[1050px] px-5 sm:px-8">
+            <div className="mb-10 flex items-end justify-between gap-8">
+              <div>
+                <Eyebrow>Visual journal</Eyebrow>
+                <h2 className="mt-3 font-display text-4xl">A closer look</h2>
+              </div>
+              <div className="flex items-center gap-5"><span className="hidden font-sans text-[9px] uppercase tracking-[0.18em] text-navy/40 sm:inline">{images.length} photographs</span></div>
+            </div>
+            <div ref={galleryCarousel} className="editorial-gallery-grid flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {images.slice(0, 6).map((image, index) => (
+                <button key={image.id} type="button" disabled={previewMode} onClick={() => setRoomGallery({ images: images.map((item) => item.url), active: index, name: property.title })} className="relative aspect-[4/3] min-w-[88%] snap-start overflow-hidden sm:min-w-[62%] lg:min-w-[52%]">
+                  <Image src={image.url} alt={property.title + ", photograph " + (index + 1)} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 hover:scale-[1.02]" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {roomTypes.length > 0 ? (
         <>
-          <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden">
-            <ParallaxImage className="absolute inset-0" speed={0.08}>
-              <Image src={roomTypes[0].imageUrl || accentImage} alt="Accommodation" fill sizes="100vw" className="object-cover" />
-            </ParallaxImage>
-            <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/55 via-navy-dark/72 to-navy-dark/80" />
-            <div className="relative z-10 max-w-3xl px-6 text-center text-cream [text-shadow:0_2px_22px_rgb(5_21_35_/_0.45)]">
-              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">Private stays</p>
-              <h2 className="mt-4 font-display text-[clamp(2.5rem,5vw,4.8rem)] text-cream">Accommodation</h2>
-              <p className="mx-auto mt-5 max-w-2xl font-sans text-sm font-light leading-7 text-cream/80">
-                Thoughtful rooms and suites designed around quiet comfort, restorative sleep, and the landscape beyond.
-              </p>
-              <a href="#rooms" className="mt-8 inline-flex border border-cream/60 px-7 py-3 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-cream transition-colors hover:bg-cream hover:text-navy">
-                View the rooms
-              </a>
-            </div>
-          </section>
-
           <section id="rooms" className="scroll-mt-24 bg-white py-20 lg:py-28">
-            <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
+            <div className="mx-auto max-w-[1050px] px-5 sm:px-8">
               <div className="mb-12 flex items-end justify-between gap-6">
                 <div>
                   <Eyebrow>Rooms & suites</Eyebrow>
                   <h2 className="mt-3 font-display text-4xl">Choose your stay</h2>
                 </div>
-                <CarouselControls target={roomCarousel} label="rooms" />
+
               </div>
-              <div ref={roomCarousel} className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div ref={roomCarousel} className="editorial-room-grid flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {roomTypes.map((room) => {
-                  const roomImages = room.images?.filter(Boolean) ?? []
+                  const roomImages = [...new Set([...(room.images ?? []), room.imageUrl].filter((url): url is string => Boolean(url)))]
                   const image = room.imageUrl || roomImages[0] || accentImage
                   return (
-                    <article key={room.id} className="min-w-[88%] snap-start border border-navy/10 bg-background sm:min-w-[62%] lg:min-w-[46%]">
+                    <article key={room.id} className="min-w-[88%] snap-start bg-background sm:min-w-[62%] lg:min-w-[46%]">
                       <button
                         type="button"
                         onClick={() => roomImages.length && setRoomGallery({ images: roomImages, active: 0, name: room.name })}
@@ -371,13 +374,13 @@ export default function PropertyDetailClient({
                           )}
                         </div>
                         {room.description ? <p className="mt-4 font-sans text-sm font-light leading-6 text-navy/62">{room.description}</p> : null}
-                        <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-navy/10 pt-5 font-sans text-[10px] uppercase tracking-[0.12em] text-navy/50">
+                        <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2  pt-5 font-sans text-[10px] uppercase tracking-[0.12em] text-navy/50">
                           <span><Users className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.maxGuests} guests</span>
                           <span><BedDouble className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.bedrooms} bed</span>
                           <span><Bath className="mr-1.5 inline h-3.5 w-3.5 text-gold" />{room.bathrooms} bath</span>
                         </div>
                         {!isOwnerView ? (
-                          <button type="button" onClick={() => selectRoom(room.id)} className="mt-6 inline-flex items-center gap-2 border border-navy/20 px-5 py-3 font-sans text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors hover:border-gold-dark hover:text-gold-dark">
+                          <button type="button" onClick={() => selectRoom(room.id)} className="mt-6 inline-flex items-center gap-2 px-0 py-3 font-sans text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors hover:border-gold-dark hover:text-gold-dark">
                             Select room <ArrowRight className="h-3.5 w-3.5" />
                           </button>
                         ) : null}
@@ -397,10 +400,10 @@ export default function PropertyDetailClient({
         <section id="experiences" className="scroll-mt-24 bg-background py-14 sm:py-20">
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <Eyebrow>At the property</Eyebrow>
-            <h2 className="mt-3 font-display text-3xl sm:text-4xl">{property.amenitiesTitle || "What to expect during your stay."}</h2>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl">{property.amenitiesTitle || "Facilities & amenities"}</h2>
             <div className="mt-7 grid gap-4 md:grid-cols-3">
               {facilityGroups.map((group) => (
-                <div key={group.title} className="bg-beige p-5 sm:p-6">
+                <div key={group.title} className="p-5 sm:p-6">
                   <h3 className="font-display text-2xl">{group.title}</h3>
                   <ul className="mt-4 space-y-2 font-sans text-sm font-light leading-6 text-navy/75">
                     {group.values.slice(0, 12).map((value) => <li key={value}>{value}</li>)}
@@ -423,59 +426,7 @@ export default function PropertyDetailClient({
         </section>
       ) : null}
 
-      <section className="bg-navy py-20 text-cream lg:py-28">
-        <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">The rhythm of your stay</p>
-            <h2 className="mt-4 font-display text-[clamp(2.2rem,4vw,4rem)]">A day with room to unfold.</h2>
-            <p className="mt-5 font-sans text-sm font-light leading-7 text-cream/68">No fixed itinerary. These are simply the moments the setting invites—from the first quiet light to an evening gathered around the table.</p>
-          </div>
-          <div className="mt-12 grid gap-px bg-cream/15 md:grid-cols-3">
-            {[
-              ["Morning", "Wake slowly", "Tea, mountain air, and breakfast made around what is freshest nearby."],
-              ["Afternoon", "Follow your curiosity", "Walk, meet a local maker, rest in the garden, or let the concierge shape an unhurried outing."],
-              ["Evening", "Return to the table", "A private meal, stories from the region, and the particular stillness that arrives after dark."],
-            ].map(([time, title, copy]) => <article key={time} className="bg-navy px-7 py-9"><p className="text-[9px] uppercase tracking-[0.2em] text-gold">{time}</p><h3 className="mt-3 font-display text-2xl">{title}</h3><p className="mt-3 text-sm font-light leading-7 text-cream/62">{copy}</p></article>)}
-          </div>
-        </div>
-      </section>
 
-      <section className="border-y border-navy/8 bg-beige py-20 lg:py-24">
-        <div className="mx-auto grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[.7fr_1.3fr]">
-          <div>
-            <Eyebrow>At a glance</Eyebrow>
-            <h2 className="mt-3 font-display text-4xl">Comfort, simply considered.</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-3">
-            {[...property.amenities, ...(property.services ?? [])].slice(0, 12).map((item) => (
-              <div key={item} className="flex items-start gap-2 border-b border-navy/10 pb-4 font-sans text-sm font-light text-navy/68">
-                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-dark" /> {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {images.length > 2 ? (
-        <section className="py-20 lg:py-28">
-          <div className="mx-auto max-w-[1320px] px-5 sm:px-8">
-            <div className="mb-10 flex items-end justify-between gap-8">
-              <div>
-                <Eyebrow>Visual journal</Eyebrow>
-                <h2 className="mt-3 font-display text-4xl">A closer look</h2>
-              </div>
-              <div className="flex items-center gap-5"><span className="hidden font-sans text-[9px] uppercase tracking-[0.18em] text-navy/40 sm:inline">{images.length} photographs</span><CarouselControls target={galleryCarousel} label="gallery" /></div>
-            </div>
-            <div ref={galleryCarousel} className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {images.slice(0, 4).map((image, index) => (
-                <button key={image.id} type="button" disabled={previewMode} onClick={() => setRoomGallery({ images: images.map((item) => item.url), active: index, name: property.title })} className="relative aspect-[4/3] min-w-[88%] snap-start overflow-hidden sm:min-w-[62%] lg:min-w-[52%]">
-                  <Image src={image.url} alt={image.alt || property.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 hover:scale-[1.02]" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       {videoUrl ? (
         <BrochureVideoBand videoUrl={videoUrl} videoPoster={videoPoster} title={property.title} />
@@ -486,14 +437,14 @@ export default function PropertyDetailClient({
           <div className="min-h-[380px] overflow-hidden">
             <PropertyDetailMap location={property.location} address={property.address} title={property.title} />
           </div>
-          <div className="flex flex-col justify-center border border-navy/10 bg-beige p-7 sm:p-9">
+          <div className="flex flex-col justify-center p-7 sm:p-9">
             <Eyebrow>Location & access</Eyebrow>
             <h2 className="mt-4 font-display text-3xl">{property.location}</h2>
             {property.address ? <p className="mt-3 font-sans text-sm font-light leading-6 text-navy/55">{property.address}</p> : null}
             {property.gettingHere?.length ? (
               <div className="mt-7 space-y-5">
                 {property.gettingHere.map((leg) => (
-                  <div key={`${leg.from}-${leg.time}`} className="flex gap-3 border-t border-navy/10 pt-4">
+                  <div key={`${leg.from}-${leg.time}`} className="flex gap-3  pt-4">
                     <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     <div>
                       <p className="font-display text-lg">{leg.time}</p>
@@ -511,7 +462,7 @@ export default function PropertyDetailClient({
       </section>
 
       {reviews.length > 0 ? (
-        <section className="bg-beige py-20 lg:py-28">
+        <section className="bg-background py-20 lg:py-28">
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <div className="mb-10">
               <Eyebrow>Guest reflections</Eyebrow>
@@ -519,10 +470,10 @@ export default function PropertyDetailClient({
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {reviews.slice(0, 3).map((review) => (
-                <figure key={review.id} className="border border-navy/8 border-t-gold-dark bg-white p-7">
+                <figure key={review.id} className="p-7 text-center">
                   <Stars rating={review.rating} />
                   <blockquote className="mt-5 font-display text-lg italic leading-7 text-navy/82">“{review.comment}”</blockquote>
-                  <figcaption className="mt-6 border-t border-navy/10 pt-4 font-sans text-xs text-navy/50">{review.guest.name || "Verified guest"}</figcaption>
+                  <figcaption className="mt-6  pt-4 font-sans text-xs text-navy/50">{review.guest.name || "Verified guest"}</figcaption>
                 </figure>
               ))}
             </div>
@@ -530,13 +481,13 @@ export default function PropertyDetailClient({
         </section>
       ) : null}
 
-      <section className="border-t border-navy/10 bg-background py-20 lg:py-28">
+      <section className=" bg-background py-20 lg:py-28">
         <div className="mx-auto max-w-[980px] px-5 sm:px-8">
           <Eyebrow>Before you arrive</Eyebrow>
           <h2 className="mt-3 font-display text-4xl">Frequently asked questions</h2>
-          <div className="mt-10 border-t border-navy/10">
+          <div className="mt-10 ">
             {faqs.map((faq, index) => (
-              <details key={faq.question} className="group border-b border-navy/10" open={index === 0}>
+              <details key={faq.question} className="group" open={index === 0}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-sans text-sm text-navy/82">
                   {faq.question}
                   <ChevronDown className="h-4 w-4 shrink-0 text-gold transition-transform group-open:rotate-180" />

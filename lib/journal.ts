@@ -23,7 +23,7 @@ export const journalArticles: JournalArticle[] = [
     readTime: "5 min read",
     date: "June 2026",
     image:
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1600&auto=format&fit=crop",
+      "/images/marketing/nepal-landscape.jpg",
     body: [
       "Ilam wakes gently. Long before the sun crests the ridgeline, a soft grey light settles over the terraced gardens, and the first pickers move quietly between the rows, baskets on their backs, fingers finding the youngest leaves by touch as much as by sight.",
       "This is Nepal's tea country — a landscape of folded green hills in the far east of the country, where the air is cool and faintly sweet, and the day is measured not by the clock but by the light. To stay here is to borrow that rhythm for a while.",

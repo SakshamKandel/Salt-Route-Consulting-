@@ -1,15 +1,17 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import { EditorialHero } from "@/components/public/EditorialHero"
 import Image, { type StaticImageData } from "next/image"
 import Link from "next/link"
 import { ArrowRight, BarChart3, CheckCircle2, Compass, LineChart, Mail, MapPin, Megaphone, Phone, Quote, ShieldCheck, Sparkles } from "lucide-react"
 import { CompactContainer } from "@/components/public/Compact"
-import imgVilla from "@/public/images/marketing/sunshine-villa-main.png"
-import imgRetreat from "@/public/images/marketing/himalayan-retreat-exterior.png"
+import imgVilla from "@/public/images/marketing/nepal-villa.jpg"
+import imgRetreat from "@/public/images/marketing/nepal-residence.jpg"
 import imgTeam from "@/public/images/marketing/boutique-office-team.png"
-import imgDining from "@/public/images/marketing/private-himalayan-dining.png"
-import imgInterior from "@/public/images/marketing/nepalese-interior-details.png"
+import imgDining from "@/public/images/saltroute/breakfast-with-a-view.webp"
+import imgBrand from "@/public/images/saltroute/painted-table.webp"
+import imgInterior from "@/public/images/marketing/nepal-interior.jpg"
 
 export type ForOwnersPortfolioItem = {
   slug: string
@@ -38,7 +40,7 @@ const disciplines = [
 ]
 
 const commercialServices = [
-  { image: imgInterior, title: "A brand guests remember", copy: "Naming, positioning, photography, film, editorial writing, and a visual system that gives your property a clear place in the market.", href: "/for-owners/brand-marketing" },
+  { image: imgBrand, title: "A brand guests remember", copy: "Naming, positioning, photography, film, editorial writing, and a visual system that gives your property a clear place in the market.", href: "/for-owners/brand-marketing" },
   { image: imgDining, title: "Demand with the right audience", copy: "Seasonal campaigns, press, private networks, embassies, travel designers, and direct channels focused on qualified guests.", href: "/for-owners/revenue-distribution" },
   { image: imgTeam, title: "Performance without daily friction", copy: "Dynamic rates, calendar management, reservations, guest care, monthly statements, and practical decisions backed by live data.", href: "/for-owners/guest-operations" },
 ]
@@ -94,31 +96,17 @@ export default function ForOwnersClient({ portfolio, contact, stats, ownerVoice 
     }
   }
 
-  const inputClass = "mt-2 min-h-12 w-full border border-navy/16 bg-transparent px-4 py-3 font-sans text-sm text-navy outline-none transition-colors placeholder:text-navy/35 focus:border-gold-dark"
+  const inputClass = "mt-2 min-h-12 w-full  bg-transparent px-4 py-3 font-sans text-sm text-navy outline-none transition-colors placeholder:text-navy/35 focus:border-gold-dark"
 
   return (
     <main className="overflow-hidden bg-background text-navy">
-      <section className="relative flex min-h-[650px] items-center justify-center overflow-hidden text-center text-cream lg:min-h-[760px]">
-        <Image src={heroImage} alt="A Salt Route partner property" fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-navy/52" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/65 via-transparent to-navy/35" />
-        <CompactContainer className="relative z-10">
-          <div className="mx-auto max-w-4xl">
-            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-gold">For distinctive property owners</p>
-            <h1 className="mt-6 font-display text-[clamp(2.75rem,6vw,5.75rem)] leading-[0.98] tracking-[-0.02em]">Let your property become a destination.</h1>
-            <p className="mx-auto mt-7 max-w-2xl font-sans text-base font-light leading-8 text-cream/88 sm:text-lg">Brand, market, operate, and care for your estate with one hospitality partner—while keeping full ownership and the freedom to return whenever you wish.</p>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
-              <Link href="#owner-enquiry" className="inline-flex min-h-12 items-center gap-3 bg-gold px-7 font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-navy transition-colors hover:bg-cream">Begin a conversation <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="#owner-marketing" className="font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-cream underline decoration-cream/40 underline-offset-8 hover:decoration-cream">Explore our approach</Link>
-            </div>
-          </div>
-        </CompactContainer>
-      </section>
+      <EditorialHero image={heroImage} title="For Owners" />
+      <div className="editorial-properties-intro">Distinctive properties deserve thoughtful care. We bring hospitality, marketing, and operations together around your property.</div>
 
-      <section id="performance" className="border-b border-navy/8 bg-white py-16 lg:py-20">
+      <section id="performance" className=" bg-white py-16 lg:py-20">
         <CompactContainer>
           <SectionHeading eyebrow="A complete hospitality partnership" title="Everything your property needs to stand apart." copy="Salt Route brings the creative, commercial, and operating disciplines of a luxury hospitality team into one clear relationship." align="center" />
-          <div className="mt-14 grid gap-px bg-navy/10 md:grid-cols-3">
+          <div className="mt-14 grid gap-10 editorial-two-column md:grid-cols-2">
             {disciplines.map((item) => { const Icon = item.icon; return (
               <article key={item.title} className="bg-white px-7 py-10 text-center lg:px-10">
                 <Icon className="mx-auto h-6 w-6 text-gold-dark" strokeWidth={1.4} />
@@ -130,7 +118,7 @@ export default function ForOwnersClient({ portfolio, contact, stats, ownerVoice 
         </CompactContainer>
       </section>
 
-      <section id="owner-marketing" className="scroll-mt-24 bg-beige py-20 lg:py-28">
+      <section id="owner-marketing" className="scroll-mt-24 bg-background py-20 lg:py-28">
         <CompactContainer>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div className="grid grid-cols-2 gap-3">
@@ -140,7 +128,7 @@ export default function ForOwnersClient({ portfolio, contact, stats, ownerVoice 
             <div>
               <SectionHeading eyebrow="Positioning & launch" title="We find the story only your property can tell." copy="Before we sell a room, we define why the place matters. Our team studies the architecture, landscape, local culture, and owner vision, then translates them into a distinctive brand guests can recognise and desire." />
               <ul className="mt-8 grid gap-4 font-sans text-sm text-navy/72 sm:grid-cols-2">
-                {["Brand strategy & naming", "Editorial photography", "Cinematic film", "Website & booking journey", "Press and launch campaigns", "Luxury trade introductions"].map((item) => <li key={item} className="flex items-center gap-3 border-t border-navy/10 pt-4"><span className="h-1.5 w-1.5 bg-gold-dark" /> {item}</li>)}
+                {["Brand strategy & naming", "Editorial photography", "Cinematic film", "Website & booking journey", "Press and launch campaigns", "Luxury trade introductions"].map((item) => <li key={item} className="flex items-center gap-3  pt-4"><span className="h-1.5 w-1.5 bg-gold-dark" /> {item}</li>)}
               </ul>
               <Link href="#owner-enquiry" className="mt-9 inline-flex items-center gap-3 font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-navy hover:text-gold-dark">Discuss your property <ArrowRight className="h-4 w-4" /></Link>
             </div>
@@ -157,15 +145,15 @@ export default function ForOwnersClient({ portfolio, contact, stats, ownerVoice 
       </section>
 
       <section className="bg-background py-20 lg:py-28">
-        <CompactContainer><div className="grid gap-10 md:grid-cols-3">
+        <CompactContainer><div className="grid gap-10 editorial-two-column md:grid-cols-2">
           {commercialServices.map((service) => <article key={service.title}><ImagePanel src={service.image} alt={service.title} className="aspect-[4/3]" /><h3 className="mt-6 font-display text-2xl text-navy">{service.title}</h3><p className="mt-3 font-sans text-sm font-light leading-7 text-navy/66">{service.copy}</p><Link href={service.href} className="mt-5 inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-navy hover:text-gold-dark">Explore the service <ArrowRight className="h-3.5 w-3.5" /></Link></article>)}
         </div></CompactContainer>
       </section>
 
-      <section className="bg-beige py-20 lg:py-28">
+      <section className="bg-background py-20 lg:py-28">
         <CompactContainer><div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
           <ImagePanel src={imgRetreat} alt="A maintained Himalayan retreat" className="aspect-[16/11]" />
-          <div><SectionHeading eyebrow="Property enhancement" title="Protect the character. Improve the experience." copy="We create a practical enhancement plan for each home—from arrival sequence and room readiness to local procurement, landscape care, preventive maintenance, and thoughtful design improvements." /><div className="mt-8 grid grid-cols-2 gap-6 border-t border-navy/10 pt-7"><div><ShieldCheck className="h-5 w-5 text-gold-dark" /><p className="mt-3 font-display text-lg">Asset care</p><p className="mt-1 font-sans text-xs leading-5 text-navy/58">Standards, maintenance, and transparent oversight.</p></div><div><Sparkles className="h-5 w-5 text-gold-dark" /><p className="mt-3 font-display text-lg">Guest readiness</p><p className="mt-1 font-sans text-xs leading-5 text-navy/58">Every room, ritual, and touchpoint considered.</p></div></div><Link href="/for-owners/property-enhancement" className="mt-7 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]">Explore property enhancement <ArrowRight className="h-3.5 w-3.5" /></Link></div>
+          <div><SectionHeading eyebrow="Property enhancement" title="Protect the character. Improve the experience." copy="We create a practical enhancement plan for each home—from arrival sequence and room readiness to local procurement, landscape care, preventive maintenance, and thoughtful design improvements." /><div className="mt-8 grid grid-cols-2 gap-6  pt-7"><div><ShieldCheck className="h-5 w-5 text-gold-dark" /><p className="mt-3 font-display text-lg">Asset care</p><p className="mt-1 font-sans text-xs leading-5 text-navy/58">Standards, maintenance, and transparent oversight.</p></div><div><Sparkles className="h-5 w-5 text-gold-dark" /><p className="mt-3 font-display text-lg">Guest readiness</p><p className="mt-1 font-sans text-xs leading-5 text-navy/58">Every room, ritual, and touchpoint considered.</p></div></div><Link href="/for-owners/property-enhancement" className="mt-7 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]">Explore property enhancement <ArrowRight className="h-3.5 w-3.5" /></Link></div>
         </div></CompactContainer>
       </section>
 
@@ -182,17 +170,17 @@ export default function ForOwnersClient({ portfolio, contact, stats, ownerVoice 
         <div className="border-cream/15 sm:border-l sm:pl-10"><p className="font-display text-4xl text-gold">100%</p><p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-cream/58">Ownership retained</p></div>
       </div></CompactContainer></section>
 
-      {portfolio.length ? <section id="portfolio" className="bg-beige py-20 lg:py-28"><CompactContainer>
+      {portfolio.length ? <section id="portfolio" className="bg-background py-20 lg:py-28"><CompactContainer>
         <SectionHeading eyebrow="Current portfolio" title="Properties with a distinct sense of place." copy="A selection of private homes and small retreats currently represented by Salt Route." align="center" />
-        <div className="mt-14 grid gap-8 md:grid-cols-3">{portfolio.slice(0, 3).map((property) => <article key={property.slug} className="bg-white"><Link href={`/properties/${property.slug}`} className="block"><ImagePanel src={property.image || imgRetreat} alt={property.name} className="aspect-[4/3]" /></Link><div className="p-6"><p className="text-[10px] uppercase tracking-[0.18em] text-gold-dark">{property.location}</p><h3 className="mt-2 font-display text-2xl"><Link href={`/properties/${property.slug}`}>{property.name}</Link></h3><p className="mt-3 line-clamp-2 text-sm font-light leading-6 text-navy/62">{property.desc}</p></div></article>)}</div>
+        <div className="mt-14 grid gap-8 editorial-two-column md:grid-cols-2">{portfolio.slice(0, 3).map((property) => <article key={property.slug} className="bg-white"><Link href={`/properties/${property.slug}`} className="block"><ImagePanel src={property.image || imgRetreat} alt={property.name} className="aspect-[4/3]" /></Link><div className="p-6"><p className="text-[10px] uppercase tracking-[0.18em] text-gold-dark">{property.location}</p><h3 className="mt-2 font-display text-2xl"><Link href={`/properties/${property.slug}`}>{property.name}</Link></h3><p className="mt-3 line-clamp-2 text-sm font-light leading-6 text-navy/62">{property.desc}</p></div></article>)}</div>
       </CompactContainer></section> : null}
 
       {ownerVoice ? <section className="bg-background py-20 lg:py-28"><CompactContainer><figure className="mx-auto max-w-4xl text-center"><Quote className="mx-auto h-7 w-7 text-gold-dark/50" /><blockquote className="mt-7 font-display text-[clamp(1.6rem,3vw,2.75rem)] italic leading-[1.28] text-navy">“{ownerVoice.quote}”</blockquote><figcaption className="mt-7 text-xs uppercase tracking-[0.16em] text-navy/55">{ownerVoice.name}{ownerVoice.role ? ` · ${ownerVoice.role}` : ""}</figcaption></figure></CompactContainer></section> : null}
 
-      <section id="owner-enquiry" className="scroll-mt-24 border-t border-navy/8 bg-white py-20 lg:py-28">
+      <section id="owner-enquiry" className="scroll-mt-24  bg-white py-20 lg:py-28">
         <CompactContainer><div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <div><SectionHeading eyebrow="Owner partnership" title="Tell us about your property." copy={`Share the setting, current stage, and what you hope to achieve. The ${contact.siteName} team will review it personally and respond within one business day.`} /><div className="mt-9 space-y-4 text-sm text-navy/65"><a href={`mailto:${contact.email}`} className="flex items-center gap-3 hover:text-navy"><Mail className="h-4 w-4 text-gold-dark" />{contact.email}</a><a href={contact.phoneHref} className="flex items-center gap-3 hover:text-navy"><Phone className="h-4 w-4 text-gold-dark" />{contact.phone}</a><p className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />{contact.address}</p></div></div>
-          <div className="border border-navy/10 bg-beige p-7 sm:p-10">
+          <div className=" bg-beige p-7 sm:p-10">
             {status === "sent" ? <div className="py-12 text-center"><CheckCircle2 className="mx-auto h-10 w-10 text-emerald-700" /><h2 className="mt-5 font-display text-3xl">Thank you.</h2><p className="mx-auto mt-3 max-w-md text-sm leading-7 text-navy/65">Your property details are with our team. We will be in touch within one business day.</p></div> :
             <form onSubmit={handleOwnerEnquiry} className="grid gap-5 sm:grid-cols-2">
               <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />

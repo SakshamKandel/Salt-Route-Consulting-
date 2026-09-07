@@ -16,7 +16,7 @@ export function CompactContainer({
   className?: string
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[92rem] px-5 sm:px-8 lg:px-12", className)}>
+    <div className={cn("editorial-container", className)}>
       {children}
     </div>
   )
@@ -32,7 +32,7 @@ export function CompactSection({
   id?: string
 }) {
   return (
-    <Reveal as="section" id={id} className={cn("py-16 sm:py-20 lg:py-28", className)}>
+    <Reveal as="section" id={id} className={cn("editorial-section", className)}>
       <CompactContainer>{children}</CompactContainer>
     </Reveal>
   )
@@ -55,7 +55,7 @@ export function CompactHeading({
     <Reveal as="div">
       <header
         className={cn(
-          "max-w-3xl",
+          "editorial-heading",
           align === "center" && "mx-auto text-center",
           className,
         )}
@@ -93,9 +93,9 @@ export function CompactButton({
     <Link
       href={href}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center px-6 py-3 font-sans text-[12px] font-medium uppercase tracking-[0.14em] transition-colors duration-200",
-        tone === "gold" && "bg-camel text-white hover:bg-camel-dark",
-        tone === "navy" && "bg-navy text-cream hover:bg-navy-dark",
+        "editorial-link inline-flex min-h-11 items-center justify-center py-3 font-sans text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-200",
+        tone === "gold" && "text-navy hover:text-gold-dark",
+        tone === "navy" && "text-navy hover:text-gold-dark",
         tone === "text" && "min-h-0 px-0 py-0 text-navy hover:text-gold-dark",
         className,
       )}
@@ -123,7 +123,7 @@ export function CompactMediaCard({
   imageClassName?: string
 }) {
   return (
-    <article className="flex h-full flex-col">
+    <article className="editorial-media-card flex h-full flex-col">
       <Link href={href} className="relative block aspect-[3/2] overflow-hidden bg-sand-dark">
         <Image
           src={image}
@@ -168,7 +168,7 @@ export function CompactImageText({
   children?: ReactNode
 }) {
   return (
-    <div className="grid items-center gap-7 lg:grid-cols-12 lg:gap-10">
+    <div className="editorial-image-text grid items-center gap-7 lg:grid-cols-12 lg:gap-10">
       {/* Image drifts against scroll for a whisper of parallax. */}
       <ParallaxImage
         className={cn(

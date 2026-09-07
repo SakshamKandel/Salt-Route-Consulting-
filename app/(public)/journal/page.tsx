@@ -1,7 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
 import { journalArticles } from "@/lib/journal"
-import { CompactHeading, CompactSection } from "@/components/public/Compact"
+import { EditorialHero } from "@/components/public/EditorialHero"
+import { CompactSection } from "@/components/public/Compact"
 
 export const metadata = {
   title: "Journal | Salt Route",
@@ -13,13 +14,8 @@ export default function JournalPage() {
 
   return (
     <div className="min-h-screen bg-background text-navy">
-      <CompactSection className="pb-7 sm:pb-8">
-        <CompactHeading
-          eyebrow="The journal"
-          title="Stories from Nepal."
-          copy="Notes on places, people, hospitality, and the slower journeys that connect them."
-        />
-      </CompactSection>
+      <EditorialHero image="/images/marketing/nepal-residence.jpg" title="Notes from the route" eyebrow="The journal" />
+      <div className="editorial-properties-intro">Notes on places, people, hospitality, and the slower journeys that connect them.</div>
 
       {lead ? (
         <CompactSection className="pt-0">
@@ -38,8 +34,8 @@ export default function JournalPage() {
       ) : null}
 
       {rest.length ? (
-        <CompactSection className="bg-beige">
-          <div className="grid gap-x-7 gap-y-9 md:grid-cols-2 lg:grid-cols-3">
+        <CompactSection className="bg-background">
+          <div className="editorial-two-column grid md:grid-cols-2">
             {rest.map((article) => (
               <article key={article.slug}>
                 <Link href={`/journal/${article.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-sand-dark">

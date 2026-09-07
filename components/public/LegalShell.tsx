@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { CompactHeading, CompactSection } from "./Compact"
+import { CompactSection } from "./Compact"
 import { Reveal } from "./motion"
 
 export type LegalItem = { id: string; title: string; body: ReactNode }
@@ -18,12 +18,13 @@ export function LegalShell({
   eyebrow?: string
 }) {
   return (
-    <div className="min-h-screen bg-background text-navy">
+    <div className="editorial-plain min-h-screen bg-background text-navy">
       <CompactSection>
-        <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:gap-12">
+        <div className="editorial-legal-grid">
           <div className="lg:sticky lg:top-24 lg:self-start">
             <Reveal as="div">
-              <CompactHeading eyebrow={eyebrow} title={title} />
+              <p className="editorial-eyebrow">{eyebrow}</p>
+              <h1 className="font-display text-4xl sm:text-5xl">{title}</h1>
             </Reveal>
             <p className="mt-4 font-sans text-[11px] uppercase tracking-[0.12em] text-navy/50">
               Last updated: {updated}
@@ -39,7 +40,7 @@ export function LegalShell({
 
           <article>
             {summary ? (
-              <Reveal as="div" className="mb-5 bg-beige p-5 sm:p-6">
+              <Reveal as="div" className="mb-5 py-5">
                 <p className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/50">Summary</p>
                 <div className="mt-2 font-sans text-base font-light leading-7 text-navy/70">{summary}</div>
               </Reveal>
@@ -51,7 +52,7 @@ export function LegalShell({
                   key={item.id}
                   id={item.id}
                   delay={index * 0.05}
-                  className="scroll-mt-24 bg-sand p-5 sm:p-6"
+                  className="scroll-mt-24 py-5"
                 >
                   <h2 className="font-display text-2xl leading-tight text-navy">{item.title}</h2>
                   <div className="mt-3 font-sans text-base font-light leading-7 text-navy/68">{item.body}</div>

@@ -1,0 +1,52 @@
+[
+  {
+    "original": "Hike-32.jpg",
+    "output": "public/images/saltroute/tea-hills.webp",
+    "bytes": 626568
+  },
+  {
+    "original": "Tea Gardens-17.jpg",
+    "output": "public/images/saltroute/misty-tea-gardens.webp",
+    "bytes": 217636
+  },
+  {
+    "original": "Jitpur-30.jpg",
+    "output": "public/images/saltroute/jitpur-terraces.webp",
+    "bytes": 503882
+  },
+  {
+    "original": "Jitpur-84.jpg",
+    "output": "public/images/saltroute/local-farmers.webp",
+    "bytes": 523512
+  },
+  {
+    "original": "Cabin House-3.jpg",
+    "output": "public/images/saltroute/tea-harvest.webp",
+    "bytes": 954344
+  },
+  {
+    "original": "Breakfast-25.jpg",
+    "output": "public/images/saltroute/garden-breakfast.webp",
+    "bytes": 242614
+  },
+  {
+    "original": "Breakfast-8.jpg",
+    "output": "public/images/saltroute/breakfast-with-a-view.webp",
+    "bytes": 133698
+  },
+  {
+    "original": "Bar House-27.jpg",
+    "output": "public/images/saltroute/painted-table.webp",
+    "bytes": 107420
+  },
+  {
+    "original": "Hike-19.jpg",
+    "output": "public/images/saltroute/garden-details.webp",
+    "bytes": 115282
+  },
+  {
+    "original": "Lucky Dairy-1.jpg",
+    "output": "public/images/saltroute/local-cheese.webp",
+    "bytes": 205526
+  }
+]

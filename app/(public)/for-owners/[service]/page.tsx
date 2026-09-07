@@ -5,11 +5,11 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, Check, CircleCheck, Compass, ShieldCheck } from "lucide-react"
 import { CompactContainer } from "@/components/public/Compact"
 import { OWNER_SERVICES, type OwnerServiceMeta } from "@/lib/owner-services"
-import imgVilla from "@/public/images/marketing/sunshine-villa-main.png"
-import imgRetreat from "@/public/images/marketing/himalayan-retreat-exterior.png"
+import imgVilla from "@/public/images/marketing/nepal-villa.jpg"
+import imgRetreat from "@/public/images/marketing/nepal-residence.jpg"
 import imgTeam from "@/public/images/marketing/boutique-office-team.png"
-import imgDining from "@/public/images/marketing/private-himalayan-dining.png"
-import imgInterior from "@/public/images/marketing/nepalese-interior-details.png"
+import imgDining from "@/public/images/saltroute/garden-breakfast.webp"
+import imgInterior from "@/public/images/marketing/nepal-interior.jpg"
 
 type OwnerService = OwnerServiceMeta & {
   image: StaticImageData
@@ -145,7 +145,7 @@ export default async function OwnerServicePage({ params }: { params: Promise<{ s
 
   return (
     <main className="bg-background text-navy">
-      <section className="relative flex min-h-[650px] items-end overflow-hidden text-cream lg:min-h-[760px]">
+      <section className="editorial-page-hero relative flex min-h-[650px] items-end overflow-hidden text-cream lg:min-h-[760px]">
         <Image src={item.image} alt={item.eyebrow} fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/42 to-navy/20" />
         <CompactContainer className="relative z-10 pb-16 lg:pb-24">
@@ -158,19 +158,19 @@ export default async function OwnerServicePage({ params }: { params: Promise<{ s
 
       <section className="py-20 lg:py-28"><CompactContainer><div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-24"><div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">Our point of view</p><h2 className="mt-4 font-display text-4xl">Specific to the property. Clear to the owner.</h2></div><p className="font-display text-[clamp(1.5rem,2.8vw,2.4rem)] leading-[1.35] text-navy/80">{item.promise}</p></div></CompactContainer></section>
 
-      <section className="border-y border-navy/8 bg-beige py-20 lg:py-28"><CompactContainer>
+      <section className=" bg-background py-20 lg:py-28"><CompactContainer>
         <div className="max-w-2xl"><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">What we do</p><h2 className="mt-4 font-display text-4xl">The work, in detail.</h2></div>
-        <div className="mt-12 grid gap-px bg-navy/10 md:grid-cols-2">{item.capabilities.map((capability, index) => <article key={capability.title} className="bg-beige p-7 sm:p-10"><p className="text-[10px] tracking-[0.18em] text-gold-dark">0{index + 1}</p><h3 className="mt-4 font-display text-2xl">{capability.title}</h3><p className="mt-4 text-sm font-light leading-7 text-navy/65">{capability.copy}</p></article>)}</div>
+        <div className="mt-12 grid gap-10 md:grid-cols-2">{item.capabilities.map((capability, index) => <article key={capability.title} className="bg-beige p-7 sm:p-10"><p className="text-[10px] tracking-[0.18em] text-gold-dark">0{index + 1}</p><h3 className="mt-4 font-display text-2xl">{capability.title}</h3><p className="mt-4 text-sm font-light leading-7 text-navy/65">{capability.copy}</p></article>)}</div>
       </CompactContainer></section>
 
       <section className="py-20 lg:py-28"><CompactContainer><div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
         <div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">How we work</p><h2 className="mt-4 font-display text-4xl">A disciplined path from insight to action.</h2><p className="mt-5 text-sm font-light leading-7 text-navy/64">The exact programme is shaped after the property walkthrough, but every engagement follows a transparent sequence.</p></div>
-        <div className="border-t border-navy/12">{item.process.map((step, index) => <article key={step.title} className="grid gap-4 border-b border-navy/12 py-7 sm:grid-cols-[70px_0.7fr_1.3fr]"><span className="text-[10px] tracking-[0.18em] text-gold-dark">0{index + 1}</span><h3 className="font-display text-xl">{step.title}</h3><p className="text-sm font-light leading-7 text-navy/62">{step.copy}</p></article>)}</div>
+        <div className="">{item.process.map((step, index) => <article key={step.title} className="grid gap-4  py-7 sm:grid-cols-[70px_0.7fr_1.3fr]"><span className="text-[10px] tracking-[0.18em] text-gold-dark">0{index + 1}</span><h3 className="font-display text-xl">{step.title}</h3><p className="text-sm font-light leading-7 text-navy/62">{step.copy}</p></article>)}</div>
       </div></CompactContainer></section>
 
-      <section className="bg-navy py-20 text-cream lg:py-24"><CompactContainer><div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20"><div><CircleCheck className="h-7 w-7 text-gold" /><h2 className="mt-5 font-display text-4xl">What this creates.</h2></div><div className="grid gap-5 sm:grid-cols-2">{item.outcomes.map((outcome) => <p key={outcome} className="flex gap-3 border-t border-cream/15 pt-5 text-sm text-cream/72"><Check className="h-4 w-4 shrink-0 text-gold" />{outcome}</p>)}</div></div></CompactContainer></section>
+      <section className="bg-navy py-20 text-cream lg:py-24"><CompactContainer><div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20"><div><CircleCheck className="h-7 w-7 text-gold" /><h2 className="mt-5 font-display text-4xl">What this creates.</h2></div><div className="grid gap-5 sm:grid-cols-2">{item.outcomes.map((outcome) => <p key={outcome} className="flex gap-3  pt-5 text-sm text-cream/72"><Check className="h-4 w-4 shrink-0 text-gold" />{outcome}</p>)}</div></div></CompactContainer></section>
 
-      <section className="bg-beige py-20 lg:py-24"><CompactContainer><div className="flex items-end justify-between gap-6"><div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">Explore the partnership</p><h2 className="mt-4 font-display text-4xl">Related owner services.</h2></div><Compass className="hidden h-7 w-7 text-gold-dark sm:block" /></div><div className="mt-10 grid gap-6 md:grid-cols-3">{related.map((entry) => <Link key={entry.slug} href={`/for-owners/${entry.slug}`} className="group border-t border-gold-dark bg-white p-7"><p className="text-[9px] uppercase tracking-[0.18em] text-gold-dark">{entry.eyebrow}</p><h3 className="mt-4 font-display text-2xl">{entry.title}</h3><span className="mt-6 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]">Read more <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span></Link>)}</div></CompactContainer></section>
+      <section className="bg-beige py-20 lg:py-24"><CompactContainer><div className="flex items-end justify-between gap-6"><div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-dark">Explore the partnership</p><h2 className="mt-4 font-display text-4xl">Related owner services.</h2></div><Compass className="hidden h-7 w-7 text-gold-dark sm:block" /></div><div className="mt-10 grid gap-6 editorial-two-column md:grid-cols-2">{related.map((entry) => <Link key={entry.slug} href={`/for-owners/${entry.slug}`} className="group bg-transparent py-7"><p className="text-[9px] uppercase tracking-[0.18em] text-gold-dark">{entry.eyebrow}</p><h3 className="mt-4 font-display text-2xl">{entry.title}</h3><span className="mt-6 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]">Read more <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span></Link>)}</div></CompactContainer></section>
 
       <section className="py-20 text-center lg:py-24"><CompactContainer><ShieldCheck className="mx-auto h-6 w-6 text-gold-dark" /><h2 className="mx-auto mt-5 max-w-3xl font-display text-[clamp(2.2rem,4vw,4rem)]">Let us walk the property with you.</h2><p className="mx-auto mt-5 max-w-xl text-sm font-light leading-7 text-navy/62">A confidential first conversation helps us understand the property, your ambitions, and where our work can create the most value.</p><Link href="/for-owners#owner-enquiry" className="mt-8 inline-flex min-h-12 items-center gap-3 bg-navy px-7 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream hover:bg-gold-dark">Begin a conversation <ArrowRight className="h-4 w-4" /></Link></CompactContainer></section>
     </main>

@@ -2,7 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getArticle, journalArticles } from "@/lib/journal"
-import { CompactContainer, CompactSection } from "@/components/public/Compact"
+import { EditorialHero } from "@/components/public/EditorialHero"
+import { CompactSection } from "@/components/public/Compact"
 
 export function generateStaticParams() {
   return journalArticles.map((article) => ({ slug: article.slug }))
@@ -25,19 +26,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   return (
     <article className="min-h-screen bg-background text-navy">
-      <CompactSection className="pb-7 text-center sm:pb-8">
-        <div className="mx-auto max-w-4xl">
-          <p className="font-sans text-[10px] uppercase tracking-[0.14em] text-navy/52">{article.category}</p>
-          <h1 className="mt-3 font-display text-[clamp(2.5rem,4.7vw,4.5rem)] leading-[1.04] tracking-[-0.02em] text-navy">{article.title}</h1>
-          <p className="mt-4 font-sans text-sm text-navy/50">{article.date} · {article.readTime}</p>
-        </div>
-      </CompactSection>
-
-      <CompactContainer>
-        <div className="relative aspect-[16/8] min-h-[280px] overflow-hidden bg-sand-dark">
-          <Image src={article.image} alt={article.title} fill priority sizes="100vw" className="object-cover" />
-        </div>
-      </CompactContainer>
+      <EditorialHero image={article.image} title={article.title} eyebrow={article.category}><p>{article.date} · {article.readTime}</p></EditorialHero>
 
       <CompactSection>
         <div className="mx-auto max-w-[44rem] space-y-6">
@@ -49,7 +38,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </CompactSection>
 
       {more.length ? (
-        <CompactSection className="bg-beige">
+        <CompactSection className="bg-background">
           <h2 className="font-display text-3xl text-navy">Continue reading</h2>
           <div className="mt-6 grid gap-7 md:grid-cols-2">
             {more.map((item) => (

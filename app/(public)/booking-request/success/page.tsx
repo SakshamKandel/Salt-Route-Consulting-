@@ -11,13 +11,13 @@ export default async function BookingSuccessPage({
   const code = typeof params.code === "string" ? params.code : "SLT-PENDING"
 
   return (
-    <div className="min-h-[72vh] bg-background py-10 text-navy sm:py-14">
+    <div className="editorial-plain min-h-[72vh] bg-background pb-20 text-navy">
       <CompactContainer>
-        <div className="mx-auto max-w-3xl bg-sand p-6 sm:p-9 border border-navy/8">
+        <div className="mx-auto max-w-3xl py-20 text-center">
           <div className="flex items-center justify-between gap-4 mb-6">
             <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-gold-dark">Request received</p>
             <Image
-              src="/brand/Logo.png"
+              src="/brand/logo.png"
               alt="Salt Route"
               width={960}
               height={399}

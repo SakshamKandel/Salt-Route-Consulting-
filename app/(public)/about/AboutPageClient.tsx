@@ -1,40 +1,39 @@
 "use client"
 
-import Image from "next/image"
+import { EditorialHero } from "@/components/public/EditorialHero"
 import { siteConfig } from "@/lib/site.config"
 import { Reveal } from "@/components/public/motion"
 import {
   CompactButton,
-  CompactContainer,
   CompactHeading,
   CompactImageText,
   CompactMediaCard,
   CompactSection,
 } from "@/components/public/Compact"
-import imgVilla from "@/public/images/marketing/sunshine-villa-main.png"
-import imgRetreat from "@/public/images/marketing/himalayan-retreat-exterior.png"
-import imgInterior from "@/public/images/marketing/nepalese-interior-details.png"
-import imgDining from "@/public/images/marketing/private-himalayan-dining.png"
-import imgOffice from "@/public/images/marketing/boutique-office-team.png"
+import imgVilla from "@/public/images/saltroute/misty-tea-gardens.webp"
+import imgRetreat from "@/public/images/saltroute/jitpur-terraces.webp"
+import imgInterior from "@/public/images/saltroute/painted-table.webp"
+import imgDining from "@/public/images/saltroute/tea-harvest.webp"
+import imgOffice from "@/public/images/saltroute/local-farmers.webp"
 
 const principles = [
   {
     image: imgRetreat,
-    alt: "A Salt Route sanctuary connected to its landscape",
+    alt: "Terraced fields and green hills in Jitpur",
     title: "Landscape & Place First",
     copy: "Every stay begins with its topography, mountain ridges, community craft, and the quiet character that makes it distinct in the Himalayas.",
     href: "/properties",
   },
   {
     image: imgDining,
-    alt: "Local hospitality and private dining",
+    alt: "A tea picker working among green tea bushes",
     title: "People at the Heart",
     copy: "Local host families, mountain guides, organic farmers, and master craftsmen turn a property into a generous, unforgettable Himalayan welcome.",
     href: "/services",
   },
   {
     image: imgInterior,
-    alt: "Considered Nepalese interior details",
+    alt: "Hand-painted details on a traditional wooden table",
     title: "Artistry in the Details",
     copy: "We favour handcrafted natural stone, heritage wood joinery, and the quiet luxury of things created with intention and patience.",
     href: "/contact",
@@ -45,34 +44,15 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
   return (
     <div className="bg-background text-navy overflow-hidden">
       {/* ─── HERO ─── */}
-      <section className="relative min-h-[540px] sm:min-h-[620px] lg:min-h-[700px] flex items-end overflow-hidden">
-        <Image
-          src={imgVilla}
-          alt="A Salt Route residence in Nepal"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/30" />
-        <CompactContainer className="relative z-10 pb-16 sm:pb-20 lg:pb-24 text-cream">
-          <Reveal className="max-w-3xl">
-            <h1 className="font-display text-[clamp(2.75rem,5.5vw,5.5rem)] leading-[0.98] tracking-[-0.02em]">
-              Local roots. Wider routes.
-            </h1>
-            <p className="mt-5 max-w-2xl font-sans text-base font-light leading-relaxed text-cream/90 sm:text-lg">
-              A Nepal-based luxury hospitality and asset consulting house connecting distinctive sanctuaries with thoughtful global travelers and sustainable regional prosperity.
-            </p>
-          </Reveal>
-        </CompactContainer>
-      </section>
+      <EditorialHero image={imgVilla} title="Our Story" />
+      <div className="editorial-properties-intro">A Nepal-based hospitality and asset consulting house connecting distinctive stays with thoughtful travelers and sustainable regional prosperity.</div>
 
       {/* ─── WHO WE ARE ─── */}
       <CompactSection className="py-20 lg:py-28">
         <Reveal>
           <CompactImageText
             image={imgOffice}
-            alt="The Salt Route team"
+            alt="Farmers tending a field in Jitpur"
             eyebrow="Who We Are"
             title="Purpose-led hospitality with rigorous commercial ambition."
             copy={`${siteConfig.brandName} unites hospitality strategists, travel curators, estate owners, and local village teams. Today our collection represents ${propertyCount} distinctive active ${propertyCount === 1 ? "sanctuary" : "sanctuaries"}, each shaped around the unique character of its geography.`}
@@ -83,7 +63,7 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
       </CompactSection>
 
       {/* ─── PRINCIPLES ─── */}
-      <CompactSection className="bg-beige py-20 lg:py-28 border-y border-navy/6">
+      <CompactSection className="bg-background py-20 lg:py-28 border-y border-navy/6">
         <Reveal>
           <CompactHeading
             eyebrow="Our Guiding Values"
@@ -91,7 +71,7 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
             copy="We build bespoke travel experiences that feel deeply personal, authentic, and responsible—grounded in the spirit of Nepal."
           />
         </Reveal>
-        <Reveal stagger={0.1} className="mt-12 grid gap-8 md:grid-cols-3">
+        <Reveal stagger={0.1} className="mt-12 grid gap-8 editorial-two-column md:grid-cols-2">
           {principles.map((principle) => (
             <Reveal.Item key={principle.title}>
               <CompactMediaCard key={principle.title} {...principle} action="Learn more" />
@@ -105,7 +85,7 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
         <Reveal>
           <CompactImageText
             image={imgRetreat}
-            alt="A private retreat in Nepal"
+            alt="Terraced farmland in the hills of Jitpur"
             eyebrow="Sustainable Stewardship"
             title="Value that lasts far beyond a single stay."
             copy="We champion fair local employment, responsible ecological property care, slow travel paths, and respectful connections between guests and indigenous host communities. Sustainability is woven directly into our operating architecture."

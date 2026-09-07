@@ -1,22 +1,24 @@
 "use client"
 
+import { EditorialHero } from "@/components/public/EditorialHero"
 import Image from "next/image"
 import Link from "next/link"
 import { Reveal } from "@/components/public/motion"
 import {
   CompactButton,
-  CompactContainer,
   CompactHeading,
   CompactImageText,
   CompactMediaCard,
   CompactSection,
 } from "@/components/public/Compact"
 import { MapPin } from "lucide-react"
-import imgRetreat from "@/public/images/marketing/himalayan-retreat-exterior.png"
-import imgDining from "@/public/images/marketing/private-himalayan-dining.png"
-import imgInterior from "@/public/images/marketing/nepalese-interior-details.png"
+import imgRetreat from "@/public/images/marketing/nepal-residence.jpg"
+import imgDining from "@/public/images/saltroute/breakfast-with-a-view.webp"
+import imgInterior from "@/public/images/marketing/nepal-interior.jpg"
 import imgOffice from "@/public/images/marketing/boutique-office-team.png"
-import imgVilla from "@/public/images/marketing/sunshine-villa-main.png"
+import imgVilla from "@/public/images/saltroute/tea-hills.webp"
+import imgCulture from "@/public/images/saltroute/tea-harvest.webp"
+import imgCheese from "@/public/images/saltroute/local-cheese.webp"
 
 export type CollageProperty = {
   slug: string
@@ -35,20 +37,28 @@ const services = [
     action: "Browse Stays",
   },
   {
-    image: imgOffice,
-    alt: "The Salt Route travel planning team",
+    image: imgVilla,
+    alt: "A walking landscape through tea-covered hills",
     title: "Private Itinerary Design",
     copy: "Seamless bespoke journeys orchestrated around Nepal's magnificent landscapes, living monastic traditions, private aviation, and secluded valleys.",
     href: "/contact",
     action: "Plan a Journey",
   },
   {
-    image: imgInterior,
-    alt: "Nepalese craft and interior details",
+    image: imgCulture,
+    alt: "Tea being harvested by hand",
     title: "Cultural Immersion & Craft",
     copy: "Intimate heritage experiences, master artisan encounters, private temple rituals, and curated culinary expeditions with renowned local hosts.",
     href: "/contact",
     action: "Enquire",
+  },
+  {
+    image: imgCheese,
+    alt: "Cheese maturing on wooden shelves at Lucky Dairy",
+    title: "Local Food & Traditions",
+    copy: "Discover Nepal through its food, from fresh breakfasts to regional producers and the everyday traditions behind a shared table.",
+    href: "/contact",
+    action: "Plan a Food Experience",
   },
 ]
 
@@ -56,35 +66,8 @@ export function ServicesClient({ latestProperties }: { latestProperties: Collage
   return (
     <div className="bg-background text-navy overflow-hidden">
       {/* ─── HERO ─── */}
-      <section className="relative min-h-[540px] sm:min-h-[620px] lg:min-h-[700px] flex items-end overflow-hidden">
-        <Image
-          src={imgDining}
-          alt="A private dining experience in Nepal"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/30" />
-        <CompactContainer className="relative z-10 pb-16 sm:pb-20 lg:pb-24 text-cream">
-          <Reveal className="max-w-3xl">
-            <h1 className="font-display text-[clamp(2.75rem,5.5vw,5.5rem)] leading-[0.98] tracking-[-0.02em]">
-              Journeys made personal.
-            </h1>
-            <p className="mt-5 max-w-2xl font-sans text-base font-light leading-relaxed text-cream/90 sm:text-lg">
-              Sanctuary stays, private culinary moments, high-altitude exploration, and cultural encounters brought together around how you desire to experience Nepal.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <CompactButton href="/contact" className="min-h-12 px-8">
-                Plan Your Journey
-              </CompactButton>
-              <CompactButton href="/properties" tone="text" className="text-cream hover:text-gold text-xs uppercase tracking-[0.16em]">
-                View All Stays →
-              </CompactButton>
-            </div>
-          </Reveal>
-        </CompactContainer>
-      </section>
+      <EditorialHero image={imgDining} title="Experiences" />
+      <div className="editorial-properties-intro">Quiet cultural access, private tables, and local encounters, arranged around your pace.</div>
 
       {/* ─── SERVICES GRID ─── */}
       <CompactSection className="py-20 lg:py-28">
@@ -95,7 +78,7 @@ export function ServicesClient({ latestProperties }: { latestProperties: Collage
             copy="Choose an individual sanctuary or let our private concierge weave your stay into an unforgettable Himalayan journey."
           />
         </Reveal>
-        <Reveal stagger={0.1} className="mt-12 grid gap-8 md:grid-cols-3">
+        <Reveal stagger={0.1} className="mt-12 grid gap-8 editorial-two-column md:grid-cols-2">
           {services.map((service) => (
             <Reveal.Item key={service.title}>
               <CompactMediaCard key={service.title} {...service} />
@@ -105,11 +88,11 @@ export function ServicesClient({ latestProperties }: { latestProperties: Collage
       </CompactSection>
 
       {/* ─── PRIVATE TRAVEL CARE ─── */}
-      <CompactSection className="bg-beige py-20 lg:py-28 border-y border-navy/6">
+      <CompactSection className="bg-background py-20 lg:py-28 border-y border-navy/6">
         <Reveal>
           <CompactImageText
             image={imgVilla}
-            alt="A Salt Route private residence"
+            alt="Tea gardens and hillside cabins in Nepal"
             eyebrow="White-Glove Hospitality"
             title="From arrival to departure, handled with discreet attention."
             copy="We coordinate helicopter transfers, luxury 4x4 mountain journeys, dedicated culinary masters, private trekking guides, and luggage care so your exploration of Nepal is effortless."
@@ -132,7 +115,7 @@ export function ServicesClient({ latestProperties }: { latestProperties: Collage
               View All Sanctuaries →
             </CompactButton>
           </Reveal>
-          <Reveal stagger={0.1} className="grid gap-8 md:grid-cols-3">
+          <Reveal stagger={0.1} className="grid gap-8 editorial-two-column md:grid-cols-2">
             {latestProperties.map((property) => (
               <Reveal.Item key={property.slug}>
                 <article className="group flex flex-col h-full bg-white border border-navy/8 hover:border-gold/40 transition-all duration-300">
@@ -169,7 +152,7 @@ export function ServicesClient({ latestProperties }: { latestProperties: Collage
         <Reveal>
           <CompactImageText
             image={imgOffice}
-            alt="Salt Route hospitality consulting"
+            alt="Hospitality planning workspace"
             eyebrow="Hospitality Advisory"
             title="Property guidance grounded in real guest excellence."
             copy="We support pre-opening strategy, architectural alignment, operational standard operating procedures, brand identity, and long-term asset positioning for luxury property owners across the Himalayan region."

@@ -1,4 +1,5 @@
 import { CompactButton, CompactHeading, CompactSection } from "@/components/public/Compact"
+import { EditorialHero } from "@/components/public/EditorialHero"
 import { Reveal } from "@/components/public/motion"
 
 const FAQ_GROUPS = [
@@ -37,8 +38,9 @@ const FAQ_GROUPS = [
 export default function FaqPage() {
   return (
     <div className="min-h-screen bg-background text-navy">
+      <EditorialHero image="/images/saltroute/garden-details.webp" title="Your questions, answered" />
       <CompactSection>
-        <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr] lg:gap-12">
+        <div className="editorial-faq">
           <Reveal as="div">
             <CompactHeading
               eyebrow="Stays and enquiries"
@@ -48,7 +50,7 @@ export default function FaqPage() {
             <CompactButton href="/contact" className="mt-6">Contact us</CompactButton>
           </Reveal>
 
-          <div className="space-y-8">
+          <div className="mt-14 space-y-8">
             {FAQ_GROUPS.map((group, groupIndex) => (
               <Reveal as="section" key={group.label} delay={0.1 + groupIndex * 0.08}>
                 <h2 className="font-display text-2xl text-navy">{group.label}</h2>

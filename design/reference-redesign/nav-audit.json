@@ -1,0 +1,839 @@
+{
+  "destinations": {
+    "featured": {
+      "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+      "title": "Himalayan Habre Center",
+      "copy": "Conservation through community",
+      "href": "/properties/himalayan-habre-center",
+      "tag": "Conservation & Education Center"
+    },
+    "categories": [
+      {
+        "title": "Fulbari",
+        "href": "/properties?location=Fulbari",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+          "title": "Fulbari, Nepal.",
+          "copy": "The Himalayan Habre Center is a community-based conservation, education and sustainable-livelihood hub in Deurali, Taplejung, eastern Nepal.",
+          "href": "/properties?location=Fulbari",
+          "tag": "2 stays"
+        },
+        "links": [
+          {
+            "href": "/properties?location=Fulbari",
+            "label": "All stays in Fulbari"
+          },
+          {
+            "href": "/properties/himalayan-habre-center",
+            "label": "Himalayan Habre Center",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/sungava-apartments",
+            "label": "Sungava Apartments",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780380752/salt-route/nvr4irfvvhxsyh7aiigj.png",
+              "title": "Sungava Apartments",
+              "copy": "This modern high – rise features 52 unit Apartments that has been thoughtfully designed and curated within the vibrant heart of the Pokhara city.",
+              "href": "/properties/sungava-apartments",
+              "tag": "Fulbari"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Lete",
+        "href": "/properties?location=Lete",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780393603/salt-route/ogcjh9d9dpgg30kknd57.jpg",
+          "title": "Lete, Mustang",
+          "copy": "Thasang lies in the off-trek route of the Annapurna circuit, making it still an undiscovered destination in the mountains.",
+          "href": "/properties?location=Lete",
+          "tag": "1 stay"
+        },
+        "links": [
+          {
+            "href": "/properties?location=Lete",
+            "label": "All stays in Lete"
+          },
+          {
+            "href": "/properties/lodge-thasang-village",
+            "label": "Lodge Thasang Village",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780393603/salt-route/ogcjh9d9dpgg30kknd57.jpg",
+              "title": "Lodge Thasang Village",
+              "copy": "Thasang lies in the off-trek route of the Annapurna circuit, making it still an undiscovered destination in the mountains.",
+              "href": "/properties/lodge-thasang-village",
+              "tag": "Lete"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Fikkal",
+        "href": "/properties?location=Fikkal",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788424682/salt-route/ovby635sbwkw12meskl2.jpg",
+          "title": "Fikkal, Ilam",
+          "copy": "Nestled amidst the pristine greenery of eastern hills of Nepal, Sunshine Villa seamlessly blends comfort and nature.",
+          "href": "/properties?location=Fikkal",
+          "tag": "1 stay"
+        },
+        "links": [
+          {
+            "href": "/properties?location=Fikkal",
+            "label": "All stays in Fikkal"
+          },
+          {
+            "href": "/properties/sunshine-villa",
+            "label": "Sunshine Villa",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788424682/salt-route/ovby635sbwkw12meskl2.jpg",
+              "title": "Sunshine Villa",
+              "copy": "Sunlit serenity in Ilam’s emerald hills, where comfort meets nature",
+              "href": "/properties/sunshine-villa",
+              "tag": "Fikkal"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "experiences": {
+    "featured": {
+      "image": "/images/marketing/private-himalayan-dining.png",
+      "title": "Experiences, Arranged Around You",
+      "copy": "Private cultural access, mountain expeditions, and restorative rituals — shaped by our concierge around the 4 stays we represent.",
+      "href": "/services",
+      "tag": "Travel, Personally Shaped"
+    },
+    "categories": [
+      {
+        "title": "Signature Services",
+        "href": "/services",
+        "preview": {
+          "image": "/images/marketing/private-himalayan-dining.png",
+          "title": "Private Tables & Living Traditions",
+          "copy": "Rare private access to multi-generational Newari kitchens, secret courtyard dinners, and conversations with master artisans.",
+          "href": "/services",
+          "tag": "Culinary & Culture"
+        },
+        "links": [
+          {
+            "href": "/properties",
+            "label": "Tailored Sanctuary Stays"
+          },
+          {
+            "href": "/contact",
+            "label": "Private Itinerary Design"
+          },
+          {
+            "href": "/services",
+            "label": "Cultural Immersion & Craft"
+          },
+          {
+            "href": "/visual-journey",
+            "label": "A Tapestry of Nepal (13 Regions)"
+          }
+        ]
+      },
+      {
+        "title": "At Our Stays",
+        "href": "/properties",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+          "title": "Himalayan Habre Center",
+          "copy": "Conservation through community",
+          "href": "/properties/himalayan-habre-center",
+          "tag": "Himalayan Habre Center"
+        },
+        "links": [
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Forest Guardian training and wildlife monitori...",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          },
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Community forest management and sustainable fo...",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          },
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Environmental education and outdoor learning",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          },
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Sustainable tourism and ecotourism opportuniti...",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          },
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Homestay management and community-based touris...",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          },
+          {
+            "href": "/properties/himalayan-habre-center#experiences",
+            "label": "Nature guiding and ecotrek leadership",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Himalayan Habre Center"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Where To Go",
+        "href": "/properties",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+          "title": "Himalayan Habre Center",
+          "copy": "Conservation through community",
+          "href": "/properties/himalayan-habre-center",
+          "tag": "Conservation & Education Center"
+        },
+        "links": [
+          {
+            "href": "/properties/himalayan-habre-center",
+            "label": "Himalayan Habre Center",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/lodge-thasang-village",
+            "label": "Lodge Thasang Village",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780393603/salt-route/ogcjh9d9dpgg30kknd57.jpg",
+              "title": "Lodge Thasang Village",
+              "copy": "Thasang lies in the off-trek route of the Annapurna circuit, making it still an undiscovered destination in the mountains.",
+              "href": "/properties/lodge-thasang-village",
+              "tag": "Lete"
+            }
+          },
+          {
+            "href": "/properties/sungava-apartments",
+            "label": "Sungava Apartments",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780380752/salt-route/nvr4irfvvhxsyh7aiigj.png",
+              "title": "Sungava Apartments",
+              "copy": "This modern high – rise features 52 unit Apartments that has been thoughtfully designed and curated within the vibrant heart of the Pokhara city.",
+              "href": "/properties/sungava-apartments",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/sunshine-villa",
+            "label": "Sunshine Villa",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788424682/salt-route/ovby635sbwkw12meskl2.jpg",
+              "title": "Sunshine Villa",
+              "copy": "Sunlit serenity in Ilam’s emerald hills, where comfort meets nature",
+              "href": "/properties/sunshine-villa",
+              "tag": "Fikkal"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Design A Journey",
+        "href": "/contact",
+        "preview": {
+          "image": "/images/marketing/private-himalayan-dining.png",
+          "title": "Tell Us How You Want To Feel",
+          "copy": "Share your dates, pace, and appetite for adventure — our concierge builds the days around you.",
+          "href": "/contact",
+          "tag": "Crafted For You"
+        },
+        "links": [
+          {
+            "href": "/contact",
+            "label": "Design a Bespoke Itinerary"
+          },
+          {
+            "href": "/contact",
+            "label": "Private Photography Journeys"
+          },
+          {
+            "href": "/contact",
+            "label": "Multi-Generation Family Travel"
+          },
+          {
+            "href": "mailto:connect@saltroutecorp.com",
+            "label": "Email the concierge"
+          }
+        ]
+      }
+    ]
+  },
+  "story": {
+    "featured": {
+      "image": "/images/marketing/nepalese-interior-details.png",
+      "title": "Hospitality With Roots",
+      "copy": "Fewer places, known more deeply. Today we represent 4 stays across 3 regions of Nepal.",
+      "href": "/about",
+      "tag": "Salt Route Ethos"
+    },
+    "categories": [
+      {
+        "title": "Who We Are",
+        "href": "/about",
+        "links": [
+          {
+            "href": "/about",
+            "label": "The Salt Route Story"
+          },
+          {
+            "href": "/about",
+            "label": "Purpose-Led Hospitality"
+          },
+          {
+            "href": "/about",
+            "label": "Our Guiding Values"
+          },
+          {
+            "href": "/about",
+            "label": "Sustainable Stewardship"
+          }
+        ]
+      },
+      {
+        "title": "The Portfolio",
+        "href": "/properties",
+        "links": [
+          {
+            "href": "/properties/himalayan-habre-center",
+            "label": "Himalayan Habre Center",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/lodge-thasang-village",
+            "label": "Lodge Thasang Village",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780393603/salt-route/ogcjh9d9dpgg30kknd57.jpg",
+              "title": "Lodge Thasang Village",
+              "copy": "Thasang lies in the off-trek route of the Annapurna circuit, making it still an undiscovered destination in the mountains.",
+              "href": "/properties/lodge-thasang-village",
+              "tag": "Lete"
+            }
+          },
+          {
+            "href": "/properties/sungava-apartments",
+            "label": "Sungava Apartments",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780380752/salt-route/nvr4irfvvhxsyh7aiigj.png",
+              "title": "Sungava Apartments",
+              "copy": "This modern high – rise features 52 unit Apartments that has been thoughtfully designed and curated within the vibrant heart of the Pokhara city.",
+              "href": "/properties/sungava-apartments",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/sunshine-villa",
+            "label": "Sunshine Villa",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788424682/salt-route/ovby635sbwkw12meskl2.jpg",
+              "title": "Sunshine Villa",
+              "copy": "Sunlit serenity in Ilam’s emerald hills, where comfort meets nature",
+              "href": "/properties/sunshine-villa",
+              "tag": "Fikkal"
+            }
+          }
+        ]
+      },
+      {
+        "title": "What We Do",
+        "href": "/services",
+        "links": [
+          {
+            "href": "/properties",
+            "label": "Curated Stays"
+          },
+          {
+            "href": "/services",
+            "label": "Experiences & Itineraries"
+          },
+          {
+            "href": "/for-owners",
+            "label": "Owner Representation"
+          },
+          {
+            "href": "/visual-journey",
+            "label": "Visual Journey of Nepal"
+          }
+        ]
+      },
+      {
+        "title": "Talk To Us",
+        "href": "/contact",
+        "links": [
+          {
+            "href": "/contact",
+            "label": "Speak With Our Concierge"
+          },
+          {
+            "href": "mailto:connect@saltroutecorp.com",
+            "label": "connect@saltroutecorp.com"
+          },
+          {
+            "href": "tel:+9779700013336",
+            "label": "+977 9700013336"
+          },
+          {
+            "href": "/faq",
+            "label": "Frequently Asked Questions"
+          }
+        ]
+      }
+    ]
+  },
+  "journal": {
+    "featured": {
+      "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1600&auto=format&fit=crop",
+      "title": "A Morning in Ilam's Tea Gardens",
+      "copy": "Before the mist lifts off the eastern hills, the tea pickers are already among the rows. A slow account of dawn in Nepal's tea country.",
+      "href": "/journal/a-morning-in-ilams-tea-gardens",
+      "tag": "Places"
+    },
+    "categories": [
+      {
+        "title": "Places",
+        "href": "/journal",
+        "preview": {
+          "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1600&auto=format&fit=crop",
+          "title": "A Morning in Ilam's Tea Gardens",
+          "copy": "Before the mist lifts off the eastern hills, the tea pickers are already among the rows. A slow account of dawn in Nepal's tea country.",
+          "href": "/journal/a-morning-in-ilams-tea-gardens",
+          "tag": "5 min read"
+        },
+        "links": [
+          {
+            "href": "/journal",
+            "label": "All Places Dispatches"
+          },
+          {
+            "href": "/journal/a-morning-in-ilams-tea-gardens",
+            "label": "A Morning in Ilam's Tea Gardens",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1600&auto=format&fit=crop",
+              "title": "A Morning in Ilam's Tea Gardens",
+              "copy": "Before the mist lifts off the eastern hills, the tea pickers are already among the rows. A slow account of dawn in Nepal's tea country.",
+              "href": "/journal/a-morning-in-ilams-tea-gardens",
+              "tag": "5 min read"
+            }
+          },
+          {
+            "href": "/journal/the-light-at-phewa-lake",
+            "label": "The Light at Phewa Lake",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1706187975952-33765f844667?q=80&w=1600&auto=format&fit=crop",
+              "title": "The Light at Phewa Lake",
+              "copy": "Pokhara is famous for the Annapurna backdrop, but the lake holds its own quiet drama at the hours most travellers miss. A field note from the shoreline.",
+              "href": "/journal/the-light-at-phewa-lake",
+              "tag": "5 min read"
+            }
+          },
+          {
+            "href": "/journal/chitwan-and-the-edge-of-the-forest",
+            "label": "Chitwan and the Edge of the Forest",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1534215782964-d58601aa091c?q=80&w=1600&auto=format&fit=crop",
+              "title": "Chitwan and the Edge of the Forest",
+              "copy": "The lowlands of the south are a different Nepal — flat, hot, and home to rhino, tiger, and the Tharu people. A few days in the country's first national park.",
+              "href": "/journal/chitwan-and-the-edge-of-the-forest",
+              "tag": "6 min read"
+            }
+          },
+          {
+            "href": "/journal/a-walk-around-bandipur",
+            "label": "A Walk Around Bandipur",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1641720370581-71cfdf96e7af?q=80&w=1600&auto=format&fit=crop",
+              "title": "A Walk Around Bandipur",
+              "copy": "Halfway between Kathmandu and Pokhara, a hilltop town that time nearly forgot. A slow afternoon on its single paved street.",
+              "href": "/journal/a-walk-around-bandipur",
+              "tag": "4 min read"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Culture",
+        "href": "/journal",
+        "preview": {
+          "image": "https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=1600&auto=format&fit=crop",
+          "title": "The Living Heritage of Kathmandu Valley",
+          "copy": "Temples worn smooth by centuries of hands, courtyards where daily life and the sacred share the same stone. An invitation to look closer.",
+          "href": "/journal/the-living-heritage-of-kathmandu-valley",
+          "tag": "6 min read"
+        },
+        "links": [
+          {
+            "href": "/journal",
+            "label": "All Culture Dispatches"
+          },
+          {
+            "href": "/journal/the-living-heritage-of-kathmandu-valley",
+            "label": "The Living Heritage of Kathmandu Valley",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=1600&auto=format&fit=crop",
+              "title": "The Living Heritage of Kathmandu Valley",
+              "copy": "Temples worn smooth by centuries of hands, courtyards where daily life and the sacred share the same stone. An invitation to look closer.",
+              "href": "/journal/the-living-heritage-of-kathmandu-valley",
+              "tag": "6 min read"
+            }
+          },
+          {
+            "href": "/journal/the-monastery-at-boudhanath",
+            "label": "The Monastery at Boudhanath",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1648702978569-d21e6c4701b2?q=80&w=1600&auto=format&fit=crop",
+              "title": "The Monastery at Boudhanath",
+              "copy": "Around the great stupa, the day turns in a slow circle of pilgrims, butter lamps, and prayer wheels. A walk through one of the most sacred sites in the Himalaya.",
+              "href": "/journal/the-monastery-at-boudhanath",
+              "tag": "5 min read"
+            }
+          },
+          {
+            "href": "/journal/the-sound-of-a-festival-in-bhaktapur",
+            "label": "The Sound of a Festival in Bhaktapur",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1561576019-4e870814d336?q=80&w=1600&auto=format&fit=crop",
+              "title": "The Sound of a Festival in Bhaktapur",
+              "copy": "Of the three old cities of the valley, Bhaktapur keeps its festivals loudest and most intact. A note from Bisket Jatra, when the city pulls its chariots through the narrow lanes.",
+              "href": "/journal/the-sound-of-a-festival-in-bhaktapur",
+              "tag": "6 min read"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Journeys",
+        "href": "/journal",
+        "preview": {
+          "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1600&auto=format&fit=crop",
+          "title": "Slow Travel: Why Nepal Rewards the Unhurried",
+          "copy": "The country does not give up its best moments to those in a rush. A case for staying longer, and doing less.",
+          "href": "/journal/slow-travel-why-nepal-rewards-the-unhurried",
+          "tag": "4 min read"
+        },
+        "links": [
+          {
+            "href": "/journal",
+            "label": "All Journeys Dispatches"
+          },
+          {
+            "href": "/journal/slow-travel-why-nepal-rewards-the-unhurried",
+            "label": "Slow Travel: Why Nepal Rewards the Unhurried",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1600&auto=format&fit=crop",
+              "title": "Slow Travel: Why Nepal Rewards the Unhurried",
+              "copy": "The country does not give up its best moments to those in a rush. A case for staying longer, and doing less.",
+              "href": "/journal/slow-travel-why-nepal-rewards-the-unhurried",
+              "tag": "4 min read"
+            }
+          },
+          {
+            "href": "/journal/what-the-mountains-teach-about-waiting",
+            "label": "What the Mountains Teach About Waiting",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1713506052667-bf79c280a70f?q=80&w=1600&auto=format&fit=crop",
+              "title": "What the Mountains Teach About Waiting",
+              "copy": "In the high country, the weather decides the schedule. A short essay on acclimatisation days, and why they are not lost time.",
+              "href": "/journal/what-the-mountains-teach-about-waiting",
+              "tag": "6 min read"
+            }
+          },
+          {
+            "href": "/journal/the-river-and-the-raft",
+            "label": "The River and the Raft",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1641584495089-5914d85d9bcc?q=80&w=1600&auto=format&fit=crop",
+              "title": "The River and the Raft",
+              "copy": "Nepal's rivers drop fast from the Himalaya, and a few days on the Trisuli or Sun Koshi is a different way to see the country. Notes from the water.",
+              "href": "/journal/the-river-and-the-raft",
+              "tag": "5 min read"
+            }
+          },
+          {
+            "href": "/journal/when-to-come-a-short-guide-to-the-seasons",
+            "label": "When to Come: A Short Guide to the Seasons",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1751566477091-921125737d76?q=80&w=1600&auto=format&fit=crop",
+              "title": "When to Come: A Short Guide to the Seasons",
+              "copy": "Nepal has two real trekking windows and a handful of quieter alternatives. A plain guide to choosing the right month for the right trip.",
+              "href": "/journal/when-to-come-a-short-guide-to-the-seasons",
+              "tag": "5 min read"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Food",
+        "href": "/journal",
+        "preview": {
+          "image": "https://images.unsplash.com/photo-1567213230501-4627cf931f34?q=80&w=1600&auto=format&fit=crop",
+          "title": "A Kitchen in the Hills: Newari Cooking",
+          "copy": "The Newar people of the valley have one of the oldest living food traditions in the Himalaya. An afternoon spent learning it, one dish at a time.",
+          "href": "/journal/a-kitchen-in-the-hills-newari-cooking",
+          "tag": "7 min read"
+        },
+        "links": [
+          {
+            "href": "/journal",
+            "label": "All Food Dispatches"
+          },
+          {
+            "href": "/journal/a-kitchen-in-the-hills-newari-cooking",
+            "label": "A Kitchen in the Hills: Newari Cooking",
+            "preview": {
+              "image": "https://images.unsplash.com/photo-1567213230501-4627cf931f34?q=80&w=1600&auto=format&fit=crop",
+              "title": "A Kitchen in the Hills: Newari Cooking",
+              "copy": "The Newar people of the valley have one of the oldest living food traditions in the Himalaya. An afternoon spent learning it, one dish at a time.",
+              "href": "/journal/a-kitchen-in-the-hills-newari-cooking",
+              "tag": "7 min read"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "owners": {
+    "featured": {
+      "image": "/images/marketing/sunshine-villa-main.png",
+      "title": "Partner With Salt Route",
+      "copy": "We partner with visionary owners of boutique properties, historic estates, and luxury camps to elevate brand positioning, distribution, and guest experience.",
+      "href": "/for-owners",
+      "tag": "Sanctuary Partnership"
+    },
+    "categories": [
+      {
+        "title": "Our Services",
+        "href": "/for-owners",
+        "preview": {
+          "image": "/images/marketing/boutique-office-team.png",
+          "title": "Five Disciplines, One Team",
+          "copy": "Brand, commercial strategy, operations, asset care, and owner reporting — delivered as one connected programme.",
+          "href": "/for-owners",
+          "tag": "Partnership"
+        },
+        "links": [
+          {
+            "href": "/for-owners/brand-marketing",
+            "label": "Brand & Storytelling",
+            "preview": {
+              "image": "/images/marketing/boutique-office-team.png",
+              "title": "Global Marketing & Storytelling",
+              "copy": "We define the idea at the heart of your property, express it through exceptional content, and bring it to the audiences most likely to value it.",
+              "href": "/for-owners/brand-marketing",
+              "tag": "Brand, content & demand"
+            }
+          },
+          {
+            "href": "/for-owners/revenue-distribution",
+            "label": "Revenue & Distribution",
+            "preview": {
+              "image": "/images/marketing/boutique-office-team.png",
+              "title": "Revenue & Yield Distribution",
+              "copy": "Pricing, distribution, direct sales, and channel decisions work together to improve profitable occupancy while protecting long-term brand value.",
+              "href": "/for-owners/revenue-distribution",
+              "tag": "Commercial strategy"
+            }
+          },
+          {
+            "href": "/for-owners/guest-operations",
+            "label": "Guest Operations",
+            "preview": {
+              "image": "/images/marketing/boutique-office-team.png",
+              "title": "Guest Experience & Operations",
+              "copy": "We translate the brand promise into practical standards, warm hosting, thoughtful communication, and a calm operating rhythm for the team.",
+              "href": "/for-owners/guest-operations",
+              "tag": "Hospitality & operations"
+            }
+          },
+          {
+            "href": "/for-owners/property-enhancement",
+            "label": "Asset Enhancement",
+            "preview": {
+              "image": "/images/marketing/boutique-office-team.png",
+              "title": "Property Enhancement & Care",
+              "copy": "From pre-opening readiness to seasonal maintenance, we prioritise improvements that strengthen the guest experience and the enduring value of the asset.",
+              "href": "/for-owners/property-enhancement",
+              "tag": "Asset care & enhancement"
+            }
+          },
+          {
+            "href": "/for-owners/owner-intelligence",
+            "label": "Owner Intelligence",
+            "preview": {
+              "image": "/images/marketing/boutique-office-team.png",
+              "title": "Owner Intelligence & Reporting",
+              "copy": "A clear owner view brings reservations, revenue, guest sentiment, and asset priorities together — without dragging you into daily management.",
+              "href": "/for-owners/owner-intelligence",
+              "tag": "Reporting & owner control"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Represented Stays",
+        "href": "/for-owners#portfolio",
+        "preview": {
+          "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+          "title": "Himalayan Habre Center",
+          "copy": "Conservation through community",
+          "href": "/properties/himalayan-habre-center",
+          "tag": "Conservation & Education Center"
+        },
+        "links": [
+          {
+            "href": "/properties/himalayan-habre-center",
+            "label": "Himalayan Habre Center",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788429856/salt-route/ecgpj0gzqlqg2sl6ql5d.jpg",
+              "title": "Himalayan Habre Center",
+              "copy": "Conservation through community",
+              "href": "/properties/himalayan-habre-center",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/lodge-thasang-village",
+            "label": "Lodge Thasang Village",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780393603/salt-route/ogcjh9d9dpgg30kknd57.jpg",
+              "title": "Lodge Thasang Village",
+              "copy": "Thasang lies in the off-trek route of the Annapurna circuit, making it still an undiscovered destination in the mountains.",
+              "href": "/properties/lodge-thasang-village",
+              "tag": "Lete"
+            }
+          },
+          {
+            "href": "/properties/sungava-apartments",
+            "label": "Sungava Apartments",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1780380752/salt-route/nvr4irfvvhxsyh7aiigj.png",
+              "title": "Sungava Apartments",
+              "copy": "This modern high – rise features 52 unit Apartments that has been thoughtfully designed and curated within the vibrant heart of the Pokhara city.",
+              "href": "/properties/sungava-apartments",
+              "tag": "Fulbari"
+            }
+          },
+          {
+            "href": "/properties/sunshine-villa",
+            "label": "Sunshine Villa",
+            "preview": {
+              "image": "https://res.cloudinary.com/diu4mp2f3/image/upload/v1788424682/salt-route/ovby635sbwkw12meskl2.jpg",
+              "title": "Sunshine Villa",
+              "copy": "Sunlit serenity in Ilam’s emerald hills, where comfort meets nature",
+              "href": "/properties/sunshine-villa",
+              "tag": "Fikkal"
+            }
+          }
+        ]
+      },
+      {
+        "title": "How We Work",
+        "href": "/for-owners#owner-enquiry",
+        "links": [
+          {
+            "href": "/for-owners#owner-enquiry",
+            "label": "Submit Your Property"
+          },
+          {
+            "href": "/for-owners",
+            "label": "Partnership Overview"
+          },
+          {
+            "href": "/contact",
+            "label": "Request a Confidential Review"
+          },
+          {
+            "href": "tel:+9779700013336",
+            "label": "+977 9700013336"
+          }
+        ]
+      },
+      {
+        "title": "Owner Access",
+        "href": "/login",
+        "links": [
+          {
+            "href": "/login",
+            "label": "Owner Dashboard Login"
+          },
+          {
+            "href": "/contact",
+            "label": "Schedule a Video Call"
+          },
+          {
+            "href": "mailto:connect@saltroutecorp.com",
+            "label": "connect@saltroutecorp.com"
+          },
+          {
+            "href": "/faq",
+            "label": "Owner FAQ"
+          }
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "propertyCount": 4,
+    "destinationCount": 3,
+    "phone": "+977 9700013336",
+    "phoneHref": "tel:+9779700013336",
+    "email": "connect@saltroutecorp.com",
+    "brandName": "Salt Route Group"
+  }
+}

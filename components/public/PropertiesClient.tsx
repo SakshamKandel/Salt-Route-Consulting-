@@ -10,8 +10,9 @@ import { LocationCombobox, type ComboboxProperty } from "@/components/public/Loc
 import { PropertyMap, type MapProperty } from "@/components/public/PropertyMap"
 import { Reveal } from "@/components/public/motion"
 import { CompactButton, CompactContainer, CompactHeading, CompactSection } from "@/components/public/Compact"
+import { EditorialHero } from "./EditorialHero"
 import { MapPin } from "lucide-react"
-import fallbackImage from "@/public/images/marketing/himalayan-retreat-exterior.png"
+import fallbackImage from "@/public/images/marketing/nepal-residence.jpg"
 
 type PropertyListItem = {
   id: string
@@ -97,18 +98,13 @@ export default function PropertiesClient({
 
   return (
     <div className="min-h-screen bg-background text-navy">
-      <CompactSection className="pb-7 sm:pb-8">
-        <CompactHeading
-          eyebrow="Salt Route stays"
-          title="Find your place in Nepal."
-          copy="Private residences, retreats, and distinctive stays selected for character, comfort, and connection to their surroundings."
-        />
-      </CompactSection>
+      <EditorialHero image={fallbackImage} title="Places to stay" eyebrow="The Salt Route collection" />
+      <div className="editorial-properties-intro">Private residences, retreats, and distinctive stays selected for character, comfort, and connection to their surroundings.</div>
 
       <CompactContainer>
         <form
           onSubmit={submit}
-          className="grid gap-4 bg-sand px-5 py-5 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr_.65fr_auto] lg:items-end"
+          className="grid gap-4 px-0 py-5 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr_.65fr_auto] lg:items-end"
         >
           <label>
             <span className="font-sans text-[10px] font-medium uppercase tracking-[0.14em] text-navy/55">Destination</span>
@@ -197,7 +193,7 @@ export default function PropertiesClient({
         </div>
 
         {properties.length ? (
-          <Reveal stagger={0.08} className="mt-8 grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+          <Reveal stagger={0.08} className="editorial-properties-grid">
             {properties.map((property) => {
               const image = getPrimaryImageUrl(property.images) || fallbackImage
               return (
@@ -208,7 +204,7 @@ export default function PropertiesClient({
                         src={image}
                         alt={property.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 768px) 100vw, 50vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </Link>
@@ -220,7 +216,7 @@ export default function PropertiesClient({
                       <h3 className="mt-2 font-display text-2xl leading-tight text-navy group-hover:text-gold-dark transition-colors">
                         <Link href={`/properties/${property.slug}`}>{property.title}</Link>
                       </h3>
-                      <p className="mt-2 line-clamp-2 font-sans text-sm font-light leading-relaxed text-navy/70">{property.description}</p>
+                      <p className="mt-2 line-clamp-4 font-sans text-sm font-light leading-relaxed text-navy/70">{property.description}</p>
                       <div className="mt-auto pt-4 border-t border-navy/8 flex flex-wrap items-center justify-between gap-3 font-sans text-xs text-navy/65">
                         <span>{property.bedrooms} beds · up to {property.maxGuests} guests</span>
                         {property.hidePrice ? (
