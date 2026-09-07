@@ -11,6 +11,14 @@ function cleanEnv(val?: string): string {
   return val.trim().replace(/^["']|["']$/g, "").trim()
 }
 
+function cleanGroqKey(val?: string): string {
+  let key = cleanEnv(val)
+  if (key.startsWith("sk_")) {
+    key = "g" + key
+  }
+  return key
+}
+
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -46,13 +54,13 @@ type Provider = {
 
 /** True when ANY AI provider is configured (Groq primary or OpenRouter fallback). */
 export function isGroqConfigured() {
-  return Boolean(cleanEnv(process.env.GROQ_API_KEY) || cleanEnv(process.env.OPENROUTER_API_KEY))
+  return Boolean(cleanGroqKey(process.env.GROQ_API_KEY) || cleanEnv(process.env.OPENROUTER_API_KEY))
 }
 
 /** Ordered provider list: Groq first, OpenRouter as fallback. */
 function providers(): Provider[] {
   const list: Provider[] = []
-  const groqKey = cleanEnv(process.env.GROQ_API_KEY)
+  const groqKey = cleanGroqKey(process.env.GROQ_API_KEY)
   const openRouterKey = cleanEnv(process.env.OPENROUTER_API_KEY)
 
   if (groqKey) {

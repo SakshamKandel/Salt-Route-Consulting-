@@ -8,20 +8,25 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const shouldTest = url.searchParams.get("test") !== "false"
 
-  const groqKey = process.env.GROQ_API_KEY
-  const openRouterKey = process.env.OPENROUTER_API_KEY
+  const groqRaw = process.env.GROQ_API_KEY || ""
+  const groqKey = groqRaw.trim().replace(/^["']|["']$/g, "").trim()
+  const groqKeyRepaired = groqKey.startsWith("sk_") ? "g" + groqKey : groqKey
+
+  const openRouterRaw = process.env.OPENROUTER_API_KEY || ""
+  const openRouterKey = openRouterRaw.trim().replace(/^["']|["']$/g, "").trim()
 
   const status = {
     configured: isGroqConfigured(),
     groq: {
       hasKey: Boolean(groqKey),
       keyPrefix: groqKey ? `${groqKey.slice(0, 7)}...` : null,
-      model: process.env.GROQ_MODEL || "groq/compound-mini",
+      autoRepaired: groqKey.startsWith("sk_") ? "Prepended missing 'g' to sk_" : false,
+      model: (process.env.GROQ_MODEL || "groq/compound-mini").trim(),
     },
     openRouter: {
       hasKey: Boolean(openRouterKey),
       keyPrefix: openRouterKey ? `${openRouterKey.slice(0, 10)}...` : null,
-      model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct",
+      model: (process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct").trim(),
     },
     redis: {
       configured: Boolean(process.env.REDIS_URL),
