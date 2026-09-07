@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { groqChat, isGroqConfigured } from "@/lib/ai/groq"
 import { safeErrorResponse } from "@/lib/security"
 import { rateLimit } from "@/lib/rate-limit"
+export const dynamic = "force-dynamic"
+export const maxDuration = 30
 
 // Public, unauthenticated concierge chat. It holds NO database access and is
 // given NO internal/property data — it only relays the visitor's text plus a

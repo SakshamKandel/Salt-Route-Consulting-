@@ -56,6 +56,8 @@ function providers(): Provider[] {
 }
 
 async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOptions): Promise<string> {
+  const signal = opts.signal || AbortSignal.timeout(20000)
+
   const res = await fetch(p.url, {
     method: "POST",
     headers: {
@@ -70,7 +72,7 @@ async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOpti
       max_tokens: opts.maxTokens ?? 800,
       ...(opts.json ? { response_format: { type: "json_object" } } : {}),
     }),
-    signal: opts.signal,
+    signal,
     // AI responses must never be cached at the fetch layer.
     cache: "no-store",
   })

@@ -4,16 +4,16 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react"
-import hills from "@/public/images/saltroute/tea-hills.webp"
-import breakfast from "@/public/images/saltroute/breakfast-with-a-view.webp"
-import terraces from "@/public/images/saltroute/jitpur-terraces.webp"
-import mist from "@/public/images/saltroute/misty-tea-gardens.webp"
+import snowcappedMountain from "@/public/images/hero/majestic-snowcapped-mountain.jpg"
+import phewaLakeBoats from "@/public/images/hero/phewa-lake-boats.jpg"
+import summerMountain from "@/public/images/hero/summer-mountain-landscape.jpg"
+import wildlifeRhino from "@/public/images/hero/kaziranga-wildlife.jpg"
 
 const slides = [
-  { image: hills, alt: "Tea gardens and blue cabins across the hills" },
-  { image: breakfast, alt: "Breakfast with a view of the hills" },
-  { image: terraces, alt: "Terraced fields overlooking the valley in Jitpur" },
-  { image: mist, alt: "Trees rising through mist in the tea gardens" },
+  { image: snowcappedMountain, alt: "Majestic snowcapped mountain in clouds" },
+  { image: phewaLakeBoats, alt: "Colorful boats on Phewa Lake in Pokhara at sunset" },
+  { image: summerMountain, alt: "Summer mountain landscape with rolling hills" },
+  { image: wildlifeRhino, alt: "Serene wildlife scene at Kaziranga National Park" },
 ]
 
 export function HomeHeroCarousel() {

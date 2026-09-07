@@ -204,7 +204,7 @@ export default function PropertyDetailClient({
         </div>
       ) : null}
 
-      <section className="editorial-page-hero relative flex min-h-[560px] items-center justify-center overflow-hidden sm:min-h-[640px] lg:min-h-[700px]">
+      <section className="editorial-page-hero relative flex min-h-[560px] items-center justify-center overflow-hidden bg-navy-dark sm:min-h-[640px] lg:min-h-[700px]">
         <ParallaxImage className="absolute inset-0" speed={0.07}>
           <Image src={heroImage} alt={property.title} fill priority sizes="100vw" className="object-cover" />
         </ParallaxImage>

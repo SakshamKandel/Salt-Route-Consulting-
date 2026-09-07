@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { suggestField, SUGGESTABLE_FIELDS, isGroqConfigured } from "@/lib/ai/property-ai"
 import { safeErrorResponse } from "@/lib/security"
+export const dynamic = "force-dynamic"
+export const maxDuration = 30
 
 const schema = z.object({
   field: z.enum(SUGGESTABLE_FIELDS as [string, ...string[]]),

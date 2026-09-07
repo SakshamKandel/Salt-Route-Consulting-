@@ -2,6 +2,8 @@ import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import { groqChat, isGroqConfigured } from "@/lib/ai/groq"
 import { safeErrorResponse } from "@/lib/security"
+export const dynamic = "force-dynamic"
+export const maxDuration = 30
 
 export async function POST(request: Request) {
   const session = await auth()

@@ -274,7 +274,7 @@ export function ParallaxImage({
 
   return (
     <div ref={ref} className={twMerge("relative overflow-hidden", className)}>
-      <motion.div style={{ y }} className="relative h-[120%] w-full will-change-transform">
+      <motion.div style={{ y }} className="absolute inset-x-0 -top-[20%] h-[140%] w-full will-change-transform">
         {children}
       </motion.div>
     </div>

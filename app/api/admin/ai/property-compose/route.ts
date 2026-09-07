@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { groqJson, isGroqConfigured } from "@/lib/ai/groq"
 import { safeErrorResponse } from "@/lib/security"
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
 
 const MAX_ANSWER_CHARS = 120_000
 const MAX_TOTAL_ANSWER_CHARS = 160_000
