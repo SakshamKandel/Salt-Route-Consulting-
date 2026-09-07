@@ -92,7 +92,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ reply })
   } catch (error) {
-    console.error("[Concierge] Error:", error)
-    return NextResponse.json({ reply: WHATSAPP_FALLBACK })
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error("[Concierge] Error:", errorMsg)
+    return NextResponse.json({
+      reply: WHATSAPP_FALLBACK,
+      aiError: errorMsg,
+    })
   }
 }

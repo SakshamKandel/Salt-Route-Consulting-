@@ -24,9 +24,14 @@ const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 function getGroqModel(): string {
   const custom = cleanEnv(process.env.GROQ_MODEL)
-  // Auto-correct common model mismatches (e.g. deprecated or unavailable models on current Groq tier)
-  if (!custom || custom === "llama-3.3-70b-versatile" || custom === "llama3-70b-8192") {
-    return "groq/compound-mini"
+  // Auto-correct common model mismatches (e.g. decommissioned or 404 models on current Groq tier)
+  if (
+    !custom ||
+    custom.toLowerCase().includes("llama") ||
+    custom.toLowerCase().includes("mixtral") ||
+    custom.toLowerCase().includes("gemma")
+  ) {
+    return "qwen/qwen3.8-27b"
   }
   return custom
 }
@@ -83,7 +88,7 @@ function providers(): Provider[] {
 }
 
 async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOptions): Promise<string> {
-  const signal = opts.signal || AbortSignal.timeout(20000)
+  const signal = opts.signal || AbortSignal.timeout(10000)
 
   const res = await fetch(p.url, {
     method: "POST",
@@ -113,6 +118,34 @@ async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOpti
   const text = data.choices?.[0]?.message?.content?.trim() ?? ""
   if (!text) throw new Error(`${p.name} returned an empty response`)
   return text
+}
+
+/** Diagnostic helper to test a specific provider directly without fallback. */
+export async function testProviderDirect(
+  name: "groq" | "openrouter",
+  prompt = "Reply with the single word OK"
+): Promise<{ success: boolean; model: string; reply?: string; error?: string; latencyMs: number }> {
+  const list = providers()
+  const p = list.find((x) => x.name === name)
+  if (!p) {
+    return { success: false, model: "none", error: `Provider ${name} is not configured`, latencyMs: 0 }
+  }
+  const t0 = Date.now()
+  try {
+    const reply = await callProvider(p, [{ role: "user", content: prompt }], {
+      maxTokens: 20,
+      temperature: 0.1,
+      signal: AbortSignal.timeout(8000),
+    })
+    return { success: true, model: p.model, reply, latencyMs: Date.now() - t0 }
+  } catch (err) {
+    return {
+      success: false,
+      model: p.model,
+      error: err instanceof Error ? err.message : String(err),
+      latencyMs: Date.now() - t0,
+    }
+  }
 }
 
 /**
