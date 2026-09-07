@@ -15,6 +15,17 @@ import imgVilla from "@/public/images/marketing/nepal-villa.jpg"
 import imgDining from "@/public/images/saltroute/garden-breakfast.webp"
 import imgConnection from "@/public/images/saltroute/local-farmers.webp"
 import imgLandscape from "@/public/images/marketing/nepal-landscape.jpg"
+import logoSwissContact from "@/public/brand/Trusted By/SwissContact.png"
+import logoRedPanda from "@/public/brand/Trusted By/Red Panda Network.png"
+import logoNatureCoffee from "@/public/brand/Trusted By/Nature Coffee.png"
+import logoSunshineVilla from "@/public/brand/Trusted By/Sunshine VIlla.png"
+
+const TRUSTED_PARTNERS = [
+  { name: "Swisscontact", logo: logoSwissContact, href: "https://www.swisscontact.org", external: true },
+  { name: "Red Panda Network", logo: logoRedPanda, href: "https://redpandanetwork.org", external: true },
+  { name: "Nature Coffee", logo: logoNatureCoffee },
+  { name: "Sunshine Villa", logo: logoSunshineVilla, href: "/properties/sunshine-villa", external: false },
+]
 
 type FeaturedProperty = { id: string; title: string; slug: string; location: string; images: PropertyMediaLike[]; pricePerNight?: number; hidePrice?: boolean; description?: string; bedrooms?: number; maxGuests?: number }
 type TestimonialItem = { id: string; quote: string; name: string; role: string | null; source: string | null; kind: "DIPLOMATIC" | "VERIFIED"; rating: number; location: string | null }
@@ -36,6 +47,39 @@ export default function HomeClient({ featured = [], testimonials = [], guestRevi
       <p>Private houses, villas, and small retreats with quiet, wide views and a real connection to local life. Salt Route brings together distinctive places and the people who make them feel like home.</p>
       <p>From a slow morning in the hills to a table shared with your hosts, we shape stays around your pace, with thoughtful care in every detail.</p>
       <Link className="editorial-link" href="/about">Our story</Link>
+    </Reveal>
+
+    <Reveal as="section" className="editorial-trusted editorial-container" aria-label="Trusted by">
+      <p className="editorial-trusted-label">Trusted by</p>
+      <div className="editorial-trusted-grid">
+        {TRUSTED_PARTNERS.map(partner => (
+          partner.href ? (
+            <Link
+              key={partner.name}
+              href={partner.href}
+              className="editorial-trusted-item"
+              title={partner.name}
+              {...(partner.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              <Image
+                src={partner.logo}
+                alt={partner.name}
+                className="editorial-trusted-logo"
+                sizes="180px"
+              />
+            </Link>
+          ) : (
+            <div key={partner.name} className="editorial-trusted-item" title={partner.name}>
+              <Image
+                src={partner.logo}
+                alt={partner.name}
+                className="editorial-trusted-logo"
+                sizes="180px"
+              />
+            </div>
+          )
+        ))}
+      </div>
     </Reveal>
 
     <section className="editorial-mosaic editorial-container" aria-label="Explore Salt Route">
