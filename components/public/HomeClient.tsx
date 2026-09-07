@@ -23,8 +23,8 @@ import logoSunshineVilla from "@/public/brand/Trusted By/Sunshine VIlla.png"
 const TRUSTED_PARTNERS = [
   { name: "Swisscontact", logo: logoSwissContact, href: "https://www.swisscontact.org", external: true },
   { name: "Red Panda Network", logo: logoRedPanda, href: "https://redpandanetwork.org", external: true },
-  { name: "Nature Coffee", logo: logoNatureCoffee },
-  { name: "Sunshine Villa", logo: logoSunshineVilla, href: "/properties/sunshine-villa", external: false },
+  { name: "Nature Coffee", logo: logoNatureCoffee, large: true },
+  { name: "Sunshine Villa", logo: logoSunshineVilla, href: "/properties/sunshine-villa", external: false, large: true },
 ]
 
 type FeaturedProperty = { id: string; title: string; slug: string; location: string; images: PropertyMediaLike[]; pricePerNight?: number; hidePrice?: boolean; description?: string; bedrooms?: number; maxGuests?: number }
@@ -64,7 +64,7 @@ export default function HomeClient({ featured = [], testimonials = [], guestRevi
               <Image
                 src={partner.logo}
                 alt={partner.name}
-                className="editorial-trusted-logo"
+                className={`editorial-trusted-logo ${partner.large ? "editorial-trusted-logo--lg" : ""}`}
                 sizes="180px"
               />
             </Link>
@@ -73,7 +73,7 @@ export default function HomeClient({ featured = [], testimonials = [], guestRevi
               <Image
                 src={partner.logo}
                 alt={partner.name}
-                className="editorial-trusted-logo"
+                className={`editorial-trusted-logo ${partner.large ? "editorial-trusted-logo--lg" : ""}`}
                 sizes="180px"
               />
             </div>
