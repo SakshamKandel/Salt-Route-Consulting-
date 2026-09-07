@@ -113,10 +113,10 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
             <h2 className="font-display text-lg text-[#1B3A5C] tracking-wide mt-0.5">Stay Summary</h2>
           </div>
           <Image
-            src="/brand/Logo.png"
+            src="/brand/logo.png"
             alt="Salt Route"
-            width={960}
-            height={399}
+            width={1947}
+            height={808}
             priority
             className="h-7 w-auto object-contain"
           />

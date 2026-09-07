@@ -66,7 +66,7 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#1B3A5C08] shrink-0">
           <Link href="/" onClick={closeDrawer} className="flex items-center">
-            <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
+            <Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} priority className="h-8 w-auto object-contain" />
           </Link>
           <button
             onClick={closeDrawer}
@@ -113,9 +113,9 @@ export function AdminShell({ userName, userImage, userInitial, unreadNotificatio
         <div className="h-16 flex items-center justify-center px-3 border-b border-[#1B3A5C08] shrink-0 overflow-hidden">
           <Link href="/" className="flex items-center justify-center">
             {mounted && isCollapsed ? (
-              <Image src="/brand/Logo.png" alt="SRC" width={960} height={399} priority className="h-6 w-auto object-contain" />
+              <Image src="/brand/logo.png" alt="SRC" width={1947} height={808} priority className="h-6 w-auto object-contain" />
             ) : (
-              <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
+              <Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} priority className="h-8 w-auto object-contain" />
             )}
           </Link>
         </div>

@@ -22,10 +22,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-col items-center justify-center mb-10">
           <Link href="/" className="flex flex-col items-center group gap-3.5">
             <Image
-              src="/brand/Logo.png"
+              src="/brand/logo.png"
               alt="Salt Route"
-              width={960}
-              height={399}
+              width={1947}
+              height={808}
               priority
               className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />

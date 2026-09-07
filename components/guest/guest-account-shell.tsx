@@ -56,7 +56,7 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
         {/* Drawer header */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-[#1B3A5C]/5 shrink-0">
           <Link href="/" onClick={closeDrawer} className="flex items-center">
-            <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
+            <Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} priority className="h-8 w-auto object-contain" />
           </Link>
           <button
             onClick={closeDrawer}
@@ -150,7 +150,7 @@ export function GuestAccountShell({ userName, userInitial, unreadNotifications }
               </button>
 
               <Link href="/" className="flex items-center gap-4">
-                <Image src="/brand/Logo.png" alt="Salt Route" width={960} height={399} priority className="h-8 w-auto object-contain" />
+                <Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} priority className="h-8 w-auto object-contain" />
                 <span className="hidden md:max-lg:block xl:block w-px h-6 bg-[#1B3A5C]/10" />
                 <span className="hidden md:max-lg:block xl:block text-[11px] uppercase tracking-[0.16em] text-[#1B3A5C]/55 font-medium whitespace-nowrap">
                   Guest Journey

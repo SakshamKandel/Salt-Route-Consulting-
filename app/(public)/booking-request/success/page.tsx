@@ -19,8 +19,8 @@ export default async function BookingSuccessPage({
             <Image
               src="/brand/logo.png"
               alt="Salt Route"
-              width={960}
-              height={399}
+              width={1947}
+              height={808}
               priority
               className="h-8 w-auto object-contain"
             />

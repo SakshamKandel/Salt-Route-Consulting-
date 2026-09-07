@@ -59,14 +59,14 @@ export function Nav({ contact }: { contact: { email: string; phone: string; phon
     <header className={`${styles.header} ${scrolled || plain ? styles.headerSolid : ""}`}>
       <div className={styles.headerInner}>
         <button ref={trigger} type="button" className={styles.menuTrigger} onClick={show} aria-label="Open navigation menu" aria-expanded={open} aria-controls="site-menu"><Menu strokeWidth={1} size={28} /><span>Menu</span></button>
-        <Link href="/" className={styles.logoLink} aria-label="Salt Route home"><Image src="/brand/logo.png" alt="Salt Route" width={960} height={399} priority /></Link>
+        <Link href="/" className={styles.logoLink} aria-label="Salt Route home"><Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} priority /></Link>
         <Link href="/contact" className={styles.enquire}>Enquire now</Link>
       </div>
     </header>
     <dialog ref={dialog} id="site-menu" className={`${styles.menu} ${closing ? styles.menuClosing : ""}`} aria-label="Main navigation" onCancel={(event) => { event.preventDefault(); close() }} onClose={() => setOpen(false)} onAnimationEnd={(event) => { if (closing && event.target === event.currentTarget) finishClose() }} data-lenis-prevent>
       <div className={styles.menuTop}>
         <button type="button" onClick={close} className={styles.close} aria-label="Close navigation menu" autoFocus><X size={27} strokeWidth={1} /></button>
-        <Link href="/" onClick={close} className={styles.logoLink} aria-label="Salt Route home"><Image src="/brand/logo.png" alt="Salt Route" width={960} height={399} /></Link>
+        <Link href="/" onClick={close} className={styles.logoLink} aria-label="Salt Route home"><Image src="/brand/logo.png" alt="Salt Route" width={1947} height={808} /></Link>
       </div>
       <div className={styles.menuContent}>
         <nav className={styles.menuLinks} aria-label="Main navigation">

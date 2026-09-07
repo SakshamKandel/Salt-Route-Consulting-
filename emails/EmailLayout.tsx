@@ -101,7 +101,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
           {/* Minimal Editorial Header with Logo */}
           <Section style={{ textAlign: 'center', marginBottom: '40px' }}>
             <Img
-              src="https://saltroutecorp.com/brand/Logo.png"
+              src="https://saltroutecorp.com/brand/logo.png"
               alt="Salt Route"
               width="130"
               height="54"
