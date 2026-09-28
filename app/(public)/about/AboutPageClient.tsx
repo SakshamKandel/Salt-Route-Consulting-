@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { EditorialHero } from "@/components/public/EditorialHero"
 import { siteConfig } from "@/lib/site.config"
 import { Reveal } from "@/components/public/motion"
@@ -60,6 +61,57 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
             action="Explore the Collection"
           />
         </Reveal>
+      </CompactSection>
+
+      {/* ─── FOUNDER'S NOTE ─── */}
+      <CompactSection className="founder-note-section">
+        <div className="founder-note-grid">
+          <Reveal className="founder-note-portrait">
+            <div className="founder-note-portrait-frame">
+              <Image
+                src="/images/saltroute/founder-advait.png"
+                alt="Advait, founder of Salt Route Corp"
+                fill
+                sizes="(max-width: 900px) 100vw, 42vw"
+                className="founder-note-portrait-image"
+              />
+            </div>
+            <p className="founder-note-caption">Advait · Founder, Salt Route Corp</p>
+          </Reveal>
+
+          <Reveal className="founder-note-copy" delay={0.08}>
+            <p className="founder-note-eyebrow">A Note from the Founder</p>
+            <h2>Every journey begins with a sense of place.</h2>
+            <div className="founder-note-prose">
+              <p>
+                Growing up, I learned that travel isn&apos;t just about moving through places—it is personal,
+                emotional, and deeply transformative. It expands our horizons, softens our perspectives, and
+                leaves us with memories that quiet long after the journey ends.
+              </p>
+              <p>
+                The name Salt Route is personal to me. My forefathers were Thakali traders who walked the
+                high-altitude salt trade routes across Nepal, connecting remote valleys, exchanging goods,
+                and opening pathways across borders. Hospitality and connection are carried in our blood.
+                Today, Salt Route Corp is my way of carrying that legacy forward into the modern world—
+                connecting local roots to global routes.
+              </p>
+              <p>
+                But with travel comes responsibility. Conservation and community empowerment are at the heart
+                of everything we build. I believe true luxury lies in preservation: protecting our landscapes,
+                honoring local heritage, and ensuring that every journey creates a lasting positive impact for
+                the communities who open their doors to us.
+              </p>
+              <p className="founder-note-welcome">
+                Whether you are looking for a quiet retreat in the hills or a meaningful connection to Nepal,
+                welcome to our route.
+              </p>
+            </div>
+            <div className="founder-note-signature" aria-label="Advait, Founder">
+              <span>Advait</span>
+              <small>Founder</small>
+            </div>
+          </Reveal>
+        </div>
       </CompactSection>
 
       {/* ─── PRINCIPLES ─── */}
