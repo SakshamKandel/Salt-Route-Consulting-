@@ -69,13 +69,11 @@ export default function AboutPageClient({ propertyCount }: { propertyCount: numb
           <Reveal className="founder-note-portrait">
             <div className="founder-note-portrait-frame">
               <Image
-                src="/images/saltroute/founder-advait-owner.png"
+                src="/images/saltroute/founder-advait.png"
                 alt="Advait Sherchan, founder of Salt Route Corp"
-                width={2160}
-                height={2700}
+                fill
                 sizes="(max-width: 900px) 100vw, 42vw"
                 className="founder-note-portrait-image"
-                priority
               />
             </div>
             <p className="founder-note-caption">Advait Sherchan · Founder, Salt Route Corp</p>
