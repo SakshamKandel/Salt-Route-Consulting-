@@ -1,6 +1,7 @@
 // Server-only LLM client with automatic provider fallback.
-// Primary: Groq (fast). Fallback: OpenRouter (used when Groq errors or is unset).
-// Both are OpenAI-compatible chat-completions APIs. Keys live in env only
+// Primary: OpenRouter free-model pool. Fallback: Groq (used when OpenRouter
+// models are unavailable or exhausted). Both are OpenAI-compatible
+// chat-completions APIs. Keys live in env only
 // (GROQ_API_KEY / OPENROUTER_API_KEY) — never hardcoded or exposed to the client.
 import "server-only"
 
@@ -22,6 +23,11 @@ function cleanGroqKey(val?: string): string {
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 const DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
+const DEFAULT_OPENROUTER_FREE_MODELS = [
+  "qwen/qwen3.8-27b:free",
+  "nvidia/nemotron-3.5-lightning:free",
+  "apodex/apodex-1.1-mini:free",
+] as const
 
 function getGroqModel(): string {
   const custom = cleanEnv(process.env.GROQ_MODEL)
@@ -39,9 +45,18 @@ function getGroqModel(): string {
   return custom
 }
 
-function getOpenRouterModel(): string {
-  const custom = cleanEnv(process.env.OPENROUTER_MODEL)
-  return custom || "meta-llama/llama-3.3-70b-instruct"
+/**
+ * Return only explicitly free OpenRouter models. A legacy OPENROUTER_MODEL
+ * value is accepted only when it has the :free suffix, so a stale paid model
+ * cannot be selected accidentally.
+ */
+export function getOpenRouterModels(): string[] {
+  const configured = cleanEnv(process.env.OPENROUTER_FREE_MODELS || process.env.OPENROUTER_MODEL)
+  const candidates = configured
+    ? configured.split(/[\s,\n]+/).map(cleanEnv).filter(Boolean)
+    : [...DEFAULT_OPENROUTER_FREE_MODELS]
+  const freeModels = Array.from(new Set(candidates.filter((model) => model.endsWith(":free"))))
+  return freeModels.length ? freeModels : [...DEFAULT_OPENROUTER_FREE_MODELS]
 }
 
 type GroqOptions = {
@@ -61,32 +76,34 @@ type Provider = {
   extraHeaders?: Record<string, string>
 }
 
-/** True when ANY AI provider is configured (Groq primary or OpenRouter fallback). */
+/** True when ANY AI provider is configured (OpenRouter free pool or Groq fallback). */
 export function isGroqConfigured() {
   return Boolean(cleanGroqKey(process.env.GROQ_API_KEY) || cleanEnv(process.env.OPENROUTER_API_KEY))
 }
 
-/** Ordered provider list: Groq first, OpenRouter as fallback. */
+/** Ordered provider list: OpenRouter free models first, Groq as fallback. */
 function providers(): Provider[] {
   const list: Provider[] = []
   const groqKey = cleanGroqKey(process.env.GROQ_API_KEY)
   const openRouterKey = cleanEnv(process.env.OPENROUTER_API_KEY)
 
+  if (openRouterKey) {
+    for (const model of getOpenRouterModels()) {
+      list.push({
+        name: "openrouter",
+        url: OPENROUTER_URL,
+        key: openRouterKey,
+        model,
+        // Recommended attribution headers for OpenRouter.
+        extraHeaders: {
+          "HTTP-Referer": cleanEnv(process.env.SITE_URL) || "https://saltroutegroup.com",
+          "X-Title": cleanEnv(process.env.SITE_NAME) || "Salt Route",
+        },
+      })
+    }
+  }
   if (groqKey) {
     list.push({ name: "groq", url: GROQ_URL, key: groqKey, model: getGroqModel() })
-  }
-  if (openRouterKey) {
-    list.push({
-      name: "openrouter",
-      url: OPENROUTER_URL,
-      key: openRouterKey,
-      model: getOpenRouterModel(),
-      // Recommended attribution headers for OpenRouter.
-      extraHeaders: {
-        "HTTP-Referer": cleanEnv(process.env.SITE_URL) || "https://saltroutegroup.com",
-        "X-Title": cleanEnv(process.env.SITE_NAME) || "Salt Route",
-      },
-    })
   }
   return list
 }
@@ -127,10 +144,11 @@ async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOpti
 /** Diagnostic helper to test a specific provider directly without fallback. */
 export async function testProviderDirect(
   name: "groq" | "openrouter",
-  prompt = "Reply with the single word OK"
+  prompt = "Reply with the single word OK",
+  model?: string,
 ): Promise<{ success: boolean; model: string; reply?: string; error?: string; latencyMs: number }> {
   const list = providers()
-  const p = list.find((x) => x.name === name)
+  const p = list.find((x) => x.name === name && (!model || x.model === model))
   if (!p) {
     return { success: false, model: "none", error: `Provider ${name} is not configured`, latencyMs: 0 }
   }
@@ -152,11 +170,11 @@ export async function testProviderDirect(
   }
 }
 
-/**
- * Chat completion with provider fallback. Tries Groq, then OpenRouter; returns
- * the first success and throws only if every configured provider fails.
- */
-export async function groqChat(messages: ChatMessage[], opts: GroqOptions = {}): Promise<string> {
+async function withProviderFallback<T>(
+  messages: ChatMessage[],
+  opts: GroqOptions,
+  parse: (text: string) => T,
+): Promise<T> {
   const list = providers()
   if (list.length === 0) {
     throw new Error("No AI provider configured (set GROQ_API_KEY or OPENROUTER_API_KEY)")
@@ -166,7 +184,7 @@ export async function groqChat(messages: ChatMessage[], opts: GroqOptions = {}):
   for (const p of list) {
     try {
       console.log(`[AI] ${p.name}: model ${opts.model || p.model}, ${messages.length} messages`)
-      return await callProvider(p, messages, opts)
+      return parse(await callProvider(p, messages, opts))
     } catch (error) {
       lastError = error
       const msg = error instanceof Error ? error.message : String(error)
@@ -176,12 +194,18 @@ export async function groqChat(messages: ChatMessage[], opts: GroqOptions = {}):
   throw lastError instanceof Error ? lastError : new Error("All AI providers failed")
 }
 
+/** Chat completion with OpenRouter-free-first provider fallback. */
+export async function groqChat(messages: ChatMessage[], opts: GroqOptions = {}): Promise<string> {
+  return withProviderFallback(messages, opts, (text) => text)
+}
+
 /** Call expecting a JSON object back; parses and returns it (or throws). */
 export async function groqJson<T = unknown>(messages: ChatMessage[], opts: GroqOptions = {}): Promise<T> {
-  const text = await groqChat(messages, { ...opts, json: true })
-  // Be tolerant of stray prose around the JSON.
-  const start = text.indexOf("{")
-  const end = text.lastIndexOf("}")
-  const slice = start >= 0 && end > start ? text.slice(start, end + 1) : text
-  return JSON.parse(slice) as T
+  return withProviderFallback(messages, { ...opts, json: true }, (text) => {
+    // Be tolerant of stray prose around the JSON.
+    const start = text.indexOf("{")
+    const end = text.lastIndexOf("}")
+    const slice = start >= 0 && end > start ? text.slice(start, end + 1) : text
+    return JSON.parse(slice) as T
+  })
 }

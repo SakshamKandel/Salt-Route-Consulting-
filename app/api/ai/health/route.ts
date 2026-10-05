@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { groqChat, isGroqConfigured, testProviderDirect } from "@/lib/ai/groq"
+import { getOpenRouterModels, groqChat, isGroqConfigured, testProviderDirect } from "@/lib/ai/groq"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 30
@@ -26,8 +26,9 @@ export async function GET(request: Request) {
     openRouter: {
       hasKey: Boolean(openRouterKey),
       keyPrefix: openRouterKey ? `${openRouterKey.slice(0, 10)}...` : null,
-      rawModelEnv: process.env.OPENROUTER_MODEL ?? null,
-      directTest: null as unknown,
+      freeModels: getOpenRouterModels(),
+      rawFreeModelsEnv: process.env.OPENROUTER_FREE_MODELS ?? null,
+      directTests: null as unknown,
     },
     redis: {
       configured: Boolean(process.env.REDIS_URL),
@@ -45,9 +46,11 @@ export async function GET(request: Request) {
     if (status.groq.hasKey) {
       status.groq.directTest = await testProviderDirect("groq", "Reply with OK")
     }
-    // 2. Test OpenRouter directly
+    // 2. Test every configured free OpenRouter model directly.
     if (status.openRouter.hasKey) {
-      status.openRouter.directTest = await testProviderDirect("openrouter", "Reply with OK")
+      status.openRouter.directTests = await Promise.all(
+        status.openRouter.freeModels.map((model) => testProviderDirect("openrouter", "Reply with OK", model))
+      )
     }
     // 3. Test full groqChat (primary + fallback)
     try {
