@@ -218,11 +218,11 @@ Rules:
 
     let data: AiComposeOutput
     try {
-      data = await groqJson<AiComposeOutput>(buildMessages(ctx), { temperature: 0.65, maxTokens: 3600 })
+      data = await groqJson<AiComposeOutput>(buildMessages(ctx), { temperature: 0.65, maxTokens: 3600, timeoutMs: 45_000 })
     } catch (firstError) {
       console.warn("[PROPERTY_AI_COMPOSE_RETRY] Retrying with compact context", firstError)
       const retryContext = buildAnswerContext(answers, 18_000)
-      data = await groqJson<AiComposeOutput>(buildMessages(retryContext), { temperature: 0.45, maxTokens: 3200 })
+      data = await groqJson<AiComposeOutput>(buildMessages(retryContext), { temperature: 0.45, maxTokens: 3200, timeoutMs: 45_000 })
     }
 
     const title = toStr(data.title, 160)

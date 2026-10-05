@@ -21,17 +21,20 @@ function cleanGroqKey(val?: string): string {
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+const DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
 
 function getGroqModel(): string {
   const custom = cleanEnv(process.env.GROQ_MODEL)
-  // Auto-correct common model mismatches (e.g. decommissioned or 404 models on current Groq tier)
+  // Auto-correct common model mismatches (including Groq's retired Compound Mini)
+  // so a stale deployment variable cannot take the whole AI flow offline.
   if (
     !custom ||
     custom.toLowerCase().includes("llama") ||
     custom.toLowerCase().includes("mixtral") ||
-    custom.toLowerCase().includes("gemma")
+    custom.toLowerCase().includes("gemma") ||
+    custom.toLowerCase().includes("compound")
   ) {
-    return "qwen/qwen3.8-27b"
+    return DEFAULT_GROQ_MODEL
   }
   return custom
 }
@@ -47,6 +50,7 @@ type GroqOptions = {
   maxTokens?: number
   json?: boolean
   signal?: AbortSignal
+  timeoutMs?: number
 }
 
 type Provider = {
@@ -88,7 +92,7 @@ function providers(): Provider[] {
 }
 
 async function callProvider(p: Provider, messages: ChatMessage[], opts: GroqOptions): Promise<string> {
-  const signal = opts.signal || AbortSignal.timeout(10000)
+  const signal = opts.signal || AbortSignal.timeout(opts.timeoutMs ?? 10000)
 
   const res = await fetch(p.url, {
     method: "POST",

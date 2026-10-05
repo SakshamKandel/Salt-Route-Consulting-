@@ -38,7 +38,7 @@ ${ctx.slice(-800)}`
 
     const text = await groqChat(
       [{ role: "system", content: systemPrompt }, { role: "user", content: userAnswer }],
-      { temperature: 0.85, maxTokens: 250 }
+      { temperature: 0.85, maxTokens: 250, timeoutMs: 20_000 }
     )
 
     return NextResponse.json({ reply: text.trim() })
