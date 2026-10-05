@@ -342,12 +342,53 @@ html.lenis body {
 
 /* ── Luxury Nepal property maps ─────────────────────────────── */
 .leaflet-container {
-  background: #eee8dc;
+  background: #102943;
   font-family: var(--font-sans), sans-serif;
 }
 
 .src-luxury-map-tiles {
-  filter: grayscale(0.7) sepia(0.12) saturate(0.72) contrast(0.96) brightness(1.06);
+  filter: saturate(0.72) contrast(0.98) brightness(0.92);
+}
+
+.src-map-frame {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.src-map-frame::after {
+  position: absolute;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(180deg, rgba(16, 41, 67, 0.2), transparent 26%, transparent 70%, rgba(16, 41, 67, 0.32));
+  mix-blend-mode: multiply;
+}
+
+.src-map-intro {
+  padding: 1.1rem 1.2rem 1.2rem;
+  border: 1px solid rgba(255, 250, 243, 0.16);
+  background: rgba(16, 41, 67, 0.9);
+  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.22);
+  backdrop-filter: blur(10px);
+}
+
+.src-map-legend {
+  border: 1px solid rgba(255, 250, 243, 0.16);
+  background: rgba(16, 41, 67, 0.9);
+  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+.src-map-legend-item {
+  background: transparent;
+  transition: background-color 180ms ease;
+}
+
+.src-map-legend-item:hover,
+.src-map-legend-item:focus-visible {
+  background: rgba(201, 169, 110, 0.14);
+  outline: none;
 }
 
 .src-map-marker-shell {
@@ -358,14 +399,14 @@ html.lenis body {
 .src-map-pin {
   position: relative;
   display: grid;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: 2px solid #fffaf3;
   border-radius: 999px;
   background: #102943;
   color: #fffaf3;
-  box-shadow: 0 8px 24px rgba(16, 41, 67, 0.3), 0 0 0 6px rgba(201, 169, 110, 0.2);
+  box-shadow: 0 8px 24px rgba(16, 41, 67, 0.34), 0 0 0 5px rgba(201, 169, 110, 0.23);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -382,22 +423,7 @@ html.lenis body {
 }
 
 .src-map-pin small {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: 150px;
-  padding: 5px 8px;
-  background: rgba(255, 250, 243, 0.94);
-  color: #102943;
-  box-shadow: 0 8px 20px rgba(16, 41, 67, 0.12);
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  display: none;
 }
 
 .src-map-pin--property {

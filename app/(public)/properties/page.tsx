@@ -58,6 +58,7 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
         title: true,
         slug: true,
         location: true,
+        address: true,
         pricePerNight: true,
         hidePrice: true,
         images: {
@@ -120,6 +121,7 @@ async function getProperties({ location, checkIn, checkOut, guests, page = 1 }: 
       title: p.title,
       slug: p.slug,
       location: p.location,
+      address: p.address,
       pricePerNight: Number(p.pricePerNight),
       hidePrice: p.hidePrice,
       imageUrl: p.images[0]?.url ?? undefined,

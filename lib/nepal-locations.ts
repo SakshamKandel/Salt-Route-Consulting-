@@ -6,6 +6,8 @@ const DESTINATIONS: Array<{ terms: string[]; coordinates: MapCoordinates }> = [
   { terms: ["fikkal", "ilam", "suryodaya"], coordinates: [26.9114, 87.9282] },
   { terms: ["fulbari", "pokhara", "kaski"], coordinates: [28.2096, 83.9856] },
   { terms: ["lete", "thasang", "mustang"], coordinates: [28.6462, 83.5967] },
+  { terms: ["taplejung", "phungling", "deurali"], coordinates: [27.35, 87.6667] },
+  { terms: ["shivapuri", "budhanilkantha", "budanilkantha"], coordinates: [27.7768, 85.3621] },
   { terms: ["nagarkot"], coordinates: [27.7172, 85.5208] },
   { terms: ["dhulikhel"], coordinates: [27.6221, 85.5426] },
   { terms: ["bandipur"], coordinates: [27.9389, 84.4069] },
