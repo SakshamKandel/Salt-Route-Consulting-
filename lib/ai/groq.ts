@@ -12,6 +12,11 @@ function cleanEnv(val?: string): string {
   return val.trim().replace(/^["']|["']$/g, "").trim()
 }
 
+function configuredKeys(pluralName: string, singularName: string, clean = cleanEnv): string[] {
+  const raw = process.env[pluralName] || process.env[singularName] || ""
+  return Array.from(new Set(raw.split(/[\s,\n]+/).map(clean).filter(Boolean)))
+}
+
 function cleanGroqKey(val?: string): string {
   let key = cleanEnv(val)
   if (key.startsWith("sk_")) {
@@ -78,32 +83,37 @@ type Provider = {
 
 /** True when ANY AI provider is configured (OpenRouter free pool or Groq fallback). */
 export function isGroqConfigured() {
-  return Boolean(cleanGroqKey(process.env.GROQ_API_KEY) || cleanEnv(process.env.OPENROUTER_API_KEY))
+  return configuredKeys("GROQ_API_KEYS", "GROQ_API_KEY", cleanGroqKey).length > 0 ||
+    configuredKeys("OPENROUTER_API_KEYS", "OPENROUTER_API_KEY").length > 0
 }
 
 /** Ordered provider list: OpenRouter free models first, Groq as fallback. */
 function providers(): Provider[] {
   const list: Provider[] = []
-  const groqKey = cleanGroqKey(process.env.GROQ_API_KEY)
-  const openRouterKey = cleanEnv(process.env.OPENROUTER_API_KEY)
+  const groqKeys = configuredKeys("GROQ_API_KEYS", "GROQ_API_KEY", cleanGroqKey)
+  const openRouterKeys = configuredKeys("OPENROUTER_API_KEYS", "OPENROUTER_API_KEY")
 
-  if (openRouterKey) {
+  if (openRouterKeys.length) {
     for (const model of getOpenRouterModels()) {
-      list.push({
-        name: "openrouter",
-        url: OPENROUTER_URL,
-        key: openRouterKey,
-        model,
-        // Recommended attribution headers for OpenRouter.
-        extraHeaders: {
-          "HTTP-Referer": cleanEnv(process.env.SITE_URL) || "https://saltroutegroup.com",
-          "X-Title": cleanEnv(process.env.SITE_NAME) || "Salt Route",
-        },
-      })
+      for (const openRouterKey of openRouterKeys) {
+        list.push({
+          name: "openrouter",
+          url: OPENROUTER_URL,
+          key: openRouterKey,
+          model,
+          // Recommended attribution headers for OpenRouter.
+          extraHeaders: {
+            "HTTP-Referer": cleanEnv(process.env.SITE_URL) || "https://saltroutegroup.com",
+            "X-Title": cleanEnv(process.env.SITE_NAME) || "Salt Route",
+          },
+        })
+      }
     }
   }
-  if (groqKey) {
-    list.push({ name: "groq", url: GROQ_URL, key: groqKey, model: getGroqModel() })
+  if (groqKeys.length) {
+    for (const groqKey of groqKeys) {
+      list.push({ name: "groq", url: GROQ_URL, key: groqKey, model: getGroqModel() })
+    }
   }
   return list
 }

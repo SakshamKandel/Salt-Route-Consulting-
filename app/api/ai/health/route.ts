@@ -8,16 +8,19 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const shouldTest = url.searchParams.get("test") !== "false"
 
-  const groqRaw = process.env.GROQ_API_KEY || ""
-  const groqKey = groqRaw.trim().replace(/^["']|["']$/g, "").trim()
+  const groqRaw = process.env.GROQ_API_KEYS || process.env.GROQ_API_KEY || ""
+  const groqKeys = groqRaw.split(/[\s,\n]+/).map((key) => key.trim().replace(/^["']|["']$/g, "").trim()).filter(Boolean)
+  const groqKey = groqKeys[0] || ""
 
-  const openRouterRaw = process.env.OPENROUTER_API_KEY || ""
-  const openRouterKey = openRouterRaw.trim().replace(/^["']|["']$/g, "").trim()
+  const openRouterRaw = process.env.OPENROUTER_API_KEYS || process.env.OPENROUTER_API_KEY || ""
+  const openRouterKeys = openRouterRaw.split(/[\s,\n]+/).map((key) => key.trim().replace(/^["']|["']$/g, "").trim()).filter(Boolean)
+  const openRouterKey = openRouterKeys[0] || ""
 
   const status = {
     configured: isGroqConfigured(),
     groq: {
       hasKey: Boolean(groqKey),
+      keyCount: groqKeys.length,
       keyPrefix: groqKey ? `${groqKey.slice(0, 7)}...` : null,
       autoRepaired: groqKey.startsWith("sk_") ? "Prepended missing 'g' to sk_" : false,
       rawModelEnv: process.env.GROQ_MODEL ?? null,
@@ -25,6 +28,7 @@ export async function GET(request: Request) {
     },
     openRouter: {
       hasKey: Boolean(openRouterKey),
+      keyCount: openRouterKeys.length,
       keyPrefix: openRouterKey ? `${openRouterKey.slice(0, 10)}...` : null,
       freeModels: getOpenRouterModels(),
       rawFreeModelsEnv: process.env.OPENROUTER_FREE_MODELS ?? null,
