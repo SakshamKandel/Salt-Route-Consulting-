@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useRef } from "react"
-import { useRouter } from "next/navigation"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { formatNpr } from "@/lib/currency"
@@ -56,59 +55,59 @@ function previewHtml(property: PositionedProperty) {
       <small>${escapeHtml(property.location)}</small>
       <strong>${escapeHtml(property.title)}</strong>
       <span>${escapeHtml(price)}</span>
+      <a class="src-map-card-link" href="/properties/${escapeHtml(property.slug)}">View stay <span aria-hidden="true">↗</span></a>
     </div>
   </article>`
 }
 
 function addLuxuryTiles(map: L.Map) {
-  const layers = [
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      subdomains: "abc",
-      maxZoom: 19,
-      crossOrigin: true,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-    }),
-    L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-      subdomains: "abc",
-      maxZoom: 19,
-      crossOrigin: true,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles style by <a href="https://www.hotosm.org/">HOT</a>',
-    }),
-    L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-      subdomains: "abc",
-      maxZoom: 17,
-      crossOrigin: true,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, map style by <a href="https://opentopomap.org/">OpenTopoMap</a>',
-    }),
-  ]
+  const esriAttribution =
+    'Tiles &copy; Esri — Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), TomTom'
+  const base = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    { maxZoom: 16, crossOrigin: true, attribution: esriAttribution },
+  )
+  const labels = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+    { maxZoom: 16, crossOrigin: true },
+  )
+  const fallback = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    subdomains: "abc",
+    maxZoom: 19,
+    crossOrigin: true,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+  })
 
-  let activeIndex = -1
-  let activeLayer: L.TileLayer | null = null
-  let fallbackTimer: number | undefined
-  const scheduleFallback = () => {
+  let hasLoaded = false
+  let tileErrors = 0
+  const switchToFallback = () => {
+    if (hasLoaded || !map.getContainer().isConnected) return
+    base.remove()
+    labels.remove()
+    fallback.addTo(map)
+  }
+
+  base.on("tileload", () => {
+    hasLoaded = true
     window.clearTimeout(fallbackTimer)
-    fallbackTimer = window.setTimeout(tryNextLayer, 5500)
-  }
-  const tryNextLayer = () => {
-    if (activeIndex >= layers.length - 1 || !map.getContainer().isConnected) return
-    if (activeLayer) activeLayer.remove()
-    activeIndex += 1
-    activeLayer = layers[activeIndex]
-    activeLayer.once("tileload", () => window.clearTimeout(fallbackTimer))
-    activeLayer.once("tileerror", tryNextLayer)
-    activeLayer.addTo(map)
-    scheduleFallback()
-  }
-  tryNextLayer()
+  })
+  base.on("tileerror", () => {
+    tileErrors += 1
+    if (tileErrors >= 2) switchToFallback()
+  })
+  base.addTo(map)
+  labels.addTo(map)
+  const fallbackTimer = window.setTimeout(switchToFallback, 6500)
 
   return () => {
     window.clearTimeout(fallbackTimer)
-    layers.forEach((layer) => layer.remove())
+    base.remove()
+    labels.remove()
+    fallback.remove()
   }
 }
 
 export default function PropertyMapInner({ properties }: { properties: MapProperty[] }) {
-  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markersRef = useRef<L.Marker[]>([])
@@ -158,13 +157,15 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
       })
       const marker = L.marker([markerLatitude, markerLongitude], { icon, riseOnHover: true })
         .addTo(map)
-        .bindTooltip(previewHtml(property), {
-          direction: "top",
+        .bindPopup(previewHtml(property), {
           className: "src-map-preview",
-          opacity: 1,
-          offset: [0, -12],
+          closeButton: true,
+          autoClose: true,
+          closeOnClick: true,
+          maxWidth: 280,
+          minWidth: 240,
+          offset: [0, -18],
         })
-      marker.on("click", () => router.push(`/properties/${property.slug}`))
       return marker
     })
     markersRef.current = markers
@@ -190,7 +191,7 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
       mapRef.current = null
       markersRef.current = []
     }
-  }, [positioned, router])
+  }, [positioned])
 
   return (
     <div className="src-map-frame relative h-full min-h-[420px] w-full bg-[#102943]">
@@ -216,7 +217,7 @@ export default function PropertyMapInner({ properties }: { properties: MapProper
                 const map = mapRef.current
                 if (!marker || !map) return
                 map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 8), { duration: 0.8 })
-                marker.openTooltip()
+                marker.openPopup()
               }}
             >
               <span className="text-[9px] font-semibold tabular-nums text-gold/80">{String(index + 1).padStart(2, "0")}</span>

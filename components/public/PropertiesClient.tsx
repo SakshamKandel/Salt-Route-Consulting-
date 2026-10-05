@@ -278,10 +278,10 @@ export default function PropertiesClient({
         <CompactSection className="bg-beige">
           <CompactHeading
             eyebrow="Map"
-            title="See the collection across Nepal."
-            copy="Use the map to understand each stay in relation to its destination and surrounding landscape."
+            title="The route between stays."
+            copy="Explore every destination in one quiet, geographic view."
           />
-          <div className="mt-6 h-[360px] overflow-hidden bg-sand-dark sm:h-[440px]">
+          <div className="mt-6 h-[390px] overflow-hidden bg-sand-dark sm:h-[480px]">
             <PropertyMap properties={mapProperties} />
           </div>
         </CompactSection>

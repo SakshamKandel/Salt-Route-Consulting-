@@ -347,7 +347,7 @@ html.lenis body {
 }
 
 .src-luxury-map-tiles {
-  filter: saturate(0.72) contrast(0.98) brightness(0.92);
+  filter: saturate(0.68) contrast(1.02) brightness(1.04);
 }
 
 .src-map-frame {
@@ -361,23 +361,24 @@ html.lenis body {
   z-index: 400;
   pointer-events: none;
   content: "";
-  background: linear-gradient(180deg, rgba(16, 41, 67, 0.2), transparent 26%, transparent 70%, rgba(16, 41, 67, 0.32));
-  mix-blend-mode: multiply;
+  background: linear-gradient(180deg, rgba(16, 41, 67, 0.1), transparent 26%, transparent 70%, rgba(16, 41, 67, 0.18));
 }
 
 .src-map-intro {
-  padding: 1.1rem 1.2rem 1.2rem;
-  border: 1px solid rgba(255, 250, 243, 0.16);
-  background: rgba(16, 41, 67, 0.9);
-  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.22);
-  backdrop-filter: blur(10px);
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid rgba(255, 250, 243, 0.2);
+  border-radius: 16px;
+  background: rgba(16, 41, 67, 0.84);
+  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.18);
+  backdrop-filter: blur(14px);
 }
 
 .src-map-legend {
-  border: 1px solid rgba(255, 250, 243, 0.16);
-  background: rgba(16, 41, 67, 0.9);
-  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.24);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 250, 243, 0.2);
+  border-radius: 16px;
+  background: rgba(16, 41, 67, 0.84);
+  box-shadow: 0 18px 42px rgba(16, 41, 67, 0.2);
+  backdrop-filter: blur(14px);
 }
 
 .src-map-legend-item {
@@ -438,21 +439,42 @@ html.lenis body {
   background: #c9a96e;
 }
 
-.src-map-preview.leaflet-tooltip {
+.src-map-preview .leaflet-popup-content-wrapper {
   overflow: hidden;
   padding: 0;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid rgba(16, 41, 67, 0.12);
+  border-radius: 18px;
   background: #fffaf3;
-  box-shadow: 0 18px 48px rgba(16, 41, 67, 0.22);
+  box-shadow: 0 22px 60px rgba(16, 41, 67, 0.24);
 }
 
-.src-map-preview.leaflet-tooltip-top::before {
-  border-top-color: #fffaf3;
+.src-map-preview .leaflet-popup-content {
+  width: auto !important;
+  margin: 0;
+}
+
+.src-map-preview .leaflet-popup-tip {
+  background: #fffaf3;
+  box-shadow: none;
+}
+
+.src-map-preview .leaflet-popup-close-button {
+  z-index: 2;
+  top: 8px !important;
+  right: 9px !important;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 250, 243, 0.86);
+  color: #102943 !important;
+  font-size: 18px !important;
+  line-height: 1;
 }
 
 .src-map-card {
-  width: 250px;
+  width: 258px;
   background: #fffaf3;
   color: #102943;
 }
@@ -460,15 +482,15 @@ html.lenis body {
 .src-map-card img {
   display: block;
   width: 100%;
-  height: 112px;
+  height: 104px;
   object-fit: cover;
 }
 
 .src-map-card > div {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 15px 17px 17px;
+  gap: 4px;
+  padding: 14px 16px 15px;
 }
 
 .src-map-card small {
@@ -489,6 +511,26 @@ html.lenis body {
 .src-map-card span {
   color: rgba(16, 41, 67, 0.58);
   font-size: 11px;
+}
+
+.src-map-card .src-map-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  margin-top: 5px;
+  color: #a47f3e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+
+.src-map-card .src-map-card-link:hover,
+.src-map-card .src-map-card-link:focus-visible {
+  color: #102943;
+  outline: none;
 }
 
 .src-map-card--detail {
