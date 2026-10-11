@@ -13,7 +13,7 @@ import { formatNpr } from "@/lib/currency"
 import imgRetreat from "@/public/images/marketing/nepal-residence.jpg"
 import imgVilla from "@/public/images/marketing/nepal-villa.jpg"
 import imgDining from "@/public/images/saltroute/garden-breakfast.webp"
-import imgConnection from "@/public/images/saltroute/local-farmers.webp"
+import imgConnection from "@/public/images/saltroute/tea-harvest.webp"
 import imgLandscape from "@/public/images/marketing/nepal-landscape.jpg"
 import logoSwissContact from "@/public/brand/Trusted By/SwissContact.png"
 import logoRedPanda from "@/public/brand/Trusted By/Red Panda Network.png"
@@ -115,7 +115,7 @@ export default function HomeClient({ featured = [], testimonials = [], guestRevi
 
     <Reveal as="section" className="editorial-place editorial-container">
       <h2>A personal connection to Nepal.</h2><p>Landscape, craft, food, and people. Discover the places that draw you in, and let us bring them together in a journey of your own.</p>
-      <Link href="/visual-journey" className="editorial-landscape"><Image src={imgConnection} alt="Farmers tending a field in Jitpur" fill sizes="(max-width:768px) 100vw, 900px" className="object-cover" /></Link>
+      <Link href="/visual-journey" className="editorial-landscape"><Image src={imgConnection} alt="Tea picker harvesting leaves in eastern Nepal" fill sizes="(max-width:768px) 100vw, 900px" className="object-cover" /></Link>
       <Link href="/visual-journey" className="editorial-link">A visual journey</Link>
     </Reveal>
 

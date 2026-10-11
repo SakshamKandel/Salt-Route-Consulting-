@@ -11,7 +11,7 @@ export const siteConfig = {
   name: process.env.SITE_NAME ?? "Salt Route Corp",
 
   /** Short group/brand name used in bylines and compact labels */
-  brandName: process.env.SITE_BRAND_NAME ?? "Salt Route Group",
+  brandName: process.env.SITE_BRAND_NAME ?? "Salt Route Corp",
 
   /** One-line tagline */
   tagline: process.env.SITE_TAGLINE ?? "Tailored Stays & Consulting · Nepal",
@@ -33,7 +33,7 @@ export const siteConfig = {
     phone: process.env.CONTACT_PHONE ?? "+977 9700013336",
     phoneHref: process.env.CONTACT_PHONE_HREF ?? "tel:+9779700013336",
     address: process.env.CONTACT_ADDRESS ?? "Chabahil, Kathmandu, Nepal",
-    addressFull: process.env.CONTACT_ADDRESS_FULL ?? "Salt Route Group HQ, Chabahil, Kathmandu, Nepal",
+    addressFull: process.env.CONTACT_ADDRESS_FULL ?? "Salt Route Corp HQ, Chabahil, Kathmandu, Nepal",
     /** Google Maps or embed URL for the office location */
     mapUrl: process.env.CONTACT_MAP_URL ?? "https://maps.google.com/?q=Chabahil,Kathmandu,Nepal",
   },

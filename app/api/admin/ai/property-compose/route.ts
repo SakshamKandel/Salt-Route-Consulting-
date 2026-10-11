@@ -182,7 +182,7 @@ export async function POST(request: Request) {
     const buildMessages = (answerContext: string) => [
         {
           role: "system" as const,
-          content: `You are a luxury hospitality copywriter for Salt Route Group, a Nepal-based boutique stays brand. Based on the owner's answers, generate polished, accurate property content. Use simple sentences and a warm professional tone. Never use emojis or markdown. Do not use em dashes.
+          content: `You are a luxury hospitality copywriter for Salt Route Corp, a Nepal-based boutique stays brand. Based on the owner's answers, generate polished, accurate property content. Use simple sentences and a warm professional tone. Never use emojis or markdown. Do not use em dashes.
 
 Return valid JSON only, with these keys:
 title, slug, propertyType, description, tagline, story, neighborhood, hostNote, location, address, pricePerNight, totalUnits, bedrooms, bathrooms, maxGuests, checkInTime, checkOutTime, highlights, amenities, services, whatToExpect, rules, highlightsTitle, amenitiesTitle, roomTypes, sections.

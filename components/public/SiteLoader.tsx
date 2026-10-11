@@ -109,7 +109,7 @@ export function SiteLoader() {
         <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
         <Image
           src="/brand/logo.png"
-          alt="Salt Route Group"
+          alt="Salt Route Corp"
           width={1947}
           height={808}
           priority
@@ -136,7 +136,7 @@ export function SiteLoader() {
           <style>{`@keyframes site-loader-pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
           <Image
             src="/brand/logo.png"
-            alt="Salt Route Group"
+            alt="Salt Route Corp"
             width={1947}
             height={808}
             priority

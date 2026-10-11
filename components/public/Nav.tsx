@@ -78,7 +78,7 @@ export function Nav({ contact }: { contact: { email: string; phone: string; phon
           <div className={styles.menuAccount}><Link href={session ? account : "/login"} onClick={close}>{session ? "My account" : "Guest sign in"}</Link><LanguageSwitcher transparent /></div>
         </div>
       </div>
-      <p className={styles.menuLegal}>© {new Date().getFullYear()} Salt Route Group · A personal connection to Nepal.</p>
+      <p className={styles.menuLegal}>© {new Date().getFullYear()} Salt Route Corp · A personal connection to Nepal.</p>
     </dialog>
   </>
 }
